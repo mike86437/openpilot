@@ -214,6 +214,7 @@ static void update_state(UIState *s) {
     const auto carParams = sm["carParams"].getCarParams();
     scene.longitudinal_control = carParams.getOpenpilotLongitudinalControl();
     if (scene.longitudinal_control) {
+      scene.conditional_experimental = carParams.getConditionalExperimentalMode();
       scene.driving_personalities_ui_wheel = carParams.getDrivingPersonalitiesUIWheel();
       scene.experimental_mode_via_wheel = carParams.getExperimentalModeViaWheel();
     }
@@ -286,6 +287,8 @@ void ui_update_params(UIState *s) {
     scene.frog_signals = scene.custom_signals == 1;
 
     scene.compass = params.getBool("Compass");
+    scene.conditional_speed = params.getInt("ConditionalExperimentalModeSpeed");
+    scene.conditional_speed_lead = params.getInt("ConditionalExperimentalModeSpeedLead");
     scene.custom_road_ui = params.getBool("CustomRoadUI");
     scene.acceleration_path = scene.custom_road_ui && params.getBool("AccelerationPath");
     scene.blind_spot_path = scene.custom_road_ui && params.getBool("BlindSpotPath");
@@ -314,6 +317,10 @@ void ui_update_live_params(UIState *s) {
   // Update FrogPilot variables when they are changed
   static bool live_toggles_checked = false;
   if (params_memory.getBool("FrogPilotTogglesUpdated")) {
+    if (scene.conditional_experimental) {
+      scene.conditional_speed = params.getInt("ConditionalExperimentalModeSpeed");
+      scene.conditional_speed_lead = params.getInt("ConditionalExperimentalModeSpeedLead");
+    }
     if (scene.custom_theme) {
       scene.custom_colors = params.getInt("CustomColors");
       scene.frog_colors = scene.custom_colors == 1;
@@ -339,6 +346,9 @@ void ui_update_live_params(UIState *s) {
   }
 
   // FrogPilot live variables that need to be constantly checked
+  if (scene.conditional_experimental) {
+    scene.conditional_status = params_memory.getInt("ConditionalStatus");
+  }
   scene.map_open = params_memory.getBool("MapOpen");
 }
 

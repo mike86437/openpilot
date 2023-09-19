@@ -117,6 +117,7 @@ private:
   bool blindSpotLeft;
   bool blindSpotRight;
   bool compass;
+  bool conditionalExperimental;
   bool experimentalMode;
   bool frogColors;
   bool frogSignals;
@@ -124,10 +125,14 @@ private:
   bool muteDM;
   bool onroadAdjustableProfiles;
   bool rotatingWheel;
+  bool toyotaCar;
   bool turnSignalLeft;
   bool turnSignalRight;
   int animationFrameIndex;
   int bearingDeg;
+  int conditionalSpeed;
+  int conditionalSpeedLead;
+  int conditionalStatus;
   int personalityProfile;
   int steeringAngleDeg;
   int steeringWheel;
