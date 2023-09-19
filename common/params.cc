@@ -84,6 +84,7 @@ private:
 };
 
 std::unordered_map<std::string, uint32_t> keys = {
+    {"AccelerationPath", PERSISTENT},
     {"AccessToken", CLEAR_ON_MANAGER_START | DONT_LOG},
     {"ApiCache_Device", PERSISTENT},
     {"ApiCache_DriveStats", PERSISTENT},
@@ -91,6 +92,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"AssistNowToken", PERSISTENT},
     {"AthenadPid", PERSISTENT},
     {"AthenadUploadQueue", PERSISTENT},
+    {"BlindSpotPath", PERSISTENT},
     {"CalibrationParams", PERSISTENT},
     {"CameraDebugExpGain", CLEAR_ON_MANAGER_START},
     {"CameraDebugExpTime", CLEAR_ON_MANAGER_START},
@@ -105,6 +107,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"CurrentRoute", CLEAR_ON_MANAGER_START | CLEAR_ON_ONROAD_TRANSITION},
     {"CustomColors", PERSISTENT},
     {"CustomIcons", PERSISTENT},
+    {"CustomRoadUI", PERSISTENT},
     {"CustomSignals", PERSISTENT},
     {"CustomSounds", PERSISTENT},
     {"CustomTheme", PERSISTENT},
@@ -157,6 +160,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"LaikadEphemerisV3", PERSISTENT | DONT_LOG},
     {"LaneChangeTimer", PERSISTENT},
     {"LaneDetection", PERSISTENT},
+    {"LaneLinesWidth", PERSISTENT},
     {"LanguageSetting", PERSISTENT},
     {"LastAthenaPingTime", CLEAR_ON_MANAGER_START},
     {"LastGPSPosition", PERSISTENT},
@@ -204,10 +208,13 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"PandaLogState", PERSISTENT},
     {"PandaSignatures", CLEAR_ON_MANAGER_START},
     {"Passive", PERSISTENT},
+    {"PathEdgeWidth", PERSISTENT},
+    {"PathWidth", PERSISTENT},
     {"PrimeType", PERSISTENT},
     {"RecordFront", PERSISTENT},
     {"RecordFrontLock", PERSISTENT},  // for the internal fleet
     {"ReplayControlsState", CLEAR_ON_MANAGER_START | CLEAR_ON_ONROAD_TRANSITION},
+    {"RoadEdgesWidth", PERSISTENT},
     {"RotatingWheel", PERSISTENT},
     {"ScreenBrightness", PERSISTENT},
     {"ShouldDoUpdate", CLEAR_ON_MANAGER_START},
@@ -221,6 +228,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"Timezone", PERSISTENT},
     {"TrainingVersion", PERSISTENT},
     {"UbloxAvailable", PERSISTENT},
+    {"UnlimitedLength", PERSISTENT},
     {"UpdateAvailable", CLEAR_ON_MANAGER_START | CLEAR_ON_ONROAD_TRANSITION},
     {"Updated", PERSISTENT},
     {"UpdateFailedCount", CLEAR_ON_MANAGER_START},
