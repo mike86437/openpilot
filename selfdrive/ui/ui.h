@@ -165,10 +165,13 @@ typedef struct UIScene {
   bool enabled;
   bool experimental_mode;
   bool frog_colors;
+  bool frog_signals;
   bool map_open;
   bool mute_dm;
   bool rotating_wheel;
   bool toyota_car = true;
+  bool turn_signal_left;
+  bool turn_signal_right;
   bool unlimited_road_ui_length;
   bool wide_camera_disabled;
   int custom_colors;
