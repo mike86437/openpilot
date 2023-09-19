@@ -163,6 +163,7 @@ typedef struct UIScene {
   bool toyota_car = true;
   int custom_colors;
   int custom_signals;
+  int screen_brightness;
 
 } UIScene;
 

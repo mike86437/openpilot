@@ -190,3 +190,9 @@ ParamController(CustomSounds, "CustomSounds", "Sounds", "Replace the stock openp
   return sounds == 0 ? "Stock" : "Frog";,
   return v >= 0 ? v % 2 : 1;
 )
+
+ParamController(ScreenBrightness, "ScreenBrightness", "Screen Brightness", "Set a custom screen brightness level or use the default 'Auto' brightness setting.", "../assets/offroad/icon_light.png",
+  const int brightness = params.getInt("ScreenBrightness");
+  return brightness == 101 ? "Auto" : brightness == 0 ? "Off" : QString::number(brightness) + "%";,
+  return std::clamp(v, 0, 101);
+)
