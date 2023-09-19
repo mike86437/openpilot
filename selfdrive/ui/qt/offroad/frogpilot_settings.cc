@@ -89,7 +89,8 @@ FrogPilotVehiclesPanel::FrogPilotVehiclesPanel(QWidget *parent) : FrogPilotPanel
   mainLayout->addWidget(whiteHorizontalLine());
 
   static const std::vector<std::tuple<QString, QString, QString, QString>> toyotaToggles = {
-    {"TSS2Tune", "TSS2 Tune", "Tuning profile for TSS2 vehicles. Based on the tuning profile from DragonPilot.", "../assets/offroad/icon_tss2_tune.png"}
+    {"TSS2Tune", "TSS2 Tune", "Tuning profile for TSS2 vehicles. Based on the tuning profile from DragonPilot.", "../assets/offroad/icon_tss2_tune.png"},
+    {"ZSS", "ZSS", "Enable the ZSS (Zorro Steering Sensor) for the Toyota Prius.", "../assets/offroad/icon_zorro.png"}
   };
 
   for (const auto &[key, label, desc, icon] : toyotaToggles) {
