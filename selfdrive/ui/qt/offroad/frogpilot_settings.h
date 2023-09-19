@@ -152,7 +152,7 @@ class className : public ParamValueControl { \
   Q_OBJECT \
 public: \
   className() : ParamValueControl(labelText, descText, iconPath) { \
-    if (std::string(#className) == "DeviceShutdownTimer") { \
+    if (std::string(#className) == "DeviceShutdownTimer" || std::string(#className) == "SteeringWheel") { \
       label.setFixedWidth(225); \
     } \
     refresh(); \
@@ -212,4 +212,10 @@ ParamController(ScreenBrightness, "ScreenBrightness", "Screen Brightness", "Set 
   const int brightness = params.getInt("ScreenBrightness");
   return brightness == 101 ? "Auto" : brightness == 0 ? "Off" : QString::number(brightness) + "%";,
   return std::clamp(v, 0, 101);
+)
+
+ParamController(SteeringWheel, "SteeringWheel", "Steering Wheel Icon", "Replace the stock openpilot steering wheel icon with a custom icon.\n\nWant to submit your own steering wheel? Post it in the 'feature-request' channel on the FrogPilot Discord!", "../assets/offroad/icon_openpilot.png",
+  const int wheel = params.getInt("SteeringWheel");
+  return wheel == 0 ? "Stock" : wheel == 1 ? "Lexus" : wheel == 2 ? "Toyota" : wheel == 3 ? "Frog" : wheel == 4 ? "Rocket" : "Hyundai";,
+  return v >= 0 ? v % 6 : 5;
 )
