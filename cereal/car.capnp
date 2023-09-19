@@ -122,6 +122,8 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     frogSteerSaturated @120;
     torqueNNLoad @121;
     torqueNNNotLoaded @122;
+    turningLeft @123;
+    turningRight @124;
 
     radarCanErrorDEPRECATED @15;
     communityFeatureDisallowedDEPRECATED @62;
