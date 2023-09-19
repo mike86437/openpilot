@@ -152,7 +152,7 @@ class className : public ParamValueControl { \
   Q_OBJECT \
 public: \
   className() : ParamValueControl(labelText, descText, iconPath) { \
-    if (std::string(#className) == "DeviceShutdownTimer" || std::string(#className) == "SteeringWheel") { \
+    if (std::string(#className) == "DeviceShutdownTimer" || std::string(#className) == "IncreasedStoppingDistance" || std::string(#className) == "SteeringWheel") { \
       label.setFixedWidth(225); \
     } \
     refresh(); \
@@ -200,6 +200,12 @@ ParamController(DeviceShutdownTimer, "DeviceShutdownTimer", "Device Shutdown Tim
   const int time = params.getInt("DeviceShutdownTimer");
   return time == 0 ? "Instant" : (time > 0 && time <= 3) ? QString::number(time * 15) + " mins" : QString::number(time - 3) + (time == 4 ? " hour" : " hours");,
   return std::clamp(v, 0, 33);
+)
+
+ParamController(IncreasedStoppingDistance, "IncreasedStoppingDistance", "   Increase Stopping Distance", "Increase the stopping distance for a more comfortable stop.", "../assets/offroad/icon_blank.png",
+  const int distance = params.getInt("IncreasedStoppingDistance");
+  return distance == 0 ? "Off" : QString::number(distance) + (isMetric ? " meters" : " feet");,
+  return std::clamp(v, 0, isMetric ? 5 : 15);
 )
 
 ParamController(LaneChangeTimer, "LaneChangeTimer", "   Lane Change Timer", "Set a time delay before openpilot conducts a nudgeless lane change.", "../assets/offroad/icon_blank.png",
