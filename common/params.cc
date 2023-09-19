@@ -90,6 +90,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"AggressiveAcceleration", PERSISTENT},
     {"AggressiveJerkValue", PERSISTENT},
     {"AggressivePersonalityValue", PERSISTENT},
+    {"AlwaysOnLateral", PERSISTENT},
     {"ApiCache_Device", PERSISTENT},
     {"ApiCache_DriveStats", PERSISTENT},
     {"ApiCache_NavDestinations", PERSISTENT},
@@ -233,6 +234,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"Passive", PERSISTENT},
     {"PathEdgeWidth", PERSISTENT},
     {"PathWidth", PERSISTENT},
+    {"PauseLateralOnSignal", PERSISTENT},
     {"PrimeType", PERSISTENT},
     {"RecordFront", PERSISTENT},
     {"RecordFrontLock", PERSISTENT},  // for the internal fleet
