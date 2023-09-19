@@ -14,6 +14,8 @@
 const int btn_size = 192;
 const int img_size = (btn_size / 4) * 3;
 
+// FrogPilot global variables
+
 
 // ***** onroad widgets *****
 class OnroadAlerts : public QWidget {
@@ -47,6 +49,9 @@ private:
   QPixmap experimental_img;
   bool experimental_mode;
   bool engageable;
+
+  // FrogPilot variables
+
 };
 
 
@@ -75,6 +80,9 @@ public:
 private:
   void drawText(QPainter &p, int x, int y, const QString &text, int alpha = 255);
 
+  // FrogPilot widgets
+  void drawStatusBar(QPainter &p);
+
   QVBoxLayout *main_layout;
   ExperimentalButton *experimental_btn;
   QPixmap dm_img;
@@ -97,6 +105,10 @@ private:
   int skip_frame_count = 0;
   bool wide_cam_requested = false;
 
+  // FrogPilot variables
+  bool experimentalMode;
+  bool mapOpen;
+
 protected:
   void paintGL() override;
   void initializeGL() override;
@@ -109,6 +121,8 @@ protected:
   inline QColor redColor(int alpha = 255) { return QColor(201, 34, 49, alpha); }
   inline QColor whiteColor(int alpha = 255) { return QColor(255, 255, 255, alpha); }
   inline QColor blackColor(int alpha = 255) { return QColor(0, 0, 0, alpha); }
+
+  // FrogPilot colors
 
   double prev_draw_t = 0;
   FirstOrderFilter fps_filter;
@@ -134,6 +148,8 @@ private:
   QColor bg = bg_colors[STATUS_DISENGAGED];
   QWidget *map = nullptr;
   QHBoxLayout* split;
+
+  // FrogPilot variables
 
 private slots:
   void offroadTransition(bool offroad);
