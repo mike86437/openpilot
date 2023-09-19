@@ -109,6 +109,7 @@ private:
   bool experimentalMode;
   bool frogColors;
   bool mapOpen;
+  bool muteDM;
 
 protected:
   void paintGL() override;
