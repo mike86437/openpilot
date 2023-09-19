@@ -151,7 +151,12 @@ public:
 class className : public ParamValueControl { \
   Q_OBJECT \
 public: \
-  className() : ParamValueControl(labelText, descText, iconPath) { refresh(); } \
+  className() : ParamValueControl(labelText, descText, iconPath) { \
+    if (std::string(#className) == "DeviceShutdownTimer") { \
+      label.setFixedWidth(225); \
+    } \
+    refresh(); \
+  } \
 private: \
   void refresh() override { \
     label.setText(getValueStr()); \
@@ -189,6 +194,12 @@ ParamController(CustomSounds, "CustomSounds", "Sounds", "Replace the stock openp
   const int sounds = params.getInt("CustomSounds");
   return sounds == 0 ? "Stock" : "Frog";,
   return v >= 0 ? v % 2 : 1;
+)
+
+ParamController(DeviceShutdownTimer, "DeviceShutdownTimer", "Device Shutdown Timer", "Set the timer for when the device turns off after being offroad to reduce energy waste and prevent battery drain.", "../assets/offroad/icon_time.png",
+  const int time = params.getInt("DeviceShutdownTimer");
+  return time == 0 ? "Instant" : (time > 0 && time <= 3) ? QString::number(time * 15) + " mins" : QString::number(time - 3) + (time == 4 ? " hour" : " hours");,
+  return std::clamp(v, 0, 33);
 )
 
 ParamController(ScreenBrightness, "ScreenBrightness", "Screen Brightness", "Set a custom screen brightness level or use the default 'Auto' brightness setting.", "../assets/offroad/icon_light.png",
