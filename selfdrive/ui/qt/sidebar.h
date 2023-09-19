@@ -67,6 +67,8 @@ private:
   bool isCustomTheme;
   bool isFrogColors;
   bool isFrogIcons;
+  bool isFahrenheit;
+  bool isNumericalTemp;
   int customColors;
   int customIcons;
   Params params;
