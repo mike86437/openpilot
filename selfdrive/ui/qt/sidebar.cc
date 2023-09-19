@@ -42,6 +42,10 @@ Sidebar::Sidebar(QWidget *parent) : QFrame(parent), onroad(false), flag_pressed(
 
   // FrogPilot variables
   isCustomTheme = params.getBool("CustomTheme");
+  isDeveloperUI = params.getInt("DeveloperUI");
+
+  isStorageLeft = params.getBool("DisplayStorageLeft");
+  isStorageUsed = params.getBool("DisplayStorageUsed");
 
   customColors = isCustomTheme ? params.getInt("CustomColors") : 0;
   isFrogColors = customColors == 1;
@@ -60,8 +64,26 @@ Sidebar::Sidebar(QWidget *parent) : QFrame(parent), onroad(false), flag_pressed(
 }
 
 void Sidebar::mousePressEvent(QMouseEvent *event) {
+  QRect memoryRect = {30, 654, 240, 126};
   QRect tempRect = {30, 338, 240, 126};
-  if (tempRect.contains(event->pos()) && isNumericalTemp) {
+  static int displayState = 0;
+
+  if (memoryRect.contains(event->pos()) && isDeveloperUI) {
+    displayState = (displayState + 1) % 3;
+    if (displayState == 0) {
+      isStorageLeft = true;
+      isStorageUsed = false;
+    } else if (displayState == 1) {
+      isStorageLeft = false;
+      isStorageUsed = true;
+    } else {
+      isStorageLeft = false;
+      isStorageUsed = false;
+    }
+    params.putBool("DisplayStorageLeft", isStorageLeft);
+    params.putBool("DisplayStorageUsed", isStorageUsed);
+    update();
+  } else if (tempRect.contains(event->pos()) && isNumericalTemp) {
     isFahrenheit = !isFahrenheit;
     params.putBool("Fahrenheit", isFahrenheit);
     update();
@@ -123,7 +145,44 @@ void Sidebar::updateState(const UIState &s) {
 
   // FrogPilot properties
   const int maxTempC = deviceState.getMaxTempC();
-  const QString max_temp = isFahrenheit ? QString::number(maxTempC * 9 / 5 + 32) + "°F" : QString::number(maxTempC) + "°C";
+  const QString max_temp = isFahrenheit || (isDeveloperUI == 1 && isFahrenheit) ? QString::number(maxTempC * 9 / 5 + 32) + "°F" : QString::number(maxTempC) + "°C";
+
+  // Developer UI
+  if (isDeveloperUI) {
+    const auto cpu_loads = deviceState.getCpuUsagePercent();
+    const int cpu_usage = std::accumulate(cpu_loads.begin(), cpu_loads.end(), 0) / cpu_loads.size();
+    const int memory_usage = deviceState.getMemoryUsagePercent();
+    const int storage_left = deviceState.getFreeSpace();
+    const int storage_used = deviceState.getUsedSpace();
+    const QString cpu = QString::number(cpu_usage) + "%";
+    const QString memory = QString::number(memory_usage) + "%";
+    const QString storage = QString::number(isStorageLeft ? storage_left : storage_used) + " GB";
+
+    ItemStatus cpuStatus = {{tr("CPU"), cpu}, isFrogColors ? frog_color : good_color};
+    if (cpu_usage >= 85) {
+      cpuStatus = {{tr("CPU"), cpu}, danger_color};
+    } else if (cpu_usage >= 70) {
+      cpuStatus = {{tr("CPU"), cpu}, warning_color};
+    }
+    if (isStorageLeft || isStorageUsed) {
+      ItemStatus storageStatus = {{tr(isStorageLeft ? "LEFT" : "USED"), storage}, isFrogColors ? frog_color : good_color};
+      if (10 <= storage_left && storage_left < 25) {
+        storageStatus = {{tr(isStorageLeft ? "LEFT" : "USED"), storage}, warning_color};
+      } else if (storage_left < 10) {
+        storageStatus = {{tr(isStorageLeft ? "LEFT" : "USED"), storage}, danger_color};
+      }
+      setProperty("storageStatus", QVariant::fromValue(storageStatus));
+    } else {
+      ItemStatus memoryStatus = {{tr("MEMORY"), memory}, isFrogColors ? frog_color : good_color};
+      if (memory_usage >= 85) {
+        memoryStatus = {{tr("MEMORY"), memory}, danger_color};
+      } else if (memory_usage >= 70) {
+        memoryStatus = {{tr("MEMORY"), memory}, warning_color};
+      }
+      setProperty("memoryStatus", QVariant::fromValue(memoryStatus));
+    }
+    setProperty("cpuStatus", QVariant::fromValue(cpuStatus));
+  }
 
   ItemStatus connectStatus;
   auto last_ping = deviceState.getLastAthenaPingTime();
@@ -183,7 +242,17 @@ void Sidebar::paintEvent(QPaintEvent *event) {
   p.drawText(r, Qt::AlignCenter, net_type);
 
   // metrics
-  drawMetric(p, temp_status.first, temp_status.second, 338);
-  drawMetric(p, panda_status.first, panda_status.second, 496);
-  drawMetric(p, connect_status.first, connect_status.second, 654);
+  if (isDeveloperUI) {
+    drawMetric(p, temp_status.first, temp_status.second, 338);
+    drawMetric(p, cpu_status.first, cpu_status.second, 496);
+    if (isStorageLeft || isStorageUsed) {
+      drawMetric(p, storage_status.first, storage_status.second, 654);
+    } else {
+      drawMetric(p, memory_status.first, memory_status.second, 654);
+    }
+  } else {
+    drawMetric(p, temp_status.first, temp_status.second, 338);
+    drawMetric(p, panda_status.first, panda_status.second, 496);
+    drawMetric(p, connect_status.first, connect_status.second, 654);
+  }
 }
