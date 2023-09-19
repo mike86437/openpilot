@@ -41,6 +41,19 @@ Sidebar::Sidebar(QWidget *parent) : QFrame(parent), onroad(false), flag_pressed(
   pm = std::make_unique<PubMaster, const std::initializer_list<const char *>>({"userFlag"});
 
   // FrogPilot variables
+  isCustomTheme = params.getBool("CustomTheme");
+
+  customColors = isCustomTheme ? params.getInt("CustomColors") : 0;
+  isFrogColors = customColors == 1;
+
+  customIcons = isCustomTheme ? params.getInt("CustomIcons") : 0;
+  isFrogIcons = customIcons == 1;
+
+  if (isFrogIcons) {
+    flag_img = loadPixmap("../assets/custom_themes/frog_theme/images/button_home.png", home_btn.size());
+    home_img = loadPixmap("../assets/custom_themes/frog_theme/images/button_home.png", home_btn.size());
+    settings_img = loadPixmap("../assets/custom_themes/frog_theme/images/button_settings.png", settings_btn.size(), Qt::IgnoreAspectRatio);
+  }
 }
 
 void Sidebar::mousePressEvent(QMouseEvent *event) {
@@ -75,6 +88,24 @@ void Sidebar::offroadTransition(bool offroad) {
 void Sidebar::updateState(const UIState &s) {
   if (!isVisible()) return;
 
+  if (Params("/dev/shm/params").getBool("FrogPilotTogglesUpdated")) {
+    customColors = isCustomTheme ? params.getInt("CustomColors") : 0;
+    isFrogColors = customColors == 1;
+
+    customIcons = isCustomTheme ? params.getInt("CustomIcons") : 0;
+    isFrogIcons = customIcons == 1;
+
+    if (isFrogIcons) {
+      flag_img = loadPixmap("../assets/custom_themes/frog_theme/images/button_home.png", home_btn.size());
+      home_img = loadPixmap("../assets/custom_themes/frog_theme/images/button_home.png", home_btn.size());
+      settings_img = loadPixmap("../assets/custom_themes/frog_theme/images/button_settings.png", settings_btn.size(), Qt::IgnoreAspectRatio);
+    } else {
+      home_img = loadPixmap("../assets/images/button_home.png", home_btn.size());
+      flag_img = loadPixmap("../assets/images/button_flag.png", home_btn.size());
+      settings_img = loadPixmap("../assets/images/button_settings.png", settings_btn.size(), Qt::IgnoreAspectRatio);
+    }
+  }
+
   auto &sm = *(s.sm);
 
   auto deviceState = sm["deviceState"].getDeviceState();
@@ -90,7 +121,7 @@ void Sidebar::updateState(const UIState &s) {
     connectStatus = ItemStatus{{tr("CONNECT"), tr("OFFLINE")}, warning_color};
   } else {
     connectStatus = nanos_since_boot() - last_ping < 80e9
-                        ? ItemStatus{{tr("CONNECT"), tr("ONLINE")}, good_color}
+                        ? ItemStatus{{tr("CONNECT"), tr("ONLINE")}, isFrogColors ? frog_color : good_color}
                         : ItemStatus{{tr("CONNECT"), tr("ERROR")}, danger_color};
   }
   setProperty("connectStatus", QVariant::fromValue(connectStatus));
@@ -98,13 +129,13 @@ void Sidebar::updateState(const UIState &s) {
   ItemStatus tempStatus = {{tr("TEMP"), tr("HIGH")}, danger_color};
   auto ts = deviceState.getThermalStatus();
   if (ts == cereal::DeviceState::ThermalStatus::GREEN) {
-    tempStatus = {{tr("TEMP"), tr("GOOD")}, good_color};
+    tempStatus = {{tr("TEMP"), tr("GOOD")}, isFrogColors ? frog_color : good_color};
   } else if (ts == cereal::DeviceState::ThermalStatus::YELLOW) {
     tempStatus = {{tr("TEMP"), tr("OK")}, warning_color};
   }
   setProperty("tempStatus", QVariant::fromValue(tempStatus));
 
-  ItemStatus pandaStatus = {{tr("VEHICLE"), tr("ONLINE")}, good_color};
+  ItemStatus pandaStatus = {{tr("VEHICLE"), tr("ONLINE")}, isFrogColors ? frog_color : good_color};
   if (s.scene.pandaType == cereal::PandaState::PandaType::UNKNOWN) {
     pandaStatus = {{tr("NO"), tr("PANDA")}, danger_color};
   } else if (s.scene.started && !sm["liveLocationKalman"].getLiveLocationKalman().getGpsOK()) {

@@ -17,13 +17,17 @@ Sound::Sound(QObject *parent) : sm({"controlsState", "microphone"}) {
   qInfo() << "default audio device: " << QAudioDeviceInfo::defaultOutputDevice().deviceName();
 
   // FrogPilot variables
+  isCustomTheme = params.getBool("CustomTheme");
+
+  customSounds = isCustomTheme ? params.getInt("CustomSounds") : 0;
+  isFrogSounds = customSounds == 1;
 
   for (auto &[alert, fn, loops, volume] : sound_list) {
     QSoundEffect *s = new QSoundEffect(this);
     QObject::connect(s, &QSoundEffect::statusChanged, [=]() {
       assert(s->status() != QSoundEffect::Error);
     });
-    s->setSource(QUrl::fromLocalFile("../../assets/sounds/" + fn));
+    s->setSource(QUrl::fromLocalFile(QString(isFrogSounds ? "../../assets/custom_themes/frog_theme/sounds/" : "../../assets/sounds/") + QString(fn)));
     s->setVolume(volume);
     sounds[alert] = {s, loops};
   }
@@ -35,6 +39,17 @@ Sound::Sound(QObject *parent) : sm({"controlsState", "microphone"}) {
 
 void Sound::update() {
   sm.update(0);
+
+  if (Params("/dev/shm/params").getBool("FrogPilotTogglesUpdated")) {
+    customSounds = isCustomTheme ? params.getInt("CustomSounds") : 0;
+    isFrogSounds = customSounds == 1;
+
+    for (auto &[alert, fn, loops, volume] : sound_list) {
+      auto &[s, _] = sounds[alert];
+      s->setSource(QUrl::fromLocalFile(QString(isFrogSounds ? "../../assets/custom_themes/frog_theme/sounds/" : "../../assets/sounds/") + QString(fn)));
+      s->setVolume(volume);
+    }
+  }
 
   // scale volume using ambient noise level
   if (sm.updated("microphone")) {

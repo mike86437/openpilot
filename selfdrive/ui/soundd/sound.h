@@ -41,4 +41,7 @@ protected:
 
   // FrogPilot variables
   Params params;
+  bool isCustomTheme;
+  bool isFrogSounds;
+  int customSounds;
 };

@@ -154,11 +154,15 @@ typedef struct UIScene {
   uint64_t started_frame;
 
   // FrogPilot variables
+  bool custom_theme;
   bool default_params_set;
   bool enabled;
   bool experimental_mode;
+  bool frog_colors;
   bool map_open;
   bool toyota_car = true;
+  int custom_colors;
+  int custom_signals;
 
 } UIScene;
 

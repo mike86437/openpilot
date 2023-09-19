@@ -54,6 +54,7 @@ protected:
   const QColor danger_color = QColor(201, 34, 49);
 
   // FrogPilot colors
+  const QColor frog_color = QColor(23, 134, 68);
 
   ItemStatus connect_status, panda_status, temp_status;
   QString net_type;
@@ -63,5 +64,10 @@ private:
   std::unique_ptr<PubMaster> pm;
 
   // FrogPilot variables
+  bool isCustomTheme;
+  bool isFrogColors;
+  bool isFrogIcons;
+  int customColors;
+  int customIcons;
   Params params;
 };
