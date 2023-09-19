@@ -43,5 +43,6 @@ protected:
   Params params;
   bool isCustomTheme;
   bool isFrogSounds;
+  bool isSilentMode;
   int customSounds;
 };

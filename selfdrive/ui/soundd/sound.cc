@@ -22,13 +22,15 @@ Sound::Sound(QObject *parent) : sm({"controlsState", "microphone"}) {
   customSounds = isCustomTheme ? params.getInt("CustomSounds") : 0;
   isFrogSounds = customSounds == 1;
 
+  isSilentMode = params.getBool("SilentMode");
+
   for (auto &[alert, fn, loops, volume] : sound_list) {
     QSoundEffect *s = new QSoundEffect(this);
     QObject::connect(s, &QSoundEffect::statusChanged, [=]() {
       assert(s->status() != QSoundEffect::Error);
     });
     s->setSource(QUrl::fromLocalFile(QString(isFrogSounds ? "../../assets/custom_themes/frog_theme/sounds/" : "../../assets/sounds/") + QString(fn)));
-    s->setVolume(volume);
+    s->setVolume(isSilentMode ? 0 : volume);
     sounds[alert] = {s, loops};
   }
 
@@ -47,7 +49,7 @@ void Sound::update() {
     for (auto &[alert, fn, loops, volume] : sound_list) {
       auto &[s, _] = sounds[alert];
       s->setSource(QUrl::fromLocalFile(QString(isFrogSounds ? "../../assets/custom_themes/frog_theme/sounds/" : "../../assets/sounds/") + QString(fn)));
-      s->setVolume(volume);
+      s->setVolume(isSilentMode ? 0 : volume);
     }
   }
 
