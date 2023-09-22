@@ -85,6 +85,12 @@ def get_can_messages(CP, gearbox_msg):
 
   if CP.carFingerprint in HONDA_BOSCH_RADARLESS:
     messages.append(("CRUISE_FAULT_STATUS", 50))
+  elif CP.carFingerprint == CAR.CLARITY:
+    signals += [
+      ("BRAKE_ERROR_1", "BRAKE_ERROR"),
+      ("BRAKE_ERROR_2", "BRAKE_ERROR")
+    ]
+    checks.append(("BRAKE_ERROR", 100)),
   elif CP.openpilotLongitudinalControl:
     messages.append(("STANDSTILL", 50))
 
@@ -154,6 +160,8 @@ class CarState(CarStateBase):
 
     if self.CP.carFingerprint in HONDA_BOSCH_RADARLESS:
       ret.accFaulted = bool(cp.vl["CRUISE_FAULT_STATUS"]["CRUISE_FAULT"])
+    elif self.CP.carFingerprint == CAR.CLARITY:
+      ret.accFaulted = bool(cp.vl["BRAKE_ERROR"]["BRAKE_ERROR_1"] or cp.vl["BRAKE_ERROR"]["BRAKE_ERROR_2"])
     else:
       # On some cars, these two signals are always 1, this flag is masking a bug in release
       # FIXME: find and set the ACC faulted signals on more platforms
