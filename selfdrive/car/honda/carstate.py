@@ -107,7 +107,7 @@ class CarState(CarStateBase):
     self.brake_switch_active = False
     self.cruise_setting = 0
     self.v_cruise_pcm_prev = 0
-
+    self.params_memory = Params("/dev/shm/params")
     self.read_distance_lines_init = False
     self.read_distance_lines = 4
     self.prev_read_distance_lines = self.read_distance_lines
