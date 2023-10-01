@@ -77,7 +77,7 @@ class VCruiseHelper:
     if not enabled:
       return
 
-    long_press = reverse_cruise_increase
+    long_press = False if not reverse_cruise_increase else True
     button_type = None
 
     v_cruise_delta = 1. if is_metric else IMPERIAL_INCREMENT
@@ -92,7 +92,7 @@ class VCruiseHelper:
       for k in self.button_timers.keys():
         if self.button_timers[k] and self.button_timers[k] % CRUISE_LONG_PRESS == 0:
           button_type = k
-          long_press = not reverse_cruise_increase
+          long_press = True if not reverse_cruise_increase else False
           break
 
     if button_type is None:
