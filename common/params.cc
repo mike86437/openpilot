@@ -212,6 +212,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"MapboxPublicKey", PERSISTENT},
     {"MapboxSecretKey", PERSISTENT},
     {"MapOpen", PERSISTENT},
+{"Model", PERSISTENT},
     {"MuteDM", PERSISTENT},
     {"MuteDoor", PERSISTENT},
     {"MuteSeatbelt", PERSISTENT},

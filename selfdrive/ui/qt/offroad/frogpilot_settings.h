@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdlib>
 #include <QFrame>
 #include <QLabel>
 #include <QPushButton>
@@ -197,13 +198,16 @@ public: \
 private: \
   void refresh() override { \
     label.setText(getValueStr()); \
-    paramsMemory.putBool("FrogPilotTogglesUpdated", true); \
-  } \
+      } \
   void updateValue(int delta) override { \
     int value = params.getInt(paramName); \
     value = newValue(value + delta); \
     params.putInt(paramName, value); \
+paramsMemory.putBool("FrogPilotTogglesUpdated", true); \
     refresh(); \
+if (std::string(#className) == "Model") { \
+      std::system("python3 /data/openpilot/selfdrive/model_switcher.py"); \
+    } \
   } \
   QString getValueStr() { getValueStrFunc; } \
   int newValue(int v) { newValueFunc; } \
@@ -288,6 +292,12 @@ ParamController(LaneChangeTimer, "LaneChangeTimer", "   Lane Change Timer", "Set
 ParamController(LaneLinesWidth, "LaneLinesWidth", "Lanes", "Customize the lane line width.\n\nDefault matches the MUTCD average of 4 inches.", "../assets/offroad/icon_blank.png",
   return QString::number(params.getInt("LaneLinesWidth")) + (isMetric ? " cm" : " in");,
   return std::clamp(v, 0, isMetric ? 60 : 24);
+)
+
+ParamController(Model, "Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nOP = Optimus Prime (Default)\nB4+B0 = B4+B0 Vision\nFV = Farmville\nNLP = New Lateral Planner\nNM = Nicki Minaj\nNI = Non-Inflatable", "../assets/offroad/icon_calibration.png",
+  const int model = params.getInt("Model");
+  return model == 0 ? "OP" : model == 1 ? "B4+B0" : model == 2 ? "FV" : model == 3 ? "NLP" : model == 4 ? "NM" : "NI";,
+  return v >= 0 ? v % 6 : 5;
 )
 
 ParamController(PathEdgeWidth, "PathEdgeWidth", "Path Edges", "Customize the path edge width that displays current driving statuses.\n\nDefault is 20% of the total path.\n\nBlue = Navigation\nLight Blue = Always On Lateral\nGreen = Default with 'FrogPilot Colors'\nLight Green = Default with stock colors\nOrange = Experimental Mode Active\nYellow = Conditional Overriden", "../assets/offroad/icon_blank.png",
