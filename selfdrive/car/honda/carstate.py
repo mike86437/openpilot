@@ -3,6 +3,7 @@ from collections import defaultdict
 from cereal import car
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.numpy_fast import interp
+from openpilot.common.params import Params, put_bool_nonblocking, put_int_nonblocking
 from opendbc.can.can_define import CANDefine
 from opendbc.can.parser import CANParser
 from openpilot.selfdrive.car.honda.hondacan import get_cruise_speed_conversion, get_pt_bus
@@ -10,6 +11,7 @@ from openpilot.selfdrive.car.honda.values import CAR, DBC, STEER_THRESHOLD, HOND
                                                  HONDA_NIDEC_ALT_SCM_MESSAGES, HONDA_BOSCH_ALT_BRAKE_SIGNAL, \
                                                  HONDA_BOSCH_RADARLESS
 from openpilot.selfdrive.car.interfaces import CarStateBase
+from math import floor
 
 TransmissionType = car.CarParams.TransmissionType
 
@@ -78,6 +80,8 @@ def get_can_messages(CP, gearbox_msg):
 
   if CP.carFingerprint in HONDA_BOSCH_RADARLESS:
     messages.append(("CRUISE_FAULT_STATUS", 50))
+  elif CP.carFingerprint == CAR.CLARITY:
+    messages.append(("BRAKE_ERROR", 100)),
   elif CP.openpilotLongitudinalControl:
     messages.append(("STANDSTILL", 50))
 
@@ -103,6 +107,12 @@ class CarState(CarStateBase):
     self.brake_switch_active = False
     self.cruise_setting = 0
     self.v_cruise_pcm_prev = 0
+    # FrogPilot variables
+    self.params = Params()
+    self.params_memory = Params("/dev/shm/params")
+    self.read_distance_lines_init = False
+    self.read_distance_lines = self.params.get_int("LongitudinalPersonality") + 1
+    self.prev_read_distance_lines = self.read_distance_lines
 
     # When available we use cp.vl["CAR_SPEED"]["ROUGH_CAR_SPEED_2"] to populate vEgoCluster
     # However, on cars without a digital speedometer this is not always present (HRV, FIT, CRV 2016, ILX and RDX)
@@ -148,7 +158,7 @@ class CarState(CarStateBase):
     if self.CP.carFingerprint in HONDA_BOSCH_RADARLESS:
       ret.accFaulted = bool(cp.vl["CRUISE_FAULT_STATUS"]["CRUISE_FAULT"])
     elif self.CP.carFingerprint == CAR.CLARITY:
-      ret.accFaulted = bool(cp.vl["STANDSTILL"]["BRAKE_ERROR_1"] or cp.vl["STANDSTILL"]["BRAKE_ERROR_2"])
+      ret.accFaulted = bool(cp.vl["BRAKE_ERROR"]["BRAKE_ERROR_1"] or cp.vl["BRAKE_ERROR"]["BRAKE_ERROR_2"])
     else:
       # On some cars, these two signals are always 1, this flag is masking a bug in release
       # FIXME: find and set the ACC faulted signals on more platforms
@@ -185,6 +195,18 @@ class CarState(CarStateBase):
     ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_stalk(
       250, cp.vl["SCM_FEEDBACK"]["LEFT_BLINKER"], cp.vl["SCM_FEEDBACK"]["RIGHT_BLINKER"])
     ret.brakeHoldActive = cp.vl["VSA_STATUS"]["BRAKE_HOLD_ACTIVE"] == 1
+
+    # when user presses distance button on steering wheel
+    if self.prev_cruise_setting == 3:
+      if self.cruise_setting == 0:
+        self.prev_read_distance_lines = self.read_distance_lines
+        self.read_distance_lines = self.read_distance_lines % 3 + 1
+
+    if not self.read_distance_lines_init or self.read_distance_lines != self.prev_read_distance_lines:
+      self.read_distance_lines_init = True
+      put_int_nonblocking("LongitudinalPersonality", int(min(self.read_distance_lines - 1, 2)))
+      self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
+      self.prev_read_distance_lines = self.read_distance_lines
 
     # TODO: set for all cars
     if self.CP.carFingerprint in (HONDA_BOSCH | {CAR.CIVIC, CAR.ODYSSEY, CAR.ODYSSEY_CHN, CAR.CLARITY}):
@@ -248,7 +270,8 @@ class CarState(CarStateBase):
       if self.CP.carFingerprint not in HONDA_BOSCH_RADARLESS:
         ret.stockAeb = (not self.CP.openpilotLongitudinalControl) and bool(cp.vl["ACC_CONTROL"]["AEB_STATUS"] and cp.vl["ACC_CONTROL"]["ACCEL_COMMAND"] < -1e-5)
     else:
-      ret.stockAeb = bool(cp_cam.vl["BRAKE_COMMAND"]["AEB_REQ_1"] and cp_cam.vl["BRAKE_COMMAND"]["COMPUTER_BRAKE_ALT"] > 1e-5)
+      aeb_sig = "COMPUTER_BRAKE_ALT" if self.CP.carFingerprint == CAR.CLARITY else "COMPUTER_BRAKE"
+      ret.stockAeb = bool(cp_cam.vl["BRAKE_COMMAND"]["AEB_REQ_1"] and cp_cam.vl["BRAKE_COMMAND"][aeb_sig] > 1e-5)
 
     self.acc_hud = False
     self.lkas_hud = False
