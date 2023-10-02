@@ -115,7 +115,8 @@ class OtisServ(BaseHTTPRequestHandler):
         return
       if params.get("NavDestination") is not None:
         self.display_nav_directions()
-      self.display_page_addr_input()
+      else :
+        self.display_page_addr_input() 
 
   def do_POST(self):
     use_amap = params.get_bool('EnableAmap')
@@ -232,6 +233,7 @@ class OtisServ(BaseHTTPRequestHandler):
     f = open("%s/selfdrive/assets/img_spinner_comma.png" % BASEDIR, "rb")
     self.wfile.write(f.read())
     f.close()
+
   def get_navdirections(self):
     self.send_response(200)
     self.send_header('Content-type','application/json')
@@ -320,7 +322,7 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def display_page_addr_input(self, msg = ""):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("addr_input", {"{{msg}}": msg})}), "utf-8"))
-
+    
   def display_nav_directions(self, msg = ""):
     content = self.get_parsed_template("addr_input", {"{{msg}}": ""}) + self.get_parsed_template("nav_directions", {"{{msg}}": msg})
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
