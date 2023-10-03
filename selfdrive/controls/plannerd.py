@@ -52,7 +52,7 @@ def plannerd_thread(sm=None, pm=None):
   if pm is None:
     pm = messaging.PubMaster(['longitudinalPlan', 'lateralPlan', 'uiPlan'])
 
-  NLP_model = params.get_int("Model", block=True) == 3
+  NLP_model = params.get_int("Model") == 3
 
   while True:
     sm.update()
