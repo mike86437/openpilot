@@ -204,11 +204,13 @@ void OnroadWindow::mousePressEvent(QMouseEvent* e) {
   }
 
 #ifdef ENABLE_MAPS
-  if (map != nullptr && !widgetClicked && !scene.experimental_mode_via_wheel) {
+  if (map != nullptr && !widgetClicked) {
     // Switch between map and sidebar when using navigate on openpilot
     bool sidebarVisible = geometry().x() > 0;
     bool show_map = uiState()->scene.navigate_on_openpilot ? sidebarVisible : !sidebarVisible;
-    map->setVisible(show_map && !map->isVisible());
+    if (!scene.experimental_mode_via_wheel || map->isVisible()) {
+      map->setVisible(show_map && !map->isVisible());
+    }
   }
 #endif
   // propagation event to parent(HomeWindow)
