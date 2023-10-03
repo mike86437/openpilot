@@ -465,7 +465,7 @@ def thermald_thread(end_event, hw_queue) -> None:
         "AggressiveJerk": "5",
         "AggressivePersonality": "12",
         "AlwaysOnLateral": "1",
-        "AlwaysOnLateralMain": "1",
+        "AlwaysOnLateralMain": "0",
         "AverageDesiredCurvature": "0",
         "BlindSpotPath": "1",
         "Compass": "1",
@@ -533,7 +533,7 @@ def thermald_thread(end_event, hw_queue) -> None:
       for key in default_values:
         if not params.get(key):
           params.put(key, default_values[key])
-          HARDWARE.reboot()
+          params.put_bool("DoReboot", True)
       params.put_bool("DefaultParamsSet", True)
 
 def main():
