@@ -294,10 +294,10 @@ ParamController(LaneLinesWidth, "LaneLinesWidth", "Lanes", "Customize the lane l
   return std::clamp(v, 0, isMetric ? 60 : 24);
 )
 
-ParamController(Model, "Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nOP = Optimus Prime (Default)\nB4+B0 = B4+B0 Vision\nFV = Farmville\nNLP = New Lateral Planner\nNI = Non-Inflatable", "../assets/offroad/icon_calibration.png",
+ParamController(Model, "Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nOP = Optimus Prime (Default)\nB4+B0 = B4+B0 Vision\nFV = Farmville\nNLP = New Lateral Planner\nNI = Non-Inflatable\nNS = Night-Strike", "../assets/offroad/icon_calibration.png",
   const int model = params.getInt("Model");
-  return model == 0 ? "OP" : model == 1 ? "B4+B0" : model == 2 ? "FV" : model == 3 ? "NLP" : "NI";,
-  return (v >= 0 && v != 3) ? v % 6 : (v == 3 ? 4 : 5);
+  return model == 0 ? "OP" : model == 1 ? "B4+B0" : model == 2 ? "FV" : model == 3 ? "NLP" : model == 4 ? "NI" : "NS";,
+  return (v >= 0 && v != 2) ? v % 6 : (v == 2 ? 4 : 5);
 )
 
 ParamController(PathEdgeWidth, "PathEdgeWidth", "Path Edges", "Customize the path edge width that displays current driving statuses.\n\nDefault is 20% of the total path.\n\nBlue = Navigation\nLight Blue = Always On Lateral\nGreen = Default with 'FrogPilot Colors'\nLight Green = Default with stock colors\nOrange = Experimental Mode Active\nYellow = Conditional Overriden", "../assets/offroad/icon_blank.png",
