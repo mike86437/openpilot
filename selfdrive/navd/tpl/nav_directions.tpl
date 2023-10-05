@@ -2,8 +2,10 @@
 <div id="destinationHeading" style="font-size: 18px; font-weight: bold;"></div>
 <div id="jsonOutput"></div>
     <script>
+        let useMetricUnits = true;
+
         // Function to fetch and display JSON data
-        async function fetchAndDisplayData(useMetric) {
+        async function fetchAndDisplayData() {
             try {
                 const response = await fetch('navdirections.json'); // Provide the full path
                 if (!response.ok) {
@@ -21,26 +23,25 @@
                 const destinationHeading = document.getElementById('destinationHeading');
                 destinationHeading.textContent = `Destination: ${destination}`;
 
-                const currentStep = firstRoute.CurrentStep;
-
-                // Display values from the steps starting from 'CurrentStep'
+                // Display values from the steps
                 const jsonOutputDiv = document.getElementById('jsonOutput');
                 jsonOutputDiv.innerHTML = '';
 
-                for (let i = currentStep; i < steps.length - 1; i++) {
-                    const instruction = steps[i + 1].maneuver.instruction;
-                    let distanceValue = steps[i].distance;
+                for (let i = 0; i < steps.length - 1; i++) {
+                    const step = steps[i];
+                    const instruction = step.maneuver.instruction;
+                    let distance = step.distance;
 
-                    if (useMetric) {
-                        distanceValue /= 1000; // Convert to kilometers
-                        jsonOutputDiv.innerHTML += `<p>In ${distanceValue.toFixed(2)} km: ${instruction}</p>`;
-                    } else {
-                        // Convert to miles
-                        const distanceMiles = distanceValue * 0.000621371;
-                        jsonOutputDiv.innerHTML += `<p>In ${distanceMiles.toFixed(2)} miles: ${instruction}</p>`;
+                    if (!useMetricUnits) {
+                        // Convert distance to miles if using imperial units
+                        distance = distance * 0.000621371;
                     }
 
-                    jsonOutputDiv.innerHTML += `<hr>`;
+                    // Display the values on the webpage
+                    jsonOutputDiv.innerHTML += `
+                        <p>In ${distance.toFixed(1)} ${useMetricUnits ? 'km' : 'miles'}: ${instruction}</p>
+                        <hr>
+                    `;
                 }
             } catch (error) {
                 console.error('Error fetching or parsing JSON data:', error);
@@ -50,17 +51,17 @@
             }
         }
 
-        // Initial display with the default unit (imperial)
-        fetchAndDisplayData(false);
-
-        // Toggle unit button
-        const unitToggleBtn = document.getElementById('unitToggle');
-        let useMetricUnits = false; // Flag to track units
-
-        unitToggleBtn.addEventListener('click', () => {
-            // Toggle the unit flag and update the display
+        // Toggle the unit (metric/imperial) when the button is clicked
+        const toggleUnitButton = document.getElementById('toggleUnitButton');
+        toggleUnitButton.addEventListener('click', () => {
             useMetricUnits = !useMetricUnits;
-            fetchAndDisplayData(useMetricUnits);
+            // Re-fetch and display data with the updated unit
+            fetchAndDisplayData();
         });
-    </script>
 
+        // Fetch and display data initially
+        fetchAndDisplayData();
+
+        // Periodically fetch and display data every 5 seconds
+        setInterval(fetchAndDisplayData, 5000); // Adjust the interval as needed (in milliseconds)
+    </script>
