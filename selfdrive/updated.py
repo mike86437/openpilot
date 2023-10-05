@@ -193,11 +193,11 @@ def finalize_update() -> None:
 
   # FrogPilot update functions
   params = Params()
-  params.put("Updated", datetime.datetime.now().astimezone(ZoneInfo('America/Phoenix')).strftime("%B %d, %Y - %I:%M%p"));
-  params.put_bool("DefaultParamsSet", False);       # Check the params again upon boot just in case of new toggles
-  params.put_bool("DisableInternetCheck", False);   # Reset the param since the user has internet connection again
+  params.put("Updated", datetime.datetime.now().astimezone(ZoneInfo('America/Phoenix')).strftime("%B %d, %Y - %I:%M%p"))
+  params.remove("DefaultParamsSet")                # Check the params again upon boot just in case of new toggles
+  params.remove("DisableInternetCheck")            # Reset the param since the user has internet connection again
   if os.path.exists("/data/openpilot/prebuilt"):
-    os.remove("/data/openpilot/prebuilt")           # Remove the prebuilt file when installing updates
+    os.remove("/data/openpilot/prebuilt")          # Remove the prebuilt file when installing updates
 
 def handle_agnos_update() -> None:
   from openpilot.system.hardware.tici.agnos import flash_agnos_update, get_target_slot_number

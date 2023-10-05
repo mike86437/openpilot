@@ -1,5 +1,7 @@
+#include <map>
 #include <QHBoxLayout>
 #include <QWidget>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -10,6 +12,10 @@
 
 FrogPilotControlsPanel::FrogPilotControlsPanel(QWidget *parent) : FrogPilotPanel(parent) {
   mainLayout = new QVBoxLayout(this);
+
+  if (!params.getBool("DefaultParamsSet")) {
+    setDefaultParams();
+  }
 
   QLabel *const descriptionLabel = new QLabel("Click on the toggle names to see a detailed toggle description", this);
   mainLayout->addWidget(descriptionLabel);
@@ -396,4 +402,88 @@ void FrogPilotPanel::setInitialToggleStates() {
       widget->setVisible(state);
     }
   }
+}
+
+void FrogPilotPanel::setDefaultParams() {
+  system("python3 /data/openpilot/selfdrive/model_switcher.py");
+
+  std::map<std::string, std::string> default_values = {
+    {"AccelerationPath", "1"},
+    {"AccelerationProfile", "3"},
+    {"AggressiveAcceleration", "1"},
+    {"AggressiveJerk", "5"},
+    {"AggressivePersonality", "12"},
+    {"AlwaysOnLateral", "1"},
+    {"AlwaysOnLateralMain", "0"},
+    {"AverageDesiredCurvature", "0"},
+    {"BlindSpotPath", "1"},
+    {"Compass", "1"},
+    {"ConditionalExperimental", "1"},
+    {"ConditionalCurves", "1"},
+    {"ConditionalCurvesLead", "0"},
+    {"ConditionalSlowerLead", "0"},
+    {"ConditionalSpeed", "0"},
+    {"ConditionalSpeedLead", "0"},
+    {"ConditionalStopLights", "1"},
+    {"ConditionalSignal", "1"},
+    {"CustomColors", "1"},
+    {"CustomIcons", "1"},
+    {"CustomSignals", "1"},
+    {"CustomSounds", "1"},
+    {"CustomTheme", "1"},
+    {"CustomDrivingPersonalities", "1"},
+    {"CustomRoadUI", "1"},
+    {"DeveloperUI", "0"},
+    {"DeviceShutdownTimer", "9"},
+    {"DisableAllLogging", "0"},
+    {"DrivingPersonalitiesUIWheel", "1"},
+    {"ExperimentalModeViaWheel", "1"},
+    {"EVTable", "0"},
+    {"FireTheBabysitter", "0"},
+    {"GreenLightAlert", "0"},
+    {"IncreasedStoppingDistance", "3"},
+    {"LaneChangeTimer", "0"},
+    {"LaneDetection", "1"},
+    {"LaneLinesWidth", "4"},
+    {"LateralTuning", "1"},
+    {"LongitudinalTuning", "1"},
+    {"LowerVolt", "0"},
+    {"MuteDM", "1"},
+    {"MuteDoor", "1"},
+    {"MuteSeatbelt", "1"},
+    {"MuteSystemOverheat", "1"},
+    {"NNFF", "0"},
+    {"NudgelessLaneChange", "1"},
+    {"NumericalTemp", "1"},
+    {"OneLaneChange", "1"},
+    {"PauseLateralOnSignal", "0"},
+    {"PathEdgeWidth", "20"},
+    {"PathWidth", "61"},
+    {"RelaxedJerk", "50"},
+    {"RelaxedPersonality", "30"},
+    {"RoadEdgesWidth", "2"},
+    {"RotatingWheel", "1"},
+    {"ScreenBrightness", "101"},
+    {"Sidebar", "1"},
+    {"SilentMode", "0"},
+    {"SmootherBraking", "1"},
+    {"SNGHack", "0"},
+    {"StandardJerk", "10"},
+    {"StandardPersonality", "15"},
+    {"SteeringWheel", "1"},
+    {"TSS2Tune", "1"},
+    {"TurnDesires", "1"},
+    {"UnlimitedLength", "1"},
+    {"WideCameraDisable", "1"},
+    {"ZSS", "0"}
+  };
+
+  for (const auto& [key, value] : default_values) {
+    if (params.get(key).empty()) {
+      params.put(key, value);
+    }
+  }
+
+  params.putBool("DefaultParamsSet", true);
+  params.putBool("DoReboot", true);
 }
