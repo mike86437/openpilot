@@ -2,7 +2,7 @@
     <div id="destinationHeading" style="font-size: 18px; font-weight: bold;"></div>
     <div id="jsonOutput"></div>
     <script>
-        let useMetricUnits = true;
+        let useMetricUnits = false;
 
         // Function to fetch and display JSON data
         async function fetchAndDisplayData() {
@@ -22,14 +22,14 @@
                 // Display the 'destination' value on the webpage
                 const destinationHeading = document.getElementById('destinationHeading');
                 destinationHeading.textContent = `Destination: ${destination}`;
-
+                const currentStep = firstRoute.CurrentStep;
                 // Display values from the steps
                 const jsonOutputDiv = document.getElementById('jsonOutput');
                 jsonOutputDiv.innerHTML = '';
 
-                for (let i = 0; i < steps.length - 1; i++) {
+                for (let i = currentStep; i < steps.length - 1; i++) {
                     const step = steps[i];
-                    const instruction = step.maneuver.instruction;
+                    const instruction = steps[i + 1].maneuver.instruction;
                     let distance = step.distance;
 
                     if (!useMetricUnits) {
