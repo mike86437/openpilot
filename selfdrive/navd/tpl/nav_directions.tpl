@@ -17,7 +17,7 @@
                 const firstRoute = jsonData.routes[0]; // Access the first route
                 const firstLeg = firstRoute.legs[0]; // Access the first leg
                 const steps = firstLeg.steps; // Access the steps array
-                const destination = firstRoute.destination; // Access the 'destination' value
+                const destination = firstRoute.Destination; // Access the 'destination' value
 
                 // Display the 'destination' value on the webpage
                 const destinationHeading = document.getElementById('destinationHeading');
@@ -27,7 +27,7 @@
                 const jsonOutputDiv = document.getElementById('jsonOutput');
                 jsonOutputDiv.innerHTML = '';
 
-                for (let i = 0; i < steps.length; i++) {
+                for (let i = 0; i < steps.length - 1; i++) {
                     const step = steps[i];
                     const instruction = step.maneuver.instruction;
                     let distance = step.distance;
