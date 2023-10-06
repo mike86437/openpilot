@@ -29,15 +29,22 @@
 
                 for (let i = currentStep; i < steps.length - 1; i++) {
                     const step = steps[i];
+                    const instruction0 = steps[i].maneuver.instruction;
                     const instruction = steps[i + 1].maneuver.instruction;
                     let distance = step.distance;
 
                     if (!useMetricUnits) {
                         // Convert distance to miles if using imperial units
                         distance = distance * 0.000621371;
-                    }
+                    } else { distance = distance * 0.001; }
 
                     // Display the values on the webpage
+                    if (i === 0) {
+                        jsonOutputDiv.innerHTML += `
+                            <p>${instruction0}</p>
+                            <hr>
+                        `;
+                    }
                     jsonOutputDiv.innerHTML += `
                         <p>In ${distance.toFixed(1)} ${useMetricUnits ? 'km' : 'miles'}: ${instruction}</p>
                         <hr>
