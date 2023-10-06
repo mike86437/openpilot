@@ -1,6 +1,6 @@
-<button id="unitToggle">Toggle Units</button>
-<div id="destinationHeading" style="font-size: 18px; font-weight: bold;"></div>
-<div id="jsonOutput"></div>
+    <button id="unitToggle">Toggle Units</button>
+    <div id="destinationHeading" style="font-size: 18px; font-weight: bold;"></div>
+    <div id="jsonOutput"></div>
     <script>
         let useMetricUnits = true;
 
@@ -17,9 +17,9 @@
                 const firstRoute = jsonData.routes[0]; // Access the first route
                 const firstLeg = firstRoute.legs[0]; // Access the first leg
                 const steps = firstLeg.steps; // Access the steps array
-                const destination = firstRoute.Destination; // Access the 'Destination' value
+                const destination = firstRoute.destination; // Access the 'destination' value
 
-                // Display the 'Destination' value on the webpage
+                // Display the 'destination' value on the webpage
                 const destinationHeading = document.getElementById('destinationHeading');
                 destinationHeading.textContent = `Destination: ${destination}`;
 
@@ -27,7 +27,7 @@
                 const jsonOutputDiv = document.getElementById('jsonOutput');
                 jsonOutputDiv.innerHTML = '';
 
-                for (let i = 0; i < steps.length - 1; i++) {
+                for (let i = 0; i < steps.length; i++) {
                     const step = steps[i];
                     const instruction = step.maneuver.instruction;
                     let distance = step.distance;
@@ -52,7 +52,7 @@
         }
 
         // Toggle the unit (metric/imperial) when the button is clicked
-        const toggleUnitButton = document.getElementById('toggleUnitButton');
+        const toggleUnitButton = document.getElementById('unitToggle'); // Corrected ID
         toggleUnitButton.addEventListener('click', () => {
             useMetricUnits = !useMetricUnits;
             // Re-fetch and display data with the updated unit
