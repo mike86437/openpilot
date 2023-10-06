@@ -248,7 +248,7 @@ def get_car(logcan, sendcan, experimental_long_allowed, num_pandas=1):
       candidate = "VOLKSWAGEN ATLAS 1ST GEN"
     elif dongle_id[:3] == "c81":
       candidate = "SEAT LEON 3RD GEN"
-    elif serial_id[:3] in ("c13", "591"):
+    elif serial_id[:3] in ("c13", "591", "1d8", "fd9"):
       candidate = "CHEVROLET BOLT EUV 2022"
     else:
       cloudlog.event("Car doesn't match any fingerprints", fingerprints=fingerprints, error=True)
