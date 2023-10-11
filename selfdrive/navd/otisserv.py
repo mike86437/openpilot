@@ -221,7 +221,7 @@ class OtisServ(BaseHTTPRequestHandler):
     elif use_gmap:
       self.display_page_gmap()
     else:
-      if params.get("NavDestination") is not None:
+      if params.get("NavDestination") is not None or params.get_int("PrimeType") != 0:
         self.display_nav_directions()
       else :
         self.display_page_addr_input()
