@@ -236,14 +236,10 @@ class LongitudinalPlanner:
     accel_limits_turns[1] = max(accel_limits_turns[1], self.a_desired - 0.05)
 
     # Pfeiferj's Vision Turn Controller
-    enabled = prev_accel_constraint and self.CP.openpilotLongitudinalControl and self.vision_turn_controller
-    vtsc.update(enabled, v_ego, self.a_desired, v_cruise, sm, self.curve_sensitivity, self.turn_aggressiveness)
-    if vtsc.active:
-      original_v_cruise = v_cruise
-      a_target, v_cruise = vtsc.plan
-      if v_cruise < v_ego and original_v_cruise > v_cruise:
-        accel_limits_turns[0] = min(accel_limits_turns[0], a_target - 0.05)
-        accel_limits_turns[1] = min(accel_limits_turns[1], a_target)
+    if self.vision_turn_controller:
+      vtsc.update(prev_accel_constraint, v_ego, sm, self.curve_sensitivity, self.turn_aggressiveness, v_cruise)
+      if vtsc.active and v_cruise > vtsc.v_target:
+        v_cruise = vtsc.v_target
 
     self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
@@ -421,7 +417,7 @@ class LongitudinalPlanner:
     # FrogPilot longitudinalPlan variables
     longitudinalPlan.conditionalExperimental = self.experimental_mode
     longitudinalPlan.greenLight = self.green_light
-    longitudinalPlan.vtscOffset = max(0, math.floor(vtsc.v_cruise_setpoint - vtsc.v_target))
+    longitudinalPlan.vtscOffset = vtsc.v_offset
     # LongitudinalPlan variables for onroad driving insights
     have_lead = self.detect_lead(sm['radarState'])
     longitudinalPlan.safeObstacleDistance = self.mpc.safe_obstacle_distance if have_lead else 0

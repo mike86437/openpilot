@@ -242,7 +242,7 @@ ParamController(ConditionalSpeedLead, "ConditionalSpeedLead", "With Lead", "Swit
   return std::clamp(v, 0, isMetric ? 150 : 99);
 )
 
-ParamController(CurveSensitivity, "CurveSensitivity", "   Curve Detection Sensitivity", "Increases / decreases the curvature threshold VTSC uses to determine if the road is a curve or not.", "../assets/offroad/icon_blank.png",
+ParamController(CurveSensitivity, "CurveSensitivity", "   Curve Detection Sensitivity", "Changes how sensitive the car is to curves in the road. Higher values make the car react to curves earlier, while lower values might result in smoother but later reactions.", "../assets/offroad/icon_blank.png",
   return QString::number(params.getInt("CurveSensitivity")) + "%";,
   return std::clamp(v, 1, 200);
 )
@@ -353,8 +353,7 @@ ParamController(SteeringWheel, "SteeringWheel", "Steering Wheel Icon", "Replace 
   return v >= 0 ? v % 7 : 6;
 )
 
-ParamController(TurnAggressiveness, "TurnAggressiveness", "   Turn Speed Aggressiveness", "Increases / decreases the speed at which VTSC will take curves at.", "../assets/offroad/icon_blank.png",
+ParamController(TurnAggressiveness, "TurnAggressiveness", "   Turn Speed Aggressiveness", "Adjusts how quickly the car takes turns. Higher values mean faster turns, while lower values make turns more gentle.", "../assets/offroad/icon_blank.png",
   return QString::number(params.getInt("TurnAggressiveness")) + "%";,
   return std::clamp(v, 1, 200);
 )
-
