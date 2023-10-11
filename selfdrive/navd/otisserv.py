@@ -115,6 +115,8 @@ class OtisServ(BaseHTTPRequestHandler):
         return
       if params.get("NavDestination") is not None:
         self.display_nav_directions()
+      elif params.get_int("PrimeType") != 0:
+        self.display_prime_directions()
       else :
         self.display_page_addr_input() 
 
@@ -221,8 +223,10 @@ class OtisServ(BaseHTTPRequestHandler):
     elif use_gmap:
       self.display_page_gmap()
     else:
-      if params.get("NavDestination") is not None or params.get_int("PrimeType") != 0:
+      if params.get("NavDestination") is not None:
         self.display_nav_directions()
+      elif params.get_int("PrimeType") != 0:
+        self.display_prime_directions()
       else :
         self.display_page_addr_input()
 
@@ -329,6 +333,10 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def display_page_nav_confirmation(self, addr, lon, lat):
     content = self.get_parsed_template("addr_input", {"{{msg}}": ""}) + self.get_parsed_template("nav_confirmation", {"{{token}}": self.get_public_token(), "{{lon}}": lon, "{{lat}}": lat, "{{addr}}": addr})
+    self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
+
+  def display_prime_directions(self, msg = ""):
+    content = self.get_parsed_template("nav_directions", {"{{msg}}": msg})
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
 
   def display_page_gmap(self):
