@@ -13,7 +13,7 @@
   <style>
         body {
             padding: 25px;
-            background-color: black;
+            background-color: #121212;
             color: white;
             font-size: 25px;
         }
@@ -27,12 +27,22 @@
             background-color: white;
             color: black;
         }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        button {
+            margin: 5px; /* Add some spacing between the buttons */
+        }
   </style>
 </head>
 <body style="margin: 0; padding: 0;">
-  <div style="display: grid; place-items: center;">
-  <button onclick="darkMode()">Darkmode</button>
-    <button onclick="lightMode()">LightMode</button>
+    <div class="button-container">
+        <button onclick="darkMode()">Dark Mode</button>
+        <button onclick="lightMode()">Light Mode</button>
+        <button id="unitToggle">Toggle Units</button>
+    </div>
     <script>
         function darkMode() {
             let element = document.body;
@@ -46,8 +56,7 @@
             element.className = "light-mode";
             content.innerText = "Dark Mode is OFF";
         }
-    </script>
-  {{content}}
+    </script>  {{content}}
   </div>
 </body>
 </html>

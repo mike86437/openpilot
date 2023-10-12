@@ -1,5 +1,4 @@
-    <button id="unitToggle">Toggle Units</button>
-    <div id="destinationHeading" style="font-size: 18px; font-weight: bold;"></div>
+    <div id="destinationHeading"  font-weight: bold;"></div>
     <div id="jsonOutput"></div>
     <script>
         let useMetricUnits = false;
