@@ -10,7 +10,7 @@ PREBUILT_PATH = "/data/openpilot/prebuilt"
 MODEL_NAME = {
   0: "night-strike",
   1: "B4+B0",
-  2: "B4+B0",
+  2: "farmville",
   3: "new-lemon-pie",
   4: "non-inflatable",
   5: "optimus-prime",
