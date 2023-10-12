@@ -302,7 +302,7 @@ ParamController(LaneLinesWidth, "LaneLinesWidth", "Lanes", "Customize the lane l
 
 ParamController(Model, "Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nNS = Night-Strike(Default)\nB4+B0 = B4+B0 Vision\nFV = Farmville\nNLP = New Lemon Pie\nNI = Non-Inflatable\nOP = Optimus Prime", "../assets/offroad/icon_calibration.png",
   const int model = params.getInt("Model");
-  return model == 0 ? "NS" : model == 1 ? "B4+B0" : model == 2 ? "B4+B0" : model == 3 ? "NLP" : model == 4 ? "NI" : "OP";,
+  return model == 0 ? "NS" : model == 1 ? "B4+B0" : model == 2 ? "FV" : model == 3 ? "NLP" : model == 4 ? "NI" : "OP";,
   return v >= 0 ? v % 6 : 5;
 )
 
