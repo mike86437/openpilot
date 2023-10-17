@@ -277,7 +277,7 @@ class CarInterface(CarInterfaceBase):
       ret.mass = 4052. * CV.LB_TO_KG
       ret.wheelbase = 2.75
       ret.centerToFront = ret.wheelbase * 0.4
-      ret.steerRatio = 16.50  # 12.72 is end-to-end spec
+      ret.steerRatio = 13.50  # 12.72 is end-to-end spec
       if eps_modified:
         for fw in car_fw:
           if fw.ecu == "eps" and b"-" not in fw.fwVersion and b"," in fw.fwVersion:
