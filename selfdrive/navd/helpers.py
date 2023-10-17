@@ -163,6 +163,22 @@ def parse_banner_instructions(banners: Any, distance_to_maneuver: float = 0.0) -
     instruction['maneuverType'] = p['type']
   if field_valid(p, 'modifier'):
     instruction['maneuverModifier'] = p['modifier']
+  if field_valid(p, 'degrees'):
+    maneuverDegrees = int(p['degrees'])
+    drivingSide = p['driving_side']
+    modifier1 = ""
+    modifier2 = ""
+    if (0 <= maneuverDegrees <= 67) or (292 < maneuverDegrees <= 360):
+      modifier1 = "sharp "
+    elif (112 < maneuverDegrees <= 157) or (202 < maneuverDegrees <= 247):
+      modifier1 = "slight "
+    if 0 <= maneuverDegrees <= 157:
+      modifier2 = drivingSide
+    elif 157 < maneuverDegrees <= 202:
+      modifier2 = "straight"
+    elif 202 < maneuverDegrees <= 360:
+      modifier2 = "left" if drivingSide == "right" else "right"
+    instruction['maneuverModifier'] = modifier1 + modifier2
 
   # Secondary
   if field_valid(current_banner, 'secondary'):
