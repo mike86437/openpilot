@@ -168,7 +168,7 @@ class RouteEngine:
           return {key: remove_keys(value, keys_to_remove) for key, value in obj.items() if key not in keys_to_remove}
         else:
           return obj
-      keys_to_remove = ['geometry', 'annotation', 'incidents', 'intersections', 'components', 'sub', 'waypoints']
+      keys_to_remove = ['geometry', 'annotation', 'incidents', 'components', 'sub', 'waypoints']
       self.r2 = remove_keys(r1, keys_to_remove)
       # Add items for display under "routes"
       if 'routes' in self.r2 and len(self.r2['routes']) > 0:
