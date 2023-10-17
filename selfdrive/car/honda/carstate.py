@@ -109,7 +109,6 @@ class CarState(CarStateBase):
     self.v_cruise_pcm_prev = 0
     # FrogPilot variables
     self.params = Params()
-    self.params_memory = Params("/dev/shm/params")
     self.read_distance_lines_init = False
     self.read_distance_lines = self.params.get_int("LongitudinalPersonality") + 1
     self.prev_read_distance_lines = self.read_distance_lines
@@ -205,7 +204,6 @@ class CarState(CarStateBase):
     if not self.read_distance_lines_init or self.read_distance_lines != self.prev_read_distance_lines:
       self.read_distance_lines_init = True
       put_int_nonblocking("LongitudinalPersonality", int(min(self.read_distance_lines - 1, 2)))
-      self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
       self.prev_read_distance_lines = self.read_distance_lines
 
     # TODO: set for all cars
