@@ -100,7 +100,7 @@ procs = [
   PythonProcess("webjoystick", "tools.bodyteleop.web", notcar),
 
   # FrogPilot procs
-  PythonProcess("otisserv", "selfdrive.navd.otisserv", always_run, enabled=not_prime),
+  PythonProcess("otisserv", "selfdrive.navd.otisserv", always_run, enabled=True),
 ]
 
 managed_processes = {p.name: p for p in procs}
