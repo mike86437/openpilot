@@ -324,7 +324,7 @@ class RouteEngine:
       self.navCondition = True
     else:
       self.navCondition = False
-    if self.navCondition = True:
+    if self.navCondition == True:
       print("Approaching stop sign or traffic light")
 
     # Speed limit sign type
