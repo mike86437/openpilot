@@ -320,11 +320,11 @@ class RouteEngine:
       msg.navInstruction.speedLimit = closest.annotations['maxspeed']
 
     # Evaluate if current position is equal to any geometry index' stored. Conditional Experimental if approaching
-    if closest_idx in stopSigns or closest_idx in trafficLight:
-      navCondition = True
+    if closest_idx in self.stopSigns or closest_idx in self.trafficLight:
+      self.navCondition = True
     else:
-      navCondition = False
-    if navCondition = True:
+      self.navCondition = False
+    if self.navCondition = True:
       print("Approaching stop sign or traffic light")
 
     # Speed limit sign type
