@@ -195,11 +195,13 @@ class RouteEngine:
         self.route_geometry = []
 
         # Iterate through the steps in self.route to find "stop_sign" and "traffic_light"
-        for step in self.route:
+        self.stopSigns = []
+	self.trafficLights = []
+	for step in self.route:
           for intersection in step["intersections"]:
             if "stop_sign" in intersection:
               self.stopSigns.append(intersection["geometry_index"])
-            if "traffic_light" in intersection:
+            if "traffic_signal" in intersection:
               self.trafficLight.append(intersection["geometry_index"])
 
         print("Geometry Indices with Stop Signs:", self.stopSigns)
