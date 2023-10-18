@@ -321,8 +321,8 @@ class RouteEngine:
     if ('maxspeed' in closest.annotations) and self.localizer_valid:
       msg.navInstruction.speedLimit = closest.annotations['maxspeed']
 
-    # Evaluate if current position is equal to any geometry index' stored. Conditional Experimental if approaching
-    if closest_idx in self.stopSigns or closest_idx in self.trafficLight:
+    # Evaluate if current position is equal to any geometry indices stored or the previous 2. Conditional Experimental if approaching
+    if any(idx in (self.stopSigns + self.trafficLight) for idx in (closest_idx, closest_idx + 1, closest_idx + 2)):
       self.navCondition = True
     else:
       self.navCondition = False
