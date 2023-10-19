@@ -49,10 +49,9 @@ class RouteEngine:
     self.reroute_counter = 0
 
     # Initialize NoO conditional exp
-    self.stopSigns = []
-    self.trafficLight = []
+    
+    self.stopSignal = []
     self.stopCoord = []
-    self.lightCoord = []
     self.navCondition = False
 
     if self.params.get_int("PrimeType") == 0:
@@ -197,7 +196,7 @@ class RouteEngine:
         self.route_geometry = []
 
         # Iterate through the steps in self.route to find "stop_sign" and "traffic_light"
-        self.stopSigns = []
+        self.stopSignal = []
         self.stopCoord = []
         for step in self.route:
           for intersection in step["intersections"]:
