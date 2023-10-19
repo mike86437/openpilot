@@ -51,6 +51,8 @@ class RouteEngine:
     # Initialize NoO conditional exp
     self.stopSigns = []
     self.trafficLight = []
+    self.stopCoord = []
+    self.lightCoord = []
     self.navCondition = False
 
     if self.params.get_int("PrimeType") == 0:
@@ -197,12 +199,18 @@ class RouteEngine:
         # Iterate through the steps in self.route to find "stop_sign" and "traffic_light"
         self.stopSigns = []
         self.trafficLight = []
+        self.stopCoord = []
+        self.lightCoord = []
         for step in self.route:
           for intersection in step["intersections"]:
             if "stop_sign" in intersection:
               self.stopSigns.append(intersection["geometry_index"])
+              coord = Coordinate.from_mapbox_tuple(intersection["location"])
+              self.stopCoord.append(coord)
             if "traffic_signal" in intersection:
               self.trafficLight.append(intersection["geometry_index"])
+              coord = Coordinate.from_mapbox_tuple(intersection["location"])
+              self.lightCoord.append(coord)
 
         print("Geometry Indices with Stop Signs:", self.stopSigns)
         print("Geometry Indices with Traffic Lights:", self.trafficLight)
@@ -321,13 +329,31 @@ class RouteEngine:
     if ('maxspeed' in closest.annotations) and self.localizer_valid:
       msg.navInstruction.speedLimit = closest.annotations['maxspeed']
 
-    # Evaluate if current position is equal to any geometry indices stored or the previous 2. Conditional Experimental if approaching
-    if any(idx in (self.stopSigns + self.trafficLight) for idx in (closest_idx, closest_idx + 1, closest_idx + 2)):
-      self.navCondition = True
+    # Determine the location of the closest upcoming stopSign or trafficLight
+    if closest_idx in (self.stopSigns + self.trafficLight):
+      self.navCondition = True  # Approaching either a stopSign or trafficLight
+      if closest_idx in self.stopSigns:
+        # Handle stopSign
+        index = self.stopSigns.index(closest_idx)
+        location = self.stopCoord[index]
+        print("Approaching a stop sign at location:", location)
+        # Calculate the distance to the stop sign
+        distance_to_stop_sign = self.last_position.distance_to(location)
+        print("Distance to stop sign:", distance_to_stop_sign)
+        if distance_to_stop_sign < 100:
+          self.navCondition = True
+      elif closest_idx in self.trafficLight:
+        # Handle trafficLight
+        index = self.trafficLight.index(closest_idx)
+        location = self.lightCoord[index]
+        print("Approaching a traffic light at location:", location)
+        # Calculate the distance to the traffic light
+        distance_to_traffic_light = self.last_position.distance_to(location)
+        print("Distance to traffic light:", distance_to_traffic_light)
+        if distance_to_traffic_light < 100:
+          self.navCondition = True
     else:
-      self.navCondition = False
-    if self.navCondition == True:
-      print("Approaching stop sign or traffic light")
+      self.navCondition = False  # Not approaching any stopSign or trafficLight
 
     # Speed limit sign type
     if 'speedLimitSign' in step:
