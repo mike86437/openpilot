@@ -205,8 +205,7 @@ class RouteEngine:
               coord = Coordinate.from_mapbox_tuple(intersection["location"])
               self.stopCoord.append(coord)
 
-        print("Geometry Indices with Stop Signs:", self.stopSigns)
-        print("Geometry Indices with Traffic Lights:", self.trafficLight)
+        print("Geometry Indices with Stop Conditions:", self.stopSignal)
 
         maxspeed_idx = 0
         maxspeeds = r['routes'][0]['legs'][0]['annotation']['maxspeed']
