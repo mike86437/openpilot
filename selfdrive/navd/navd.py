@@ -322,19 +322,25 @@ class RouteEngine:
       msg.navInstruction.speedLimit = closest.annotations['maxspeed']
 
     # Determine the location of the closest upcoming stopSign or trafficLight
-    if any(abs(closest_idx - idx) <= 20 for idx in self.stopSignal if idx > closest_idx):
-      closest_condition_index = min(self.stopSignal, key=lambda idx: abs(closest_idx - idx))
+    if any(abs(closest_idx - idx) <= 20 for idx in self.stopSignal if idx >= closest_idx):
+      closest_condition_index = min(
+        (idx for idx in self.stopSignal if idx >= closest_idx),
+        key=lambda idx: abs(closest_idx - idx)
+      )
 
       index = self.stopSignal.index(closest_condition_index)
       location = self.stopCoord[index]
-
+      # vEgo being 45 mph (20 m/s) for testing times 5 sec = 100 meters. Would be actual vEgo * 5
+      testvEgo = 20
+      secondstoStop = 5
       # Calculate the distance to the stopSign or trafficLight
       distance_to_condition = self.last_position.distance_to(location)
+      time_to_condition = distance_to_condition / testvEgo
       print("Distance to condition:", distance_to_condition)
 
-      if distance_to_condition < 100:
+      if distance_to_condition < (secondstoStop * testvEgo):
         self.navCondition = True
-        print("Approaching stop sign or traffic light")
+        print("Time to condition:", time_to_condition)
       else:
         self.navCondition = False  # Not approaching any stopSign or trafficLight
 
