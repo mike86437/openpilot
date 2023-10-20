@@ -49,11 +49,9 @@ class RouteEngine:
     self.reroute_counter = 0
 
     # Initialize NoO conditional exp
-    
     self.stopSignal = []
     self.stopCoord = []
     self.navCondition = False
-    self.latch_condition = False
 
     if self.params.get_int("PrimeType") == 0:
       self.mapbox_token = self.params.get("MapboxPublicKey", encoding='utf8')
@@ -199,13 +197,11 @@ class RouteEngine:
         # Iterate through the steps in self.route to find "stop_sign" and "traffic_light"
         self.stopSignal = []
         self.stopCoord = []
-        self.latch_condition = False
         for step in self.route:
           for intersection in step["intersections"]:
             if "stop_sign" in intersection or "traffic_signal" in intersection:
               self.stopSignal.append(intersection["geometry_index"])
-              coord = Coordinate.from_mapbox_tuple(intersection["location"])
-              self.stopCoord.append(coord)
+              self.stopCoord.append(Coordinate.from_mapbox_tuple(intersection["location"]))
 
         print("Geometry Indices with Stop Conditions:", self.stopSignal)
 
@@ -324,26 +320,23 @@ class RouteEngine:
       msg.navInstruction.speedLimit = closest.annotations['maxspeed']
 
     # Determine the location of the closest upcoming stopSign or trafficLight
-    closest_condition_index = min(
-      (idx for idx in self.stopSignal if idx >= closest_idx),
-      key=lambda idx: abs(closest_idx - idx)
-    )
+    closest_condition_indices = [idx for idx in self.stopSignal if idx >= closest_idx]
+    if closest_condition_indices:
+      closest_condition_index = min(closest_condition_indices, key=lambda idx: abs(closest_idx - idx))
+      index = self.stopSignal.index(closest_condition_index)
+      v_ego = self.sm['carState'].vEgo
 
-    index = self.stopSignal.index(closest_condition_index)
-    location = self.stopCoord[index]
-    # vEgo being 45 mph (20 m/s) for testing times 5 sec = 100 meters. Would be actual vEgo * 5
-    v_ego = self.sm['carState'].vEgo
-    secondstoStop = 5
-    # Calculate the distance to the stopSign or trafficLight
-    distance_to_condition = self.last_position.distance_to(location)
-    time_to_condition = distance_to_condition / v_ego if v_ego != 0 else float('inf')
-    print("Distance to condition:", distance_to_condition)
+      # Calculate the distance to the stopSign or trafficLight
+      distance_to_condition = self.last_position.distance_to(self.stopCoord[index])
+      time_to_condition = (distance_to_condition / v_ego if v_ego != 0 else float('inf'))
 
-    if distance_to_condition < (secondstoStop * v_ego):
-      self.navCondition = True
-      print("Time to condition:", time_to_condition)
+      if distance_to_condition < (5 * v_ego): # 5 Seconds to stop condition
+        self.navCondition = True
+        print("Time to condition:", time_to_condition)
+      else:
+        self.navCondition = False  # Not approaching any stopSign or trafficLight
     else:
-      self.navCondition = False  # Not approaching any stopSign or trafficLight
+      self.navCondition = False  # No more stopSign or trafficLight in array
 
     # Speed limit sign type
     if 'speedLimitSign' in step:
