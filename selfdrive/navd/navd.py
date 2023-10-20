@@ -345,7 +345,7 @@ class RouteEngine:
         print("Time to condition:", time_to_condition)
         if distance_to_condition < 10:
           self.latch_condition = True  # Latch the condition when close to intersection
-      elif latch_condition and distance_to_condition > 10:
+      elif self.latch_condition and distance_to_condition > 10:
         self.navCondition = False  # Release the latch to prevent navCondition after leaving intersection
         self.latch_condition = False
       else:
