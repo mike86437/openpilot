@@ -341,6 +341,11 @@ class RouteEngine:
       if distance_to_condition < (secondstoStop * testvEgo):
         self.navCondition = True
         print("Time to condition:", time_to_condition)
+        if distance_to_condition < 10:
+        latch_condition = True  # Latch the condition when close to intersection
+      elif latch_condition and distance_to_condition > 10:
+        self.navCondition = False  # Release the latch to prevent navCondition after leaving intersection
+        latch_condition = False
       else:
         self.navCondition = False  # Not approaching any stopSign or trafficLight
 
