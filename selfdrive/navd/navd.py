@@ -324,32 +324,26 @@ class RouteEngine:
       msg.navInstruction.speedLimit = closest.annotations['maxspeed']
 
     # Determine the location of the closest upcoming stopSign or trafficLight
-    if any(abs(closest_idx - idx) <= 20 for idx in self.stopSignal if idx >= closest_idx):
-      closest_condition_index = min(
-        (idx for idx in self.stopSignal if idx >= closest_idx),
-        key=lambda idx: abs(closest_idx - idx)
-      )
+    closest_condition_index = min(
+      (idx for idx in self.stopSignal if idx >= closest_idx),
+      key=lambda idx: abs(closest_idx - idx)
+    )
 
-      index = self.stopSignal.index(closest_condition_index)
-      location = self.stopCoord[index]
-      # vEgo being 45 mph (20 m/s) for testing times 5 sec = 100 meters. Would be actual vEgo * 5
-      v_ego = 20 # self.sm['carState'].vEgo not working for some reason
-      secondstoStop = 5
-      # Calculate the distance to the stopSign or trafficLight
-      distance_to_condition = self.last_position.distance_to(location)
-      time_to_condition = distance_to_condition / v_ego
-      print("Distance to condition:", distance_to_condition)
+    index = self.stopSignal.index(closest_condition_index)
+    location = self.stopCoord[index]
+    # vEgo being 45 mph (20 m/s) for testing times 5 sec = 100 meters. Would be actual vEgo * 5
+    v_ego = self.sm['carState'].vEgo
+    secondstoStop = 5
+    # Calculate the distance to the stopSign or trafficLight
+    distance_to_condition = self.last_position.distance_to(location)
+    time_to_condition = distance_to_condition / v_ego
+    print("Distance to condition:", distance_to_condition)
 
-      if distance_to_condition < (secondstoStop * v_ego):
-        self.navCondition = True
-        print("Time to condition:", time_to_condition)
-        if distance_to_condition < 10:
-          self.latch_condition = True  # Latch the condition when close to intersection
-      elif self.latch_condition and distance_to_condition > 10:
-        self.navCondition = False  # Release the latch to prevent navCondition after leaving intersection
-        self.latch_condition = False
-      else:
-        self.navCondition = False  # Not approaching any stopSign or trafficLight
+    if distance_to_condition < (secondstoStop * v_ego):
+      self.navCondition = True
+      print("Time to condition:", time_to_condition)
+    else:
+      self.navCondition = False  # Not approaching any stopSign or trafficLight
 
     # Speed limit sign type
     if 'speedLimitSign' in step:
@@ -432,7 +426,7 @@ class RouteEngine:
 
 def main(sm=None, pm=None):
   if sm is None:
-    sm = messaging.SubMaster(['liveLocationKalman', 'managerState'])
+    sm = messaging.SubMaster(['liveLocationKalman', 'managerState', 'carState'])
   if pm is None:
     pm = messaging.PubMaster(['navInstruction', 'navRoute'])
 
