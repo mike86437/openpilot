@@ -53,6 +53,7 @@ class RouteEngine:
     self.stopSignal = []
     self.stopCoord = []
     self.navCondition = False
+    self.latch_condition = False
 
     if self.params.get_int("PrimeType") == 0:
       self.mapbox_token = self.params.get("MapboxPublicKey", encoding='utf8')
@@ -198,6 +199,7 @@ class RouteEngine:
         # Iterate through the steps in self.route to find "stop_sign" and "traffic_light"
         self.stopSignal = []
         self.stopCoord = []
+        self.latch_condition = False
         for step in self.route:
           for intersection in step["intersections"]:
             if "stop_sign" in intersection or "traffic_signal" in intersection:
@@ -342,10 +344,10 @@ class RouteEngine:
         self.navCondition = True
         print("Time to condition:", time_to_condition)
         if distance_to_condition < 10:
-          latch_condition = True  # Latch the condition when close to intersection
+          self.latch_condition = True  # Latch the condition when close to intersection
       elif latch_condition and distance_to_condition > 10:
         self.navCondition = False  # Release the latch to prevent navCondition after leaving intersection
-        latch_condition = False
+        self.latch_condition = False
       else:
         self.navCondition = False  # Not approaching any stopSign or trafficLight
 
