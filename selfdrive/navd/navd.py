@@ -331,14 +331,14 @@ class RouteEngine:
       index = self.stopSignal.index(closest_condition_index)
       location = self.stopCoord[index]
       # vEgo being 45 mph (20 m/s) for testing times 5 sec = 100 meters. Would be actual vEgo * 5
-      testvEgo = 20
+      v_ego = sm['carState'].vEgo
       secondstoStop = 5
       # Calculate the distance to the stopSign or trafficLight
       distance_to_condition = self.last_position.distance_to(location)
-      time_to_condition = distance_to_condition / testvEgo
+      time_to_condition = distance_to_condition / v_ego
       print("Distance to condition:", distance_to_condition)
 
-      if distance_to_condition < (secondstoStop * testvEgo):
+      if distance_to_condition < (secondstoStop * v_ego):
         self.navCondition = True
         print("Time to condition:", time_to_condition)
         if distance_to_condition < 10:
