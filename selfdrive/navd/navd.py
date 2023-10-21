@@ -332,7 +332,7 @@ class RouteEngine:
       distance_to_condition = self.last_position.distance_to(self.stopCoord[index])
       time_to_condition = (distance_to_condition / v_ego if v_ego != 0 else float('inf'))
       # 5-10 Seconds to stop condition based on v_ego or minimum of 25 meters
-      seconds_to_stop = interp(v_egp, [0, 22.3, 44.7], [5, 10, 10])
+      seconds_to_stop = interp(v_ego, [0, 22.3, 44.7], [5, 10, 10])
       if distance_to_condition < max((seconds_to_stop * v_ego), 25): 
         self.navCondition = True
         print("Time to condition:", time_to_condition)
