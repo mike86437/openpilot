@@ -28,6 +28,7 @@ class RouteEngine:
     self.pm = pm
 
     self.params = Params()
+    self.params_memory = Params("/dev/shm/params")
 
     # Get last gps position from params
     self.last_position = coordinate_from_param("LastGPSPosition", self.params)
@@ -329,7 +330,7 @@ class RouteEngine:
       # Calculate the distance to the stopSign or trafficLight
       distance_to_condition = self.last_position.distance_to(self.stopCoord[index])
       time_to_condition = (distance_to_condition / v_ego if v_ego != 0 else float('inf'))
-      # 10 Seconds to stop condition or minimum of 25 meters
+      # 5-10 Seconds to stop condition based on v_ego or minimum of 25 meters
       seconds_to_stop = interp(v_egp, [0, 22.3, 44.7], [5, 10, 10])
       if distance_to_condition < max((seconds_to_stop * v_ego), 25): 
         self.navCondition = True
@@ -338,6 +339,8 @@ class RouteEngine:
         self.navCondition = False  # Not approaching any stopSign or trafficLight
     else:
       self.navCondition = False  # No more stopSign or trafficLight in array
+
+    self.params_memory.put_int("ConditionalStatus", 2 if self.nav_condition else 0)
 
     # Speed limit sign type
     if 'speedLimitSign' in step:
