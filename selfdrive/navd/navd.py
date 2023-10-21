@@ -341,7 +341,7 @@ class RouteEngine:
     else:
       self.navCondition = False  # No more stopSign or trafficLight in array
 
-    self.params_memory.put_int("ConditionalStatus", 2 if self.nav_condition else 0)
+    self.params_memory.put_int("ConditionalStatus", 2 if self.navCondition else 0)
 
     # Speed limit sign type
     if 'speedLimitSign' in step:
