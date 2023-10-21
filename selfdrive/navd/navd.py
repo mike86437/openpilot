@@ -329,8 +329,8 @@ class RouteEngine:
       # Calculate the distance to the stopSign or trafficLight
       distance_to_condition = self.last_position.distance_to(self.stopCoord[index])
       time_to_condition = (distance_to_condition / v_ego if v_ego != 0 else float('inf'))
-      # 5 Seconds to stop condition or minimum of 25 meters
-      if distance_to_condition < max((5 * v_ego), 25): 
+      # 10 Seconds to stop condition or minimum of 25 meters
+      if distance_to_condition < max((10 * v_ego), 25): 
         self.navCondition = True
         print("Time to condition:", time_to_condition)
       else:
