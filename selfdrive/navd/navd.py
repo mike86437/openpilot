@@ -322,7 +322,7 @@ class RouteEngine:
       msg.navInstruction.speedLimit = closest.annotations['maxspeed']
 
     # Determine the location of the closest upcoming stopSign or trafficLight
-    closest_condition_indices = [idx for idx in self.stopSignal if idx > closest_idx]
+    closest_condition_indices = [idx for idx in self.stopSignal if idx >= closest_idx]
     if closest_condition_indices:
       closest_condition_index = min(closest_condition_indices, key=lambda idx: abs(closest_idx - idx))
       index = self.stopSignal.index(closest_condition_index)
