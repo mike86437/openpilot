@@ -54,6 +54,7 @@ class RouteEngine:
     self.stopSignal = []
     self.stopCoord = []
     self.navCondition = False
+    self.nooCondition = False
 
     if self.params.get_int("PrimeType") == 0:
       self.mapbox_token = self.params.get("MapboxPublicKey", encoding='utf8')
@@ -341,7 +342,13 @@ class RouteEngine:
     else:
       self.navCondition = False  # No more stopSign or trafficLight in array
 
-    self.params_memory.put_int("ConditionalStatus", 2 if self.navCondition else 0)
+    # Determine if NoO distance to maneuver is upcoming
+    if distance_to_maneuver < max((seconds_to_stop * v_ego), 25): 
+      self.nooCondition = True
+    else:
+       self.nooCondition = False  # Not approaching any NoO maneuver
+
+    self.params_memory.put_int("ConditionalStatus", 2 if self.navCondition or self.nooCondition else 0)
 
     # Speed limit sign type
     if 'speedLimitSign' in step:
