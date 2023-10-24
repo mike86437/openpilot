@@ -343,9 +343,9 @@ class RouteEngine:
       self.navCondition = False  # No more stopSign or trafficLight in array
 
     # Determine if NoO distance to maneuver is upcoming
-    if distance_to_maneuver < max((seconds_to_stop * v_ego), 25): 
+    print("Distance to maneuver:", distance_to_maneuver_along_geometry)
+    if distance_to_maneuver_along_geometry < max((seconds_to_stop * v_ego), 25): 
       self.nooCondition = True
-      print("Distance to maneuver:", distance_to_maneuver)
     else:
        self.nooCondition = False  # Not approaching any NoO maneuver
 
