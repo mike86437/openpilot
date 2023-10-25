@@ -255,7 +255,7 @@ class LongitudinalPlanner:
       # Configure the offset value for the UI
       self.v_offset = max(0, int(v_cruise - self.v_target) - 1)
 
-      self.read_test = self.params_memory.get_int("ReadTest")
+      self.read_test = int(self.params.get('ReadTest'))
       if self.read_test == 1:
         self.v_cruise_temp = 44.7
       elif self.read_test == 2:
