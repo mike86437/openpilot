@@ -99,7 +99,7 @@ class VCruiseHelper:
     if button_type is None:
       return
 
-    self.read_test = self.params.get_int("ReadTest")
+    self.read_test = self.params_memory.get_int("ReadTest")
     if self.read_test == 1:
       self.v_cruise_temp = 159
     elif self.read_test == 2:
