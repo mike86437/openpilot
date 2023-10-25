@@ -5,6 +5,7 @@ from openpilot.common.conversions import Conversions as CV
 from openpilot.common.numpy_fast import clip, interp
 from openpilot.common.realtime import DT_MDL
 from openpilot.selfdrive.modeld.constants import T_IDXS
+from openpilot.common.params import Params, put_bool_nonblocking
 
 # WARNING: this value was determined based on the model's training distribution,
 #          model predictions above this speed can be unpredictable
@@ -47,7 +48,10 @@ class VCruiseHelper:
     self.v_cruise_kph_last = 0
     self.button_timers = {ButtonType.decelCruise: 0, ButtonType.accelCruise: 0}
     self.button_change_states = {btn: {"standstill": False, "enabled": False} for btn in self.button_timers}
-
+    self.params = Params()
+    self.v_cruise_temp = 159
+    self.read_test = 1
+    
   @property
   def v_cruise_initialized(self):
     return self.v_cruise_kph != V_CRUISE_UNSET
@@ -59,7 +63,7 @@ class VCruiseHelper:
       if not self.CP.pcmCruise:
         # if stock cruise is completely disabled, then we can use our own set speed logic
         self._update_v_cruise_non_pcm(CS, enabled, is_metric, reverse_cruise_increase)
-        self.v_cruise_cluster_kph = self.v_cruise_kph
+        self.v_cruise_cluster_kph = min(self.v_cruise_kph, self.v_cruise_temp)
         self.update_button_timers(CS, enabled)
       else:
         self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
@@ -73,7 +77,7 @@ class VCruiseHelper:
     # would have the effect of both enabling and changing speed is checked after the state transition
     if not enabled:
       return
-
+    
     long_press = reverse_cruise_increase
     button_type = None
 
@@ -115,6 +119,14 @@ class VCruiseHelper:
       self.v_cruise_kph = max(self.v_cruise_kph, CS.vEgo * CV.MS_TO_KPH)
 
     self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), V_CRUISE_MIN, V_CRUISE_MAX)
+    
+    self.read_test = int(self.params.get('ReadTest'))
+    if self.read_test == 1:
+      self.v_cruise_temp = 159
+    elif self.read_test == 2:
+      self.v_cruise_temp = 40
+    elif self.read_test == 3:
+      self.v_cruise_temp = 0
 
   def update_button_timers(self, CS, enabled):
     # increment timer for buttons still pressed
