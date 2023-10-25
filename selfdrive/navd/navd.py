@@ -322,14 +322,14 @@ class RouteEngine:
     if ('maxspeed' in closest.annotations) and self.localizer_valid:
       msg.navInstruction.speedLimit = closest.annotations['maxspeed']
 
+    v_ego = self.sm['carState'].vEgo
     seconds_to_stop = interp(v_ego, [0, 22.3, 44.7], [5, 10, 10])
     # Determine the location of the closest upcoming stopSign or trafficLight
     closest_condition_indices = [idx for idx in self.stopSignal if idx >= closest_idx]
     if closest_condition_indices:
       closest_condition_index = min(closest_condition_indices, key=lambda idx: abs(closest_idx - idx))
       index = self.stopSignal.index(closest_condition_index)
-      v_ego = self.sm['carState'].vEgo
-
+      
       # Calculate the distance to the stopSign or trafficLight
       distance_to_condition = self.last_position.distance_to(self.stopCoord[index])
       time_to_condition = (distance_to_condition / v_ego if v_ego != 0 else float('inf'))
