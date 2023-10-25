@@ -186,7 +186,7 @@ class LongitudinalPlanner:
     if frogpilot_toggles_updated:
       self.update_frogpilot_params()
 
-    if self.param_read_counter % 50 == 0:
+    if self.param_read_counter % 10 == 0:
       self.read_param()
     self.param_read_counter += 1
     self.mpc.mode = 'blended' if sm['controlsState'].experimentalMode else 'acc'
@@ -234,7 +234,7 @@ class LongitudinalPlanner:
     accel_limits_turns[1] = max(accel_limits_turns[1], self.a_desired - 0.05)
 
     # Pfeiferj's Vision Turn Controller
-    if self.vision_turn_controller and prev_accel_constraint and v_ego >= 1:
+    if self.vision_turn_controller and prev_accel_constraint:
       # Adjust the rate plan with curve sensitivity
       rate_plan = np.array(np.abs(sm['modelV2'].orientationRate.z)) * self.curve_sensitivity
       vel_plan = np.array(sm['modelV2'].velocity.x)
@@ -259,7 +259,7 @@ class LongitudinalPlanner:
       if self.read_test == 1:
         self.v_cruise_temp = 44.7
       elif self.read_test == 2:
-        self.v_cruise_temp = 10
+        self.v_cruise_temp = 0
       elif self.read_test == 3:
         self.v_cruise_temp = 0
       # Set v_cruise to the desired speed
