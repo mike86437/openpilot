@@ -206,7 +206,7 @@ class CarState(CarStateBase):
       if self.cruise_setting == 0:
         self.read_test = self.read_test % 3 + 1
         print(self.read_test)
-        self.params_memory.put_int_nonblocking("ReadTest", int(self.read_test))
+        put_int_nonblocking("ReadTest", int(self.read_test))
 
     if not self.read_distance_lines_init or self.read_distance_lines != self.prev_read_distance_lines:
       self.read_distance_lines_init = True
