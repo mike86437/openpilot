@@ -50,7 +50,7 @@ class VCruiseHelper:
     self.button_change_states = {btn: {"standstill": False, "enabled": False} for btn in self.button_timers}
     self.params = Params()
     self.v_cruise_temp = 159
-    self.read_test = 1
+    self.read_test = self.params.get_int("ReadTest")
     
   @property
   def v_cruise_initialized(self):
@@ -120,12 +120,15 @@ class VCruiseHelper:
 
     self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), V_CRUISE_MIN, V_CRUISE_MAX)
     
-    self.read_test = int(self.params.get('ReadTest'))
+    self.read_test = self.params.get_int("ReadTest")
     if self.read_test == 1:
+      print("one")
       self.v_cruise_temp = 159
     elif self.read_test == 2:
+      print("two")
       self.v_cruise_temp = 40
     elif self.read_test == 3:
+      print("three")
       self.v_cruise_temp = 0
 
   def update_button_timers(self, CS, enabled):
