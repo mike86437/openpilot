@@ -256,6 +256,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"PauseLateralOnSignal", PERSISTENT},
     {"PersonalitiesViaWheel", PERSISTENT},
     {"PrimeType", PERSISTENT},
+    {"ReadTest", CLEAR_ON_MANAGER_START | CLEAR_ON_OFFROAD_TRANSITION},  
     {"RecordFront", PERSISTENT},
     {"RecordFrontLock", PERSISTENT},  // for the internal fleet
     {"RelaxedJerk", PERSISTENT},

@@ -4,6 +4,7 @@ from cereal import car, log
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.numpy_fast import clip, interp
 from openpilot.common.realtime import DT_MDL
+from openpilot.common.params import Params, put_bool_nonblocking, put_int_nonblocking
 from openpilot.selfdrive.modeld.constants import T_IDXS
 
 # WARNING: this value was determined based on the model's training distribution,
@@ -48,6 +49,8 @@ class VCruiseHelper:
     self.button_timers = {ButtonType.decelCruise: 0, ButtonType.accelCruise: 0}
     self.button_change_states = {btn: {"standstill": False, "enabled": False} for btn in self.button_timers}
     self.v_cruise_temp = 159
+    self.params_memory = Params("/dev/shm/params")
+    self.read_test = 0
 
   @property
   def v_cruise_initialized(self):
@@ -96,11 +99,12 @@ class VCruiseHelper:
     if button_type is None:
       return
 
-    if CS.read_test == 1:
+    self.read_test = self.params.get_int("ReadTest")
+    if self.read_test == 1:
       self.v_cruise_temp = 159
-    elif CS.read_test == 2:
+    elif self.read_test == 2:
       self.v_cruise_temp = 25
-    elif CS.read_test == 3:
+    elif self.read_test == 3:
       self.v_cruise_temp = 0
 
     # Don't adjust speed when pressing resume to exit standstill
