@@ -4,7 +4,6 @@ from cereal import car, log
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.numpy_fast import clip, interp
 from openpilot.common.realtime import DT_MDL
-from openpilot.common.params import Params, put_bool_nonblocking, put_int_nonblocking
 from openpilot.selfdrive.modeld.constants import T_IDXS
 
 # WARNING: this value was determined based on the model's training distribution,
@@ -48,9 +47,6 @@ class VCruiseHelper:
     self.v_cruise_kph_last = 0
     self.button_timers = {ButtonType.decelCruise: 0, ButtonType.accelCruise: 0}
     self.button_change_states = {btn: {"standstill": False, "enabled": False} for btn in self.button_timers}
-    self.v_cruise_temp = 159
-    self.params_memory = Params("/dev/shm/params")
-    self.read_test = 0
 
   @property
   def v_cruise_initialized(self):
@@ -63,7 +59,7 @@ class VCruiseHelper:
       if not self.CP.pcmCruise:
         # if stock cruise is completely disabled, then we can use our own set speed logic
         self._update_v_cruise_non_pcm(CS, enabled, is_metric, reverse_cruise_increase)
-        self.v_cruise_cluster_kph = min(self.v_cruise_kph, self.v_cruise_temp)
+        self.v_cruise_cluster_kph = self.v_cruise_kph
         self.update_button_timers(CS, enabled)
       else:
         self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
@@ -98,14 +94,6 @@ class VCruiseHelper:
 
     if button_type is None:
       return
-
-    self.read_test = self.params_memory.get_int("ReadTest")
-    if self.read_test == 1:
-      self.v_cruise_temp = 159
-    elif self.read_test == 2:
-      self.v_cruise_temp = 25
-    elif self.read_test == 3:
-      self.v_cruise_temp = 0
 
     # Don't adjust speed when pressing resume to exit standstill
     cruise_standstill = self.button_change_states[button_type]["standstill"] or CS.cruiseState.standstill

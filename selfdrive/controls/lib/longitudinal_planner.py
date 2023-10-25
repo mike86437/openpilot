@@ -156,6 +156,8 @@ class LongitudinalPlanner:
     self.previous_yRel = 0
     self.status_value = 0
     self.stop_light_count = 0
+    self.v_cruise_temp = 159
+    self.read_test = 0
 
   def read_param(self):
     try:
@@ -253,8 +255,15 @@ class LongitudinalPlanner:
       # Configure the offset value for the UI
       self.v_offset = max(0, int(v_cruise - self.v_target) - 1)
 
+      self.read_test = self.params_memory.get_int("ReadTest")
+      if self.read_test == 1:
+        self.v_cruise_temp = 44.7
+      elif self.read_test == 2:
+        self.v_cruise_temp = 10
+      elif self.read_test == 3:
+        self.v_cruise_temp = 0
       # Set v_cruise to the desired speed
-      v_cruise = min(v_cruise, self.v_target)
+      v_cruise = min(v_cruise, self.v_target, self.v_cruise_temp)
 
     self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
