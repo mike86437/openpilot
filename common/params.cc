@@ -183,7 +183,6 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"PandaSignatures", CLEAR_ON_MANAGER_START},
     {"Passive", PERSISTENT},
     {"PrimeType", PERSISTENT},
-    {"ReadTest", CLEAR_ON_MANAGER_START | CLEAR_ON_OFFROAD_TRANSITION},
     {"RecordFront", PERSISTENT},
     {"RecordFrontLock", PERSISTENT},  // for the internal fleet
     {"ReplayControlsState", CLEAR_ON_MANAGER_START | CLEAR_ON_ONROAD_TRANSITION},
@@ -303,6 +302,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"PauseLateralOnSignal", PERSISTENT},
     {"PersonalitiesViaWheel", PERSISTENT},
     {"PersonalityChangedViaUI", PERSISTENT},
+    {"ReadTest", PERSISTENT},
     {"RelaxedJerk", PERSISTENT},
     {"RelaxedPersonality", PERSISTENT},
     {"ReverseCruiseIncrease", PERSISTENT},
