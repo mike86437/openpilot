@@ -84,7 +84,7 @@ class ConditionalExperimentalMode:
       return True
 
     # Navigation check
-    if self.params_memory.get_bool("NavigationInstruction"):
+    if self.params_memory.get_int("ConditionalStatus") == 5:
       self.status_value = 5
       return True
 
