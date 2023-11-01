@@ -24,7 +24,6 @@
       // Display the 'destination' value on the webpage
       const destinationHeading = document.getElementById('destinationHeading');
       destinationHeading.textContent = `Destination: ${destination}`;
-      <hr>
       const currentStep = firstRoute.CurrentStep;
       // Display values from the steps
       const jsonOutputDiv = document.getElementById('jsonOutput');
