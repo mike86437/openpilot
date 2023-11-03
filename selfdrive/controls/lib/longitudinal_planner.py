@@ -109,6 +109,8 @@ class LongitudinalPlanner:
     self.v_target = MIN_TARGET_V
 
     self.update_frogpilot_params()
+    self.v_cruise_temp = 159
+    self.read_test = 0
 
   def read_param(self):
     try:
@@ -137,8 +139,7 @@ class LongitudinalPlanner:
     if frogpilot_toggles_updated:
       self.update_frogpilot_params()
 
-    if self.param_read_counter % 50 == 0:
-      self.read_param()
+    self.read_param()
     self.param_read_counter += 1
     self.mpc.mode = 'blended' if sm['controlsState'].experimentalMode else 'acc'
 
@@ -220,8 +221,15 @@ class LongitudinalPlanner:
       # Configure the offset value for the UI
       self.v_offset = max(0, int(v_cruise - self.v_target))
 
+      self.read_test = int(self.params.get('ReadTest'))
+      if self.read_test == 1:
+        self.v_cruise_temp = 44.7
+      elif self.read_test == 2:
+        self.v_cruise_temp = 11
+      elif self.read_test == 3:
+        self.v_cruise_temp = 0
       # Set v_cruise to the desired speed
-      v_cruise = min(v_cruise, self.v_target)
+      v_cruise = min(v_cruise, self.v_target, self.v_cruise_temp)
     else:
       self.v_offset = 0
 
