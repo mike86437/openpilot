@@ -207,6 +207,7 @@ class RouteEngine:
         # Iterate through the steps in self.route to find "stop_sign" and "traffic_light"
         self.stop_signal = []
         self.stop_coord = []
+        self.stopped_idx = 0
         for step in self.route:
           for intersection in step["intersections"]:
             if "stop_sign" in intersection or "traffic_signal" in intersection:
