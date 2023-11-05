@@ -182,6 +182,16 @@ class OtisServ(BaseHTTPRequestHandler):
           lng, lat = self.gcj02towgs84(lng, lat)
         params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
         self.to_json(lat, lng, save_type, name)
+    if postvars is not None:
+      if "latitude" in postvars and postvars.get("latitude")[0] != "" and "longitude" in postvars and postvars.get("longitude")[0] != "":
+        lat = float(postvars.get("latitude")[0])
+        lng = float(postvars.get("longitude")[0])
+        save_type = "recent"
+        name = postvars.get("place_name")[0] if postvars.get("place_name") is not None else ""
+        if use_amap:
+          lng, lat = self.gcj02towgs84(lng, lat)
+        params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
+        self.to_json(lat, lng, save_type, name)
       # favorites
       if not use_gmap and "fav_val" in postvars:
         addr = postvars.get("fav_val")[0]
