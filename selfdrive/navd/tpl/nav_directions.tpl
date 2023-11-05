@@ -1,7 +1,8 @@
-<div id="destinationHeading"  font-weight: bold;"></div>
+<div id="destinationHeading"  style=font-weight: bold;"></div>
 <div id="jsonOutput"></div>
 <script>
   let useMetricUnits = false;
+  let previousUuid = null;
 
   // Function to fetch and display JSON data
   async function fetchAndDisplayData() {
@@ -11,21 +12,21 @@
         throw new Error(`Failed to fetch JSON file. Status: ${response.status}`);
       }
       const jsonData = await response.json();
-
-      // Access the first route's nested structure
-      const firstRoute = jsonData.routes[0]; // Access the first route
-      const firstLeg = firstRoute.legs[0]; // Access the first leg
-      const steps = firstLeg.steps; // Access the steps array
-      const destination = firstRoute.Destination; // Access the 'destination' value
-
+      if (jsonData.uuid !== previousUuid) {
+        previousUuid = jsonData.uuid;
+        // Access the first route's nested structure
+        const firstRoute = jsonData.routes[0]; // Access the first route
+        const firstLeg = firstRoute.legs[0]; // Access the first leg
+        const steps = firstLeg.steps; // Access the steps array
+        const destination = firstRoute.Destination; // Access the 'destination' value
+      }
       // Determine whether to use metric or imperial units based on the 'Metric' key
       const useMetricUnits = firstRoute.Metric === true;
 
       // Display the 'destination' value on the webpage
       const destinationHeading = document.getElementById('destinationHeading');
       destinationHeading.textContent = `Destination: ${destination}`;
-      <hr>
-      const currentStep = firstRoute.CurrentStep;
+      const currentStep = jsonData.CurrentStep;
       // Display values from the steps
       const jsonOutputDiv = document.getElementById('jsonOutput');
       jsonOutputDiv.innerHTML = '';
