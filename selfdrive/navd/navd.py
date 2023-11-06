@@ -184,6 +184,7 @@ class RouteEngine:
           return obj
       keys_to_remove = ['geometry', 'annotation', 'incidents', 'intersections', 'components', 'sub', 'waypoints']
       self.r2 = remove_keys(r1, keys_to_remove)
+      self.r3 = {}
       # Add items for display under "routes"
       if 'routes' in self.r2 and len(self.r2['routes']) > 0:
         first_route = self.r2['routes'][0]
