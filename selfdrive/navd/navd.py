@@ -192,13 +192,16 @@ class RouteEngine:
           nav_destination_data = json.loads(nav_destination_json)
           place_name = nav_destination_data.get('place_name', 'Default Place Name')
           first_route['Destination'] = place_name
-          self.r2['CurrentStep'] = 0
           first_route['Metric'] = self.params.get_bool("IsMetric")
+          self.r3['CurrentStep'] = 0
+          self.r3['uuid'] = self.r2['uuid']
         except json.JSONDecodeError as e:
           print(f"Error decoding JSON: {e}")
 	  # Save slim json as file
       with open('navdirections.json', 'w') as json_file:
         json.dump(self.r2, json_file, indent=4)
+      with open('CurrentStep.json', 'w') as json_file:
+        json.dump(self.r3, json_file, indent=4)
 		
       if len(r['routes']):
         self.route = r['routes'][0]['legs'][0]['steps']
@@ -390,10 +393,10 @@ class RouteEngine:
         self.reset_recompute_limits()
         # Update the 'CurrentStep' value in the JSON
         if 'routes' in self.r2 and len(self.r2['routes']) > 0:
-          self.r2['CurrentStep'] = self.step_idx
+          self.r3['CurrentStep'] = self.step_idx
         # Write the modified JSON data back to the file
-        with open('navdirections.json', 'w') as json_file:
-          json.dump(self.r2, json_file, indent=4)
+        with open('CurrentStep.json', 'w') as json_file:
+          json.dump(self.r3, json_file, indent=4)
       else:
         cloudlog.warning("Destination reached")
 
