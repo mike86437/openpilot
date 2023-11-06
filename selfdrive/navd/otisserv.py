@@ -53,6 +53,9 @@ class OtisServ(BaseHTTPRequestHandler):
     if self.path == '/navdirections.json':
       self.get_navdirections()
       return
+    if self.path == '/CurrentStep.json':
+      self.get_currentstep()
+      return
     if self.path == '/?reset=1':
       params.put("NavDestination", "")
     if use_amap:
