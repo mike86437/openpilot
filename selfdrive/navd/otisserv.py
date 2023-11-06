@@ -254,6 +254,14 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(f.read())
     f.close()
 
+  def get_currentstep(self):
+    self.send_response(200)
+    self.send_header('Content-type','application/json')
+    self.end_headers()
+    f = open("%s/selfdrive/manager/CurrentStep.json" % BASEDIR, "rb")
+    self.wfile.write(f.read())
+    f.close()
+
   def get_gmap_css(self):
     self.wfile.write(bytes(self.get_parsed_template("gmap/style.css"), "utf-8"))
 
