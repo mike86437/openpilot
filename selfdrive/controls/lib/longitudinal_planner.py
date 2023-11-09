@@ -139,8 +139,7 @@ class LongitudinalPlanner:
     if frogpilot_toggles_updated:
       self.update_frogpilot_params()
 
-    if self.param_read_counter % 50 == 0:
-      self.read_param()
+    self.read_param()
     self.param_read_counter += 1
     self.mpc.mode = 'blended' if sm['controlsState'].experimentalMode else 'acc'
 
