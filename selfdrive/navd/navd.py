@@ -362,9 +362,9 @@ class RouteEngine:
       if distance_to_condition < max((seconds_to_stop * v_ego), 25): 
         if abs(closest_idx - self.stopped_idx) > 2:
             self.nav_condition = True
-          if v_ego <= 3:
-            self.stopped_idx = closest_idx
-            self.nav_condition = False
+        if v_ego <= 3:
+          self.stopped_idx = closest_idx
+          self.nav_condition = False
       else:
         self.nav_condition = False  # Not approaching any stopSign or trafficLight
     else:
