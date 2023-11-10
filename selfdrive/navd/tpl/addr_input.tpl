@@ -29,24 +29,13 @@
         }
 
         function onPlaceChanged() {
-            var place = autocomplete.getPlace();
+    var place = autocomplete.getPlace();
 
-            // Check if the place has address components
-            if (place.address_components) {
-                // Iterate through address components to construct the full address
-                var fullAddress = '';
-                for (var i = 0; i < place.address_components.length; i++) {
-                    var component = place.address_components[i];
-                    // Concatenate the long_name of each component to the full address
-                    fullAddress += component.long_name + ' ';
-                }
-
-                // Trim any extra white spaces
-                fullAddress = fullAddress.trim();
-
-                // Set the value of the input field to the full address
-                document.getElementById('pac-input').value = fullAddress;
-            }
-        }
+    // Check if the place has a formatted address
+    if (place.formatted_address) {
+        // Set the value of the input field to the formatted address
+        document.getElementById('pac-input').value = place.formatted_address;
+    }
+}
     </script>
 
