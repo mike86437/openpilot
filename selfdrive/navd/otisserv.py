@@ -55,19 +55,13 @@ class OtisServ(BaseHTTPRequestHandler):
     if self.path == '/CurrentStep.json':
       self.get_currentstep()
       return
-    if self.path == '/set_destination':
-      self.send_response(200)
-      self.send_header('Content-type', 'application/json')
-      self.end_headers()
-      response_json = json.dumps({"success": True}).encode('utf-8')
-      self.wfile.write(response_json)
-      return      
     if self.path == '/?reset=1':
       params.put("NavDestination", "")
 
     self.send_response(200)
     self.send_header("Content-type", "text/html")
     self.end_headers()
+
     if self.get_public_token() is None:
       self.display_page_public_token()
       return
@@ -98,7 +92,7 @@ class OtisServ(BaseHTTPRequestHandler):
       # gmap token
       if self.get_gmap_key() is None:
         if postvars is None or "gmap_key_val" not in postvars or postvars.get("gmap_key_val")[0] == "":
-          self.display_page_addr_input()
+          self.display_page_gmap_key()
           return
         params.put('GmapKey', postvars.get("gmap_key_val")[0])
 
@@ -132,8 +126,6 @@ class OtisServ(BaseHTTPRequestHandler):
         lng = float(postvars.get("lon")[0])
         save_type = postvars.get("save_type")[0]
         name = postvars.get("name")[0] if postvars.get("name") is not None else ""
-        if use_amap:
-          lng, lat = self.gcj02towgs84(lng, lat)
         params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
         self.to_json(lat, lng, save_type, name)
     if postvars is not None:
@@ -150,7 +142,7 @@ class OtisServ(BaseHTTPRequestHandler):
         self.to_json(lat, lng, save_type, name)
 
       # favorites
-      if not use_gmap and "fav_val" in postvars:
+      if "fav_val" in postvars:
         addr = postvars.get("fav_val")[0]
         real_addr = None
         lon = None
@@ -175,7 +167,7 @@ class OtisServ(BaseHTTPRequestHandler):
             self.display_page_addr_input("Place Not Found")
             return
       # search
-      if not use_gmap and "addr_val" in postvars:
+      if "addr_val" in postvars:
         addr = postvars.get("addr_val")[0]
         if addr != "":
           real_addr, lat, lon = self.query_addr(addr)
