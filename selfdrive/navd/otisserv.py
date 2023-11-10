@@ -355,7 +355,7 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("app_token_input", {"{{msg}}": msg})}), "utf-8"))
 
   def display_page_addr_input(self, msg = ""):
-    self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("addr_input", {"{{msg}}": msg})}), "utf-8"))
+    self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key()})}), "utf-8"))
     
   def display_nav_directions(self, msg = ""):
     content = self.get_parsed_template("addr_input", {"{{msg}}": ""}) + self.get_parsed_template("nav_directions", {"{{msg}}": msg})
