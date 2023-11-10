@@ -32,7 +32,11 @@ from common.basedir import BASEDIR
 from common.params import Params
 from common.i18n import supported_languages
 params = Params()
-
+use_gmap = params.get_bool('EnableGmap')
+prime_type = params.get_int("PrimeType")
+gmap_key = params.get("GmapKey", encoding='utf8')
+map_pk = params.get("MapboxPublicKey", encoding='utf8')
+map_sk = params.get("MapboxSecretKey", encoding='utf8')
 
 hostName = ""
 serverPort = 8082
@@ -44,15 +48,7 @@ ee = 0.00669342162296594323
 
 
 class OtisServ(BaseHTTPRequestHandler):
-  def __init__ (self):
-    self.use_gmap = params.get_bool('EnableGmap')
-    self.prime_type = params.get_int("PrimeType")
-    self.gmap_key = params.get("GmapKey", encoding='utf8')
-    self.map_pk = params.get("MapboxPublicKey", encoding='utf8')
-    self.map_sk = params.get("MapboxSecretKey", encoding='utf8')
-    
   def do_GET(self):
-
     if self.path == '/logo.png':
       self.get_logo()
       return
@@ -75,11 +71,11 @@ class OtisServ(BaseHTTPRequestHandler):
     if self.get_app_token() is None:
       self.display_page_app_token()
       return
-    if self.use_gmap:
+    if use_gmap:
       if self.get_gmap_key() is None:
         self.display_page_gmap_key()
         return
-    if self.prime_type != 0:
+    if prime_type != 0:
       self.display_prime_directions()
     else :
       self.display_nav_directions() 
@@ -92,14 +88,14 @@ class OtisServ(BaseHTTPRequestHandler):
     self.end_headers()
 
 
-    if self.use_gmap:
+    if use_gmap:
       # gmap token
       if self.get_gmap_key() is None:
         if postvars is None or "gmap_key_val" not in postvars or postvars.get("gmap_key_val")[0] == "":
           self.display_page_gmap_key()
           return
         params.put('GmapKey', postvars.get("gmap_key_val")[0])
-        self.gmap_key = params.get("GmapKey", encoding='utf8')
+        gmap_key = params.get("GmapKey", encoding='utf8')
 
     else:
       # mapbox public key
@@ -112,7 +108,7 @@ class OtisServ(BaseHTTPRequestHandler):
           self.display_page_public_token("Your token was incorrect!")
           return
         params.put('MapboxPublicKey', token)
-        self.map_pk = params.get("MapboxPublicKey", encoding='utf8')
+        map_pk = params.get("MapboxPublicKey", encoding='utf8')
 
     # app key
     if self.get_app_token() is None:
@@ -124,7 +120,7 @@ class OtisServ(BaseHTTPRequestHandler):
         self.display_page_app_token("Your token was incorrect!")
         return
       params.put('MapboxSecretKey', token)
-      self.map_sk = params.get("MapboxSecretKey", encoding='utf8')
+      map_sk = params.get("MapboxSecretKey", encoding='utf8')
 
     # nav confirmed
     if postvars is not None:
@@ -219,19 +215,19 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(bytes(self.get_parsed_template("gmap/index.js", {"{{lat}}": lat, "{{lon}}": lon}), "utf-8"))
 
   def get_gmap_key(self):
-    token = self.gmap_key
+    token = gmap_key
     if token is not None and token != "":
       return token.rstrip('\x00')
     return None
 
   def get_public_token(self):
-    token = self.map_pk
+    token = map_pk
     if token is not None and token != "":
       return token.rstrip('\x00')
     return None
 
   def get_app_token(self):
-    token = self.map_sk
+    token = map_sk
     if token is not None and token != "":
       return token.rstrip('\x00')
     return None
