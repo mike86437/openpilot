@@ -57,13 +57,11 @@ class OtisServ(BaseHTTPRequestHandler):
       self.get_currentstep()
       return
     if self.path == '/set_destination':
+      self.send_response(200)
+      self.send_header('Content-type', 'application/json')
       self.end_headers()
-      # Respond with success
-      response = {"success": True, "saved_next": False}  # Modify "saved_next" based on your logic
-      response_json = json.dumps(response).encode('utf-8')
-      self.wfile.write(response_json)      
-      # Print the response for debugging
-      print("Response:", response_json.decode('utf-8'))
+      response_json = json.dumps({"success": True}).encode('utf-8')
+      self.wfile.write(response_json)
       return      
     if self.path == '/?reset=1':
       params.put("NavDestination", "")
