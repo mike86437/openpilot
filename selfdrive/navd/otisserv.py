@@ -32,11 +32,7 @@ from common.basedir import BASEDIR
 from common.params import Params
 from common.i18n import supported_languages
 params = Params()
-self.use_gmap = params.get_bool('EnableGmap')
-self.prime_type = params.get_int("PrimeType")
-self.gmap_key = params.get("GmapKey", encoding='utf8')
-self.map_pk = params.get("MapboxPublicKey", encoding='utf8')
-self.map_sk = params.get("MapboxSecretKey", encoding='utf8')
+
 
 hostName = ""
 serverPort = 8082
@@ -48,6 +44,13 @@ ee = 0.00669342162296594323
 
 
 class OtisServ(BaseHTTPRequestHandler):
+  def __init__ (self):
+    self.use_gmap = params.get_bool('EnableGmap')
+    self.prime_type = params.get_int("PrimeType")
+    self.gmap_key = params.get("GmapKey", encoding='utf8')
+    self.map_pk = params.get("MapboxPublicKey", encoding='utf8')
+    self.map_sk = params.get("MapboxSecretKey", encoding='utf8')
+    
   def do_GET(self):
 
     if self.path == '/logo.png':
