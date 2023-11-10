@@ -9,7 +9,6 @@
                 <option value="fav2">Favorite 2</option>
                 <option value="fav3">Favorite 3</option>
             </select>
-            <div style="padding: 5px; color: red; font-weight: bold;" align="center">{{msg}}</div>
             <input class="uk-input" type="text" name="addr_val" id="pac-input" placeholder="Search a place">
             <input class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom" type="submit" value="Search">
         </div>
