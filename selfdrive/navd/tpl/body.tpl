@@ -35,12 +35,12 @@
 </head>
 <body style="margin: 0; padding: 0;">
 
-  <!-- Dark Mode Toggle Button -->
-  <button class="uk-button uk-button-default uk-margin-small-right" onclick="toggleDarkMode()">Toggle Dark Mode</button>
 
   <div style="display: grid; place-items: center;">
     {{content}}
   </div>
+  <!-- Dark Mode Toggle Button -->
+  <button class="uk-button uk-button-default uk-margin-small-right" onclick="toggleDarkMode()">Toggle Dark Mode</button>
 
   <script>
     function toggleDarkMode() {
