@@ -123,7 +123,7 @@ class OtisServ(BaseHTTPRequestHandler):
       else :
         self.display_page_addr_input() 
 
-def do_POST(self):
+  def do_POST(self):
     use_amap = params.get_bool('EnableAmap')
     use_gmap = not use_amap and params.get_bool('EnableGmap')
 
