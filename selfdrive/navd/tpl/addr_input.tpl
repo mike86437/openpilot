@@ -16,8 +16,7 @@
     </fieldset>
 </form>
 
-<!-- Include the Google Maps Places API script conditionally -->
-{% if gmap_key %}
+
     <script src="https://maps.googleapis.com/maps/api/js?key={{gmap_key}}&libraries=places&callback=initAutocomplete" async defer></script>
 
     <script>
@@ -51,4 +50,4 @@
             }
         }
     </script>
-{% endif %}
+
