@@ -182,6 +182,11 @@ class OtisServ(BaseHTTPRequestHandler):
           else:
             self.display_page_addr_input("Place Not Found")
             return
+    else:
+      if params.get("NavDestination") is not None:
+        self.display_nav_directions()
+      else :
+        self.display_page_addr_input()
 
   def get_logo(self):
     self.send_response(200)
