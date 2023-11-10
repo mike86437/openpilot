@@ -77,8 +77,10 @@ class OtisServ(BaseHTTPRequestHandler):
         return
     if prime_type != 0:
       self.display_prime_directions()
+    elif params.get("NavDestination") is not None:
+      self.display_nav_directions()
     else :
-      self.display_nav_directions() 
+      self.display_page_addr_input() 
 
   def do_POST(self):
 
@@ -180,8 +182,6 @@ class OtisServ(BaseHTTPRequestHandler):
           else:
             self.display_page_addr_input("Place Not Found")
             return
-    else :
-      self.display_nav_directions()
 
   def get_logo(self):
     self.send_response(200)
