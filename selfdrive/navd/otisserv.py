@@ -44,8 +44,7 @@ ee = 0.00669342162296594323
 
 class OtisServ(BaseHTTPRequestHandler):
   def do_GET(self):
-    use_amap = params.get_bool('EnableAmap')
-    use_gmap = not use_amap and params.get_bool('EnableGmap')
+    use_gmap = params.get_bool('EnableGmap')
 
     if self.path == '/logo.png':
       self.get_logo()
@@ -65,96 +64,41 @@ class OtisServ(BaseHTTPRequestHandler):
       return      
     if self.path == '/?reset=1':
       params.put("NavDestination", "")
-    if use_amap:
-      if self.path == '/style.css':
-        self.send_response(200)
-        self.send_header("Content-type", "text/css")
-        self.end_headers()
-        self.get_amap_css()
+
+    self.send_response(200)
+    self.send_header("Content-type", "text/html")
+    self.end_headers()
+    if self.get_public_token() is None:
+      self.display_page_public_token()
+      return
+    if self.get_app_token() is None:
+      self.display_page_app_token()
+      return
+    if use_gmap:
+      if self.get_gmap_key() is None:
+        self.display_page_gmap_key()
         return
-      elif self.path == '/index.js':
-        self.send_response(200)
-        self.send_header("Content-type", "text/javascript")
-        self.end_headers()
-        self.get_amap_js()
-        return
-      else:
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        if self.get_amap_key() is None or self.get_amap_key_2() is None:
-          self.display_page_amap_key()
-          return
-        if self.get_app_token() is None:
-          self.display_page_app_token()
-          return
-        self.display_page_amap()
-    elif use_gmap:
-      if self.path == '/style.css':
-        self.send_response(200)
-        self.send_header("Content-type", "text/css")
-        self.end_headers()
-        self.get_gmap_css()
-        return
-      elif self.path == '/index.js':
-        self.send_response(200)
-        self.send_header("Content-type", "text/javascript")
-        self.end_headers()
-        self.get_gmap_js()
-        return
-      else:
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        if self.get_gmap_key() is None:
-          self.display_page_gmap_key()
-          return
-        if self.get_app_token() is None:
-          self.display_page_app_token()
-          return
-        self.display_page_gmap()
-    else:
-      self.send_response(200)
-      self.send_header("Content-type", "text/html")
-      self.end_headers()
-      if self.get_public_token() is None:
-        self.display_page_public_token()
-        return
-      if self.get_app_token() is None:
-        self.display_page_app_token()
-        return
-      if params.get_int("PrimeType") != 0:
-        self.display_prime_directions()
-      elif params.get("NavDestination") is not None:
-        self.display_nav_directions()
-      else :
-        self.display_page_addr_input() 
+    if params.get_int("PrimeType") != 0:
+      self.display_prime_directions()
+    elif params.get("NavDestination") is not None:
+      self.display_nav_directions()
+    else :
+      self.display_page_addr_input() 
 
   def do_POST(self):
-    use_amap = params.get_bool('EnableAmap')
-    use_gmap = not use_amap and params.get_bool('EnableGmap')
+    use_gmap = params.get_bool('EnableGmap')
 
     postvars = self.parse_POST()
     self.send_response(200)
     self.send_header("Content-type", "text/html")
     self.end_headers()
 
-    if use_amap:
-      # amap token
-      if self.get_amap_key() is None or self.get_amap_key_2() is None:
-        if postvars is None or \
-                ("amap_key_val" not in postvars or postvars.get("amap_key_val")[0] == "") or \
-                ("amap_key_val_2" not in postvars or postvars.get("amap_key_val_2")[0] == ""):
-          self.display_page_amap_key()
-          return
-        params.put('AppleMapsKey1', postvars.get("amap_key_val")[0])
-        params.put('AppleMapsKey2', postvars.get("amap_key_val_2")[0])
 
-    elif use_gmap:
+    if use_gmap:
       # gmap token
       if self.get_gmap_key() is None:
         if postvars is None or "gmap_key_val" not in postvars or postvars.get("gmap_key_val")[0] == "":
-          self.display_page_gmap_key()
+          self.display_page_addr_input()
           return
         params.put('GmapKey', postvars.get("gmap_key_val")[0])
 
@@ -202,9 +146,6 @@ class OtisServ(BaseHTTPRequestHandler):
         save_type = "recent"
         name = postvars.get("place_name", [""])
 
-        if use_amap:
-          lng, lat = self.gcj02towgs84(lng, lat)
-
         params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
         self.to_json(lat, lng, save_type, name)
 
@@ -244,15 +185,10 @@ class OtisServ(BaseHTTPRequestHandler):
           else:
             self.display_page_addr_input("Place Not Found")
             return
-    if use_amap:
-      self.display_page_amap()
-    elif use_gmap:
-      self.display_page_gmap()
-    else:
-      if params.get("NavDestination") is not None:
-        self.display_nav_directions()
-      else :
-        self.display_page_addr_input()
+    if params.get("NavDestination") is not None:
+      self.display_nav_directions()
+    else :
+      self.display_page_addr_input()
 
   def get_logo(self):
     self.send_response(200)
@@ -287,25 +223,6 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def get_gmap_key(self):
     token = params.get("GmapKey", encoding='utf8')
-    if token is not None and token != "":
-      return token.rstrip('\x00')
-    return None
-
-  def get_amap_css(self):
-    self.wfile.write(bytes(self.get_parsed_template("amap/style.css"), "utf-8"))
-
-  def get_amap_js(self):
-    lon, lat = self.get_last_lon_lat()
-    self.wfile.write(bytes(self.get_parsed_template("amap/index.js", {"{{lat}}": lat, "{{lon}}": lon}), "utf-8"))
-
-  def get_amap_key(self):
-    token = params.get("AppleMapsKey1", encoding='utf8')
-    if token is not None and token != "":
-      return token.rstrip('\x00')
-    return None
-
-  def get_amap_key_2(self):
-    token = params.get("AppleMapsKey2", encoding='utf8')
     if token is not None and token != "":
       return token.rstrip('\x00')
     return None
@@ -347,9 +264,6 @@ class OtisServ(BaseHTTPRequestHandler):
   def display_page_gmap_key(self):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("gmap/key_input")}), "utf-8"))
 
-  def display_page_amap_key(self):
-    self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("amap/key_input")}), "utf-8"))
-
   def display_page_public_token(self, msg = ""):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("public_token_input", {"{{msg}}": msg})}), "utf-8"))
 
@@ -377,9 +291,6 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def display_page_gmap(self):
     self.wfile.write(bytes(self.get_parsed_template("gmap/index.html", {"{{gmap_key}}": self.get_gmap_key(), "{{language}}": self.get_lang()}), "utf-8"))
-
-  def display_page_amap(self):
-    self.wfile.write(bytes(self.get_parsed_template("amap/index.html", {"{{amap_key}}": self.get_amap_key(), "{{amap_key_2}}": self.get_amap_key_2()}), "utf-8"))
 
   def get_parsed_template(self, name, replace = {}):
     f = open('%s/selfdrive/navd/tpl/%s.tpl' % (BASEDIR, name), mode='r', encoding='utf-8')
