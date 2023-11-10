@@ -1,41 +1,53 @@
 <form name="searchForm" method="post">
-    <fieldset class="uk-fieldset">
-        <div class="uk-margin">
-            <select class="uk-select" name="fav_val">
-                <option value="favorites">Select Saved Destinations</option>
-                <option value="home">Home</option>
-                <option value="work">Work</option>
-                <option value="fav1">Favorite 1</option>
-                <option value="fav2">Favorite 2</option>
-                <option value="fav3">Favorite 3</option>
-            </select>
-            <input class="uk-input" type="text" name="addr_val" id="pac-input" placeholder="Search a place">
-            <input class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom" type="submit" value="Search">
-        </div>
-    </fieldset>
+  <fieldset class="uk-fieldset">
+    <div class="uk-margin">
+      <select class="uk-select" name="fav_val">
+        <option value="favorites">Select Saved Destinations</option>
+        <option value="home">Home</option>
+        <option value="work">Work</option>
+        <option value="fav1">Favorite 1</option>
+        <option value="fav2">Favorite 2</option>
+        <option value="fav3">Favorite 3</option>
+      </select>
+      <input class="uk-input" type="text" name="addr_val" id="pac-input" placeholder="Search a place">
+      <input class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom" type="submit" value="Search">
+    </div>
+  </fieldset>
 </form>
 
+<!-- Include the Google Maps Places API script conditionally with JavaScript -->
+<script>
+  // attach gmap_key to variable
+  let gmap = "{{gmap_key}}";
 
-    <script src="https://maps.googleapis.com/maps/api/js?key={{gmap_key}}&libraries=places&callback=initAutocomplete" async defer></script>
+  // Check if gmap_key is defined
+  if (gmap && gmap !== "None") {
+    var script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key={{gmap_key}}&libraries=places&callback=initAutocomplete';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
 
-    <script>
-        let autocomplete;
+    // Define the callback function for place_changed
+    function onPlaceChanged() {
+      var place = autocomplete.getPlace();
 
-        function initAutocomplete() {
-            autocomplete = new google.maps.places.Autocomplete(
-                document.getElementById('pac-input')
-            );
-            autocomplete.addListener('place_changed', onPlaceChanged);
-        }
-
-        function onPlaceChanged() {
-    var place = autocomplete.getPlace();
-
-    // Check if the place has a formatted address
-    if (place.formatted_address) {
+      // Check if the place has a formatted address
+      if (place.formatted_address) {
         // Set the value of the input field to the formatted address
         document.getElementById('pac-input').value = place.formatted_address;
+      }
     }
-}
-    </script>
 
+    // Define the autocomplete variable
+    var autocomplete;
+
+    // Define the initAutocomplete function
+    function initAutocomplete() {
+      autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById('pac-input')
+      );
+      autocomplete.addListener('place_changed', onPlaceChanged);
+    }
+  }
+</script>
