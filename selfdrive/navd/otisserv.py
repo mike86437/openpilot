@@ -123,7 +123,7 @@ class OtisServ(BaseHTTPRequestHandler):
       else :
         self.display_page_addr_input() 
 
-  def do_POST(self):
+def do_POST(self):
     use_amap = params.get_bool('EnableAmap')
     use_gmap = not use_amap and params.get_bool('EnableGmap')
 
@@ -186,15 +186,26 @@ class OtisServ(BaseHTTPRequestHandler):
         params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
         self.to_json(lat, lng, save_type, name)
     if postvars is not None:
-      if "latitude" in postvars and postvars.get("latitude")[0] != "" and "longitude" in postvars and postvars.get("longitude")[0] != "":
-        lat = float(postvars.get("latitude")[0])
-        lng = float(postvars.get("longitude")[0])
+      latitude_value = postvars.get("latitude")
+      longitude_value = postvars.get("longitude")
+
+      if latitude_value is not None and latitude_value != "" and longitude_value is not None and longitude_value != "":
+        lat = float(latitude_value)
+        lng = float(longitude_value)
         save_type = "recent"
-        name = postvars.get("place_name")[0] if postvars.get("place_name") is not None else ""
+        name = postvars.get("place_name", [""])
+
         if use_amap:
           lng, lat = self.gcj02towgs84(lng, lat)
+
         params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
         self.to_json(lat, lng, save_type, name)
+        # Respond with success
+        response = {"success": True, "saved_next": False}  # Modify "saved_next" based on your logic
+        response_json = json.dumps(response).encode('utf-8')
+        self.wfile.write(response_json)      
+        # Print the response for debugging
+        print("Response:", response_json.decode('utf-8'))
       # favorites
       if not use_gmap and "fav_val" in postvars:
         addr = postvars.get("fav_val")[0]
@@ -395,13 +406,26 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def parse_POST(self):
     ctype, pdict = parse_header(self.headers['content-type'])
+
     if ctype == 'application/x-www-form-urlencoded':
       length = int(self.headers['content-length'])
       postvars = parse_qs(
         self.rfile.read(length).decode('utf-8'),
-        keep_blank_values=1)
+        keep_blank_values=1
+      )
+    elif ctype == 'application/json':
+      length = int(self.headers['content-length'])
+      post_data = self.rfile.read(length).decode('utf-8')
+      try:
+        # Parse the JSON data
+        postvars = json.loads(post_data)
+      except json.JSONDecodeError:
+        # Handle JSON decoding error
+        self.send_error(400, 'Invalid JSON data')
+        return None
     else:
       postvars = {}
+
     return postvars
 
   def gcj02towgs84(self, lng, lat):
