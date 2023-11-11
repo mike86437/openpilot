@@ -180,7 +180,7 @@ class OtisServ(BaseHTTPRequestHandler):
     is_json_request = 'application/json' in accept_header.lower() if accept_header else False
 
     # Set the appropriate content type
-    if is_json_request:
+    if self.path == '/set_destination':
       self.send_response(200)
       self.send_header("Content-type", "application/json")
       self.end_headers()
