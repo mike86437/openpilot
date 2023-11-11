@@ -23,8 +23,7 @@
   // Check if gmap_key is defined
   if (gmap && gmap !== "None") {
     var script = document.createElement('script');
-    // Specify the circular location biasing with radius and center
-    script.src = 'https://maps.googleapis.com/maps/api/js?key={{gmap_key}}&libraries=places&callback=initAutocomplete&locationbias=circle:5000@{{lat}},{{lon}}';
+    script.src = 'https://maps.googleapis.com/maps/api/js?key={{gmap_key}}&libraries=places&callback=initAutocomplete';
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
@@ -43,15 +42,23 @@
     // Define the autocomplete variable
     var autocomplete;
 
-    // Define the initAutocomplete function with center/radius biasing
+    // Define the initAutocomplete function with initial bounds
     function initAutocomplete() {
+      var center = new google.maps.LatLng({{lat}}, {{lon}});
+      var bounds = new google.maps.Circle({ center: center, radius: 5000 }).getBounds();
+
       autocomplete = new google.maps.places.Autocomplete(
-        document.getElementById('pac-input')
+        document.getElementById('pac-input'),
+        {
+          bounds: bounds // Set initial bounds here
+        }
       );
+
       autocomplete.addListener('place_changed', onPlaceChanged);
     }
   }
 </script>
+
 
 
 
