@@ -84,9 +84,27 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def do_POST(self):
     postvars = self.parse_POST()
-    self.send_response(200)
-    self.send_header("Content-type", "text/html")
-    self.end_headers()
+
+    # Check the Accept header to determine the response format
+    accept_header = self.headers.get('Accept')
+    is_json_request = 'application/json' in accept_header.lower() if accept_header else False
+
+    # Set the appropriate content type
+    if is_json_request:
+      self.send_response(200)
+      self.send_header("Content-type", "application/json")
+      self.end_headers()
+
+      # Prepare the JSON response
+      response_data = {'success': True}
+
+      # Send the JSON response
+      self.wfile.write(json.dumps(response_data).encode('utf-8'))
+    else:
+      # For non-JSON requests, proceed with your existing code
+      self.send_response(200)
+      self.send_header("Content-type", "text/html")
+      self.end_headers()
 
     if use_gmap:
       # gmap token
