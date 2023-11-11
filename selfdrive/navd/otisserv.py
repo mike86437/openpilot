@@ -60,7 +60,7 @@ class OtisServ(BaseHTTPRequestHandler):
       return
     if self.path == '/?reset=1':
       params.put("NavDestination", "")
-      
+
     self.send_response(200)
     self.send_header("Content-type", "text/html")
     self.end_headers()
@@ -217,7 +217,8 @@ class OtisServ(BaseHTTPRequestHandler):
   def get_gmap_key(self):
     if use_gmap:
       token = gmap_key
-    else token = ""
+    else : 
+      token = ""
     if token is not None and token != "":
       return token.rstrip('\x00')
     return None
