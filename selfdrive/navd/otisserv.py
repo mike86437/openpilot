@@ -84,7 +84,9 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def do_POST(self):
     postvars = self.parse_POST()
-
+    self.send_response(200)
+    self.send_header("Content-type", "text/html")
+    self.end_headers()
     if use_gmap:
       # gmap token
       if self.get_gmap_key() is None:
