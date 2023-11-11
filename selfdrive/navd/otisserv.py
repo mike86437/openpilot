@@ -293,7 +293,6 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
 
   def display_page_nav_confirmation(self, addr, lon, lat):
-    lon, lat = self.get_last_lon_lat()
     content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key(), "{{lat}}": lat, "{{lon}}": lon}) + self.get_parsed_template("nav_confirmation", {"{{token}}": self.get_public_token(), "{{lon}}": lon, "{{lat}}": lat, "{{addr}}": addr})
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
 
