@@ -175,11 +175,8 @@ class OtisServ(BaseHTTPRequestHandler):
           else:
             self.display_page_addr_input("Place Not Found")
             return
-    # Check the Accept header to determine the response format
-    accept_header = self.headers.get('Accept')
-    is_json_request = 'application/json' in accept_header.lower() if accept_header else False
 
-    # Set the appropriate content type
+    # Set destination endpoint
     if self.path == '/set_destination':
       self.send_response(200)
       self.send_header("Content-type", "application/json")
@@ -292,11 +289,11 @@ class OtisServ(BaseHTTPRequestHandler):
     # Send the HTML response to the client
     self.wfile.write(bytes(body_content, "utf-8"))
   def display_nav_directions(self, msg = ""):
-    content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key()}) + self.get_parsed_template("nav_directions", {"{{msg}}": msg})
+    content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key(), "{{lat}}": lat, "{{lon}}": lon}) + self.get_parsed_template("nav_directions", {"{{msg}}": msg})
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
 
   def display_page_nav_confirmation(self, addr, lon, lat):
-    content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key()}) + self.get_parsed_template("nav_confirmation", {"{{token}}": self.get_public_token(), "{{lon}}": lon, "{{lat}}": lat, "{{addr}}": addr})
+    content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key(), "{{lat}}": lat, "{{lon}}": lon}) + self.get_parsed_template("nav_confirmation", {"{{token}}": self.get_public_token(), "{{lon}}": lon, "{{lat}}": lat, "{{addr}}": addr})
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
 
   def display_prime_directions(self, msg = ""):
