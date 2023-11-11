@@ -267,8 +267,9 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("app_token_input", {"{{msg}}": msg})}), "utf-8"))
 
   def display_page_addr_input(self, msg=""):
+    lon, lat = self.get_last_lon_lat()
     # Replace {{gmap_key}} with the actual gmap_key value
-    template_content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key()})
+    template_content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key(), "{{lat}}": lat, "{{lon}}": lon})
     body_content = self.get_parsed_template("body", {"{{content}}": template_content})
     
     # Send the HTML response to the client
