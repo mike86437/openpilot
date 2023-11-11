@@ -45,7 +45,7 @@
     // Define the initAutocomplete function with center/radius biasing
     function initAutocomplete() {
       // Specify the center and radius for location biasing
-      var center = new google.maps.LatLng({{lat}},{{long}});
+      var center = new google.maps.LatLng({{lat}},{{lon}});
       var radius = 5000; // Example radius in meters
 
       var options = {

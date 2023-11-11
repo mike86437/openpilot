@@ -85,27 +85,6 @@ class OtisServ(BaseHTTPRequestHandler):
   def do_POST(self):
     postvars = self.parse_POST()
 
-    # Check the Accept header to determine the response format
-    accept_header = self.headers.get('Accept')
-    is_json_request = 'application/json' in accept_header.lower() if accept_header else False
-
-    # Set the appropriate content type
-    if is_json_request:
-      self.send_response(200)
-      self.send_header("Content-type", "application/json")
-      self.end_headers()
-
-      # Prepare the JSON response
-      response_data = {'success': True}
-
-      # Send the JSON response
-      self.wfile.write(json.dumps(response_data).encode('utf-8'))
-    else:
-      # For non-JSON requests, proceed with your existing code
-      self.send_response(200)
-      self.send_header("Content-type", "text/html")
-      self.end_headers()
-
     if use_gmap:
       # gmap token
       if self.get_gmap_key() is None:
@@ -196,10 +175,30 @@ class OtisServ(BaseHTTPRequestHandler):
           else:
             self.display_page_addr_input("Place Not Found")
             return
-    if params.get("NavDestination") is not None:
-      self.display_nav_directions()
-    else :
-      self.display_page_addr_input()
+    # Check the Accept header to determine the response format
+    accept_header = self.headers.get('Accept')
+    is_json_request = 'application/json' in accept_header.lower() if accept_header else False
+
+    # Set the appropriate content type
+    if is_json_request:
+      self.send_response(200)
+      self.send_header("Content-type", "application/json")
+      self.end_headers()
+
+      # Prepare the JSON response
+      response_data = {'success': True}
+
+      # Send the JSON response
+      self.wfile.write(json.dumps(response_data).encode('utf-8'))
+    else:
+      # For non-JSON requests, proceed with your existing code
+      self.send_response(200)
+      self.send_header("Content-type", "text/html")
+      self.end_headers()
+      if params.get("NavDestination") is not None:
+        self.display_nav_directions()
+      else :
+        self.display_page_addr_input()
 
   def get_logo(self):
     self.send_response(200)
