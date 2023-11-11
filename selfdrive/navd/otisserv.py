@@ -32,6 +32,7 @@ from common.basedir import BASEDIR
 from common.params import Params
 from common.i18n import supported_languages
 params = Params()
+params_memory = Params("/dev/shm/params")
 use_gmap = params.get_bool('EnableGmap')
 prime_type = params.get_int("PrimeType")
 gmap_key = params.get("GmapKey", encoding='utf8')
@@ -49,6 +50,8 @@ ee = 0.00669342162296594323
 
 class OtisServ(BaseHTTPRequestHandler):
   def do_GET(self):
+    if params_memory.get_bool("FrogPilotTogglesUpdated"):
+      use_gmap = params.get_bool('EnableGmap')
     if self.path == '/logo.png':
       self.get_logo()
       return
