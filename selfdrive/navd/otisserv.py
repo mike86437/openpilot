@@ -60,7 +60,7 @@ class OtisServ(BaseHTTPRequestHandler):
       return
     if self.path == '/?reset=1':
       params.put("NavDestination", "")
-
+      
     self.send_response(200)
     self.send_header("Content-type", "text/html")
     self.end_headers()
@@ -83,12 +83,10 @@ class OtisServ(BaseHTTPRequestHandler):
       self.display_page_addr_input() 
 
   def do_POST(self):
-
     postvars = self.parse_POST()
     self.send_response(200)
     self.send_header("Content-type", "text/html")
     self.end_headers()
-
 
     if use_gmap:
       # gmap token
@@ -136,13 +134,11 @@ class OtisServ(BaseHTTPRequestHandler):
     if postvars is not None:
       latitude_value = postvars.get("latitude")
       longitude_value = postvars.get("longitude")
-
       if latitude_value is not None and latitude_value != "" and longitude_value is not None and longitude_value != "":
         lat = float(latitude_value)
         lng = float(longitude_value)
         save_type = "recent"
         name = postvars.get("place_name", [""])
-
         params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
         self.to_json(lat, lng, save_type, name)
 
@@ -219,7 +215,9 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(bytes(self.get_parsed_template("gmap/index.js", {"{{lat}}": lat, "{{lon}}": lon}), "utf-8"))
 
   def get_gmap_key(self):
-    token = gmap_key
+    if use_gmap:
+      token = gmap_key
+    else token = ""
     if token is not None and token != "":
       return token.rstrip('\x00')
     return None
@@ -339,7 +337,6 @@ class OtisServ(BaseHTTPRequestHandler):
         return None
     else:
       postvars = {}
-
     return postvars
 
   def gcj02towgs84(self, lng, lat):
