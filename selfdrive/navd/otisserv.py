@@ -49,8 +49,6 @@ ee = 0.00669342162296594323
 
 class OtisServ(BaseHTTPRequestHandler):
   def do_GET(self):
-    if params_memory.get_bool("FrogPilotTogglesUpdated"):
-      use_gmap = params.get_bool('EnableGmap')
     if self.path == '/logo.png':
       self.get_logo()
       return
