@@ -47,7 +47,6 @@ x_pi = 3.14159265358979324 * 3000.0 / 180.0
 a = 6378245.0
 ee = 0.00669342162296594323
 
-
 class OtisServ(BaseHTTPRequestHandler):
   def do_GET(self):
     if params_memory.get_bool("FrogPilotTogglesUpdated"):
@@ -87,19 +86,14 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def do_POST(self):
     postvars = self.parse_POST()
-    # Set destination endpoint
+    # set_destination endpoint
     if self.path == '/set_destination':
       self.send_response(200)
       self.send_header("Content-type", "application/json")
       self.end_headers()
-
-      # Prepare the JSON response
       response_data = {'success': True}
-
-      # Send the JSON response
       self.wfile.write(json.dumps(response_data).encode('utf-8'))
     else:
-      # For non-JSON requests, proceed with your existing code
       self.send_response(200)
       self.send_header("Content-type", "text/html")
       self.end_headers()
@@ -284,12 +278,10 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def display_page_addr_input(self, msg=""):
     lon, lat = self.get_last_lon_lat()
-    # Replace {{gmap_key}} with the actual gmap_key value
     template_content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key(), "{{lat}}": lat, "{{lon}}": lon})
     body_content = self.get_parsed_template("body", {"{{content}}": template_content})
-    
-    # Send the HTML response to the client
     self.wfile.write(bytes(body_content, "utf-8"))
+
   def display_nav_directions(self, msg = ""):
     lon, lat = self.get_last_lon_lat()
     content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key(), "{{lat}}": lat, "{{lon}}": lon}) + self.get_parsed_template("nav_directions", {"{{msg}}": msg})
@@ -348,10 +340,8 @@ class OtisServ(BaseHTTPRequestHandler):
       length = int(self.headers['content-length'])
       post_data = self.rfile.read(length).decode('utf-8')
       try:
-        # Parse the JSON data
         postvars = json.loads(post_data)
       except json.JSONDecodeError:
-        # Handle JSON decoding error
         self.send_error(400, 'Invalid JSON data')
         return None
     else:
