@@ -451,6 +451,20 @@ AnnotatedCameraWidget::AnnotatedCameraWidget(VisionStreamType type, QWidget* par
 
   // FrogPilot buttons
 
+  // Neokii screen recorder
+  QSpacerItem *spacer = new QSpacerItem(50, -250, QSizePolicy::Minimum, QSizePolicy::Fixed);
+  main_layout->addItem(spacer);
+  recorder_btn = new ScreenRecorder(this);
+  main_layout->addWidget(recorder_btn, 0, Qt::AlignTop | Qt::AlignRight);
+
+  QTimer *record_timer = new QTimer(this);
+  connect(record_timer, &QTimer::timeout, this, [this]() {
+    if (this->recorder_btn) {
+      this->recorder_btn->update_screen();
+    }
+  });
+  record_timer->start(1000 / UI_FREQ);
+
   // FrogPilot variable checks
   if (params.getBool("HideSpeed")) {
     speedHidden = true;
@@ -1055,8 +1069,12 @@ void AnnotatedCameraWidget::drawLead(QPainter &painter, const cereal::RadarState
 }
 
 void AnnotatedCameraWidget::paintGL() {
+}
+
+void AnnotatedCameraWidget::paintEvent(QPaintEvent *event) {
   UIState *s = uiState();
   SubMaster &sm = *(s->sm);
+  QPainter painter(this);
   const double start_draw_t = millis_since_boot();
   const cereal::ModelDataV2::Reader &model = sm["modelV2"].getModelV2();
   const cereal::RadarState::Reader &radar_state = sm["radarState"].getRadarState();
@@ -1101,11 +1119,12 @@ void AnnotatedCameraWidget::paintGL() {
     } else {
       CameraWidget::updateCalibration(DEFAULT_CALIBRATION);
     }
+    painter.beginNativePainting();
     CameraWidget::setFrameId(model.getFrameId());
     CameraWidget::paintGL();
+    painter.endNativePainting();
   }
 
-  QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setPen(Qt::NoPen);
 
