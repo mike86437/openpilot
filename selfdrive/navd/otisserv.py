@@ -52,16 +52,18 @@ class OtisServ(BaseHTTPRequestHandler):
     if self.path == '/logo.png':
       self.get_logo()
       return
-    if self.path == '/navdirections.json':
+    elif self.path == '/navdirections.json':
       self.get_navdirections()
       return
-    if self.path == '/CurrentStep.json':
+    elif self.path == '/CurrentStep.json':
       self.get_currentstep()
       return
-    if self.path == '/?reset=1':
+    elif self.path == '/?reset=1':
       params.put("NavDestination", "")
-    if self.path == '/locations':
+      return
+    elif self.path == '/locations':
       self.get_locations()
+      return
     else:
       self.send_response(200)
       self.send_header("Content-type", "text/html")
@@ -77,12 +79,13 @@ class OtisServ(BaseHTTPRequestHandler):
       if self.get_gmap_key() is None:
         self.display_page_gmap_key()
         return
-    if prime_type != 0:
-      self.display_prime_directions()
-    elif params.get("NavDestination") is not None:
-      self.display_nav_directions()
-    else :
-      self.display_page_addr_input() 
+    if self.path != '/locations':
+      if prime_type != 0:
+        self.display_prime_directions()
+      elif params.get("NavDestination") is not None:
+        self.display_nav_directions()
+      else :
+        self.display_page_addr_input() 
 
   def do_POST(self):
     postvars = self.parse_POST()
