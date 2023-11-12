@@ -77,13 +77,12 @@ class OtisServ(BaseHTTPRequestHandler):
       if self.get_gmap_key() is None:
         self.display_page_gmap_key()
         return
-    if self.path != '/locations':
-      if prime_type != 0:
-        self.display_prime_directions()
-      elif params.get("NavDestination") is not None:
-        self.display_nav_directions()
-      else :
-        self.display_page_addr_input() 
+    if prime_type != 0:
+      self.display_prime_directions()
+    elif params.get("NavDestination") is not None:
+      self.display_nav_directions()
+    else :
+      self.display_page_addr_input() 
 
   def do_POST(self):
     postvars = self.parse_POST()
