@@ -60,10 +60,12 @@ class OtisServ(BaseHTTPRequestHandler):
       return
     if self.path == '/?reset=1':
       params.put("NavDestination", "")
-
-    self.send_response(200)
-    self.send_header("Content-type", "text/html")
-    self.end_headers()
+    if self.path == '/locations':
+      self.get_locations()
+    else:
+      self.send_response(200)
+      self.send_header("Content-type", "text/html")
+      self.end_headers()
 
     if self.get_public_token() is None:
       self.display_page_public_token()
@@ -75,12 +77,13 @@ class OtisServ(BaseHTTPRequestHandler):
       if self.get_gmap_key() is None:
         self.display_page_gmap_key()
         return
-    if prime_type != 0:
-      self.display_prime_directions()
-    elif params.get("NavDestination") is not None:
-      self.display_nav_directions()
-    else :
-      self.display_page_addr_input() 
+    if self.path != '/locations':
+      if prime_type != 0:
+        self.display_prime_directions()
+      elif params.get("NavDestination") is not None:
+        self.display_nav_directions()
+      else :
+        self.display_page_addr_input() 
 
   def do_POST(self):
     postvars = self.parse_POST()
@@ -214,6 +217,14 @@ class OtisServ(BaseHTTPRequestHandler):
     f = open("%s/selfdrive/manager/CurrentStep.json" % BASEDIR, "rb")
     self.wfile.write(f.read())
     f.close()
+
+  def get_locations(self):
+    self.send_response(200)
+    self.send_header('Content-type','application/json')
+    self.end_headers()
+    val = params.get("ApiCache_NavDestinations", encoding='utf-8')
+    if val is not None:
+      self.wfile.write(val.encode('utf-8'))
 
   def get_gmap_css(self):
     self.wfile.write(bytes(self.get_parsed_template("gmap/style.css"), "utf-8"))
