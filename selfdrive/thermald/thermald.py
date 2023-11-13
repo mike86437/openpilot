@@ -139,6 +139,7 @@ def hw_state_thread(end_event, hw_queue):
 
         hw_state = HardwareState(
           network_type=network_type,
+          network_info=HARDWARE.get_network_info(),
           network_strength=HARDWARE.get_network_strength(network_type),
           network_stats={'wwanTx': tx, 'wwanRx': rx},
           network_metered=HARDWARE.get_network_metered(network_type),
