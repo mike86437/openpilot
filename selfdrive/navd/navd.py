@@ -70,7 +70,7 @@ class RouteEngine:
     self.stop_signal = []
     self.nav_condition = False
     self.noo_condition = False
-
+    self.stopped_idx = 0
     self.update_frogpilot_params()
 
   def update(self):
@@ -173,6 +173,37 @@ class RouteEngine:
       resp.raise_for_status()
 
       r = resp.json()
+      r1 = resp.json()
+      # Function to remove specified keys recursively unnessary for display
+      def remove_keys(obj, keys_to_remove):
+        if isinstance(obj, list):
+          return [remove_keys(item, keys_to_remove) for item in obj]
+        elif isinstance(obj, dict):
+          return {key: remove_keys(value, keys_to_remove) for key, value in obj.items() if key not in keys_to_remove}
+        else:
+          return obj
+      keys_to_remove = ['geometry', 'annotation', 'incidents', 'intersections', 'components', 'sub', 'waypoints']
+      self.r2 = remove_keys(r1, keys_to_remove)
+      self.r3 = {}
+      # Add items for display under "routes"
+      if 'routes' in self.r2 and len(self.r2['routes']) > 0:
+        first_route = self.r2['routes'][0]
+        nav_destination_json = self.params.get('NavDestination')
+        try:
+          nav_destination_data = json.loads(nav_destination_json)
+          place_name = nav_destination_data.get('place_name', 'Default Place Name')
+          first_route['Destination'] = place_name
+          first_route['Metric'] = self.params.get_bool("IsMetric")
+          self.r3['CurrentStep'] = 0
+          self.r3['uuid'] = self.r2['uuid']
+        except json.JSONDecodeError as e:
+          print(f"Error decoding JSON: {e}")
+	  # Save slim json as file
+      with open('navdirections.json', 'w') as json_file:
+        json.dump(self.r2, json_file, indent=4)
+      with open('CurrentStep.json', 'w') as json_file:
+        json.dump(self.r3, json_file, indent=4)
+		
       if len(r['routes']):
         self.route = r['routes'][0]['legs'][0]['steps']
         self.route_geometry = []
@@ -181,6 +212,7 @@ class RouteEngine:
         if self.conditional_navigation:
           self.stop_signal = []
           self.stop_coord = []
+          self.stopped_idx = 0
           for step in self.route:
             for intersection in step["intersections"]:
               if "stop_sign" in intersection or "traffic_signal" in intersection:
@@ -330,7 +362,11 @@ class RouteEngine:
         # Calculate the distance to the stopSign or trafficLight
         distance_to_condition = self.last_position.distance_to(self.stop_coord[index])
         if distance_to_condition < max((seconds_to_stop * v_ego), 25): 
-          self.nav_condition = True
+          if abs(closest_idx - self.stopped_idx) > 2:
+            self.nav_condition = True
+          if v_ego <= 3:
+            self.stopped_idx = closest_idx
+            self.nav_condition = False
         else:
           self.nav_condition = False  # Not approaching any stopSign or trafficLight
       else:
@@ -358,6 +394,12 @@ class RouteEngine:
       if self.step_idx + 1 < len(self.route):
         self.step_idx += 1
         self.reset_recompute_limits()
+        # Update the 'CurrentStep' value in the JSON
+        if 'routes' in self.r2 and len(self.r2['routes']) > 0:
+          self.r3['CurrentStep'] = self.step_idx
+        # Write the modified JSON data back to the file
+        with open('CurrentStep.json', 'w') as json_file:
+          json.dump(self.r3, json_file, indent=4)
       else:
         cloudlog.warning("Destination reached")
 
