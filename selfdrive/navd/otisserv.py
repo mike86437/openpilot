@@ -30,6 +30,7 @@ import requests
 import math
 from common.basedir import BASEDIR
 from common.params import Params
+from common.realtime import set_core_affinity
 from common.i18n import supported_languages
 params = Params()
 params_memory = Params("/dev/shm/params")
