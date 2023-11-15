@@ -190,9 +190,6 @@ def main() -> None:
 
   manager_init()
 
-  # Remove the prebuilt file to prevent boot failures
-  if os.path.exists("/data/openpilot/prebuilt"):
-    os.remove("/data/openpilot/prebuilt")
 
   subprocess.run(["python3", "/data/openpilot/selfdrive/modeld/model_switcher.py"])
 
