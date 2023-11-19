@@ -165,16 +165,17 @@ class LongitudinalPlanner:
 
     carcontrol, carstate, modeldata, radarstate = sm['carControl'], sm['carState'], sm['modelV2'], sm['radarState']
     enabled = sm['controlsState'].enabled
+    have_lead = ConditionalExperimentalMode.detect_lead(radarstate)
 
     # Conditional Experimental Mode
-    if self.conditional_experimental_mode and sm['controlsState'].enabled:
+    if self.conditional_experimental_mode and enabled:
       ConditionalExperimentalMode.update(carstate, modeldata, radarstate, v_ego, v_lead)
 
     self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
     x, v, a, j = self.parse_model(sm['modelV2'], self.v_model_error)
-    self.mpc.update(sm['radarState'], v_cruise, x, v, a, j, self.aggressive_acceleration, 
+    self.mpc.update(sm['radarState'], v_cruise, x, v, a, j, have_lead, self.aggressive_acceleration, 
                     self.custom_personalities, self.aggressive_follow, self.standard_follow, self.relaxed_follow, personality=self.personality)
 
     self.x_desired_trajectory_full = np.interp(ModelConstants.T_IDXS, T_IDXS_MPC, self.mpc.x_solution)
@@ -218,6 +219,12 @@ class LongitudinalPlanner:
 
     # FrogPilot longitudinalPlan variables
     longitudinalPlan.conditionalExperimental = ConditionalExperimentalMode.experimental_mode
+    # LongitudinalPlan variables for onroad driving insights
+    longitudinalPlan.safeObstacleDistance = self.mpc.safe_obstacle_distance
+    longitudinalPlan.stoppedEquivalenceFactor = self.mpc.stopped_equivalence_factor
+    longitudinalPlan.desiredFollowDistance = self.mpc.safe_obstacle_distance - self.mpc.stopped_equivalence_factor
+    longitudinalPlan.safeObstacleDistanceStock = self.mpc.safe_obstacle_distance_stock
+    longitudinalPlan.stoppedEquivalenceFactorStock = self.mpc.stopped_equivalence_factor_stock
 
     pm.send('longitudinalPlan', plan_send)
     
