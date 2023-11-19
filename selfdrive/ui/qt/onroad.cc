@@ -468,6 +468,7 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
   laneWidthLeft = scene.lane_width_left;
   laneWidthRight = scene.lane_width_right;
   leadInfo = scene.lead_info;
+  mapOpen = scene.map_open;
   obstacleDistance = scene.obstacle_distance;
   obstacleDistanceStock = scene.obstacle_distance_stock;
   stoppedEquivalence = scene.stopped_equivalence;
@@ -1072,7 +1073,7 @@ void AnnotatedCameraWidget::drawLeadInfo(QPainter &p) {
 
   // Constants for units and conversions
   QString unit_a = " m/s²";
-  QString unit_d = "meters";
+  QString unit_d = mapOpen ? "m" : "meters";
   QString unit_s = "kmh";
   float distanceConversion = 1.0f;
   float speedConversion = 3.6f;
@@ -1085,7 +1086,7 @@ void AnnotatedCameraWidget::drawLeadInfo(QPainter &p) {
   if (!is_metric) {
     // US imperial conversion
     unit_a = " ft/s²";
-    unit_d = "feet";
+    unit_d = mapOpen ? "ft" : "feet";
     unit_s = "mph";
     distanceConversion = toFeet;
     speedConversion = toMph;
@@ -1113,13 +1114,13 @@ void AnnotatedCameraWidget::drawLeadInfo(QPainter &p) {
     .arg(currentAcceleration * speedConversion, 0, 'f', 2)
     .arg(unit_a);
 
-  const QString maxAccSuffix = QString(" - Max: %1%2")
+  const QString maxAccSuffix = mapOpen ? "" : QString(" - Max: %1%2")
     .arg(maxAcceleration * speedConversion, 0, 'f', 2)
     .arg(unit_a);
 
-  const QString obstacleText = createText("  |  Obstacle Factor: ", obstacleDistance);
-  const QString stopText = createText("  -  Stop Factor: ", stoppedEquivalence);
-  const QString followText = " = " + createText("Follow Distance: ", desiredFollow);
+  const QString obstacleText = createText(mapOpen ? " | Obstacle: " : "  |  Obstacle Factor: ", obstacleDistance);
+  const QString stopText = createText(mapOpen ? " - Stop: " : "  -  Stop Factor: ", stoppedEquivalence);
+  const QString followText = " = " + createText(mapOpen ? "Follow: " : "Follow Distance: ", desiredFollow);
 
   // Check if the longitudinal toggles have an impact on the driving logics
   const auto createDiffText = [&](const double data, const double stockData) {
@@ -1186,20 +1187,20 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
     {2, "Experimental Mode manually activated"},
     {3, "Conditional Experimental overridden"},
     {4, "Experimental Mode manually activated"},
-    {5, "Experimental Mode activated for navigation" + (QString(" instructions input"))},
-    {6, "Experimental Mode activated due to" + (QString(" no speed limit set"))},
-    {7, "Experimental Mode activated due to" + (" speed being less than " + QString::number(conditionalSpeedLead) + (is_metric ? " kph" : " mph"))},
-    {8, "Experimental Mode activated due to" + (" speed being less than " + QString::number(conditionalSpeed) + (is_metric ? " kph" : " mph"))},
+    {5, "Experimental Mode activated for navigation" + (mapOpen ? "" : QString(" instructions input"))},
+    {6, "Experimental Mode activated due to" + (mapOpen ? "SLC" : QString(" no speed limit set"))},
+    {7, "Experimental Mode activated due to" + (mapOpen ? " speed" : " speed being less than " + QString::number(conditionalSpeedLead) + (is_metric ? " kph" : " mph"))},
+    {8, "Experimental Mode activated due to" + (mapOpen ? " speed" : " speed being less than " + QString::number(conditionalSpeed) + (is_metric ? " kph" : " mph"))},
     {9, "Experimental Mode activated for slower lead"},
-    {10, "Experimental Mode activated for turn" + (QString(" / lane change"))},
-    {11, "Experimental Mode activated for stop" + (QString(" sign / stop light"))},
+    {10, "Experimental Mode activated for turn" + (mapOpen ? "" : QString(" / lane change"))},
+    {11, "Experimental Mode activated for stop" + (mapOpen ? "" : QString(" sign / stop light"))},
     {12, "Experimental Mode activated for curve"}
   };
 
   // Display the appropriate status
   QString newStatus;
   if (alwaysOnLateral) {
-    newStatus = QString("Always On Lateral active") + (". Press the \"Cruise Control\" button to disable");
+    newStatus = QString("Always On Lateral active") + (mapOpen ? "" : ". Press the \"Cruise Control\" button to disable");
   } else if (conditionalExperimental) {
     newStatus = conditionalStatusMap.contains(conditionalStatus) && status != STATUS_DISENGAGED ? conditionalStatusMap[conditionalStatus] : conditionalStatusMap[0];
   }
