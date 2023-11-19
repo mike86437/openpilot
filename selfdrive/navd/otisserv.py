@@ -33,11 +33,7 @@ from common.params import Params
 from common.i18n import supported_languages
 params = Params()
 params_memory = Params("/dev/shm/params")
-use_gmap = params.get_bool('EnableGmap')
 prime_type = params.get_int("PrimeType")
-gmap_key = params.get("GmapKey", encoding='utf8')
-map_pk = params.get("MapboxPublicKey", encoding='utf8')
-map_sk = params.get("MapboxSecretKey", encoding='utf8')
 
 hostName = ""
 serverPort = 8082
@@ -50,6 +46,7 @@ ee = 0.00669342162296594323
 
 class OtisServ(BaseHTTPRequestHandler):
   def do_GET(self):
+    use_gmap = params.get_bool('EnableGmap')
     if self.path == '/logo.png':
       self.get_logo()
       return
@@ -108,7 +105,6 @@ class OtisServ(BaseHTTPRequestHandler):
           self.display_page_gmap_key()
           return
         params.put('GmapKey', postvars.get("gmap_key_val")[0])
-        gmap_key = params.get("GmapKey", encoding='utf8')
 
     else:
       # mapbox public key
@@ -121,7 +117,6 @@ class OtisServ(BaseHTTPRequestHandler):
           self.display_page_public_token("Your token was incorrect!")
           return
         params.put('MapboxPublicKey', token)
-        map_pk = params.get("MapboxPublicKey", encoding='utf8')
 
     # app key
     if self.get_app_token() is None:
@@ -133,7 +128,6 @@ class OtisServ(BaseHTTPRequestHandler):
         self.display_page_app_token("Your token was incorrect!")
         return
       params.put('MapboxSecretKey', token)
-      map_sk = params.get("MapboxSecretKey", encoding='utf8')
 
     # nav confirmed
     if postvars is not None:
@@ -237,7 +231,7 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def get_gmap_key(self):
     if use_gmap:
-      token = gmap_key
+      token = params.get("GmapKey", encoding='utf8')
     else : 
       token = ""
     if token is not None and token != "":
@@ -245,13 +239,13 @@ class OtisServ(BaseHTTPRequestHandler):
     return None
 
   def get_public_token(self):
-    token = map_pk
+    token = params.get("MapboxPublicKey", encoding='utf8')
     if token is not None and token != "":
       return token.rstrip('\x00')
     return None
 
   def get_app_token(self):
-    token = map_sk
+    token = params.get("MapboxSecretKey", encoding='utf8')
     if token is not None and token != "":
       return token.rstrip('\x00')
     return None
