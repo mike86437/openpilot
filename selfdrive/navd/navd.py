@@ -70,7 +70,7 @@ class RouteEngine:
     self.stop_signal = []
     self.nav_condition = False
     self.noo_condition = False
-
+    self.stopped_idx = 0
     self.update_frogpilot_params()
 
   def update(self):
@@ -212,6 +212,7 @@ class RouteEngine:
         if self.conditional_navigation:
           self.stop_signal = []
           self.stop_coord = []
+          self.stopped_idx = 0
           for step in self.route:
             for intersection in step["intersections"]:
               if "stop_sign" in intersection or "traffic_signal" in intersection:
@@ -361,7 +362,11 @@ class RouteEngine:
         # Calculate the distance to the stopSign or trafficLight
         distance_to_condition = self.last_position.distance_to(self.stop_coord[index])
         if distance_to_condition < max((seconds_to_stop * v_ego), 25): 
-          self.nav_condition = True
+          if abs(closest_idx - self.stopped_idx) > 2:
+            self.nav_condition = True
+          if v_ego <= 3:
+            self.stopped_idx = closest_idx
+            self.nav_condition = False
         else:
           self.nav_condition = False  # Not approaching any stopSign or trafficLight
       else:
