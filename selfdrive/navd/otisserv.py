@@ -98,25 +98,17 @@ class OtisServ(BaseHTTPRequestHandler):
       self.send_response(200)
       self.send_header("Content-type", "text/html")
       self.end_headers()
-    if use_gmap:
-      # gmap token
-      if self.get_gmap_key() is None:
-        if postvars is None or "gmap_key_val" not in postvars or postvars.get("gmap_key_val")[0] == "":
-          self.display_page_gmap_key()
-          return
-        params.put('GmapKey', postvars.get("gmap_key_val")[0])
 
-    else:
-      # mapbox public key
-      if self.get_public_token() is None:
-        if postvars is None or "pk_token_val" not in postvars or postvars.get("pk_token_val")[0] == "":
-          self.display_page_public_token()
-          return
-        token = postvars.get("pk_token_val")[0]
-        if "pk." not in token:
-          self.display_page_public_token("Your token was incorrect!")
-          return
-        params.put('MapboxPublicKey', token)
+    # mapbox public key
+    if self.get_public_token() is None:
+      if postvars is None or "pk_token_val" not in postvars or postvars.get("pk_token_val")[0] == "":
+        self.display_page_public_token()
+        return
+      token = postvars.get("pk_token_val")[0]
+      if "pk." not in token:
+        self.display_page_public_token("Your token was incorrect!")
+        return
+      params.put('MapboxPublicKey', token)
 
     # app key
     if self.get_app_token() is None:
@@ -128,6 +120,14 @@ class OtisServ(BaseHTTPRequestHandler):
         self.display_page_app_token("Your token was incorrect!")
         return
       params.put('MapboxSecretKey', token)
+
+    # gmap token
+    if use_gmap:
+      if self.get_gmap_key() is None:
+        if postvars is None or "gmap_key_val" not in postvars or postvars.get("gmap_key_val")[0] == "":
+          self.display_page_gmap_key()
+          return
+        params.put('GmapKey', postvars.get("gmap_key_val")[0])
 
     # nav confirmed
     if postvars is not None:
