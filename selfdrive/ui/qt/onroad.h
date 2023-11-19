@@ -115,6 +115,7 @@ private:
   const UIScene &scene;
   bool alwaysOnLateral;
   bool experimentalMode;
+  int cameraView;
 
 protected:
   void paintGL() override;
