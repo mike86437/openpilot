@@ -34,7 +34,7 @@ from common.i18n import supported_languages
 params = Params()
 params_memory = Params("/dev/shm/params")
 prime_type = params.get_int("PrimeType")
-
+use_gmap = params.get_bool('EnableGmap')
 hostName = ""
 serverPort = 8082
 
