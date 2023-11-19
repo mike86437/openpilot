@@ -8,9 +8,57 @@
                 <option value="fav1">Favorite 1</option>
                 <option value="fav2">Favorite 2</option>
                 <option value="fav3">Favorite 3</option>
-            <div style="padding: 5px; color: red; font-weight: bold;" align="center">{{msg}}</div>
-<input class="uk-input" type="text" name="addr_val" placeholder="Search a place">
+            </select>
+<input class="uk-input" type="text" name="addr_val" id="pac-input" placeholder="Search a place">
             <input class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom" type="submit" value="Search">
         </div>
     </fieldset>
 </form>
+
+<!-- Include the Google Maps Places API script conditionally with JavaScript -->
+<script>
+  // attach gmap_key to variable
+  let gmap = "{{gmap_key}}";
+
+  // Check if gmap_key is defined
+  if (gmap && gmap !== "None") {
+    var script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key={{gmap_key}}&libraries=places&callback=initAutocomplete';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+
+    // Define the callback function for place_changed
+    function onPlaceChanged() {
+      var place = autocomplete.getPlace();
+
+      // Check if the place has a formatted address
+      if (place.formatted_address) {
+        // Set the value of the input field to the formatted address
+        document.getElementById('pac-input').value = place.formatted_address;
+      }
+    }
+
+    // Define the autocomplete variable
+    var autocomplete;
+
+    // Define the initAutocomplete function with initial bounds
+    function initAutocomplete() {
+      var center = new google.maps.LatLng({{lat}}, {{lon}});
+      var bounds = new google.maps.Circle({ center: center, radius: 5000 }).getBounds();
+
+      autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById('pac-input'),
+        {
+          bounds: bounds // Set initial bounds here
+        }
+      );
+
+      autocomplete.addListener('place_changed', onPlaceChanged);
+    }
+  }
+</script>
+
+
+
+
