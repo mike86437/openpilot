@@ -142,12 +142,20 @@ class OtisServ(BaseHTTPRequestHandler):
       latitude_value = postvars.get("latitude")
       longitude_value = postvars.get("longitude")
       if latitude_value is not None and latitude_value != "" and longitude_value is not None and longitude_value != "":
-        lat = float(latitude_value)
-        lng = float(longitude_value)
+        lat = float(postvars.get("latitude_value"))
+        lng = float(postvars.get("longitude_value"))
         save_type = "recent"
-        name = postvars.get("place_name", [""])
-        params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
-        self.to_json(lat, lng, save_type, name)
+        name = postvars.get("place_name", "")
+        details = postvars.get("place_details", "")
+
+        # Combine place_name and place_details if place_name is not None
+        if name:
+          name_and_details = f"{name}, {details}" if details else name
+        else:
+          name_and_details = details
+
+    params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name_and_details))
+    self.to_json(lat, lng, save_type, name_and_details)
       # favorites
       if "fav_val" in postvars:
         addr = postvars.get("fav_val")[0]
