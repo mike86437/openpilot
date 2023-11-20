@@ -147,6 +147,7 @@ class OtisServ(BaseHTTPRequestHandler):
         save_type = "recent"
         name = postvars.get("place_name", "")
         details = postvars.get("place_details", "")
+        print(postvars)
         print(name)
         print(details)
         # Combine place_name and place_details if place_name is not None
@@ -154,6 +155,7 @@ class OtisServ(BaseHTTPRequestHandler):
           name_and_details = f"{name}, {details}" if details else name
         else:
           name_and_details = details
+        print(name_and_details)
         params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name_and_details))
         self.to_json(lat, lng, save_type, name_and_details)
       # favorites
