@@ -142,8 +142,8 @@ class OtisServ(BaseHTTPRequestHandler):
       latitude_value = postvars.get("latitude")
       longitude_value = postvars.get("longitude")
       if latitude_value is not None and latitude_value != "" and longitude_value is not None and longitude_value != "":
-        lat = float(latitude_value))
-        lng = float(longitude_value))
+        lat = float(latitude_value)
+        lng = float(longitude_value)
         save_type = "recent"
         name = postvars.get("place_name", "")
         details = postvars.get("place_details", "")
