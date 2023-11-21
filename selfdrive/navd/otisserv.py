@@ -156,8 +156,8 @@ class OtisServ(BaseHTTPRequestHandler):
         else:
           name_and_details = details
         print(name_and_details)
-        params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name_and_details))
-        self.to_json(lat, lng, save_type, name_and_details)
+        # params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name_and_details))
+        # self.to_json(lat, lng, save_type, name_and_details)
       # favorites
       if "fav_val" in postvars:
         addr = postvars.get("fav_val")[0]
