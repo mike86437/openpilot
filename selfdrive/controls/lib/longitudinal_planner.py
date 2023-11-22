@@ -233,6 +233,9 @@ class LongitudinalPlanner:
         self.v_slc_target = self.overridden_speed
     else:
       self.v_slc_target = 159
+    print("SLC " self.v_slc_target)
+    print("VLC " self.v_target)
+    print("MAX " v_cruise)
 
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint and v_ego > 5:
