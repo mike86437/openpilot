@@ -228,9 +228,9 @@ class LongitudinalPlanner:
       if not self.override_slc:
         SpeedLimitController.update_current_max_velocity(carstate.cruiseState.speedLimit, v_cruise)
         if 0 < desired_speed_limit < v_cruise:
-          self.v_slc_target = round(desired_speed_limit)
+          self.overridden_speed = round(desired_speed_limit)
       else:
-        self.v_slc_target = overridden_speed
+        self.v_slc_target = self.overridden_speed
 
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint and v_ego > 5:
