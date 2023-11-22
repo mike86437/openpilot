@@ -251,17 +251,6 @@ void MapWindow::updateState(const UIState &s) {
     interaction_counter--;
   }
 
-  if (loaded_once && (sm.rcv_frame("uiPlan") != model_rcv_frame)) {
-        m = sm["uiPlan"].getUiPlan().getPosition(); // XYZTData in device frame
-        auto model_path = model_to_collection(locationd_location.getCalibratedOrientationECEF(), locationd_location.getPositionECEF(), m);
-        QMapbox::Feature model_path_feature(QMapbox::Feature::LineStringType, model_path, {}, {});
-        QVariantMap modelV2Path;
-        modelV2Path["type"] =  "geojson";
-        modelV2Path["data"] = QVariant::fromValue<QMapbox::Feature>(model_path_feature);
-        m_map->updateSource("modelPathSource", modelV2Path);
-        model_rcv_frame = sm.rcv_frame("uiPlan");
- }
-
   if (sm.updated("navInstruction")) {
     // an invalid navInstruction packet with a nav destination is only possible if:
     // - API exception/no internet
