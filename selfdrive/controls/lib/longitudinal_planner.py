@@ -221,7 +221,7 @@ class LongitudinalPlanner:
       if carstate.gasPressed:
         self.overridden_speed = np.clip(v_ego, desired_speed_limit, v_cruise)
       else:
-        self.overridden_speed = v_cruise
+        self.overridden_speed = 159
       self.overridden_speed *= not carstate.brakePressed
       
       # Use the speed limit if its not being overridden
@@ -233,9 +233,14 @@ class LongitudinalPlanner:
         self.v_slc_target = self.overridden_speed
     else:
       self.v_slc_target = 159
-    print("SLC ", self.v_slc_target)
-    print("VLC ", self.v_target)
-    print("MAX ", v_cruise)
+    testvar += 1
+    if testvar % 25 == 0 :
+      print("Lim ", round(desired_speed_limit))
+      print("Ovr ", self.overridden_speed)
+      print("SLC ", self.v_slc_target)
+      print("VLC ", self.v_target)
+      print("MAX ", v_cruise)
+      print("SET ", v_cruise1)
 
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint and v_ego > 5:
@@ -264,13 +269,13 @@ class LongitudinalPlanner:
       self.v_target = 159
     
     # Set v_cruise to the desired speed
-    v_cruise = min(v_cruise, self.v_target, self.v_slc_target)
+    v_cruise1 = min(v_cruise, self.v_target, self.v_slc_target)
 
     self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
     x, v, a, j = self.parse_model(sm['modelV2'], self.v_model_error)
-    self.mpc.update(sm['radarState'], v_cruise, x, v, a, j, have_lead, self.aggressive_acceleration, self.increased_stopping_distance, self.smoother_braking,
+    self.mpc.update(sm['radarState'], v_cruise1, x, v, a, j, have_lead, self.aggressive_acceleration, self.increased_stopping_distance, self.smoother_braking,
                     self.custom_personalities, self.aggressive_follow, self.standard_follow, self.relaxed_follow, personality=self.personality)
 
     self.x_desired_trajectory_full = np.interp(ModelConstants.T_IDXS, T_IDXS_MPC, self.mpc.x_solution)
