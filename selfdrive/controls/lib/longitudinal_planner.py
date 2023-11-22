@@ -106,7 +106,7 @@ class LongitudinalPlanner:
     self.green_light_count = 0
     self.overridden_speed = 0
     self.v_offset = 0
-    self.v_target = MIN_TARGET_V
+    self.v_target = 159
     self.v_cruise_temp = 159
     self.read_test = 0
     self.v_slc_target = 0
