@@ -109,6 +109,7 @@ class LongitudinalPlanner:
     self.v_target = MIN_TARGET_V
     self.v_cruise_temp = 159
     self.read_test = 0
+    self.v_slc_target = 0
 
   def read_param(self):
     try:
@@ -220,14 +221,16 @@ class LongitudinalPlanner:
       if carstate.gasPressed:
         self.overridden_speed = np.clip(v_ego, desired_speed_limit, v_cruise)
       self.overridden_speed *= not carstate.brakePressed
+      else:
+        self.overridden_speed = v_cruise
 
       # Use the speed limit if its not being overridden
       if not self.override_slc:
         SpeedLimitController.update_current_max_velocity(carstate.cruiseState.speedLimit, v_cruise)
         if 0 < desired_speed_limit < v_cruise:
-          v_cruise = round(desired_speed_limit)
+          self.v_slc_target = round(desired_speed_limit)
       else:
-        v_cruise = self.overridden_speed
+        self.v_slc_target = overridden_speed
 
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint and v_ego > 5:
@@ -251,17 +254,11 @@ class LongitudinalPlanner:
       # Configure the offset value for the UI
       self.v_offset = max(0, int(v_cruise - self.v_target))
 
-      self.read_test = int(self.params.get('ReadTest'))
-      if self.read_test == 1:
-        self.v_cruise_temp = 44.7
-      elif self.read_test == 2:
-        self.v_cruise_temp = 11
-      elif self.read_test == 3:
-        self.v_cruise_temp = 0
-      # Set v_cruise to the desired speed
-      v_cruise = min(v_cruise, self.v_target, self.v_cruise_temp)
     else:
       self.v_offset = 0
+    
+    # Set v_cruise to the desired speed
+    v_cruise = min(v_cruise, self.v_target, self.v_slc_target)
 
     self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
