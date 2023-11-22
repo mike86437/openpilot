@@ -242,7 +242,7 @@ class LongitudinalPlanner:
       print("SLC ", self.v_slc_target)
       print("VLC ", self.v_target)
       print("MAX ", v_cruise)
-      print("SET ", v_cruise1)
+      print("SET ", self.v_cruise1)
 
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint and v_ego > 5:
