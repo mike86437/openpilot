@@ -110,6 +110,7 @@ class LongitudinalPlanner:
     self.v_cruise_temp = 159
     self.read_test = 0
     self.v_slc_target = 0
+    self.v_cruise1 = 0
 
   def read_param(self):
     try:
@@ -269,13 +270,13 @@ class LongitudinalPlanner:
       self.v_target = 159
     
     # Set v_cruise to the desired speed
-    v_cruise1 = min(v_cruise, self.v_target, self.v_slc_target)
+    self.v_cruise1 = min(v_cruise, self.v_target, self.v_slc_target)
 
     self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
     x, v, a, j = self.parse_model(sm['modelV2'], self.v_model_error)
-    self.mpc.update(sm['radarState'], v_cruise1, x, v, a, j, have_lead, self.aggressive_acceleration, self.increased_stopping_distance, self.smoother_braking,
+    self.mpc.update(sm['radarState'], self.v_cruise1, x, v, a, j, have_lead, self.aggressive_acceleration, self.increased_stopping_distance, self.smoother_braking,
                     self.custom_personalities, self.aggressive_follow, self.standard_follow, self.relaxed_follow, personality=self.personality)
 
     self.x_desired_trajectory_full = np.interp(ModelConstants.T_IDXS, T_IDXS_MPC, self.mpc.x_solution)
