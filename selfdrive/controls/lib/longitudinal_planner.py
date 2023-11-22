@@ -111,6 +111,7 @@ class LongitudinalPlanner:
     self.read_test = 0
     self.v_slc_target = 0
     self.v_cruise1 = 0
+    self.testvar = 0
 
   def read_param(self):
     try:
@@ -234,8 +235,8 @@ class LongitudinalPlanner:
         self.v_slc_target = self.overridden_speed
     else:
       self.v_slc_target = 159
-    testvar += 1
-    if testvar % 25 == 0 :
+    self.testvar += 1
+    if self.testvar % 25 == 0 :
       print("Lim ", round(desired_speed_limit))
       print("Ovr ", self.overridden_speed)
       print("SLC ", self.v_slc_target)
