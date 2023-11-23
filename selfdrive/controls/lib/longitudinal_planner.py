@@ -237,7 +237,7 @@ class LongitudinalPlanner:
         "overridden_speed": self.overridden_speed,
         "v_target": self.v_target,
         "v_cruise": v_cruise,
-        "gasPressed": gasPressed,
+        "gasPressed": carstate.gasPressed,
         "v_ego": v_ego
       }
 
