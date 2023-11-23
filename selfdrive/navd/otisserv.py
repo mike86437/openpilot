@@ -56,6 +56,9 @@ class OtisServ(BaseHTTPRequestHandler):
     elif self.path == '/CurrentStep.json':
       self.get_currentstep()
       return
+    elif self.path == '/debug_output.json':
+      self.get_debug()
+      return
     elif self.path == '/debug':
       self.send_response(200)
       self.send_header("Content-type", "text/html")
@@ -225,6 +228,14 @@ class OtisServ(BaseHTTPRequestHandler):
     self.send_header('Content-type','application/json')
     self.end_headers()
     f = open("%s/selfdrive/manager/CurrentStep.json" % BASEDIR, "rb")
+    self.wfile.write(f.read())
+    f.close()
+
+  def get_debug(self):
+    self.send_response(200)
+    self.send_header('Content-type','application/json')
+    self.end_headers()
+    f = open("%s/selfdrive/manager/debug_output.json" % BASEDIR, "rb")
     self.wfile.write(f.read())
     f.close()
 
