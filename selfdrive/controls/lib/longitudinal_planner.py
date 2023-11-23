@@ -231,8 +231,8 @@ class LongitudinalPlanner:
     self.testvar += 1
     if self.testvar % 100 == 0 :
       debug_data = {
-        "Speed Limit": round(desired_speed_limit),
-        "override_slc": self.override_slc,
+        "Speed_Limit": round(desired_speed_limit),
+        "override_slc_bool": self.override_slc,
         "overridden_speed": self.overridden_speed,
         "v_target": self.v_target,
         "v_cruise": v_cruise,
