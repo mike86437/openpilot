@@ -107,12 +107,7 @@ class LongitudinalPlanner:
     self.green_light_count = 0
     self.overridden_speed = 0
     self.v_offset = 0
-    self.v_target = 159
-    self.v_cruise_temp = 159
-    self.read_test = 0
-    self.v_slc_target = 0
-    self.v_cruise1 = 0
-    self.testvar = 0
+    self.v_target = MIN_TARGET_V
 
   def read_param(self):
     try:
@@ -223,36 +218,24 @@ class LongitudinalPlanner:
       # Set the max speed to the manual set speed
       if carstate.gasPressed:
         self.overridden_speed = np.clip(v_ego, desired_speed_limit, v_cruise)
-      else:
-        self.overridden_speed = 159
-      self.overridden_speed *= not carstate.brakePressed
-      
+      self.overridden_speed *= sm['controlsState'].enabled
+
       # Use the speed limit if its not being overridden
       if not self.override_slc:
         SpeedLimitController.update_current_max_velocity(carstate.cruiseState.speedLimit, v_cruise)
         if 0 < desired_speed_limit < v_cruise:
-          self.v_slc_target = round(desired_speed_limit)
+          v_cruise = round(desired_speed_limit)
       else:
-        self.v_slc_target = self.overridden_speed
-    else:
-      self.v_slc_target = 159
+        v_cruise = self.overridden_speed
+
     self.testvar += 1
     if self.testvar % 100 == 0 :
-      print("override_slc ", self.override_slc)
-      print("Speed Limit ", round(desired_speed_limit))
-      print("overridden_speed ", self.overridden_speed)
-      print("v_slc_target ", self.v_slc_target)
-      print("v_target ", self.v_target)
-      print("v_cruise ", v_cruise)
-      print("v_cruise1 ", self.v_cruise1)
       debug_data = {
-        "override_slc": self.override_slc,
         "Speed Limit": round(desired_speed_limit),
+        "override_slc": self.override_slc,
         "overridden_speed": self.overridden_speed,
-        "v_slc_target": self.v_slc_target,
         "v_target": self.v_target,
         "v_cruise": v_cruise,
-        "v_cruise1": self.v_cruise1
       }
 
       with open('debug_output.json', 'w') as json_file:
@@ -281,18 +264,16 @@ class LongitudinalPlanner:
       # Configure the offset value for the UI
       self.v_offset = max(0, int(v_cruise - self.v_target))
 
+      # Set v_cruise to the desired speed
+      v_cruise = min(v_cruise, self.v_target)
     else:
       self.v_offset = 0
-      self.v_target = 159
-    
-    # Set v_cruise to the desired speed
-    self.v_cruise1 = min(v_cruise, self.v_target, self.v_slc_target)
 
     self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
     x, v, a, j = self.parse_model(sm['modelV2'], self.v_model_error)
-    self.mpc.update(sm['radarState'], self.v_cruise1, x, v, a, j, have_lead, self.aggressive_acceleration, self.increased_stopping_distance, self.smoother_braking,
+    self.mpc.update(sm['radarState'], v_cruise, x, v, a, j, have_lead, self.aggressive_acceleration, self.increased_stopping_distance, self.smoother_braking,
                     self.custom_personalities, self.aggressive_follow, self.standard_follow, self.relaxed_follow, personality=self.personality)
 
     self.x_desired_trajectory_full = np.interp(ModelConstants.T_IDXS, T_IDXS_MPC, self.mpc.x_solution)
