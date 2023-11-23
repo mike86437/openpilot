@@ -56,7 +56,7 @@ class OtisServ(BaseHTTPRequestHandler):
     elif self.path == '/CurrentStep.json':
       self.get_currentstep()
       return
-    elif self.path == '/debug.html':
+    elif self.path == '/debug':
       self.display_debug()
       return
     elif self.path == '/?reset=1':
