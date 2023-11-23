@@ -4,6 +4,7 @@ import numpy as np
 from openpilot.common.numpy_fast import clip, interp
 from openpilot.common.params import Params
 from cereal import log
+import json
 
 import cereal.messaging as messaging
 from openpilot.common.conversions import Conversions as CV
@@ -236,13 +237,25 @@ class LongitudinalPlanner:
     else:
       self.v_slc_target = 159
     self.testvar += 1
-    if self.testvar % 25 == 0 :
+    if self.testvar % 100 == 0 :
       print("Lim ", round(desired_speed_limit))
       print("Ovr ", self.overridden_speed)
       print("SLC ", self.v_slc_target)
       print("VLC ", self.v_target)
       print("MAX ", v_cruise)
       print("SET ", self.v_cruise1)
+      debug_data = {
+        "Lim": round(desired_speed_limit),
+        "Ovr": self.overridden_speed,
+        "SLC": self.v_slc_target,
+        "VLC": self.v_target,
+        "MAX": v_cruise,
+        "SET": self.v_cruise1
+      }
+
+      with open('debug_output.json', 'w') as json_file:
+        json.dump(debug_data, json_file, indent=2)
+        json_file.write('\n')
 
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint and v_ego > 5:
