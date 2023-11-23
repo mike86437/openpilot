@@ -235,7 +235,8 @@ class LongitudinalPlanner:
         "override_slc": self.override_slc,
         "overridden_speed": self.overridden_speed,
         "v_target": self.v_target,
-        "v_cruise": v_cruise,
+        "cruise_set": v_cruise_kph * CV.KPH_TO_MS,
+        "v_cruise": v_cruise, 
         "gasPressed": gasPressed,
         "v_ego": v_ego
       }
