@@ -238,19 +238,21 @@ class LongitudinalPlanner:
       self.v_slc_target = 159
     self.testvar += 1
     if self.testvar % 100 == 0 :
-      print("Lim ", round(desired_speed_limit))
-      print("Ovr ", self.overridden_speed)
-      print("SLC ", self.v_slc_target)
-      print("VLC ", self.v_target)
-      print("MAX ", v_cruise)
-      print("SET ", self.v_cruise1)
+      print("override_slc ", self.override_slc)
+      print("Speed Limit ", round(desired_speed_limit))
+      print("overridden_speed ", self.overridden_speed)
+      print("v_slc_target ", self.v_slc_target)
+      print("v_target ", self.v_target)
+      print("v_cruise ", v_cruise)
+      print("v_cruise1 ", self.v_cruise1)
       debug_data = {
-        "Lim": round(desired_speed_limit),
-        "Ovr": self.overridden_speed,
-        "SLC": self.v_slc_target,
-        "VLC": self.v_target,
-        "MAX": v_cruise,
-        "SET": self.v_cruise1
+        "override_slc": self.override_slc,
+        "Speed Limit": round(desired_speed_limit),
+        "overridden_speed": self.overridden_speed,
+        "v_slc_target": self.v_slc_target,
+        "v_target": self.v_target,
+        "v_cruise": v_cruise,
+        "v_cruise1": self.v_cruise1
       }
 
       with open('debug_output.json', 'w') as json_file:

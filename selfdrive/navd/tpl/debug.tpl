@@ -1,4 +1,4 @@
-<div id="debug-container">
+<div id="debug-container" style="font-size: 20px;">
     <!-- JSON data will be displayed here -->
 </div>
 
@@ -7,6 +7,15 @@ function fetchData() {
     fetch('debug_output.json')
         .then(response => response.json())
         .then(data => {
+            // Convert m/s to mph
+            data.override_slc = data.override_slc ? "True" : "False";  // Convert boolean to string
+
+            data.overridden_speed = (data.overridden_speed * 2.23694).toFixed(2);
+            data.v_slc_target = (data.v_slc_target * 2.23694).toFixed(2);
+            data.v_target = (data.v_target * 2.23694).toFixed(2);
+            data.v_cruise = (data.v_cruise * 2.23694).toFixed(2);
+            data.v_cruise1 = (data.v_cruise1 * 2.23694).toFixed(2);
+
             // Create an HTML string for each key-value pair
             const htmlString = Object.entries(data)
                 .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
