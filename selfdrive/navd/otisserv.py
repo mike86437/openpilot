@@ -276,7 +276,7 @@ class OtisServ(BaseHTTPRequestHandler):
     return lang
 
   def display_debug(self):
-    self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("debug.tpl")}), "utf-8"))
+    self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("debug")}), "utf-8"))
 
   def display_page_gmap_key(self):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("gmap/key_input")}), "utf-8"))
