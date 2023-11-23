@@ -108,6 +108,7 @@ class LongitudinalPlanner:
     self.overridden_speed = 0
     self.v_offset = 0
     self.v_target = MIN_TARGET_V
+    self.testvar = 0
 
   def read_param(self):
     try:
