@@ -232,10 +232,12 @@ class LongitudinalPlanner:
     if self.testvar % 100 == 0 :
       debug_data = {
         "Speed_Limit": round(desired_speed_limit),
-        "override_slc_bool": self.override_slc,
+        "override_slc": self.override_slc,
         "overridden_speed": self.overridden_speed,
         "v_target": self.v_target,
         "v_cruise": v_cruise,
+        "gasPressed": gasPressed,
+        "v_ego": v_ego
       }
 
       with open('debug_output.json', 'w') as json_file:
