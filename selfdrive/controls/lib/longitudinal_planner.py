@@ -238,7 +238,7 @@ class LongitudinalPlanner:
         "v_target": self.v_target,
         "cruise_set": v_cruise_kph * CV.KPH_TO_MS,
         "v_cruise": v_cruise, 
-        "gasPressed": gasPressed,
+        "gasPressed": carstate.gasPressed,
         "v_ego": v_ego
       }
 
