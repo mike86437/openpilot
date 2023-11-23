@@ -65,6 +65,15 @@ class OtisServ(BaseHTTPRequestHandler):
     if self.path == '/CurrentStep.json':
       self.get_currentstep()
       return
+    if self.path == '/debug_output.json':
+      self.get_debug()
+      return
+    if self.path == '/debug':
+      self.send_response(200)
+      self.send_header("Content-type", "text/html")
+      self.end_headers()
+      self.display_debug()
+      return
     if self.path == '/?reset=1':
       params.put("NavDestination", "")
     if self.path == '/locations':
@@ -294,6 +303,14 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(f.read())
     f.close()
 
+  def get_debug(self):
+    self.send_response(200)
+    self.send_header('Content-type','application/json')
+    self.end_headers()
+    f = open("%s/selfdrive/manager/debug_output.json" % BASEDIR, "rb")
+    self.wfile.write(f.read())
+    f.close()
+
   def get_gmap_css(self):
     self.wfile.write(bytes(self.get_parsed_template("gmap/style.css"), "utf-8"))
 
@@ -359,6 +376,9 @@ class OtisServ(BaseHTTPRequestHandler):
     except KeyError:
       lang = "en-US"
     return lang
+
+  def display_debug(self):
+    self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("debug")}), "utf-8"))
 
   def display_page_gmap_key(self):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("gmap/key_input")}), "utf-8"))
