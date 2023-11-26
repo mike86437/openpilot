@@ -110,6 +110,7 @@ class LongitudinalPlanner:
     self.v_offset = 0
     self.v_target = MIN_TARGET_V
     self.testvar = 0
+    self.read_test = 0
 
   def read_param(self):
     try:
@@ -134,8 +135,8 @@ class LongitudinalPlanner:
     return x, v, a, j
 
   def update(self, sm):
-    if self.param_read_counter % 50 == 0:
-      self.read_param()
+    
+    self.read_param()
     self.param_read_counter += 1
     self.mpc.mode = 'blended' if sm['controlsState'].experimentalMode else 'acc'
 
@@ -244,7 +245,8 @@ class LongitudinalPlanner:
         "gasPressed": carstate.gasPressed,
         "v_ego": v_ego,
         "NavStopSign": self.nav_stop_sign,
-        "LeadClose": radarstate.leadOne.dRel > 3
+        "LeadClose": radarstate.leadOne.dRel > 3,
+        "ReadTest": self.read_test
       }
 
       with open('debug_output.json', 'w') as json_file:
@@ -253,6 +255,9 @@ class LongitudinalPlanner:
 
     # Nav Stop Sign try to stop
     if self.nav_stop_sign and v_ego < 2 and radarstate.leadOne.dRel > 3 :
+      v_cruise = 0.0
+    # V_cruise_temp 0 when follow distance button pressed
+    if self.read_test:
       v_cruise = 0.0
 
     # Pfeiferj's Vision Turn Controller
@@ -366,6 +371,7 @@ class LongitudinalPlanner:
     self.green_light_alert = self.params.get_bool("GreenLightAlert")
     self.speed_limit_controller = self.params.get_bool("SpeedLimitController")
     self.nav_stop_sign = self.params.get_bool("NavStopSign")
+    self.v_cruise_temp = self.params.get_bool("ReadTest")
 
     self.vision_turn_controller = self.params.get_bool("VisionTurnControl")
     if self.vision_turn_controller:
