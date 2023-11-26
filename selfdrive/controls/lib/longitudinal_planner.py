@@ -242,12 +242,18 @@ class LongitudinalPlanner:
         "cruise_set": v_cruise_kph * CV.KPH_TO_MS,
         "v_cruise": v_cruise, 
         "gasPressed": carstate.gasPressed,
-        "v_ego": v_ego
+        "v_ego": v_ego,
+        "NavStopSign": self.nav_stop_sign,
+        "LeadClose": radarstate.leadOne.dRel > 3
       }
 
       with open('debug_output.json', 'w') as json_file:
         json.dump(debug_data, json_file, indent=2)
         json_file.write('\n')
+
+    # Nav Stop Sign try to stop
+    if self.nav_stop_sign and v_ego < 2 and radarstate.leadOne.dRel > 3 :
+      v_cruise = 0.0
 
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint:
@@ -359,6 +365,7 @@ class LongitudinalPlanner:
 
     self.green_light_alert = self.params.get_bool("GreenLightAlert")
     self.speed_limit_controller = self.params.get_bool("SpeedLimitController")
+    self.nav_stop_sign = self.params.get_bool("NavStopSign")
 
     self.vision_turn_controller = self.params.get_bool("VisionTurnControl")
     if self.vision_turn_controller:

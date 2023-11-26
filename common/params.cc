@@ -282,6 +282,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"NavigationConditionMet", PERSISTENT},
     {"NavSpeedLimit", PERSISTENT},
     {"NavSpeedLimitControl", PERSISTENT},
+    {"NavStopSign", PERSISTENT},
     {"NNFF", PERSISTENT},
     {"NoLogging", PERSISTENT},
     {"NudgelessLaneChange", PERSISTENT},
