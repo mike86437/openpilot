@@ -245,7 +245,7 @@ class LongitudinalPlanner:
         "gasPressed": carstate.gasPressed,
         "v_ego": v_ego,
         "NavStopSign": self.nav_stop_sign,
-        "LeadClose": radarstate.leadOne.dRel > 3,
+        "LeadClose": radarstate.leadOne.dRel < 3,
         "ReadTest": self.read_test
       }
 
@@ -254,7 +254,7 @@ class LongitudinalPlanner:
         json_file.write('\n')
 
     # Nav Stop Sign try to stop
-    if self.nav_stop_sign and v_ego < 2 and radarstate.leadOne.dRel > 3 :
+    if self.nav_stop_sign and v_ego < 2 and radarstate.leadOne.dRel < 3 :
       v_cruise = 0.0
     if self.read_test:
       v_cruise = 0.0

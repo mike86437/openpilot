@@ -204,11 +204,8 @@ class CarState(CarStateBase):
         self.read_distance_lines = self.read_distance_lines % 3 + 1
     if self.prev_cruise_setting == 1:
       if self.cruise_setting == 0:
-        if self.read_test:
-          self.read_test = True
-          self.params.put_bool("ReadTest", True)
-        else:
-          self.read_test = False
+        self.read_test = not self.read_test
+        self.params.put_bool("ReadTest", self.read_test)
 
     if not self.read_distance_lines_init or self.read_distance_lines != self.prev_read_distance_lines:
       self.read_distance_lines_init = True
