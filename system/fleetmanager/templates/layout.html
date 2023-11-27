@@ -10,11 +10,23 @@
   <title>FrogPilot: {% block title %}{% endblock %}</title>
   <!-- Custom Styles for Dark Mode -->
   <style>
-    #htmlElement.dark-mode,
+    /* Default styles */
+    #htmlElement input,
+    #htmlElement select {
+      background-color: #ffffff; /* Light background color for inputs and selects */
+      color: #000000; /* Dark text color for inputs and selects */
+    }
+
+    /* Dark mode styles */
     #htmlElement.dark-mode input,
     #htmlElement.dark-mode select {
-      background-color: #121212; /* Dark background color */
-      color: #ffffff; /* Light text color */
+      background-color: #121212; /* Dark background color for inputs and selects */
+      color: #ffffff; /* Light text color for inputs and selects */
+    }
+
+    /* Override Bootstrap styles for links in dark mode */
+    #htmlElement.dark-mode a {
+      color: #ffffff; /* Light color for links in dark mode */
     }
   </style>
   <!-- Script to set default dark mode -->
