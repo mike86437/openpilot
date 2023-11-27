@@ -147,6 +147,7 @@ class RouteEngine:
       'banner_instructions': 'true',
       'alternatives': 'false',
       'language': lang,
+      'voice_instructions': 'true' ,
     }
 
     # TODO: move waypoints into NavDestination param?
