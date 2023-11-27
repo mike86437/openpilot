@@ -11,24 +11,24 @@
   <!-- Custom Styles for Dark Mode -->
   <style>
     /* Default styles */
+    body,
     #htmlElement input,
-    #htmlElement select {
-      background-color: #ffffff; /* Light background color for inputs and selects */
-      color: #000000; /* Dark text color for inputs and selects */
+    #htmlElement select,
+    #htmlElement a {
+      background-color: #ffffff; /* Light background color */
+      color: #000000; /* Dark text color */
     }
-
+  
     /* Dark mode styles */
+    #htmlElement.dark-mode body,
     #htmlElement.dark-mode input,
-    #htmlElement.dark-mode select {
-      background-color: #121212; /* Dark background color for inputs and selects */
-      color: #ffffff; /* Light text color for inputs and selects */
-    }
-
-    /* Override Bootstrap styles for links in dark mode */
+    #htmlElement.dark-mode select,
     #htmlElement.dark-mode a {
-      color: #ffffff; /* Light color for links in dark mode */
+      background-color: #121212; /* Dark background color */
+      color: #ffffff; /* Light text color */
     }
   </style>
+  
   <!-- Script to set default dark mode -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
