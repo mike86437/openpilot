@@ -11,23 +11,38 @@
   <!-- Custom Styles for Dark Mode -->
   <style>
     /* Default styles */
-    body,
-    #htmlElement input,
-    #htmlElement select,
-    #htmlElement a {
+    body.light-mode {
       background-color: #ffffff; /* Light background color */
-      color: #121212; /* Dark text color */
+      color: #000000; /* Dark text color */
     }
   
     /* Dark mode styles */
-    #htmlElement.dark-mode body,
-    #htmlElement.dark-mode input,
-    #htmlElement.dark-mode select,
-    #htmlElement.dark-mode a {
+    body.dark-mode {
+      background-color: #121212; /* Dark background color */
+      color: #ffffff; /* Light text color */
+    }
+  
+    /* Styles for the navigation bar */
+    body.light-mode .navbar {
+      background-color: #f8f9fa; /* Light background color for the navbar */
+    }
+  
+    body.dark-mode .navbar {
+      background-color: #343a40; /* Dark background color for the navbar */
+    }
+  
+    /* Styles for the main content */
+    body.light-mode .main-container {
+      background-color: #ffffff; /* Light background color */
+      color: #000000; /* Dark text color */
+    }
+  
+    body.dark-mode .main-container {
       background-color: #121212; /* Dark background color */
       color: #ffffff; /* Light text color */
     }
   </style>
+  
   
   <!-- Script to set default dark mode -->
   <script>
