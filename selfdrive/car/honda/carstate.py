@@ -114,7 +114,6 @@ class CarState(CarStateBase):
     self.read_distance_lines = self.params.get_int("LongitudinalPersonality") + 1
     self.prev_read_distance_lines = self.read_distance_lines
     self.read_test = 1
-    self.params.put_bool("ReadTest", False)
 
     # When available we use cp.vl["CAR_SPEED"]["ROUGH_CAR_SPEED_2"] to populate vEgoCluster
     # However, on cars without a digital speedometer this is not always present (HRV, FIT, CRV 2016, ILX and RDX)
@@ -203,13 +202,6 @@ class CarState(CarStateBase):
       if self.cruise_setting == 0:
         self.prev_read_distance_lines = self.read_distance_lines
         self.read_distance_lines = self.read_distance_lines % 3 + 1
-    if self.prev_cruise_setting == 1:
-      if self.cruise_setting == 0:
-        self.read_test = self.read_test % 2 + 1
-        if self.read_test == 2:
-          self.params.put_bool("ReadTest", True)
-        else:
-          self.params.put_bool("ReadTest", False)
           
 
     if not self.read_distance_lines_init or self.read_distance_lines != self.prev_read_distance_lines:
