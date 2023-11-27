@@ -69,6 +69,7 @@ class RouteEngine:
     self.stop_coord = []
     self.stop_signal = []
     self.stopsign_signal = []
+    self.stopsign_coord = []
     self.nav_condition = False
     self.noo_condition = False
 
@@ -214,11 +215,16 @@ class RouteEngine:
         if self.conditional_navigation:
           self.stop_signal = []
           self.stop_coord = []
+          self.stopsign_signal = []
+          self.stopsign_coord = []
           for step in self.route:
             for intersection in step["intersections"]:
               if "stop_sign" in intersection or "traffic_signal" in intersection:
                 self.stop_signal.append(intersection["geometry_index"])
                 self.stop_coord.append(Coordinate.from_mapbox_tuple(intersection["location"]))
+              if"stop_sign" in intersection:
+                self.stopsign_signal.append(intersection["geometry_index"])
+                self.stopsign_coord.append(Coordinate.from_mapbox_tuple(intersection["location"]))
 
         maxspeed_idx = 0
         maxspeeds = r['routes'][0]['legs'][0]['annotation']['maxspeed']
