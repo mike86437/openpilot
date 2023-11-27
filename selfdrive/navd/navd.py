@@ -68,6 +68,7 @@ class RouteEngine:
     # FrogPilot variables
     self.stop_coord = []
     self.stop_signal = []
+    self.stopsign_signal = []
     self.nav_condition = False
     self.noo_condition = False
 
