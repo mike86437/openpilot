@@ -38,26 +38,44 @@ def login():
     return render_template("login.html", error=error_message)
 
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Accept-Ranges', 'bytes')
+    return response
+
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
-  chunk_size = 1024 * 512  # 5KiB
-  file_name = cameratype + (".ts" if cameratype == "qcamera" else ".hevc")
-  vidlist = "|".join(Paths.log_root() + "/" + segment + "/" + file_name for segment in fleet.segments_in_route(route))
+    chunk_size = 1024 * 512  # 5KiB
+    file_name = cameratype + (".ts" if cameratype == "qcamera" else ".hevc")
+    vidlist = "|".join(Paths.log_root() + "/" + segment + "/" + file_name for segment in fleet.segments_in_route(route))
 
-  def generate_single_byte_stream():
-    # Implement this function to yield only a single byte
-    # For example, if your video file is accessible as 'file', you can use:
-    with open('file', 'rb') as f:
-      yield f.read(1)
+    file_size = os.stat(vidlist).st_size
+    start = 0
+    length = 10240  # can be any default length you want
 
-  def generate_buffered_stream():
-    with fleet.ffmpeg_mp4_concat_wrap_process_builder(vidlist, cameratype, chunk_size) as process:
-      try:
-        for chunk in iter(lambda: process.stdout.read(chunk_size), b""):
-          yield bytes(chunk)
-      except BrokenPipeError:
-        # Ignore the broken pipe error
-        pass
+    range_header = request.headers.get('Range', None)
+    if range_header:
+        m = re.search('([0-9]+)-([0-9]*)', range_header)
+        g = m.groups()
+        byte1, byte2 = 0, None
+        if g[0]:
+            byte1 = int(g[0])
+        if g[1]:
+            byte2 = int(g[1])
+        if byte1 < file_size:
+            start = byte1
+        if byte2:
+            length = byte2 + 1 - byte1
+        else:
+            length = file_size - start
+
+    with open(vidlist, 'rb') as f:
+        f.seek(start)
+        chunk = f.read(length)
+
+    rv = Response(chunk, 206, mimetype='video/mp4', content_type='video/mp4', direct_passthrough=True)
+    rv.headers.add('Content-Range', 'bytes {0}-{1}/{2}'.format(start, start + length - 1, file_size))
+    return rv
 
 
   # Check for the iOS Safari preliminary range request
