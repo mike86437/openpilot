@@ -50,7 +50,7 @@ class OtisServ(BaseHTTPRequestHandler):
     
     if self.path.startswith('/opweb'):
       # Forward the request to the Go server
-      go_server_url = 'http://localhost:3000' + self.path.replace('/go_server', '')
+      go_server_url = 'http://localhost:3000' + self.path.replace('/opweb', '')
       response = request.urlopen(go_server_url)
             
       # Send the Go server's response back to the client
