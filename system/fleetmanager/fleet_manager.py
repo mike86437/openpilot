@@ -40,15 +40,26 @@ def login():
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
-  chunk_size = 1024 * 512  # 5KiB
-  file_name = cameratype + (".ts" if cameratype == "qcamera" else ".hevc")
-  vidlist = "|".join(Paths.log_root() + "/" + segment + "/" + file_name for segment in fleet.segments_in_route(route))
+    chunk_size = 1024 * 512  # 5KiB
+    file_name = cameratype + (".ts" if cameratype == "qcamera" else ".hevc")
+    vidlist = "|".join(Paths.log_root() + "/" + segment + "/" + file_name for segment in fleet.segments_in_route(route))
 
-  def generate_buffered_stream():
-    with fleet.ffmpeg_mp4_concat_wrap_process_builder(vidlist, cameratype, chunk_size) as process:
-      for chunk in iter(lambda: process.stdout.read(chunk_size), b""):
-        yield bytes(chunk)
-  return Response(generate_buffered_stream(), status=200, mimetype='video/mp4')
+    def generate_single_byte_stream():
+        # Implement this function to yield only a single byte
+        # For example, if your video file is accessible as 'file', you can use:
+        with open('file', 'rb') as f:
+            yield f.read(1)
+
+    def generate_buffered_stream():
+        with fleet.ffmpeg_mp4_concat_wrap_process_builder(vidlist, cameratype, chunk_size) as process:
+            for chunk in iter(lambda: process.stdout.read(chunk_size), b""):
+                yield bytes(chunk)
+
+    # Check for the iOS Safari preliminary range request
+    if request.headers.get('Range') == 'bytes=0-1':
+        return Response(generate_single_byte_stream(), status=200, mimetype='video/mp4')
+
+    return Response(generate_buffered_stream(), status=200, mimetype='video/mp4')
 
 
 @app.route("/footage/<cameratype>/<segment>")
