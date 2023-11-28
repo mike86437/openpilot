@@ -46,7 +46,18 @@ class OtisServ(BaseHTTPRequestHandler):
   def do_GET(self):
     use_amap = params.get_int("SearchInput") == 1
     use_gmap = params.get_int("SearchInput") == 2
-
+    
+    if self.path.startswith('/opweb'):
+      # Forward the request to the Go server
+      go_server_url = 'http://localhost:3000' + self.path.replace('/go_server', '')
+      response = request.urlopen(go_server_url)
+            
+      # Send the Go server's response back to the client
+      self.send_response(response.status)
+      for header, value in response.getheaders():
+        self.send_header(header, value)
+      self.end_headers()
+      self.wfile.write(response.read())
     if self.path == '/logo.png':
       self.get_logo()
       return
