@@ -82,6 +82,8 @@ class OtisServ(BaseHTTPRequestHandler):
     if self.path == '/locations':
       self.get_locations()
       return
+    elif self.path == '/opweb':
+      return
     elif use_amap:
       if self.path == '/style.css':
         self.send_response(200)
