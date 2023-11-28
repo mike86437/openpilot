@@ -111,7 +111,9 @@ procs = [
   # FrogPilot procs
   PythonProcess("mapd", "selfdrive.mapd", osm),
   PythonProcess("otisserv", "selfdrive.navd.otisserv", always_run),
+  # PFEIFER - OPWEBGO {{
   PythonProcess("opwebd", "selfdrive.opwebd", always_run),
+  # }} PFEIFER - OPWEBGO
 ]
 
 managed_processes = {p.name: p for p in procs}
