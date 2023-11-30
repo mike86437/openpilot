@@ -20,7 +20,7 @@ class SentryMode:
     self.sentry_status = False
     self.events = Events()
 
-  def send_discord_webhook(webhook_url, message):
+  def send_discord_webhook(self, webhook_url, message):
     data = {"content": message}
     headers = {"Content-Type": "application/json"}
 
