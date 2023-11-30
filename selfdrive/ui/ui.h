@@ -17,7 +17,6 @@
 #include "common/params.h"
 #include "common/timing.h"
 
-#include "selfdrive/ui/qt/network/wifi_manager.h"
 
 const int UI_BORDER_SIZE = 30;
 const int UI_HEADER_HEIGHT = 420;
@@ -264,7 +263,6 @@ private:
   // FrogPilot variables
   Params params;
   Params paramsMemory{"/dev/shm/params"};
-  bool started_prev = false;
 };
 
 UIState *uiState();

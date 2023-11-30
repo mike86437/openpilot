@@ -343,7 +343,7 @@ void UIState::updateStatus() {
   }
 }
 
-UIState::UIState(QObject *parent) : QObject(parent), wifi(new WifiManager(this)) {
+UIState::UIState(QObject *parent) : QObject(parent) {
   sm = std::make_unique<SubMaster, const std::initializer_list<const char *>>({
     "modelV2", "controlsState", "liveCalibration", "radarState", "deviceState", "roadCameraState",
     "pandaStates", "carParams", "driverMonitoringState", "carState", "liveLocationKalman", "driverStateV2",
@@ -392,16 +392,6 @@ void UIState::update() {
   // FrogPilot live variables that need to be constantly checked
   if (scene.conditional_experimental) {
     scene.conditional_status = paramsMemory.getInt("CEStatus");
-  }
-  // Toggle tether onroad/offroad
-  if (scene.started != started_scene) {
-    if (scene.started) {
-      wifi->setTetheringEnabled(true);  // Enable tethering
-    }
-    started_scene = scene.started;
-    if (!scene.started) {
-      wifi->setTetheringEnabled(false);  // Disable tethering
-    }
   }
 }
 
