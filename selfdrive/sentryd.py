@@ -19,6 +19,7 @@ class SentryMode:
     self.prev_accel = None
     self.sentry_status = False
     self.events = Events()
+    self.secDelay = 0
 
   def send_discord_webhook(self, webhook_url, message):
     data = {"content": message}
@@ -58,10 +59,12 @@ class SentryMode:
       self.events.add(EventName.joystickDebug, static=True)
       self.last_timestamp = time.monotonic()
       self.sentry_status = True
-      # Replace 'YOUR_WEBHOOK_URL' with the actual URL of your Discord webhook
-      webhook_url = 'YOUR_WEBHOOK_URL'
-      message = 'Hello, this is a test message from Python!'
-      self.send_discord_webhook(webhook_url, message)
+      self.secDelay += 1
+      if self.secDelay % 100 == 0:
+        # Replace 'YOUR_WEBHOOK_URL' with the actual URL of your Discord webhook
+        webhook_url = 'YOUR_WEBHOOK_URL'
+        message = 'Hello, this is a test message from Python!'
+        self.send_discord_webhook(webhook_url, message)
 
     # Trigger Reset
     elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
