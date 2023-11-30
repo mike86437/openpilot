@@ -254,10 +254,14 @@ class LongitudinalPlanner:
         json_file.write('\n')
 
     # Nav Stop Sign try to stop
-    if self.nav_stop_sign and v_ego < 2 and radarstate.leadOne.dRel < 3 :
+    if self.nav_stop_sign and v_ego < 2 and 1 < radarstate.leadOne.dRel < 3 :
       v_cruise = 0.0
     if self.read_test:
       v_cruise = 0.0
+      if carstate:gasPressed:
+        self.params.put_bool("ReadTest", false)
+        self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
+    self.params_memory.put_int("ConditionalStatus", 2 if self.read_test else 0)
 
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint:
