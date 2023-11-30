@@ -36,8 +36,8 @@ class SentryMode:
 
     # Trigger Check
     if delta > SENSITIVITY_THRESHOLD:
-      movement_type = self.get_movement_type(self.curr_accel, self.prev_accel)
-      print("Movement {} - {}".format(movement_type, delta))
+      # movement_type = self.get_movement_type(self.curr_accel, self.prev_accel)
+      # print("Movement {} - {}".format(movement_type, delta))
       self.last_timestamp = time.monotonic()
       self.sentry_status = True
 
