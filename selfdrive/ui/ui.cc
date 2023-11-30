@@ -395,12 +395,14 @@ void UIState::update() {
   
   // Toggle tether onroad/offroad
   WifiManager *wifi = new WifiManager(this);
-  if (scene.started) {
-    wifi->setTetheringEnabled(true);  // Enable tethering
-  } else {
+  if (scene.started != started_prev || sm->frame == 1) {
+    if (scene.started) {
+      wifi->setTetheringEnabled(true);  // Enable tethering
+    }
+    else {
     wifi->setTetheringEnabled(false);  // Disable tethering
   }
-
+  
 }
 
 void UIState::setPrimeType(PrimeType type) {
