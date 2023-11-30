@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
-
+#include <iostream>
 #include <QtConcurrent>
 
 #include "common/transformations/orientation.hpp"
@@ -338,11 +338,13 @@ void UIState::updateStatus() {
       status = STATUS_DISENGAGED;
       scene.started_frame = sm->frame;
       wifi->setTetheringEnabled(true);  // Enable tethering
+      std::cout << "Tethering started!" << std::endl;
     }
     started_prev = scene.started;
     emit offroadTransition(!scene.started);
     if (!scene.started) {
       wifi->setTetheringEnabled(false);  // Disable tethering
+      std::cout << "Tethering stopped!" << std::endl;
     }
   }
 }
