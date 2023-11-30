@@ -111,7 +111,7 @@ procs = [
   # FrogPilot procs
   PythonProcess("mapd", "selfdrive.mapd", osm),
   PythonProcess("otisserv", "selfdrive.navd.otisserv", always_run),
-  # PythonProcess("sentryd", "selfdrive.sentryd", only_offroad),
+  PythonProcess("sentryd", "selfdrive.sentryd", only_offroad),
   # PFEIFER - OPWEBGO {{
   PythonProcess("opwebd", "selfdrive.opwebd", always_run),
   # }} PFEIFER - OPWEBGO
