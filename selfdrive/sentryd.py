@@ -62,7 +62,7 @@ class SentryMode:
       self.last_timestamp = time.monotonic()
       self.sentry_status = True
       self.secDelay += 1
-      if self.secDelay % 100 == 0:
+      if self.secDelay % 100 == 0 and self.webhook_url is not None:
         # Replace 'YOUR_WEBHOOK_URL' with the actual URL of your Discord webhook
         message = 'ALERT! Sentry Detected Movement!'
         self.send_discord_webhook(self.webhook_url, message)
