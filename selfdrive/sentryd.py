@@ -3,7 +3,7 @@ import numpy as np
 from cereal import messaging
 import time
 
-SENSITIVITY_THRESHOLD = 0.03
+SENSITIVITY_THRESHOLD = 0.05
 TRIGGERED_TIME = 2
 
 
@@ -38,6 +38,7 @@ class SentryMode:
     if delta > SENSITIVITY_THRESHOLD:
       # movement_type = self.get_movement_type(self.curr_accel, self.prev_accel)
       # print("Movement {} - {}".format(movement_type, delta))
+      print(delta)
       self.last_timestamp = time.monotonic()
       self.sentry_status = True
 
