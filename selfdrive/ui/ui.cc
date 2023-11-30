@@ -330,15 +330,20 @@ void UIState::updateStatus() {
       status = controls_state.getEnabled() ? STATUS_ENGAGED : STATUS_DISENGAGED;
     }
   }
-
+  // Toggle tether onroad/offroad
+  WifiManager *wifi = new WifiManager(this);
   // Handle onroad/offroad transition
   if (scene.started != started_prev || sm->frame == 1) {
     if (scene.started) {
       status = STATUS_DISENGAGED;
       scene.started_frame = sm->frame;
+      wifi->setTetheringEnabled(true);  // Enable tethering
     }
     started_prev = scene.started;
     emit offroadTransition(!scene.started);
+    if (!scene.started) {
+      wifi->setTetheringEnabled(false);  // Disable tethering
+    }
   }
 }
 
@@ -392,17 +397,6 @@ void UIState::update() {
   if (scene.conditional_experimental) {
     scene.conditional_status = paramsMemory.getInt("CEStatus");
   }
-  
-  // Toggle tether onroad/offroad
-  WifiManager *wifi = new WifiManager(this);
-  if (scene.started != started_prev || sm->frame == 1) {
-    if (scene.started) {
-      wifi->setTetheringEnabled(true);  // Enable tethering
-    }
-    else {
-    wifi->setTetheringEnabled(false);  // Disable tethering
-  }
-  
 }
 
 void UIState::setPrimeType(PrimeType type) {
