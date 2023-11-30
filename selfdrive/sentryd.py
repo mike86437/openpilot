@@ -12,7 +12,7 @@ class SentryMode:
   def __init__(self):
     self.sm = messaging.SubMaster(['accelerometer'], poll=['accelerometer'])
     # self.pm = messaging.PubMaster(['sentryState'])
-
+    self.curr_accel = 0
     self.prev_accel = None
     self.sentry_status = False
 
@@ -25,18 +25,18 @@ class SentryMode:
 
   def update(self):    
     # Extract acceleration data
-    curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
+    self.curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
 
     # Initialize
     if self.prev_accel is None:
-      self.prev_accel = curr_accel
+      self.prev_accel = self.curr_accel
 
     # Calculate magnitude change
-    delta = abs(np.linalg.norm(curr_accel) - np.linalg.norm(self.prev_accel))
+    delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
 
     # Trigger Check
     if delta > SENSITIVITY_THRESHOLD:
-      movement_type = self.get_movement_type(curr_accel, self.prev_accel)
+      movement_type = self.get_movement_type(self.curr_accel, self.prev_accel)
       print("Movement {} - {}".format(movement_type, delta))
       self.last_timestamp = time.monotonic()
       self.sentry_status = True
@@ -46,7 +46,7 @@ class SentryMode:
       self.sentry_status = False
       print("Movement Ended")
 
-    self.prev_accel = curr_accel
+    self.prev_accel = self.curr_accel
 
 
   # def publish(self):
