@@ -264,6 +264,7 @@ private:
   // FrogPilot variables
   Params params;
   Params paramsMemory{"/dev/shm/params"};
+  bool started_prev = false;
 };
 
 UIState *uiState();
