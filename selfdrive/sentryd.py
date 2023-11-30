@@ -2,6 +2,8 @@
 import numpy as np
 from cereal import messaging
 import time
+from openpilot.selfdrive.controls.lib.events import Events
+import requests
 
 SENSITIVITY_THRESHOLD = 0.05
 TRIGGERED_TIME = 2
@@ -15,6 +17,19 @@ class SentryMode:
     self.curr_accel = 0
     self.prev_accel = None
     self.sentry_status = False
+    self.events = Events()
+
+  def send_discord_webhook(webhook_url, message):
+    data = {"content": message}
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(webhook_url, json=data, headers=headers)
+
+    if response.status_code == 200:
+      print("Message sent successfully")
+    else:
+      print(f"Failed to send message. Status code: {response.status_code}")
+
 
 
   def get_movement_type(self, current, previous):
@@ -39,8 +54,13 @@ class SentryMode:
       # movement_type = self.get_movement_type(self.curr_accel, self.prev_accel)
       # print("Movement {} - {}".format(movement_type, delta))
       print(delta)
+      self.events.add(EventName.joystickDebug, static=True)
       self.last_timestamp = time.monotonic()
       self.sentry_status = True
+      # Replace 'YOUR_WEBHOOK_URL' with the actual URL of your Discord webhook
+      webhook_url = 'YOUR_WEBHOOK_URL'
+      message = 'Hello, this is a test message from Python!'
+      send_discord_webhook(webhook_url, message)
 
     # Trigger Reset
     elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
