@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 import numpy as np
-from cereal import messaging
+from cereal import car, messaging
 import time
 from openpilot.selfdrive.controls.lib.events import Events
 import requests
 
 SENSITIVITY_THRESHOLD = 0.05
 TRIGGERED_TIME = 2
+EventName = car.CarEvent.EventName
 
 
 class SentryMode:
