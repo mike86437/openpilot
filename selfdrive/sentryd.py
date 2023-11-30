@@ -4,7 +4,8 @@ from cereal import car, messaging
 import time
 from openpilot.selfdrive.controls.lib.events import Events
 import requests
-
+from common.params import Params
+params = Params()
 SENSITIVITY_THRESHOLD = 0.05
 TRIGGERED_TIME = 2
 EventName = car.CarEvent.EventName
@@ -20,6 +21,7 @@ class SentryMode:
     self.sentry_status = False
     self.events = Events()
     self.secDelay = 0
+    self.webhook_url = params.get("SentryDhook", encoding='utf8')
 
   def send_discord_webhook(self, webhook_url, message):
     data = {"content": message}
@@ -62,9 +64,8 @@ class SentryMode:
       self.secDelay += 1
       if self.secDelay % 100 == 0:
         # Replace 'YOUR_WEBHOOK_URL' with the actual URL of your Discord webhook
-        webhook_url = 'YOUR_WEBHOOK_URL'
-        message = 'Hello, this is a test message from Python!'
-        self.send_discord_webhook(webhook_url, message)
+        message = 'ALERT! Sentry Detected Movement!'
+        self.send_discord_webhook(self.webhook_url, message)
 
     # Trigger Reset
     elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:

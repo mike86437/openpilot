@@ -258,7 +258,7 @@ class LongitudinalPlanner:
       v_cruise = 0.0
     if self.read_test:
       v_cruise = 0.0
-      if carstate:gasPressed:
+      if carstate.gasPressed:
         self.params.put_bool("ReadTest", false)
         self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
     self.params_memory.put_int("ConditionalStatus", 2 if self.read_test else 0)
