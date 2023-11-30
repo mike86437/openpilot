@@ -392,6 +392,15 @@ void UIState::update() {
   if (scene.conditional_experimental) {
     scene.conditional_status = paramsMemory.getInt("CEStatus");
   }
+  
+  // Toggle tether onroad/offroad
+  WifiManager *wifi = new WifiManager(this);
+  if (scene.started) {
+    wifi->setTetheringEnabled(true);  // Enable tethering
+  } else {
+    wifi->setTetheringEnabled(false);  // Disable tethering
+  }
+
 }
 
 void UIState::setPrimeType(PrimeType type) {
