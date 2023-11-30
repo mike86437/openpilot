@@ -206,6 +206,7 @@ class CarState(CarStateBase):
       if self.cruise_setting == 0:
         self.read_test = not self.read_test
         self.params.put_bool("ReadTest", self.read_test)
+        self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
 
     if not self.read_distance_lines_init or self.read_distance_lines != self.prev_read_distance_lines:
       self.read_distance_lines_init = True
