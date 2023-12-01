@@ -29,7 +29,7 @@ class SentryMode:
     self.webhook_url = params.get("SentryDhook", encoding='utf8')
 
     # sshane variables
-    self.sentry_enabled = self.params.get_bool("SentryMode")
+    self.sentry_enabled = params.get_bool("SentryMode")
     self.last_read_ts = time.monotonic()
     self.sentry_tripped = False
     self.sentry_armed = False
@@ -84,7 +84,7 @@ class SentryMode:
     # sshane version
     now_ts = time.monotonic()
     if now_ts - self.last_read_ts > 15.:
-      self.sentry_enabled = self.params.get_bool("SentryMode")
+      self.sentry_enabled = params.get_bool("SentryMode")
       self.last_read_ts = float(now_ts)
 
     self.update_sentry_tripped(now_ts)
