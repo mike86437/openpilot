@@ -111,6 +111,8 @@ class LongitudinalPlanner:
     self.v_offset = 0
     self.v_target = MIN_TARGET_V
 
+    self.read_test = False
+
   def read_param(self):
     try:
       self.personality = int(self.params.get('LongitudinalPersonality'))
@@ -240,6 +242,13 @@ class LongitudinalPlanner:
       else:
         self.slc_target = self.overridden_speed
 
+    if self.read_test:
+      v_cruise = 0.0
+      if carstate.gasPressed:
+        self.params.put_bool("ReadTest", False)
+        self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
+    self.params_memory.put_bool("NavigationConditionMet", 2 if self.read_test else 0)
+
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint:
       # Set the curve sensitivity
@@ -350,6 +359,7 @@ class LongitudinalPlanner:
 
     self.green_light_alert = self.params.get_bool("GreenLightAlert")
     self.speed_limit_controller = self.params.get_bool("SpeedLimitController")
+    self.read_test = self.params.get_bool("ReadTest")
 
     self.vision_turn_controller = self.params.get_bool("VisionTurnControl")
     if self.vision_turn_controller:
