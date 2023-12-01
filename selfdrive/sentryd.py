@@ -2,7 +2,7 @@
 import numpy as np
 from cereal import messaging
 import time
-
+from openpilot.common.realtime import DT_CTRL
 import requests
 from common.params import Params
 from common.filter_simple import FirstOrderFilter
@@ -35,6 +35,8 @@ class SentryMode:
     self.sentry_armed = False
     self.sentry_tripped_ts = 0.
     self.car_active_ts = time.monotonic()  # start at active
+    self.movement_ts = 0.
+    self.accel_filters = [FirstOrderFilter(0, 0.5, DT_CTRL) for _ in range(3)]
 
   def send_discord_webhook(self, webhook_url, message):
     data = {"content": message}
