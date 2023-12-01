@@ -68,7 +68,8 @@ struct Alert {
       // Handle controls timeout
       if (started_sentry) {
         return {"RECORDING 360° VIDEO", "Unlock car to dis-arm",
-                "controlsUnresponsive", cereal::ControlsState::AlertSize::FULL};
+                "controlsUnresponsive", cereal::ControlsState::AlertSize::FULL,
+                AudibleAlert::WARNING_IMMEDIATE};
       } else if (controls_frame < started_frame) {
         // car is started, but controlsState hasn't been seen at all
         alert = {"openpilot Unavailable", "Waiting for controls to start",
