@@ -2287,7 +2287,6 @@ struct Event {
     deviceState @6 :DeviceState;
     logMessage @18 :Text;
     errorLogMessage @85 :Text;
-    sentryState @127 :SentryState;
 
     # navigation
     navInstruction @82 :NavInstruction;
@@ -2324,7 +2323,7 @@ struct Event {
     customReserved6 @113 :Custom.CustomReserved6;
     customReserved7 @114 :Custom.CustomReserved7;
     customReserved8 @115 :Custom.CustomReserved8;
-    customReserved9 @116 :Custom.CustomReserved9;
+    sentryState @116 :SentryState;
 
     # *********** legacy + deprecated ***********
     model @9 :Legacy.ModelData; # TODO: rename modelV2 and mark this as deprecated
