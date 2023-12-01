@@ -53,6 +53,7 @@ Sound::Sound(QObject *parent) : sm({"controlsState", "microphone"}) {
 
 void Sound::update() {
   sm.update(0);
+  const bool started_sentry = sm["deviceState"].getDeviceState().getStartedSentry();
 
   // scale volume using ambient noise level
   if (sm.updated("microphone")) {
