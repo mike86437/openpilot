@@ -38,6 +38,11 @@ class SentryMode:
     self.movement_ts = 0.
     self.accel_filters = [FirstOrderFilter(0, 0.5, DT_CTRL) for _ in range(3)]
 
+  def sprint(self, *args, **kwargs):  # slow print
+    if DEBUG:
+      if self.sm.frame % (100 / 20.) == 0:  # 20 hz
+        print(*args, **kwargs)
+
   def send_discord_webhook(self, webhook_url, message):
     data = {"content": message}
     headers = {"Content-Type": "application/json"}
