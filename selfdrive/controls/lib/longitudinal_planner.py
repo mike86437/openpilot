@@ -111,6 +111,7 @@ class LongitudinalPlanner:
     self.v_target = MIN_TARGET_V
     self.testvar = 0
     self.read_test = False
+    self.params_memory = Params("/dev/shm/params")
 
   def read_param(self):
     try:
