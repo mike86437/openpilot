@@ -25,21 +25,16 @@ class SentryMode:
   def send_discord_webhook(self, webhook_url, message):
     data = {"content": message}
     headers = {"Content-Type": "application/json"}
-
     response = requests.post(webhook_url, json=data, headers=headers)
-
     if response.status_code == 200:
       print("Message sent successfully")
     else:
       print(f"Failed to send message. Status code: {response.status_code}")
 
-
-
   def get_movement_type(self, current, previous):
     ax_mapping = {0: "X", 1: "Y", 2: "Z"}
     dominant_axis = np.argmax(np.abs(current - previous))
     return ax_mapping[dominant_axis]
-
 
   def update(self):    
     events = Events()
@@ -55,9 +50,6 @@ class SentryMode:
 
     # Trigger Check
     if delta > SENSITIVITY_THRESHOLD:
-      # movement_type = self.get_movement_type(self.curr_accel, self.prev_accel)
-      # print("Movement {} - {}".format(movement_type, delta))
-      print(delta)
       events.add(car.CarEvent.EventName.tooDistracted)
       self.last_timestamp = time.monotonic()
       self.sentry_status = True
@@ -73,7 +65,7 @@ class SentryMode:
       print("Movement Ended")
 
     self.prev_accel = self.curr_accel
-
+    events.to_msg
 
   # def publish(self):
   #   sentry_state = messaging.new_message('sentryState')
