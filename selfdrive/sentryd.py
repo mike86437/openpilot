@@ -8,7 +8,6 @@ from common.params import Params
 params = Params()
 SENSITIVITY_THRESHOLD = 0.05
 TRIGGERED_TIME = 2
-EventName = car.CarEvent.EventName
 
 
 class SentryMode:
@@ -43,6 +42,7 @@ class SentryMode:
 
 
   def update(self):    
+    events = Events()
     # Extract acceleration data
     self.curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
 
@@ -58,7 +58,7 @@ class SentryMode:
       # movement_type = self.get_movement_type(self.curr_accel, self.prev_accel)
       # print("Movement {} - {}".format(movement_type, delta))
       print(delta)
-      self.events.add(EventName.joystickDebug, static=True)
+      events.add(car.CarEvent.EventName.tooDistracted)
       self.last_timestamp = time.monotonic()
       self.sentry_status = True
       self.secDelay += 1
