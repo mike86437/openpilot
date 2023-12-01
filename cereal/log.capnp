@@ -313,6 +313,7 @@ struct DeviceState @0xa4d8b5af2aa492eb {
   lastAthenaPingTime @32 :UInt64;
 
   started @11 :Bool;
+  startedSentry @41 :Bool;
   startedMonoTime @13 :UInt64;
 
   # system utilization
@@ -406,6 +407,11 @@ struct DeviceState @0xa4d8b5af2aa492eb {
   chargingErrorDEPRECATED @17 :Bool;
   chargingDisabledDEPRECATED @18 :Bool;
   usbOnlineDEPRECATED @12 :Bool;
+}
+
+struct SentryState {
+  started @0 :Bool;
+  armed @1 :Bool;
 }
 
 struct PandaState @0xa7649e2575e4591e {
@@ -2281,6 +2287,7 @@ struct Event {
     deviceState @6 :DeviceState;
     logMessage @18 :Text;
     errorLogMessage @85 :Text;
+    sentryState @92 :SentryState;
 
     # navigation
     navInstruction @82 :NavInstruction;
