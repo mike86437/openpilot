@@ -264,7 +264,7 @@ class LongitudinalPlanner:
       if carstate.gasPressed:
         self.params.put_bool("ReadTest", false)
         self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
-    # self.params_memory.put_int("ConditionalStatus", 2 if self.read_test else 0)
+    self.params_memory.put_bool("NavigationConditionMet", 2 if self.read_test else 0)
 
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint:
