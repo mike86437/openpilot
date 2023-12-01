@@ -95,7 +95,7 @@ void OnroadWindow::updateState(const UIState &s) {
   }
 
   QColor bgColor = bg_colors[s.status];
-  Alert alert = Alert::get(*(s.sm), s.scene.started_frame);
+  Alert alert = Alert::get(*(s.sm), s.scene.started_frame, s.scene.started_sentry);
   alerts->updateAlert(alert);
 
   if (s.scene.map_on_left) {

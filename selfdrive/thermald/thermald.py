@@ -168,7 +168,7 @@ def hw_state_thread(end_event, hw_queue):
 
 def thermald_thread(end_event, hw_queue) -> None:
   pm = messaging.PubMaster(['deviceState'])
-  sm = messaging.SubMaster(["peripheralState", "gpsLocationExternal", "controlsState", "pandaStates"], poll=["pandaStates"])
+  sm = messaging.SubMaster(["peripheralState", "gpsLocationExternal", "controlsState", "pandaStates", "sentryState"], poll=["pandaStates"])
 
   count = 0
 
@@ -341,7 +341,7 @@ def thermald_thread(end_event, hw_queue) -> None:
             pass
 
     # Handle offroad/onroad transition
-    should_start = all(onroad_conditions.values())
+    should_start = all(onroad_conditions.values()) or sm["sentryState"].started
     if started_ts is None:
       should_start = should_start and all(startup_conditions.values())
 
@@ -400,7 +400,8 @@ def thermald_thread(end_event, hw_queue) -> None:
       cloudlog.warning(f"shutting device down, offroad since {off_ts}")
       params.put_bool("DoShutdown", True)
 
-    msg.deviceState.started = started_ts is not None
+    msg.deviceState.started = started_ts is not None and onroad_conditions["ignition"]
+    msg.deviceState.startedSentry = started_ts is not None and not onroad_conditions["ignition"]
     msg.deviceState.startedMonoTime = int(1e9*(started_ts or 0))
 
     last_ping = params.get("LastAthenaPingTime")

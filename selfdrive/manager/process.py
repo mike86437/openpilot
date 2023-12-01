@@ -70,7 +70,7 @@ class ManagerProcess(ABC):
   proc: Optional[Process] = None
   enabled = True
   name = ""
-
+  sentry = False
   last_watchdog_time = 0
   watchdog_max_dt: Optional[int] = None
   watchdog_seen = False
@@ -168,7 +168,7 @@ class ManagerProcess(ABC):
 
 
 class NativeProcess(ManagerProcess):
-  def __init__(self, name, cwd, cmdline, should_run, enabled=True, sigkill=False, watchdog_max_dt=None, always_watchdog=False):
+  def __init__(self, name, cwd, cmdline, should_run, enabled=True, sentry=False, sigkill=False, watchdog_max_dt=None, always_watchdog=False):
     self.name = name
     self.cwd = cwd
     self.cmdline = cmdline
@@ -178,6 +178,7 @@ class NativeProcess(ManagerProcess):
     self.watchdog_max_dt = watchdog_max_dt
     self.launcher = nativelauncher
     self.always_watchdog = always_watchdog
+    self.sentry = sentry
 
   def prepare(self) -> None:
     pass
@@ -199,7 +200,7 @@ class NativeProcess(ManagerProcess):
 
 
 class PythonProcess(ManagerProcess):
-  def __init__(self, name, module, should_run, enabled=True, sigkill=False, watchdog_max_dt=None):
+  def __init__(self, name, module, should_run, enabled=True, sentry=False, sigkill=False, watchdog_max_dt=None):
     self.name = name
     self.module = module
     self.should_run = should_run
@@ -207,6 +208,7 @@ class PythonProcess(ManagerProcess):
     self.sigkill = sigkill
     self.watchdog_max_dt = watchdog_max_dt
     self.launcher = launcher
+    self.sentry = sentry
 
   def prepare(self) -> None:
     if self.enabled:
@@ -274,7 +276,7 @@ class DaemonProcess(ManagerProcess):
     pass
 
 
-def ensure_running(procs: ValuesView[ManagerProcess], started: bool, params=None, CP: car.CarParams=None,
+def ensure_running(procs: ValuesView[ManagerProcess], started: bool, started_sentry: bool=False, params=None, CP: car.CarParams=None,
                    not_run: Optional[List[str]]=None) -> List[ManagerProcess]:
   if not_run is None:
     not_run = []
@@ -284,6 +286,9 @@ def ensure_running(procs: ValuesView[ManagerProcess], started: bool, params=None
     if p.enabled and p.name not in not_run and p.should_run(started, params, CP):
       p.start()
       running.append(p)
+    # stop processes normally only starting when onroad from starting if not a sentry process
+    elif not p.sentry and started_sentry:
+      p.stop(block=False)
     else:
       p.stop(block=False)
 

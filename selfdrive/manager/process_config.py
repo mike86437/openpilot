@@ -66,7 +66,7 @@ def osm(started, params, CP: car.CarParams) -> bool:
 procs = [
   DaemonProcess("manage_athenad", "selfdrive.athena.manage_athenad", "AthenadPid"),
 
-  NativeProcess("camerad", "system/camerad", ["./camerad"], driverview),
+  NativeProcess("camerad", "system/camerad", ["./camerad"], driverview, sentry=True),
   NativeProcess("logcatd", "system/logcatd", ["./logcatd"], (enable_logging and only_onroad)),
   NativeProcess("proclogd", "system/proclogd", ["./proclogd"], only_onroad),
   PythonProcess("logmessaged", "system.logmessaged", enable_logging),
@@ -76,7 +76,7 @@ procs = [
   PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", enable_dm, enabled=(not PC or WEBCAM)),
   NativeProcess("encoderd", "system/loggerd", ["./encoderd"], only_onroad),
   NativeProcess("stream_encoderd", "system/loggerd", ["./encoderd", "--stream"], notcar),
-  NativeProcess("loggerd", "system/loggerd", ["./loggerd"], (enable_logging and logging)),
+  NativeProcess("loggerd", "system/loggerd", ["./loggerd"], (enable_logging and logging), sentry=True),
   NativeProcess("modeld", "selfdrive/modeld", ["./modeld"], only_onroad),
   NativeProcess("mapsd", "selfdrive/navd", ["./mapsd"], only_onroad),
   PythonProcess("navmodeld", "selfdrive.modeld.navmodeld", only_onroad),
@@ -111,7 +111,7 @@ procs = [
   # FrogPilot procs
   PythonProcess("mapd", "selfdrive.mapd", osm),
   PythonProcess("otisserv", "selfdrive.navd.otisserv", always_run),
-  PythonProcess("sentryd", "selfdrive.sentryd", only_offroad),
+  PythonProcess("sentryd", "selfdrive.sentryd", always_run),
   # PFEIFER - OPWEBGO {{
   PythonProcess("opwebd", "selfdrive.opwebd", always_run),
   # }} PFEIFER - OPWEBGO

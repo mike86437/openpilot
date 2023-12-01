@@ -198,7 +198,7 @@ static void update_state(UIState *s) {
       scene.pandaType = pandaStates[0].getPandaType();
 
       if (scene.pandaType != cereal::PandaState::PandaType::UNKNOWN) {
-        scene.ignition = false;
+        scene.ignition = sm["deviceState"].getDeviceState().getStartedSentry();
         for (const auto& pandaState : pandaStates) {
           scene.ignition |= pandaState.getIgnitionLine() || pandaState.getIgnitionCan();
         }
@@ -271,6 +271,8 @@ static void update_state(UIState *s) {
     scene.light_sensor = std::max(100.0f - scale * cam_state.getExposureValPercent(), 0.0f);
   }
   scene.started = sm["deviceState"].getDeviceState().getStarted() && scene.ignition;
+  scene.started_sentry = sm["deviceState"].getDeviceState().getStartedSentry();
+  scene.sentry_armed = sm["sentryState"].getSentryState().getArmed();
 }
 
 void ui_update_params(UIState *s) {
@@ -319,7 +321,7 @@ void ui_update_params(UIState *s) {
 }
 
 void UIState::updateStatus() {
-  if (scene.started && sm->updated("controlsState")) {
+  if ((scene.started || scene.started_sentry) && sm->updated("controlsState")) {
     auto controls_state = (*sm)["controlsState"].getControlsState();
     auto state = controls_state.getState();
     if (state == cereal::ControlsState::OpenpilotState::PRE_ENABLED || state == cereal::ControlsState::OpenpilotState::OVERRIDING) {
@@ -332,13 +334,13 @@ void UIState::updateStatus() {
   }
 
   // Handle onroad/offroad transition
-  if (scene.started != started_prev || sm->frame == 1) {
-    if (scene.started) {
+  if ((scene.started || scene.started_sentry) != started_prev || sm->frame == 1) {
+    if (scene.started || scene.started_sentry) {
       status = STATUS_DISENGAGED;
       scene.started_frame = sm->frame;
     }
-    started_prev = scene.started;
-    emit offroadTransition(!scene.started);
+    started_prev = scene.started || scene.started_sentry;
+    emit offroadTransition(!(scene.started || scene.started_sentry));
   }
 }
 
@@ -347,7 +349,7 @@ UIState::UIState(QObject *parent) : QObject(parent) {
     "modelV2", "controlsState", "liveCalibration", "radarState", "deviceState", "roadCameraState",
     "pandaStates", "carParams", "driverMonitoringState", "carState", "liveLocationKalman", "driverStateV2",
     "wideRoadCameraState", "managerState", "navInstruction", "navRoute", "uiPlan", "carControl",
-    "gpsLocationExternal", "lateralPlan", "longitudinalPlan"
+    "gpsLocationExternal", "lateralPlan", "longitudinalPlan", "sentryState"
   });
 
   language = QString::fromStdString(params.get("LanguageSetting"));
@@ -439,7 +441,7 @@ void Device::resetInteractiveTimeout(int timeout) {
 
 void Device::updateBrightness(const UIState &s) {
   float clipped_brightness = offroad_brightness;
-  if (s.scene.started) {
+  if (s.scene.started || s.scene.started_sentry) {
     clipped_brightness = s.scene.light_sensor;
 
     // CIE 1931 - https://www.photonstophotos.net/GeneralTopics/Exposure/Psychometric_Lightness_and_Gamma.htm
