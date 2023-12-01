@@ -2,7 +2,7 @@
 import numpy as np
 from cereal import messaging
 import time
-from common.realtime import sec_since_boot, DT_CTRL
+
 import requests
 from common.params import Params
 from common.filter_simple import FirstOrderFilter
@@ -30,11 +30,11 @@ class SentryMode:
 
     # sshane variables
     self.sentry_enabled = self.params.get_bool("SentryMode")
-    self.last_read_ts = sec_since_boot()
+    self.last_read_ts = time.monotonic()
     self.sentry_tripped = False
     self.sentry_armed = False
     self.sentry_tripped_ts = 0.
-    self.car_active_ts = sec_since_boot()  # start at active
+    self.car_active_ts = time.monotonic()  # start at active
 
   def send_discord_webhook(self, webhook_url, message):
     data = {"content": message}
@@ -77,12 +77,12 @@ class SentryMode:
 
     # set when we first tripped
     if sentry_tripped and not self.sentry_tripped:
-      self.sentry_tripped_ts = sec_since_boot()
+      self.sentry_tripped_ts = time.monotonic()
     self.sentry_tripped = sentry_tripped
 
   def update(self):    
     # sshane version
-    now_ts = sec_since_boot()
+    now_ts = time.monotonic()
     if now_ts - self.last_read_ts > 15.:
       self.sentry_enabled = self.params.get_bool("SentryMode")
       self.last_read_ts = float(now_ts)
