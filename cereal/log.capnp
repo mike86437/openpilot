@@ -2287,7 +2287,7 @@ struct Event {
     deviceState @6 :DeviceState;
     logMessage @18 :Text;
     errorLogMessage @85 :Text;
-    sentryState @92 :SentryState;
+    sentryState @127 :SentryState;
 
     # navigation
     navInstruction @82 :NavInstruction;
