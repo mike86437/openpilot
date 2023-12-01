@@ -64,7 +64,7 @@ void Sound::update() {
     }
   }
 
-  setAlert(Alert::get(sm, 0));
+  setAlert(Alert::get(sm, 0, started_sentry));
 }
 
 void Sound::updateFrogPilotParams() {
