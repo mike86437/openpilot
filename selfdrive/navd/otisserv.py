@@ -48,15 +48,6 @@ class OtisServ(BaseHTTPRequestHandler):
     use_amap = params.get_int("SearchInput") == 1
     use_gmap = params.get_int("SearchInput") == 2
 
-    if self.path.startswith('/fleetmanager'):
-      # Redirect the request to the Flask app running on port 5050
-      flask_app_response = requests.get(f'http://127.0.0.1:5050{self.path.replace("/fleetmanager", "")}', stream=True)
-      self.send_response(flask_app_response.status_code)
-      self.send_header("Content-type", flask_app_response.headers.get('Content-type'))
-      self.end_headers()
-      for chunk in flask_app_response.iter_content(chunk_size=128):
-        self.wfile.write(chunk)
-      return
     if self.path == '/logo.png':
       self.get_logo()
       return
@@ -206,7 +197,6 @@ class OtisServ(BaseHTTPRequestHandler):
           lng, lat = self.gcj02towgs84(lng, lat)
         params.put("NavDestination", "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
         self.to_json(lat, lng, save_type, name)
-    if postvars is not None:
       if "latitude" in postvars and postvars.get("latitude")[0] != "" and "longitude" in postvars and postvars.get("longitude")[0] != "":
         lat = float(latitude)
         lng = float(longitude)
