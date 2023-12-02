@@ -20,7 +20,11 @@ def make_request_with_retry(method, url, data=None, headers=None):
     for attempt in range(retries):
         try:
             if data is not None and method == 'POST':
-                # For POST requests, use json parameter for data
+                # For POST requests, check if data is a JSON string and convert it to a dictionary
+                if isinstance(data, str):
+                    data = json.loads(data)
+
+                # Use json parameter for data
                 response = requests.request(method, url, json=data, headers=headers, stream=True)
             else:
                 # For GET requests or other methods, use data parameter directly
