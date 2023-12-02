@@ -4,7 +4,9 @@ import random
 import secrets
 import threading
 import time
+
 from flask import Flask, render_template, Response, request, send_from_directory, session, redirect, url_for
+import requests
 from openpilot.common.realtime import set_core_affinity
 import openpilot.system.fleetmanager.helpers as fleet
 from openpilot.system.hardware.hw import Paths
@@ -18,6 +20,29 @@ app = Flask(__name__)
 def home_page():
   return render_template("index.html")
 
+# Route for /otisserv without a specific path
+@app.route("/otisserv")
+def otisserv_base():
+    # Modify the URL to point to the target server
+    target_server_url = 'http://127.0.0.1:8082/'
+    
+    # Send the request to the target server and forward the response to the client
+    response = requests.get(target_server_url, stream=True)
+    
+    # Mimic the target server response in the Flask app
+    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+
+# Route for /otisserv/<path:subpath>
+@app.route("/otisserv/<path:subpath>")
+def reverse_proxy(subpath):
+    # Modify the URL to point to the target server
+    target_server_url = f'http://127.0.0.1:8082/{subpath}'
+    
+    # Send the request to the target server and forward the response to the client
+    response = requests.get(target_server_url, stream=True)
+    
+    # Mimic the target server response in the Flask app
+    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
