@@ -20,8 +20,13 @@ def make_request_with_retry(method, url, data=None, headers=None):
   for attempt in range(retries):
     try:
       if data is not None and method == 'POST':
-        # For POST requests, use json parameter for data
-        response = requests.request(method, url, json=data, headers=headers, stream=True)
+        # For POST requests, check if the content type is form data
+        content_type = headers.get('Content-Type', '').lower()
+        if 'application/x-www-form-urlencoded' in content_type:
+          response = requests.request(method, url, data=data, headers=headers, stream=True)
+        else:
+          # For other content types, assume JSON
+          response = requests.request(method, url, json=data, headers=headers, stream=True)
       else:
         # For GET requests or other methods, use data parameter directly
         response = requests.request(method, url, data=data, headers=headers, stream=True)
@@ -73,7 +78,7 @@ def reverse_proxy_post(subpath):
   print(f"POST Request: {request.url}\nData: {request.data.decode('utf-8')}")
   print(f"Form Data: {request.form}")
   response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
-  return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+  return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type')
 
 
 @app.route("/footage/full/<cameratype>/<route>")
