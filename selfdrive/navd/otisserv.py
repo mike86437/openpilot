@@ -423,7 +423,7 @@ class OtisServ(BaseHTTPRequestHandler):
     feature = j["features"][0]
     return feature["place_name"], feature["center"][1], feature["center"][0]
 
-  def parse_POST(self):
+  def do_POST(self):
     try:
       ctype, pdict = parse_header(self.headers['content-type'])
 
@@ -440,15 +440,18 @@ class OtisServ(BaseHTTPRequestHandler):
         except json.JSONDecodeError as e:
           logging.error(f"Failed to decode JSON data: {e}")
           self.send_error(400, 'Invalid JSON data')
-          return None
+          return
       else:
         postvars = {}
 
-      return postvars
+      # Now 'postvars' should contain the parsed data, whether from form or JSON
+      print(f"Received data: {postvars}")
+
+      # Additional processing logic here
+
     except Exception as e:
       logging.error(f"Error parsing POST data: {e}")
       self.send_error(500, 'Internal Server Error')
-      return None
 
   def gcj02towgs84(self, lng, lat):
     dlat = self.transform_lat(lng - 105.0, lat - 35.0)

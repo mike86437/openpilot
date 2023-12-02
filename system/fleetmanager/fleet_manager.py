@@ -16,16 +16,20 @@ from openpilot.system.swaglog import cloudlog
 app = Flask(__name__)
 
 def make_request_with_retry(method, url, data=None, headers=None):
-    retries = 3  # Adjust the number of retries as needed
-    for attempt in range(retries):
-        try:
-            response = requests.request(method, url, json=data, headers=headers, stream=True)
-            return response
-        except ConnectionError as e:
-            print(f"Error: {e}. Retrying...")
+  retries = 3  # Adjust the number of retries as needed
+  for attempt in range(retries):
+    try:
+      if data is not None:
+        response = requests.request(method, url, json=data, headers=headers, stream=True)
+      else:
+        response = requests.request(method, url, headers=headers, stream=True)
 
-    # If all retries fail, raise the last encountered exception
-    raise e
+      return response
+    except ConnectionError as e:
+      print(f"Error: {e}. Retrying...")
+
+  # If all retries fail, raise the last encountered exception
+  raise e
 
 @app.route("/")
 def home_page():
