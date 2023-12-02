@@ -31,7 +31,11 @@ def otisserv_base():
 
     # Send the request to the target server and forward the response to the client
     response = requests.request(method, target_server_url, data=request.data, headers=request.headers, stream=True)
-    
+
+    # Debugging statements
+    print(f"Original Request Method: {method}")
+    print(f"Forwarding request to: {target_server_url}")
+
     # Mimic the target server response in the Flask app
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
@@ -46,7 +50,11 @@ def reverse_proxy(subpath):
 
     # Send the request to the target server and forward the response to the client
     response = requests.request(method, target_server_url, data=request.data, headers=request.headers, stream=True)
-    
+
+    # Debugging statements
+    print(f"Original Request Method: {method}")
+    print(f"Forwarding request to: {target_server_url}")
+
     # Mimic the target server response in the Flask app
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
@@ -145,7 +153,7 @@ def main():
   except Exception:
     cloudlog.exception("fleet_manager: failed to set core affinity")
   app.secret_key = secrets.token_hex(32)
-  app.run(host="0.0.0.0", port=5050)
+  app.run(host="0.0.0.0", port=5050, debug=True)
 
 
 if __name__ == '__main__':
