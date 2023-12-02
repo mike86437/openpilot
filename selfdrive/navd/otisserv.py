@@ -111,9 +111,11 @@ class OtisServ(BaseHTTPRequestHandler):
           return
         self.display_page_gmap()
     else:
-      self.send_response(200)
-      self.send_header("Content-type", "text/html")
-      self.end_headers()
+      print(self.path)
+      if self.path != '/locations':
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
       if self.get_public_token() is None:
         self.display_page_public_token()
         return
@@ -133,6 +135,7 @@ class OtisServ(BaseHTTPRequestHandler):
 
     postvars = self.parse_POST()
     # set_destination endpoint
+    print(self.path)
     if self.path == '/set_destination':
       self.send_response(200)
       self.send_header("Content-type", "application/json")
