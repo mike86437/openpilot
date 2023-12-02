@@ -54,19 +54,19 @@ def reverse_proxy(subpath):
 
 @app.route("/navdirections.json", methods=['GET'])
 def otisserv_navdirections():
-  return handle_request(request.method)
+  return handle_request(request.method, "navdirections.json")
 
 @app.route("/CurrentStep.json", methods=['GET'])
 def otisserv_CurrentStep():
-  return handle_request(request.method)
+  return handle_request(request.method, "CurrentStep.json")
 
 @app.route("/locations", methods=['GET'])
 def otisserv_locations():
-  return handle_request(request.method)
+  return handle_request(request.method, "locations")
 
 @app.route("/set_destination", methods=['POST'])
 def otisserv_set_destination():
-  return handle_request(request.method)
+  return handle_request(request.method, set_destination)
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
