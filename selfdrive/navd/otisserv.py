@@ -42,6 +42,8 @@ x_pi = 3.14159265358979324 * 3000.0 / 180.0
 a = 6378245.0
 ee = 0.00669342162296594323
 
+step_confirm = False
+
 
 class OtisServ(BaseHTTPRequestHandler):
   def do_GET(self):
@@ -119,6 +121,9 @@ class OtisServ(BaseHTTPRequestHandler):
           self.display_page_app_token()
           return
         self.display_page_gmap()
+    elif step_confirm == True:
+      self.display_page_nav_confirmation(real_addr, lon, lat)
+      return
     else:
       self.send_response(200)
       self.send_header("Content-type", "text/html")
@@ -234,6 +239,7 @@ class OtisServ(BaseHTTPRequestHandler):
             else:
               real_addr = None
           if real_addr is not None:
+            step_confirm = True
             self.display_page_nav_confirmation(real_addr, lon, lat)
             return
           else:
