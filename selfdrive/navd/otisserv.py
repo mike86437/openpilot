@@ -45,8 +45,8 @@ ee = 0.00669342162296594323
 
 class OtisServ(BaseHTTPRequestHandler):
   def do_GET(self):
-    use_amap = params.get_int("SearchInput") == 1
-    use_gmap = params.get_int("SearchInput") == 2
+    use_amap = True if params.get_int("SearchInput") == 1 else False
+    use_gmap = True if params.get_int("SearchInput") == 2 else False
 
     if self.path == '/logo.png':
       self.get_logo()
