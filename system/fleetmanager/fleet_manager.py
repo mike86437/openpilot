@@ -81,6 +81,21 @@ def reverse_proxy_post(subpath):
     response = make_request_with_retry(method, target_server_url, data=modified_data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
+@app.route("/navdirections.json", methods=['GET'])
+def otisserv_get():
+    target_server_url = 'http://127.0.0.1:8082/navdirections.json'
+    method = request.method
+    print(f"GET Request: {request.url}")
+    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
+    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+
+@app.route("/CurrentStep.json", methods=['GET'])
+def otisserv_get():
+    target_server_url = 'http://127.0.0.1:8082/CurrentStep.json'
+    method = request.method
+    print(f"GET Request: {request.url}")
+    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
+    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
