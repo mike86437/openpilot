@@ -17,15 +17,13 @@ app = Flask(__name__)
 target_server_base_url = 'http://127.0.0.1:8282/'
 
 def make_request_with_retry(method, url, data=None, headers=None):
-  retries = 3  # Adjust the number of retries as needed
+  retries = 3 
   for attempt in range(retries):
     try:
       response = requests.request(method, url, data=data, headers=headers, stream=True)
       return response
     except ConnectionError as e:
       print(f"Error: {e}. Retrying...")
-
-  # If all retries fail, raise the last encountered exception
   raise e
 
 def build_target_url(subpath=''):
@@ -38,7 +36,6 @@ def handle_request(method, subpath=''):
   else:
     data = request.form.to_dict()
   response = make_request_with_retry(method, target_url, data=data, headers=request.headers)
-  
   return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 @app.route("/")
