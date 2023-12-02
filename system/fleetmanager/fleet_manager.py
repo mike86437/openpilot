@@ -66,7 +66,7 @@ def otisserv_locations():
 
 @app.route("/set_destination", methods=['POST'])
 def otisserv_set_destination():
-  return handle_request(request.method, set_destination)
+  return handle_request(request.method, "set_destination")
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
