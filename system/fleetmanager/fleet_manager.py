@@ -19,10 +19,12 @@ def make_request_with_retry(method, url, data=None, headers=None):
   retries = 3  # Adjust the number of retries as needed
   for attempt in range(retries):
     try:
-      if data is not None:
+      if data is not None and method == 'POST':
+        # For POST requests, use json parameter for data
         response = requests.request(method, url, json=data, headers=headers, stream=True)
       else:
-        response = requests.request(method, url, headers=headers, stream=True)
+        # For GET requests or other methods, use data parameter directly
+        response = requests.request(method, url, data=data, headers=headers, stream=True)
 
       return response
     except ConnectionError as e:
@@ -33,45 +35,46 @@ def make_request_with_retry(method, url, data=None, headers=None):
 
 @app.route("/")
 def home_page():
-    return render_template("index.html")
+  return render_template("index.html")
 
 # Route for handling GET requests
 @app.route("/otisserv", methods=['GET'])
 def otisserv_get():
-    target_server_url = 'http://127.0.0.1:8082/'
-    method = request.method
-    print(f"GET Request: {request.url}")
-    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
-    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+  target_server_url = 'http://127.0.0.1:8082/'
+  method = request.method
+  print(f"GET Request: {request.url}")
+  response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
+  return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 # Route for handling POST requests
 @app.route("/otisserv", methods=['POST'])
 def otisserv_post():
-    target_server_url = 'http://127.0.0.1:8082/'
-    method = request.method
-    print(f"POST Request: {request.url}\nData: {request.data.decode('utf-8')}")
-    print(f"Form Data: {request.form}")
-    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
-    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+  target_server_url = 'http://127.0.0.1:8082/'
+  method = request.method
+  print(f"POST Request: {request.url}\nData: {request.data.decode('utf-8')}")
+  print(f"Form Data: {request.form}")
+  response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
+  return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 # Route for handling GET requests
 @app.route("/otisserv/<path:subpath>", methods=['GET'])
 def reverse_proxy_get(subpath):
-    target_server_url = f'http://127.0.0.1:8082/{subpath}'
-    method = request.method
-    print(f"GET Request: {request.url}")
-    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
-    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+  target_server_url = f'http://127.0.0.1:8082/{subpath}'
+  method = request.method
+  print(f"GET Request: {request.url}")
+  response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
+  return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 # Route for handling POST requests
 @app.route("/otisserv/<path:subpath>", methods=['POST'])
 def reverse_proxy_post(subpath):
-    target_server_url = f'http://127.0.0.1:8082/{subpath}'
-    method = request.method
-    print(f"POST Request: {request.url}\nData: {request.data.decode('utf-8')}")
-    print(f"Form Data: {request.form}")
-    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
-    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+  target_server_url = f'http://127.0.0.1:8082/{subpath}'
+  method = request.method
+  print(f"POST Request: {request.url}\nData: {request.data.decode('utf-8')}")
+  print(f"Form Data: {request.form}")
+  response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
+  return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
