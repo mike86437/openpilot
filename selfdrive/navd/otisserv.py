@@ -86,30 +86,6 @@ class OtisServ(BaseHTTPRequestHandler):
           self.display_page_app_token()
           return
         self.display_page_amap()
-    elif use_gmap:
-      if self.path == '/style.css':
-        self.send_response(200)
-        self.send_header("Content-type", "text/css")
-        self.end_headers()
-        self.get_gmap_css()
-        return
-      elif self.path == '/index.js':
-        self.send_response(200)
-        self.send_header("Content-type", "text/javascript")
-        self.end_headers()
-        self.get_gmap_js()
-        return
-      else:
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        if self.get_gmap_key() is None:
-          self.display_page_gmap_key()
-          return
-        if self.get_app_token() is None:
-          self.display_page_app_token()
-          return
-        self.display_page_gmap()
     else:
       self.send_response(200)
       self.send_header("Content-type", "text/html")
@@ -205,7 +181,7 @@ class OtisServ(BaseHTTPRequestHandler):
         params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
         self.to_json(lat, lng, save_type, name)
       # favorites
-      if not use_gmap and "fav_val" in postvars:
+      if "fav_val" in postvars:
         addr = postvars.get("fav_val")[0]
         real_addr = None
         lon = None
@@ -231,7 +207,7 @@ class OtisServ(BaseHTTPRequestHandler):
             self.display_page_addr_input("Place Not Found")
             return
       # search
-      if not use_gmap and "addr_val" in postvars:
+      if "addr_val" in postvars:
         addr = postvars.get("addr_val")[0]
         if addr != "":
           real_addr, lat, lon = self.query_addr(addr)
@@ -292,7 +268,10 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(bytes(self.get_parsed_template("gmap/index.js", {"{{lat}}": lat, "{{lon}}": lon}), "utf-8"))
 
   def get_gmap_key(self):
-    token = params.get("GmapKey", encoding='utf8')
+    if use_gmap:
+      token = params.get("GmapKey", encoding='utf8')
+    else : 
+      token = ""
     if token is not None and token != "":
       return token.rstrip('\x00')
     return None
@@ -362,15 +341,19 @@ class OtisServ(BaseHTTPRequestHandler):
   def display_page_app_token(self, msg = ""):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("app_token_input", {"{{msg}}": msg})}), "utf-8"))
 
-  def display_page_addr_input(self, msg = ""):
-    self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("addr_input", {"{{msg}}": msg})}), "utf-8"))
-    
+  def display_page_addr_input(self, msg=""):
+    lon, lat = self.get_last_lon_lat()
+    template_content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key(), "{{lat}}": lat, "{{lon}}": lon})
+    body_content = self.get_parsed_template("body", {"{{content}}": template_content})
+    self.wfile.write(bytes(body_content, "utf-8"))
+
   def display_nav_directions(self, msg = ""):
-    content = self.get_parsed_template("addr_input", {"{{msg}}": ""}) + self.get_parsed_template("nav_directions", {"{{msg}}": msg})
+    lon, lat = self.get_last_lon_lat()
+    content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key(), "{{lat}}": lat, "{{lon}}": lon}) + self.get_parsed_template("nav_directions", {"{{msg}}": msg})
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
 
   def display_page_nav_confirmation(self, addr, lon, lat):
-    content = self.get_parsed_template("addr_input", {"{{msg}}": ""}) + self.get_parsed_template("nav_confirmation", {"{{token}}": self.get_public_token(), "{{lon}}": lon, "{{lat}}": lat, "{{addr}}": addr})
+    content = self.get_parsed_template("addr_input", {"{{gmap_key}}": self.get_gmap_key(), "{{lat}}": lat, "{{lon}}": lon}) + self.get_parsed_template("nav_confirmation", {"{{token}}": self.get_public_token(), "{{lon}}": lon, "{{lat}}": lat, "{{addr}}": addr})
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
 
   def display_prime_directions(self, msg = ""):
