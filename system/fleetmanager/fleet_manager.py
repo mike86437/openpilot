@@ -34,8 +34,10 @@ def build_target_url(subpath=''):
 def handle_request(method, subpath=''):
   target_url = build_target_url(subpath)
   if request.is_json:
+    print("request is json")
     data = request.get_json()
   else:
+    print("request is form")
     data = request.form.to_dict()
 
   print(f"{method} Request: {request.url}\nData: {data}")
