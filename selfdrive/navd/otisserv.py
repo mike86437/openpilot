@@ -86,6 +86,12 @@ class OtisServ(BaseHTTPRequestHandler):
           self.display_page_app_token()
           return
         self.display_page_amap()
+    elif use_gmap and self.get_gmap_key() is None:
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.display_page_gmap_key()
+        return
     else:
       self.send_response(200)
       self.send_header("Content-type", "text/html")
