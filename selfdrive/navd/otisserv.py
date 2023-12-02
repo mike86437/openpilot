@@ -426,12 +426,13 @@ class OtisServ(BaseHTTPRequestHandler):
         keep_blank_values=1)
     elif ctype == 'application/json':
       print("parsing json")
-      print(f"Received json: {postvars}")
       length = int(self.headers['content-length'])
       post_data = self.rfile.read(length).decode('utf-8')
       try:
         postvars = json.loads(post_data)
+        print(f"Received json: {postvars}")
       except json.JSONDecodeError:
+        print(f"Received this: {post_data}")
         self.send_error(400, 'Invalid JSON data')
         return None
     else:
