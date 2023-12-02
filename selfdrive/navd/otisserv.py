@@ -424,6 +424,7 @@ class OtisServ(BaseHTTPRequestHandler):
 
   def parse_POST(self):
     ctype, pdict = parse_header(self.headers['content-type'])
+  
     if ctype == 'application/x-www-form-urlencoded':
       length = int(self.headers['content-length'])
       postvars = parse_qs(
@@ -434,11 +435,13 @@ class OtisServ(BaseHTTPRequestHandler):
       post_data = self.rfile.read(length).decode('utf-8')
       try:
         postvars = json.loads(post_data)
-      except json.JSONDecodeError:
+      except json.JSONDecodeError as e:
+        logging.error(f"Failed to decode JSON data: {e}")
         self.send_error(400, 'Invalid JSON data')
         return None
     else:
       postvars = {}
+  
     return postvars
 
   def gcj02towgs84(self, lng, lat):
