@@ -42,8 +42,6 @@ x_pi = 3.14159265358979324 * 3000.0 / 180.0
 a = 6378245.0
 ee = 0.00669342162296594323
 
-step_confirm = False
-
 
 class OtisServ(BaseHTTPRequestHandler):
   def do_GET(self):
@@ -121,12 +119,6 @@ class OtisServ(BaseHTTPRequestHandler):
           self.display_page_app_token()
           return
         self.display_page_gmap()
-    elif step_confirm == True:
-      self.send_response(200)
-      self.send_header("Content-type", "text/html")
-      self.end_headers()
-      self.display_page_nav_confirmation(real_addr, lon, lat)
-      return
     else:
       self.send_response(200)
       self.send_header("Content-type", "text/html")
@@ -224,7 +216,6 @@ class OtisServ(BaseHTTPRequestHandler):
         self.to_json(lat, lng, save_type, name)
       # favorites
       if not use_gmap and "fav_val" in postvars:
-        print("Made it to fav")
         addr = postvars.get("fav_val")[0]
         real_addr = None
         lon = None
@@ -251,7 +242,6 @@ class OtisServ(BaseHTTPRequestHandler):
             return
       # search
       if not use_gmap and "addr_val" in postvars:
-        print("Made it to search")
         addr = postvars.get("addr_val")[0]
         if addr != "":
           real_addr, lat, lon = self.query_addr(addr)
