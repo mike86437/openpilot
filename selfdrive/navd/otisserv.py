@@ -442,10 +442,6 @@ class OtisServ(BaseHTTPRequestHandler):
       postvars = {}
     return postvars
 
-    except Exception as e:
-      logging.error(f"Error parsing POST data: {e}")
-      self.send_error(500, 'Internal Server Error')
-
   def gcj02towgs84(self, lng, lat):
     dlat = self.transform_lat(lng - 105.0, lat - 35.0)
     dlng = self.transform_lng(lng - 105.0, lat - 35.0)
