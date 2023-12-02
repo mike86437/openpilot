@@ -111,7 +111,6 @@ class OtisServ(BaseHTTPRequestHandler):
           return
         self.display_page_gmap()
     else:
-      print(self.path)
       if self.path != '/locations':
         self.send_response(200)
         self.send_header("Content-type", "text/html")
@@ -135,9 +134,7 @@ class OtisServ(BaseHTTPRequestHandler):
 
     postvars = self.parse_POST()
     # set_destination endpoint
-    print(self.path)
     if self.path == '/set_destination':
-      print("made it to set dest")
       self.send_response(200)
       self.send_header("Content-type", "application/json")
       self.end_headers()
@@ -419,25 +416,20 @@ class OtisServ(BaseHTTPRequestHandler):
   def parse_POST(self):
     ctype, pdict = parse_header(self.headers['content-type'])
     if ctype == 'application/x-www-form-urlencoded':
-      print("parsing form")
       length = int(self.headers['content-length'])
       postvars = parse_qs(
         self.rfile.read(length).decode('utf-8'),
         keep_blank_values=1)
     elif ctype == 'application/json':
-      print("parsing json")
       length = int(self.headers['content-length'])
       post_data = self.rfile.read(length).decode('utf-8')
       try:
         postvars = json.loads(post_data)
-        print(f"Received json: {postvars}")
       except json.JSONDecodeError:
-        print(f"Received this: {post_data}")
         self.send_error(400, 'Invalid JSON data')
         return None
     else:
       postvars = {}
-    print(f"Received data: {postvars}")
     return postvars
 
   def gcj02towgs84(self, lng, lat):

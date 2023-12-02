@@ -34,13 +34,9 @@ def build_target_url(subpath=''):
 def handle_request(method, subpath=''):
   target_url = build_target_url(subpath)
   if request.is_json:
-    print("request is json")
     data = request.data
   else:
-    print("request is form")
     data = request.form.to_dict()
-
-  print(f"{method} Request: {request.url}\nData: {data}")
   response = make_request_with_retry(method, target_url, data=data, headers=request.headers)
   
   return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
