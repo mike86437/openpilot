@@ -60,6 +60,14 @@ def otisserv_navdirections():
 def otisserv_CurrentStep():
   return handle_request(request.method)
 
+@app.route("/locations", methods=['GET'])
+def otisserv_locations():
+  return handle_request(request.method)
+
+@app.route("/set_destination", methods=['POST'])
+def otisserv_set_destination():
+  return handle_request(request.method)
+
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
   chunk_size = 1024 * 512  # 5KiB
