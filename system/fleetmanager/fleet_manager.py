@@ -20,7 +20,7 @@ def make_request_with_retry(method, url, data=None, headers=None):
   retries = 3  # Adjust the number of retries as needed
   for attempt in range(retries):
     try:
-      response = requests.request(method, url, json=data, headers=headers, stream=True)
+      response = requests.request(method, url, data=data, headers=headers, stream=True)
       return response
     except ConnectionError as e:
       print(f"Error: {e}. Retrying...")
