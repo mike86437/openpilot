@@ -82,7 +82,7 @@ def reverse_proxy_post(subpath):
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 @app.route("/navdirections.json", methods=['GET'])
-def otisserv_get():
+def otisserv_navdirections():
     target_server_url = 'http://127.0.0.1:8082/navdirections.json'
     method = request.method
     print(f"GET Request: {request.url}")
@@ -90,7 +90,7 @@ def otisserv_get():
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 @app.route("/CurrentStep.json", methods=['GET'])
-def otisserv_get():
+def otisserv_CurrentStep():
     target_server_url = 'http://127.0.0.1:8082/CurrentStep.json'
     method = request.method
     print(f"GET Request: {request.url}")
