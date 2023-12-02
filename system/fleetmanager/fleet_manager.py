@@ -7,6 +7,7 @@ import time
 
 from flask import Flask, render_template, Response, request, send_from_directory, session, redirect, url_for
 import requests
+from requests.exceptions import ConnectionError
 from openpilot.common.realtime import set_core_affinity
 import openpilot.system.fleetmanager.helpers as fleet
 from openpilot.system.hardware.hw import Paths
@@ -14,48 +15,35 @@ from openpilot.system.swaglog import cloudlog
 
 app = Flask(__name__)
 
+def make_request_with_retry(method, url, data=None, headers=None):
+    retries = 3  # Adjust the number of retries as needed
+    for attempt in range(retries):
+        try:
+            response = requests.request(method, url, data=data, headers=headers, stream=True)
+            return response
+        except ConnectionError as e:
+            print(f"Error: {e}. Retrying...")
+
+    # If all retries fail, raise the last encountered exception
+    raise e
 
 @app.route("/")
 @app.route("/index")
 def home_page():
   return render_template("index.html")
 
-# Route for /otisserv without a specific path
 @app.route("/otisserv", methods=['GET', 'POST'])
 def otisserv_base():
-    # Modify the URL to point to the target server
     target_server_url = 'http://127.0.0.1:8082/'
-    
-    # Determine the method of the original request
     method = request.method
-
-    # Send the request to the target server and forward the response to the client
-    response = requests.request(method, target_server_url, data=request.data, headers=request.headers, stream=True)
-
-    # Debugging statements
-    print(f"Original Request Method: {method}")
-    print(f"Forwarding request to: {target_server_url}")
-
-    # Mimic the target server response in the Flask app
+    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
-# Route for /otisserv/<path:subpath>
 @app.route("/otisserv/<path:subpath>", methods=['GET', 'POST'])
 def reverse_proxy(subpath):
-    # Modify the URL to point to the target server
     target_server_url = f'http://127.0.0.1:8082/{subpath}'
-    
-    # Determine the method of the original request
     method = request.method
-
-    # Send the request to the target server and forward the response to the client
-    response = requests.request(method, target_server_url, data=request.data, headers=request.headers, stream=True)
-
-    # Debugging statements
-    print(f"Original Request Method: {method}")
-    print(f"Forwarding request to: {target_server_url}")
-
-    # Mimic the target server response in the Flask app
+    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 @app.route("/footage/full/<cameratype>/<route>")
