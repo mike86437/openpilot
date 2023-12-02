@@ -435,11 +435,13 @@ class OtisServ(BaseHTTPRequestHandler):
   def parse_POST(self):
     ctype, pdict = parse_header(self.headers['content-type'])
     if ctype == 'application/x-www-form-urlencoded':
+      print("parsing form")
       length = int(self.headers['content-length'])
       postvars = parse_qs(
         self.rfile.read(length).decode('utf-8'),
         keep_blank_values=1)
     elif ctype == 'application/json':
+      print("parsing json")
       length = int(self.headers['content-length'])
       post_data = self.rfile.read(length).decode('utf-8')
       try:
