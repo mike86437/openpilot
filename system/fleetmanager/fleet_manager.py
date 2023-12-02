@@ -73,6 +73,23 @@ def reverse_proxy_post(subpath):
   response = make_request_with_retry(method, target_server_url, data=list(request.form.items()), headers=request.headers)
   return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
+# Route for handling POST requests
+@app.route("/confirm_destination_ajax", methods=['POST'])
+def confirm_destination_ajax_post():
+    target_server_url = 'http://127.0.0.1:8082/'  # Update with your correct URL
+    method = request.method
+    print(f"POST Request: {request.url}\nData: {list(request.form.items())}")
+    response = make_request_with_retry(method, target_server_url, data=list(request.form.items()), headers=request.headers)
+    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+
+@app.route("/otisserv/confirm_destination_ajax", methods=['POST'])
+def confirm_destination_ajax_post():
+    target_server_url = 'http://127.0.0.1:8082/'  # Update with your correct URL
+    method = request.method
+    print(f"POST Request: {request.url}\nData: {list(request.form.items())}")
+    response = make_request_with_retry(method, target_server_url, data=list(request.form.items()), headers=request.headers)
+    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
