@@ -52,8 +52,8 @@ def otisserv_post():
     target_server_url = 'http://127.0.0.1:8082/'
     method = request.method
 
-    # Create a dictionary from request.form.items()
-    modified_data = dict(request.form.items())
+    # Convert request.form to dictionary
+    modified_data = request.form.to_dict()
 
     print(f"POST Request: {request.url}\nData: {modified_data}")
     response = make_request_with_retry(method, target_server_url, data=modified_data, headers=request.headers)
@@ -74,12 +74,13 @@ def reverse_proxy_post(subpath):
     target_server_url = f'http://127.0.0.1:8082/{subpath}'
     method = request.method
 
-    # Create a dictionary from request.form.items()
-    modified_data = dict(request.form.items())
+    # Convert request.form to dictionary
+    modified_data = request.form.to_dict()
 
     print(f"POST Request: {request.url}\nData: {modified_data}")
     response = make_request_with_retry(method, target_server_url, data=modified_data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
