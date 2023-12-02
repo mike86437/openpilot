@@ -32,8 +32,8 @@ import math
 from common.basedir import BASEDIR
 from common.params import Params
 from common.i18n import supported_languages
+use_gmap = False
 params = Params()
-
 hostName = ""
 serverPort = 8282
 
