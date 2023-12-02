@@ -111,7 +111,6 @@ class OtisServ(BaseHTTPRequestHandler):
           return
         self.display_page_gmap()
     else:
-      if self.path != '/locations':
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
