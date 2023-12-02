@@ -33,7 +33,10 @@ def build_target_url(subpath=''):
 
 def handle_request(method, subpath=''):
   target_url = build_target_url(subpath)
-  data = request.form.to_dict()
+  if request.is_json:
+    data = request.get_json()
+  else:
+    data = request.form.to_dict()
 
   print(f"{method} Request: {request.url}\nData: {data}")
   response = make_request_with_retry(method, target_url, data=data, headers=request.headers)
