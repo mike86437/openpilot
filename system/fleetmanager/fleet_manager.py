@@ -28,19 +28,36 @@ def make_request_with_retry(method, url, data=None, headers=None):
     raise e
 
 @app.route("/")
-@app.route("/index")
 def home_page():
-  return render_template("index.html")
+    return render_template("index.html")
 
-@app.route("/otisserv", methods=['GET', 'POST'])
-def otisserv_base():
+# Route for handling GET requests
+@app.route("/otisserv", methods=['GET'])
+def otisserv_get():
     target_server_url = 'http://127.0.0.1:8082/'
     method = request.method
     response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
-@app.route("/otisserv/<path:subpath>", methods=['GET', 'POST'])
-def reverse_proxy(subpath):
+# Route for handling POST requests
+@app.route("/otisserv", methods=['POST'])
+def otisserv_post():
+    target_server_url = 'http://127.0.0.1:8082/'
+    method = request.method
+    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
+    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+
+# Route for handling GET requests
+@app.route("/otisserv/<path:subpath>", methods=['GET'])
+def reverse_proxy_get(subpath):
+    target_server_url = f'http://127.0.0.1:8082/{subpath}'
+    method = request.method
+    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
+    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+
+# Route for handling POST requests
+@app.route("/otisserv/<path:subpath>", methods=['POST'])
+def reverse_proxy_post(subpath):
     target_server_url = f'http://127.0.0.1:8082/{subpath}'
     method = request.method
     response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
