@@ -111,9 +111,9 @@ class OtisServ(BaseHTTPRequestHandler):
           return
         self.display_page_gmap()
     else:
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
+      self.send_response(200)
+      self.send_header("Content-type", "text/html")
+      self.end_headers()
       if self.get_public_token() is None:
         self.display_page_public_token()
         return
