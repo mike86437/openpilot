@@ -423,31 +423,24 @@ class OtisServ(BaseHTTPRequestHandler):
     feature = j["features"][0]
     return feature["place_name"], feature["center"][1], feature["center"][0]
 
-  def do_POST(self):
-    try:
-      ctype, pdict = parse_header(self.headers['content-type'])
-
-      if ctype == 'application/x-www-form-urlencoded':
-        length = int(self.headers['content-length'])
-        postvars = parse_qs(
-          self.rfile.read(length).decode('utf-8'),
-          keep_blank_values=1)
-      elif ctype == 'application/json':
-        length = int(self.headers['content-length'])
-        post_data = self.rfile.read(length).decode('utf-8')
-        try:
-          postvars = json.loads(post_data)
-        except json.JSONDecodeError as e:
-          logging.error(f"Failed to decode JSON data: {e}")
-          self.send_error(400, 'Invalid JSON data')
-          return
-      else:
-        postvars = {}
-
-      # Now 'postvars' should contain the parsed data, whether from form or JSON
-      print(f"Received data: {postvars}")
-
-      # Additional processing logic here
+  def parse_POST(self):
+    ctype, pdict = parse_header(self.headers['content-type'])
+    if ctype == 'application/x-www-form-urlencoded':
+      length = int(self.headers['content-length'])
+      postvars = parse_qs(
+        self.rfile.read(length).decode('utf-8'),
+        keep_blank_values=1)
+    elif ctype == 'application/json':
+      length = int(self.headers['content-length'])
+      post_data = self.rfile.read(length).decode('utf-8')
+      try:
+        postvars = json.loads(post_data)
+      except json.JSONDecodeError:
+        self.send_error(400, 'Invalid JSON data')
+        return None
+    else:
+      postvars = {}
+    return postvars
 
     except Exception as e:
       logging.error(f"Error parsing POST data: {e}")
