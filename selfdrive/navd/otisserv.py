@@ -137,6 +137,7 @@ class OtisServ(BaseHTTPRequestHandler):
     # set_destination endpoint
     print(self.path)
     if self.path == '/set_destination':
+      print("made it to set dest")
       self.send_response(200)
       self.send_header("Content-type", "application/json")
       self.end_headers()
