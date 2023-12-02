@@ -25,6 +25,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from cgi import parse_header, parse_multipart
 from urllib.parse import parse_qs, unquote
+import logging
 import json
 import requests
 import math
@@ -423,26 +424,31 @@ class OtisServ(BaseHTTPRequestHandler):
     return feature["place_name"], feature["center"][1], feature["center"][0]
 
   def parse_POST(self):
-    ctype, pdict = parse_header(self.headers['content-type'])
-  
-    if ctype == 'application/x-www-form-urlencoded':
-      length = int(self.headers['content-length'])
-      postvars = parse_qs(
-        self.rfile.read(length).decode('utf-8'),
-        keep_blank_values=1)
-    elif ctype == 'application/json':
-      length = int(self.headers['content-length'])
-      post_data = self.rfile.read(length).decode('utf-8')
-      try:
-        postvars = json.loads(post_data)
-      except json.JSONDecodeError as e:
-        logging.error(f"Failed to decode JSON data: {e}")
-        self.send_error(400, 'Invalid JSON data')
-        return None
-    else:
-      postvars = {}
-  
-    return postvars
+    try:
+      ctype, pdict = parse_header(self.headers['content-type'])
+
+      if ctype == 'application/x-www-form-urlencoded':
+        length = int(self.headers['content-length'])
+        postvars = parse_qs(
+          self.rfile.read(length).decode('utf-8'),
+          keep_blank_values=1)
+      elif ctype == 'application/json':
+        length = int(self.headers['content-length'])
+        post_data = self.rfile.read(length).decode('utf-8')
+        try:
+          postvars = json.loads(post_data)
+        except json.JSONDecodeError as e:
+          logging.error(f"Failed to decode JSON data: {e}")
+          self.send_error(400, 'Invalid JSON data')
+          return None
+      else:
+        postvars = {}
+
+      return postvars
+    except Exception as e:
+      logging.error(f"Error parsing POST data: {e}")
+      self.send_error(500, 'Internal Server Error')
+      return None
 
   def gcj02towgs84(self, lng, lat):
     dlat = self.transform_lat(lng - 105.0, lat - 35.0)
