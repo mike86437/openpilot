@@ -36,6 +36,7 @@ def home_page():
 def otisserv_get():
     target_server_url = 'http://127.0.0.1:8082/'
     method = request.method
+    print(f"GET Request: {request.url}")
     response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
@@ -44,6 +45,7 @@ def otisserv_get():
 def otisserv_post():
     target_server_url = 'http://127.0.0.1:8082/'
     method = request.method
+    print(f"POST Request: {request.url}\nData: {request.data.decode('utf-8')}")
     response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
@@ -52,6 +54,7 @@ def otisserv_post():
 def reverse_proxy_get(subpath):
     target_server_url = f'http://127.0.0.1:8082/{subpath}'
     method = request.method
+    print(f"GET Request: {request.url}")
     response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
@@ -60,6 +63,7 @@ def reverse_proxy_get(subpath):
 def reverse_proxy_post(subpath):
     target_server_url = f'http://127.0.0.1:8082/{subpath}'
     method = request.method
+    print(f"POST Request: {request.url}\nData: {request.data.decode('utf-8')}")
     response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
