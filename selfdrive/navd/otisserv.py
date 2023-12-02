@@ -217,8 +217,6 @@ class OtisServ(BaseHTTPRequestHandler):
     if self.path != '/set_destination':
       if self.use_amap:
         self.display_page_amap()
-      elif self.use_gmap:
-        self.display_page_gmap()
       else:
         if params.get("NavDestination") is not None:
           self.display_nav_directions()
