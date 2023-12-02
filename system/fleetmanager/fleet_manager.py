@@ -14,7 +14,7 @@ from openpilot.system.hardware.hw import Paths
 from openpilot.system.swaglog import cloudlog
 
 app = Flask(__name__)
-target_server_base_url = 'http://127.0.0.1:8082/'
+target_server_base_url = 'http://127.0.0.1:8282/'
 
 def make_request_with_retry(method, url, data=None, headers=None):
   retries = 3  # Adjust the number of retries as needed
@@ -54,19 +54,11 @@ def reverse_proxy(subpath):
 
 @app.route("/navdirections.json", methods=['GET'])
 def otisserv_navdirections():
-    target_server_url = 'http://127.0.0.1:8082/navdirections.json'
-    method = request.method
-    print(f"GET Request: {request.url}")
-    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
-    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+  return handle_request(request.method)
 
 @app.route("/CurrentStep.json", methods=['GET'])
 def otisserv_CurrentStep():
-    target_server_url = 'http://127.0.0.1:8082/CurrentStep.json'
-    method = request.method
-    print(f"GET Request: {request.url}")
-    response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
-    return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
+  return handle_request(request.method)
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
@@ -163,7 +155,7 @@ def main():
   except Exception:
     cloudlog.exception("fleet_manager: failed to set core affinity")
   app.secret_key = secrets.token_hex(32)
-  app.run(host="0.0.0.0", port=5050)
+  app.run(host="0.0.0.0", port=8082)
 
 
 if __name__ == '__main__':

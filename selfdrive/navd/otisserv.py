@@ -35,7 +35,7 @@ from common.i18n import supported_languages
 params = Params()
 
 hostName = ""
-serverPort = 8082
+serverPort = 8282
 
 pi = 3.1415926535897932384626
 x_pi = 3.14159265358979324 * 3000.0 / 180.0
