@@ -438,6 +438,7 @@ class OtisServ(BaseHTTPRequestHandler):
         return None
     else:
       postvars = {}
+    print(f"Received data: {postvars}")
     return postvars
 
   def gcj02towgs84(self, lng, lat):
