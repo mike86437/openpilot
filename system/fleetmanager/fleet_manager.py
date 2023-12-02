@@ -78,7 +78,7 @@ def reverse_proxy_post(subpath):
   print(f"POST Request: {request.url}\nData: {request.data.decode('utf-8')}")
   print(f"Form Data: {request.form}")
   response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
-  return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type')
+  return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 
 @app.route("/footage/full/<cameratype>/<route>")
