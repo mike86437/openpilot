@@ -21,25 +21,31 @@ def home_page():
   return render_template("index.html")
 
 # Route for /otisserv without a specific path
-@app.route("/otisserv")
+@app.route("/otisserv", methods=['GET', 'POST'])
 def otisserv_base():
     # Modify the URL to point to the target server
     target_server_url = 'http://127.0.0.1:8082/'
     
+    # Determine the method of the original request
+    method = request.method
+
     # Send the request to the target server and forward the response to the client
-    response = requests.get(target_server_url, stream=True)
+    response = requests.request(method, target_server_url, data=request.data, headers=request.headers, stream=True)
     
     # Mimic the target server response in the Flask app
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 # Route for /otisserv/<path:subpath>
-@app.route("/otisserv/<path:subpath>")
+@app.route("/otisserv/<path:subpath>", methods=['GET', 'POST'])
 def reverse_proxy(subpath):
     # Modify the URL to point to the target server
     target_server_url = f'http://127.0.0.1:8082/{subpath}'
     
+    # Determine the method of the original request
+    method = request.method
+
     # Send the request to the target server and forward the response to the client
-    response = requests.get(target_server_url, stream=True)
+    response = requests.request(method, target_server_url, data=request.data, headers=request.headers, stream=True)
     
     # Mimic the target server response in the Flask app
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
