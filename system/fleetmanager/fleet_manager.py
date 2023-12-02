@@ -5,7 +5,7 @@ import secrets
 import threading
 import time
 
-from flask import Flask, render_template, Response, request, send_from_directory, session, redirect, url_for
+from flask import Flask, render_template, Response, request, send_from_directory, session, redirect, url_for, jsonify
 import requests
 from requests.exceptions import ConnectionError
 from openpilot.common.realtime import set_core_affinity
