@@ -201,9 +201,9 @@ class OtisServ(BaseHTTPRequestHandler):
           lng, lat = self.gcj02towgs84(lng, lat)
         params.put("NavDestination", "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
         self.to_json(lat, lng, save_type, name)
-      if "latitude" in postvars and postvars.get("latitude")[0] != "" and "longitude" in postvars and postvars.get("longitude")[0] != "":
-        lat = float(latitude)
-        lng = float(longitude)
+      if "latitude" in postvars and postvars.get("latitude") != "" and "longitude" in postvars and postvars.get("longitude") != "":
+        lat = float(postvars.get("latitude"))
+        lng = float(postvars.get("longitude"))
         save_type = "recent"
         name = postvars.get("place_name", [""])
         params.put('NavDestination', "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
