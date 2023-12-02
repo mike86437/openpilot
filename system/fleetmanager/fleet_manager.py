@@ -46,6 +46,7 @@ def otisserv_post():
     target_server_url = 'http://127.0.0.1:8082/'
     method = request.method
     print(f"POST Request: {request.url}\nData: {request.data.decode('utf-8')}")
+    print(f"Form Data: {request.form}")
     response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
@@ -64,6 +65,7 @@ def reverse_proxy_post(subpath):
     target_server_url = f'http://127.0.0.1:8082/{subpath}'
     method = request.method
     print(f"POST Request: {request.url}\nData: {request.data.decode('utf-8')}")
+    print(f"Form Data: {request.form}")
     response = make_request_with_retry(method, target_server_url, data=request.data, headers=request.headers)
     return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
