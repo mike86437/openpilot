@@ -32,7 +32,6 @@ import math
 from common.basedir import BASEDIR
 from common.params import Params
 from common.i18n import supported_languages
-use_gmap = False
 params = Params()
 hostName = ""
 serverPort = 8282
@@ -45,8 +44,8 @@ ee = 0.00669342162296594323
 
 class OtisServ(BaseHTTPRequestHandler):
   def do_GET(self):
-    use_amap = True if params.get_int("SearchInput") == 1 else False
-    use_gmap = True if params.get_int("SearchInput") == 2 else False
+    self.use_amap = True if params.get_int("SearchInput") == 1 else False
+    self.use_gmap = True if params.get_int("SearchInput") == 2 else False
 
     if self.path == '/logo.png':
       self.get_logo()
@@ -62,7 +61,7 @@ class OtisServ(BaseHTTPRequestHandler):
     if self.path == '/locations':
       self.get_locations()
       return
-    elif use_amap:
+    elif self.use_amap:
       if self.path == '/style.css':
         self.send_response(200)
         self.send_header("Content-type", "text/css")
@@ -86,7 +85,7 @@ class OtisServ(BaseHTTPRequestHandler):
           self.display_page_app_token()
           return
         self.display_page_amap()
-    elif use_gmap and self.get_gmap_key() is None:
+    elif self.use_gmap and self.get_gmap_key() is None:
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
@@ -110,8 +109,8 @@ class OtisServ(BaseHTTPRequestHandler):
         self.display_page_addr_input()
 
   def do_POST(self):
-    use_amap = params.get_int("SearchInput") == 1
-    use_gmap = params.get_int("SearchInput") == 2
+    self.use_amap = params.get_int("SearchInput") == 1
+    self.use_gmap = params.get_int("SearchInput") == 2
 
     postvars = self.parse_POST()
     # set_destination endpoint
@@ -126,7 +125,7 @@ class OtisServ(BaseHTTPRequestHandler):
       self.send_header("Content-type", "text/html")
       self.end_headers()
 
-    if use_amap:
+    if self.use_amap:
       # amap token
       if self.get_amap_key() is None or self.get_amap_key_2() is None:
         if postvars is None or \
@@ -137,7 +136,7 @@ class OtisServ(BaseHTTPRequestHandler):
         params.put("AppleMapsKey1", postvars.get("amap_key_val")[0])
         params.put("AppleMapsKey2", postvars.get("amap_key_val_2")[0])
 
-    elif use_gmap:
+    elif self.use_gmap:
       # gmap token
       if self.get_gmap_key() is None:
         if postvars is None or "gmap_key_val" not in postvars or postvars.get("gmap_key_val")[0] == "":
@@ -175,7 +174,7 @@ class OtisServ(BaseHTTPRequestHandler):
         lng = float(postvars.get("lon")[0])
         save_type = postvars.get("save_type")[0]
         name = postvars.get("name")[0] if postvars.get("name") is not None else ""
-        if use_amap:
+        if self.use_amap:
           lng, lat = self.gcj02towgs84(lng, lat)
         params.put("NavDestination", "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
         self.to_json(lat, lng, save_type, name)
@@ -224,9 +223,9 @@ class OtisServ(BaseHTTPRequestHandler):
             self.display_page_addr_input("Place Not Found")
             return
     if self.path != '/set_destination':
-      if use_amap:
+      if self.use_amap:
         self.display_page_amap()
-      elif use_gmap:
+      elif self.use_gmap:
         self.display_page_gmap()
       else:
         if params.get("NavDestination") is not None:
@@ -274,7 +273,7 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(bytes(self.get_parsed_template("gmap/index.js", {"{{lat}}": lat, "{{lon}}": lon}), "utf-8"))
 
   def get_gmap_key(self):
-    if use_gmap:
+    if self.use_gmap:
       token = params.get("GmapKey", encoding='utf8')
     else : 
       token = ""
