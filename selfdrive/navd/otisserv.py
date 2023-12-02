@@ -109,8 +109,8 @@ class OtisServ(BaseHTTPRequestHandler):
         self.display_page_addr_input()
 
   def do_POST(self):
-    self.use_amap = params.get_int("SearchInput") == 1
-    self.use_gmap = params.get_int("SearchInput") == 2
+    self.use_amap = True if params.get_int("SearchInput") == 1 else False
+    self.use_gmap = True if params.get_int("SearchInput") == 2 else False
 
     postvars = self.parse_POST()
     # set_destination endpoint
@@ -135,14 +135,6 @@ class OtisServ(BaseHTTPRequestHandler):
           return
         params.put("AppleMapsKey1", postvars.get("amap_key_val")[0])
         params.put("AppleMapsKey2", postvars.get("amap_key_val_2")[0])
-
-    elif self.use_gmap:
-      # gmap token
-      if self.get_gmap_key() is None:
-        if postvars is None or "gmap_key_val" not in postvars or postvars.get("gmap_key_val")[0] == "":
-          self.display_page_gmap_key()
-          return
-        params.put("GmapKey", postvars.get("gmap_key_val")[0])
 
     else:
       # mapbox public key
