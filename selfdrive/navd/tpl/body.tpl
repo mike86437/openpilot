@@ -46,7 +46,7 @@
 </head>
 <body style="margin: 0; padding: 0;">
   <div style="display: grid; place-items: center;">
-<div style="padding: 5px; font-weight: bold;" align="center"><a href="/fleetmanager">Fleet Manager</a></div>
+<div style="padding: 5px; font-weight: bold;" align="center"><a href="/">Fleet Manager</a></div>
   {{content}}
   </div>
 <!-- Dark Mode Toggle Button -->
