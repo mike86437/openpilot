@@ -152,7 +152,7 @@ def addr_input():
   token = fleet.get_public_token()
   s_token = fleet.get_app_token()
   gmap_key = fleet.get_gmap_key()
-  PrimeType = 1
+  PrimeType = fleet.get_PrimeType()
   lon = float(0.0)
   lat = float(0.0)
   if request.method == 'POST':

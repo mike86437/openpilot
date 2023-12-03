@@ -22,6 +22,9 @@
     </div>
   </fieldset>
 </form>
+{% else %}
+  {# Debugging step to print the value of PrimeType #}
+  <p>PrimeType Value: {{ PrimeType }}</p>
 {% endif %}
 <div id="destinationHeading" style="font-weight: bold;"></div>
 <div id="jsonOutput"></div>
