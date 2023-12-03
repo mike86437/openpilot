@@ -133,7 +133,7 @@ def parse_POST(post_data):
   return postvars
 
 def parse_addr(postvars, lon, lat, valid_addr):
-  addr = postvars.get("fav_val", [""])[0]
+  addr = postvars.get("fav_val", [""])
   print(addr)
   real_addr = None
   if addr != "favorites":
@@ -151,7 +151,7 @@ def parse_addr(postvars, lon, lat, valid_addr):
 
 def search_addr(postvars, lon, lat, valid_addr):
   if "addr_val" in postvars:
-    addr = postvars.get("addr_val")[0]
+    addr = postvars.get("addr_val")
     if addr != "":
       real_addr, lat, lon = self.query_addr(addr)
   if real_addr is not None:
