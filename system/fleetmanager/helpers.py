@@ -135,15 +135,15 @@ def get_nav_active():
     return False
 
 def get_public_token():
-  token = Params().get("MapboxPublicKey", encoding='utf8')
+  token = params.get("MapboxPublicKey", encoding='utf8')
   return token
 
 def get_app_token():
-  token = Params().get("MapboxSecretKey", encoding='utf8')
+  token = params.get("MapboxSecretKey", encoding='utf8')
   return token
 
 def get_gmap_key():
-  token = Params().get("GmapKey", encoding='utf8')
+  token = params.get("GmapKey", encoding='utf8')
   return token
 
 def get_SearchInput():
@@ -151,7 +151,7 @@ def get_SearchInput():
   return SearchInput
 
 def get_PrimeType():
-  PrimeType = Params().get_int("PrimeType")
+  PrimeType = params.get_int("PrimeType")
   return PrimeType
 
 def parse_addr(postvars, lon, lat, valid_addr, token):

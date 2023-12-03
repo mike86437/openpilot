@@ -148,10 +148,10 @@ def open_error_log(file_name):
 
 @app.route("/addr_input", methods=['GET', 'POST'])
 def addr_input():
+  SearchInput = fleet.get_SearchInput()
   token = fleet.get_public_token()
   s_token = fleet.get_app_token()
   gmap_key = fleet.get_gmap_key()
-  SearchInput = fleet.get_SearchInput()
   PrimeType = fleet.get_PrimeType()
   if request.method == 'POST':
     lon = float(0.0)
