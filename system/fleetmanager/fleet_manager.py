@@ -157,7 +157,7 @@ def open_error_log(file_name):
 @app.route("/addr_input", methods=['GET', 'POST'])
 def addr_input():
   if request.method == 'POST':
-    token = ""
+    token = fleet.get_public_token()
     lon = float(0.0)
     lat = float(0.0)
     valid_addr = False
@@ -169,7 +169,7 @@ def addr_input():
       addr, lon, lat, valid_addr, token = fleet.search_addr(postvars, lon, lat, valid_addr, token)
     if valid_addr:
       # If a valid address is found, redirect to nav_confirmation
-      return redirect(url_for('nav_confirmation', addr=addr, lon=lon, lat=lat, token=token))
+      return redirect(url_for('nav_confirmation', addr=addr, lon=lon, lat=lat))
     else:
       return render_template("error.html")
   else:
@@ -177,14 +177,14 @@ def addr_input():
 
 @app.route("/nav_confirmation", methods=['GET', 'POST'])
 def nav_confirmation():
-  token = request.args.get('token')
+  token = fleet.get_public_token()
   lon = request.args.get('lon')
   lat = request.args.get('lat')
   addr = request.args.get('addr')
   if request.method == 'POST':
     postvars = request.form.to_dict()
     fleet.nav_confirmed(postvars)
-    pass
+    return redirect(url_for('addr_input'))
   else:
     return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
 

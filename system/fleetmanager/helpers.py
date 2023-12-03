@@ -128,9 +128,11 @@ def ffplay_mp4_wrap_process_builder(file_name):
     command_line, stdout=subprocess.PIPE
   )
 
+def get_public_token(self):
+  token = params.get("MapboxPublicKey", encoding='utf8')
+  return token
 
 def parse_addr(postvars, lon, lat, valid_addr, token):
-  token = params.get("MapboxPublicKey", encoding='utf8')
   addr = postvars.get("fav_val", [""])
   real_addr = None
   if addr != "favorites":
@@ -176,18 +178,15 @@ def nav_confirmed(postvars):
     if name == "":
       name =  str(lat) + "," + str(lng)
     new_dest = {"latitude": float(lat), "longitude": float(lng), "place_name": name}
-
     if save_type == "recent":
       new_dest["save_type"] = "recent"
     else:
       new_dest["save_type"] = "favorite"
       new_dest["label"] = save_type
-
     val = params.get("ApiCache_NavDestinations", encoding='utf8')
     if val is not None:
       val = val.rstrip('\x00')
     dests = [] if val is None else json.loads(val)
-
     # type idx
     type_label_ids = {"home": None, "work": None, "fav1": None, "fav2": None, "fav3": None, "recent": []}
     idx = 0
@@ -197,18 +196,15 @@ def nav_confirmed(postvars):
       else:
         type_label_ids["recent"].append(idx)
       idx += 1
-
     if save_type == "recent":
       id = None
       if len(type_label_ids["recent"]) > 10:
         dests.pop(type_label_ids["recent"][-1])
     else:
       id = type_label_ids[save_type]
-
     if id is None:
       dests.insert(0, new_dest)
     else:
       dests[id] = new_dest
-
     params.put("ApiCache_NavDestinations", json.dumps(dests).rstrip("\n\r"))
 
