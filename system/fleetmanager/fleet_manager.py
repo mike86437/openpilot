@@ -155,7 +155,7 @@ def open_error_log(file_name):
   return render_template("error_log.html", file_name=file_name, file_content=error)
 
 @app.route("/addr_input")
-def about():
+def addr_input():
   return render_template("addr_input.html")
 
 def main():
