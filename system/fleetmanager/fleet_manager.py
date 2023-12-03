@@ -149,9 +149,10 @@ def open_error_log(file_name):
 @app.route("/addr_input", methods=['GET', 'POST'])
 def addr_input():
   token = fleet.get_public_token()
-  print(token)
   s_token = fleet.get_app_token()
-  print(s_token)
+  gmap_key = fleet.get_gmap_key()
+  SearchInput = fleet.get_SearchInput()
+  PrimeType = fleet.get_PrimeType()
   if request.method == 'POST':
     lon = float(0.0)
     lat = float(0.0)
@@ -171,6 +172,8 @@ def addr_input():
     return redirect(url_for('public_token_input'))
   elif s_token == "" or s_token is None:
     return redirect(url_for('app_token_input'))
+  elif (gmap_key == "" or gmap_key is None) and SearchInput == 2:
+    return redirect(url_for('gmap_key_input'))
   elif fleet.get_nav_active():
     return render_template("nav_directions.html")
   else:
@@ -206,6 +209,15 @@ def app_token_input():
     return redirect(url_for('addr_input'))
   else:
     return render_template("app_token_input.html")
+
+@app.route("/gmap_key_input", methods=['GET', 'POST'])
+def gmap_key_input():
+  if request.method == 'POST':
+    postvars = request.form.to_dict()
+    fleet.gmap_key_input(postvars)
+    return redirect(url_for('addr_input'))
+  else:
+    return render_template("gmap_key_input.html")
 
 @app.route("/CurrentStep.json", methods=['GET'])
 def find_CurrentStep():

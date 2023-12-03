@@ -142,6 +142,18 @@ def get_app_token():
   token = Params().get("MapboxSecretKey", encoding='utf8')
   return token
 
+def get_gmap_key():
+  token = Params().get("GmapKey", encoding='utf8')
+  return token
+
+def get_SearchInput():
+  SearchInput = Params().get_int("SearchInput")
+  return SearchInput
+
+def get_PrimeType():
+  PrimeType = Params().get_int("PrimeType")
+  return PrimeType
+
 def parse_addr(postvars, lon, lat, valid_addr, token):
   addr = postvars.get("fav_val", [""])
   real_addr = None
@@ -238,5 +250,13 @@ def app_token_input(postvars):
       return postvars
     else:
         params.put("MapboxSecretKey", token)
+  return token
+
+def gmap_key_input(postvars):
+  if postvars is None or "gmap_key_val" not in postvars or postvars.get("gmap_key_val")[0] == "":
+    return postvars
+  else:
+    token = postvars.get("gmap_key_val")
+    params.put("GmapKey", token)
   return token
 
