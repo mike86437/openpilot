@@ -159,6 +159,10 @@ def get_last_lon_lat():
   l = json.loads(last_pos)
   return l["longitude"], l["latitude"]
 
+def get_locations():
+  data = Params().get("ApiCache_NavDestinations", encoding='utf-8')
+  return data
+
 def parse_addr(postvars, lon, lat, valid_addr, token):
   addr = postvars.get("fav_val", [""])
   real_addr = None
@@ -192,6 +196,20 @@ def search_addr(postvars, lon, lat, valid_addr, token):
       lon, lat = j["features"][0]["geometry"]["coordinates"]
       valid_addr = True
   return (addr, lon, lat, valid_addr, token)
+
+def set_destination(postvars, valid_addr):
+  if postvars.get("latitude") is not None and postvars.get("longitude") is not None:
+    nav_confirmed(postvars)
+    valid_addr = True
+  else:
+    addr = postvars.get("place_name")
+    token = get_public_token()
+    data, lon, lat, valid_addr, token = search_addr(addr, lon, lat, valid_addr, token)
+    postvars["lat"] = lat
+    postvars["lon"] = lon
+    nav_confirmed(postvars)
+    valid_addr= True
+  return postvars, valid_addr
 
 def nav_confirmed(postvars):
   if postvars is not None:

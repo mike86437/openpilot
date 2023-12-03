@@ -50,14 +50,6 @@ def otisserv_proxy():
 def reverse_proxy(subpath):
   return handle_request(request.method, subpath)
 
-@app.route("/locations", methods=['GET'])
-def otisserv_locations():
-  return handle_request(request.method, "locations")
-
-@app.route("/set_destination", methods=['POST'])
-def otisserv_set_destination():
-  return handle_request(request.method, "set_destination")
-
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
   chunk_size = 1024 * 512  # 5KiB
@@ -162,6 +154,7 @@ def addr_input():
     if not valid_addr:
       # If address is not found, try searching
       postvars = request.form.to_dict()
+      addr = postvars.get(addr_val)
       addr, lon, lat, valid_addr, token = fleet.search_addr(postvars, lon, lat, valid_addr, token)
     if valid_addr:
       # If a valid address is found, redirect to nav_confirmation
@@ -234,6 +227,20 @@ def find_nav_directions():
   directory = "/data/openpilot/selfdrive/manager/" 
   filename = "navdirections.json"
   return send_from_directory(directory, filename, as_attachment=True)
+
+@app.route("/locations", methods=['GET'])
+def get_locations():
+  data = fleet.get_locations()
+  return Response(data, content_type="application/json")
+
+@app.route("/set_destination", methods=['POST'])
+def set_destination():
+  valid_addr = False
+  data, valid_addr = fleet.set_destination(request.method, valid_addr)
+  if valid_addr:
+    return Response('{"success": true}', content_type='application/json')
+  else:
+    return Response('{"success": false}', content_type='application/json')
 
 
 def main():
