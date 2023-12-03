@@ -10,7 +10,7 @@ from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
 
 # otisserv conversion
-from email.message import Message
+from email.parser import HeaderParser
 from urllib.parse import parse_qs
 import json
 
@@ -128,7 +128,8 @@ def ffplay_mp4_wrap_process_builder(file_name):
   )
 
 def parse_POST(addr_val):
-  ctype, pdict = parse_content_type_header(addr_val.headers['content-type'])
+  parser = HeaderParser()
+  ctype, pdict = parser.parsestr(addr_val.headers['content-type'])
   if ctype == 'application/x-www-form-urlencoded':
     length = int(addr_val.headers['content-length'])
     postvars = parse_qs(
