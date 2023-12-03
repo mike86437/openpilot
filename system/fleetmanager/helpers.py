@@ -173,7 +173,6 @@ def nav_confirmed(postvars):
     save_type = postvars.get("save_type")
     name = postvars.get("name") if postvars.get("name") is not None else ""
     params.put("NavDestination", "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
-    self.to_json(lat, lng, save_type, name)
     if name == "":
       name =  str(lat) + "," + str(lng)
     new_dest = {"latitude": float(lat), "longitude": float(lng), "place_name": name}
