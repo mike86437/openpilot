@@ -52,22 +52,13 @@
 <!-- Dark Mode Toggle Button -->
   <button class="uk-button uk-button-default uk-margin-small-right" onclick="toggleDarkMode()">Toggle Dark Mode</button>
 
-<script>
-  // Function to set a cookie with a given name, value, and expiration time
-  function setCookie(name, value, days) {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-  }
-
-  function toggleDarkMode() {
-    console.log('Toggle Dark Mode function called');
-    const htmlElement = document.documentElement;
-    htmlElement.classList.toggle('dark-mode');
-    // Save the dark mode preference to a cookie
-    setCookie('darkMode', htmlElement.classList.contains('dark-mode'), 365);
-  }
-</script>
-
+  <script>
+    function toggleDarkMode() {
+      const htmlElement = document.getElementById('htmlElement');
+      htmlElement.classList.toggle('dark-mode');
+      // Save the dark mode preference to a cookie
+      setCookie('darkMode', htmlElement.classList.contains('dark-mode'), 365);
+    }
+  </script>
 </body>
 </html>
