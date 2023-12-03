@@ -10,7 +10,8 @@ from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
 
 # otisserv conversion
-from urllib.parse import parse_qs, parse_header
+from email.message import Message
+from urllib.parse import parse_qs
 import json
 
 params = Params()
