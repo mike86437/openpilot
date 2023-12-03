@@ -5,12 +5,6 @@
 {% endblock %}
 
 {% block main %}
-  <!-- UIkit CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.9.2/dist/css/uikit.min.css" />
-
-  <!-- UIkit JS -->
-  <script src="https://cdn.jsdelivr.net/npm/uikit@3.9.2/dist/js/uikit.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/uikit@3.9.2/dist/js/uikit-icons.min.js"></script>
 
   <style>
     /* Dark mode styles */
@@ -56,20 +50,21 @@
   <!-- Dark mode toggle button -->
   <button class="uk-button uk-button-default uk-margin-small-right" onclick="toggleDarkMode()">Toggle Dark Mode</button>
 
-  <script>
-    // Function to set a cookie with a given name, value, and expiration time
-    function setCookie(name, value, days) {
-      const date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-      document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-    }
-  
-    function toggleDarkMode() {
-      console.log('Toggle Dark Mode function called');
-      const htmlElement = document.documentElement;
-      htmlElement.classList.toggle('dark-mode');
-      // Save the dark mode preference to a cookie
-      setCookie('darkMode', htmlElement.classList.contains('dark-mode'), 365);
-    }
-  </script>
+<script>
+  // Function to set a cookie with a given name, value, and expiration time
+  function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+  }
+
+  function toggleDarkMode() {
+    console.log('Toggle Dark Mode function called');
+    const htmlElement = document.documentElement;
+    htmlElement.classList.toggle('dark-mode');
+    // Save the dark mode preference to a cookie
+    setCookie('darkMode', htmlElement.classList.contains('dark-mode'), 365);
+  }
+</script>
+
 {% endblock %}
