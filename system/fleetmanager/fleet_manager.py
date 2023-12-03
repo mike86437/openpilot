@@ -173,7 +173,10 @@ def addr_input():
     else:
       return render_template("error.html")
   else:
-    return render_template("addr_input.html")
+    if fleet.get_nav_active():
+      return render_template("nav_directions.html")
+    else:
+      return render_template("addr_input.html")
 
 @app.route("/nav_confirmation", methods=['GET', 'POST'])
 def nav_confirmation():
