@@ -182,7 +182,7 @@ def search_addr(postvars, lon, lat, valid_addr, token):
       query = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{addr_encoded}.json?access_token={token}&limit=1"
       # focus on place around last gps position
       lngi, lati = get_last_lon_lat()
-        query += "&proximity=%s,%s" % (lngi, lati)
+      query += "&proximity=%s,%s" % (lngi, lati)
       r = requests.get(query)
       if r.status_code != 200:
         return (addr, lon, lat, valid_addr, token)
