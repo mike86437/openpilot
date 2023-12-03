@@ -191,7 +191,7 @@ def nav_confirmation():
 def public_token_input():
   if request.method == 'POST':
     postvars = request.form.to_dict()
-    fleet.nav_confirmed(postvars)
+    fleet.public_token_input(postvars)
     return redirect(url_for('addr_input'))
   else:
     return render_template("public_token_input.html")
@@ -200,7 +200,7 @@ def public_token_input():
 def app_token_input():
   if request.method == 'POST':
     postvars = request.form.to_dict()
-    fleet.nav_confirmed(postvars)
+    fleet.app_token_input(postvars)
     return redirect(url_for('addr_input'))
   else:
     return render_template("app_token_input.html")
