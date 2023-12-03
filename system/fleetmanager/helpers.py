@@ -139,7 +139,10 @@ def parse_addr(postvars, lon, lat, valid_addr):
   addr = postvars.get("fav_val", [""])[0]
   real_addr = None
   if addr != "favorites":
-    dests = json.loads(params.get("ApiCache_NavDestinations", encoding='utf8', default="[]").rstrip('\x00'))
+    try:
+      dests = json.loads(params.get("ApiCache_NavDestinations", encoding='utf8').rstrip('\x00'))
+    except TypeError:
+      dests = json.loads("[]")
     for item in dests:
       if "label" in item and item["label"] == addr:
         lat, lon, real_addr = item["latitude"], item["longitude"], item["place_name"]
