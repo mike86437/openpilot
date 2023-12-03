@@ -183,7 +183,7 @@ def nav_confirmation():
   addr = request.args.get('addr')
   if request.method == 'POST':
     postvars = request.form.to_dict()
-    fleet.nav_confirmed(postvars, lon, lat)
+    fleet.nav_confirmed(postvars)
     pass
   else:
     return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
