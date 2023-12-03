@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block main %}
+{% if {{PrimeType}} != 0 %}
 <form name="searchForm" method="post">
   <fieldset class="uk-fieldset">
     <div class="uk-margin">
@@ -21,6 +22,7 @@
     </div>
   </fieldset>
 </form>
+{% endif %}
 <div id="destinationHeading" style="font-weight: bold;"></div>
 <div id="jsonOutput"></div>
 <script>
