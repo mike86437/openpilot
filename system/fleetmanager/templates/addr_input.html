@@ -22,5 +22,47 @@
       </div>
     </fieldset>
   </form>
+<!-- Include the Google Maps Places API script conditionally with JavaScript -->
+<script>
+  // attach gmap_key to variable
+  let gmap = "{{gmap_key}}";
 
+  // Check if gmap_key is defined
+  if (gmap && gmap !== "None") {
+    var script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key={{gmap_key}}&libraries=places&callback=initAutocomplete';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+
+    // Define the callback function for place_changed
+    function onPlaceChanged() {
+      var place = autocomplete.getPlace();
+
+      // Check if the place has a formatted address
+      if (place.formatted_address) {
+        // Set the value of the input field to the formatted address
+        document.getElementById('pac-input').value = place.formatted_address;
+      }
+    }
+
+    // Define the autocomplete variable
+    var autocomplete;
+
+    // Define the initAutocomplete function with initial bounds
+    function initAutocomplete() {
+      var center = new google.maps.LatLng({{lat}}, {{lon}});
+      var bounds = new google.maps.Circle({ center: center, radius: 5000 }).getBounds();
+
+      autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById('pac-input'),
+        {
+          bounds: bounds // Set initial bounds here
+        }
+      );
+
+      autocomplete.addListener('place_changed', onPlaceChanged);
+    }
+  }
+</script>
 {% endblock %}
