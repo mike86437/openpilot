@@ -170,7 +170,7 @@ def addr_input_post():
     return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat)
   else:
     # Handle the case where the address is not valid
-    return render_template("error_page.html")
+    return render_template("error.html")
 
 
 def main():
