@@ -78,29 +78,35 @@
     document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
   }
   
-  // Function to get the value of a cookie with a given name
-  function getCookie(name) {
-    return document.cookie.split('; ')
-      .find(row => row.startsWith(name))
-      ?.split('=')[1] || null;
-  }
-  
-  document.addEventListener('DOMContentLoaded', function () {
-    const htmlElement = document.getElementById('htmlElement');
-    const darkModeCookie = getCookie('darkMode');
-    // Check if a 'darkMode' cookie exists and apply dark mode accordingly
-    if (darkModeCookie !== null) {
-      htmlElement.classList.toggle('dark-mode', darkModeCookie === 'true');
+  <script>
+    // Function to set a cookie with a given name, value, and expiration time
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
     }
-  });
-  
-  function toggleDarkMode() {
-    console.log('Toggle Dark Mode function called');
-    const htmlElement = document.getElementById('htmlElement');
-    htmlElement.classList.toggle('dark-mode');
-    // Save the dark mode preference to a cookie
-    setCookie('darkMode', htmlElement.classList.contains('dark-mode'), 365);
-  }
+
+    // Function to get the value of a cookie with a given name
+    function getCookie(name) {
+      return document.cookie.split('; ')
+        .find(row => row.startsWith(name))
+        ?.split('=')[1] || null;
+    }
+
+    function toggleDarkMode() {
+      console.log('Toggle Dark Mode function called');
+      const htmlElement = document.documentElement;
+      htmlElement.classList.toggle('dark-mode');
+      // Save the dark mode preference to a cookie
+      setCookie('darkMode', htmlElement.classList.contains('dark-mode'), 365);
+    }
+
+    // Check if a 'darkMode' cookie exists and apply dark mode accordingly
+    document.addEventListener('DOMContentLoaded', function () {
+      const htmlElement = document.documentElement;
+      htmlElement.classList.toggle('dark-mode', getCookie('darkMode') === 'true');
+    });
+  </script>
   
 </body>
 </html>
