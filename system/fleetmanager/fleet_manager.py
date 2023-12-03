@@ -148,8 +148,9 @@ def open_error_log(file_name):
 
 @app.route("/addr_input", methods=['GET', 'POST'])
 def addr_input():
+  token = fleet.get_public_token()
+  s_token = fleet.get_app_token()
   if request.method == 'POST':
-    token = fleet.get_public_token()
     lon = float(0.0)
     lat = float(0.0)
     valid_addr = False
@@ -164,10 +165,13 @@ def addr_input():
       return redirect(url_for('nav_confirmation', addr=addr, lon=lon, lat=lat))
     else:
       return render_template("error.html")
+  elif token == "" or token is None:
+    return redirect(url_for('public_token_input'))
+  elif s_token == "" or token is None:
+    return redirect(url_for('app_token_input'))
+  elif fleet.get_nav_active():
+    return render_template("nav_directions.html")
   else:
-    if fleet.get_nav_active():
-      return render_template("nav_directions.html")
-    else:
       return render_template("addr_input.html")
 
 @app.route("/nav_confirmation", methods=['GET', 'POST'])
@@ -182,6 +186,24 @@ def nav_confirmation():
     return redirect(url_for('addr_input'))
   else:
     return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
+
+@app.route("/public_token_input", methods=['GET', 'POST'])
+def public_token_input():
+  if request.method == 'POST':
+    postvars = request.form.to_dict()
+    fleet.nav_confirmed(postvars)
+    return redirect(url_for('addr_input'))
+  else:
+    return render_template("public_token_input.html")
+
+@app.route("/app_token_input", methods=['GET', 'POST'])
+def app_token_input():
+  if request.method == 'POST':
+    postvars = request.form.to_dict()
+    fleet.nav_confirmed(postvars)
+    return redirect(url_for('addr_input'))
+  else:
+    return render_template("app_token_input.html")
 
 @app.route("/CurrentStep.json", methods=['GET'])
 def find_CurrentStep():

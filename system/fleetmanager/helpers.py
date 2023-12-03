@@ -129,13 +129,17 @@ def ffplay_mp4_wrap_process_builder(file_name):
   )
 
 def get_nav_active():
-  if params.get("NavDestination", encoding='utf8') is not None:
+  if Params().get("NavDestination", encoding='utf8') is not None:
     return True
   else:
     return False
 
 def get_public_token():
-  token = params.get("MapboxPublicKey", encoding='utf8')
+  token = Params().get("MapboxPublicKey", encoding='utf8')
+  return token
+
+def get_app_token():
+  token = Params().get("MapboxSecretKey", encoding='utf8')
   return token
 
 def parse_addr(postvars, lon, lat, valid_addr, token):
@@ -189,7 +193,7 @@ def nav_confirmed(postvars):
     else:
       new_dest["save_type"] = "favorite"
       new_dest["label"] = save_type
-    val = params.get("ApiCache_NavDestinations", encoding='utf8')
+    val = Params().get("ApiCache_NavDestinations", encoding='utf8')
     if val is not None:
       val = val.rstrip('\x00')
     dests = [] if val is None else json.loads(val)
@@ -213,4 +217,26 @@ def nav_confirmed(postvars):
     else:
       dests[id] = new_dest
     params.put("ApiCache_NavDestinations", json.dumps(dests).rstrip("\n\r"))
+
+def public_token_input(postvars):
+  if postvars is None or "pk_token_val" not in postvars or postvars.get("pk_token_val")[0] == "":
+    return postvars
+  else:
+    token = postvars.get("pk_token_val")
+    if "pk." not in token:
+      return postvars
+    else:
+        params.put("MapboxPublicKey", token)
+  return token
+
+def app_token_input(postvars):
+  if postvars is None or "sk_token_val" not in postvars or postvars.get("sk_token_val")[0] == "":
+    return postvars
+  else:
+    token = postvars.get("sk_token_val")
+    if "sk." not in token:
+      return postvars
+    else:
+        params.put("MapboxSecretKey", token)
+  return token
 
