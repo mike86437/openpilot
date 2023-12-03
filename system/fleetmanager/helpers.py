@@ -129,13 +129,16 @@ def ffplay_mp4_wrap_process_builder(file_name):
 
 def parse_POST(addr_val):
   parser = HeaderParser()
-  ctype, pdict = parser.parsestr(addr_val.headers['content-type'])
-  if ctype == 'application/x-www-form-urlencoded':
+  parser.feed("Content-Type: " + addr_val.headers['content-type'])
+  content_type = parser.get_content_type()
+  pdict = parser.get_params()
+
+  if content_type == 'application/x-www-form-urlencoded':
     length = int(addr_val.headers['content-length'])
     postvars = parse_qs(
       addr_val.rfile.read(length).decode('utf-8'),
       keep_blank_values=1)
-  elif ctype == 'application/json':
+  elif content_type == 'application/json':
     length = int(addr_val.headers['content-length'])
     post_data = addr_val.rfile.read(length).decode('utf-8')
     try:
