@@ -10,9 +10,7 @@ from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
 
 # otisserv conversion
-from email.message import Message
 from urllib.parse import parse_qs
-import json
 
 params = Params()
 
@@ -133,23 +131,8 @@ def parse_content_type_header(header):
     return msg.get_content_type(), msg.get_params()
 
 def parse_POST(addr_val):
-    content_type, _ = parse_content_type_header(addr_val.headers['content-type'])
-    if content_type == 'application/x-www-form-urlencoded':
-        length = int(addr_val.headers['content-length'])
-        postvars = parse_qs(
-            addr_val.rfile.read(length).decode('utf-8'),
-            keep_blank_values=1)
-    elif content_type == 'application/json':
-        length = int(addr_val.headers['content-length'])
-        post_data = addr_val.rfile.read(length).decode('utf-8')
-        try:
-            postvars = json.loads(post_data)
-        except json.JSONDecodeError:
-            addr_val.send_error(400, 'Invalid JSON data')
-            return None
-    else:
-        postvars = {}
-    return postvars
+  postvars = parse_qs(post_data, keep_blank_values=1)
+  return postvars
 
 def parse_addr(postvars, lon, lat, valid_addr):
   if "fav_val" in postvars:
