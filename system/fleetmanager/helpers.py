@@ -147,31 +147,67 @@ def parse_addr(postvars, lon, lat, valid_addr, token):
 def search_addr(postvars, lon, lat, valid_addr, token):
   if "addr_val" in postvars:
     addr = postvars.get("addr_val")
-    print(addr)
     if addr != "":
       # Properly encode the address to handle spaces
       addr_encoded = quote(addr)
       query = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{addr_encoded}.json?access_token={token}&limit=1"
-      print(query)
       # focus on place around last gps position
       last_pos = Params().get("LastGPSPosition")
-      print(last_pos)
       if last_pos is not None and last_pos != "":
         l = json.loads(last_pos)
         query += "&proximity=%s,%s" % (l["longitude"], l["latitude"])
-      print(query)
       r = requests.get(query)
       if r.status_code != 200:
         return (addr, lon, lat, valid_addr, token)
-      
       j = json.loads(r.text)
       if not j["features"]:
         return (addr, lon, lat, valid_addr, token)
-      
-      # Extract the relevant information from the response and update lon, lat, etc.
       lon, lat = j["features"][0]["geometry"]["coordinates"]
       valid_addr = True
-  
   return (addr, lon, lat, valid_addr, token)
 
+def nav_confirmed(postvars, lng, lat):
+  if postvars is not None:
+    save_type = postvars.get("save_type")
+    name = postvars.get("name") if postvars.get("name") is not None else ""
+    params.put("NavDestination", "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
+    self.to_json(lat, lng, save_type, name)
+    if name == "":
+      name =  str(lat) + "," + str(lng)
+    new_dest = {"latitude": float(lat), "longitude": float(lng), "place_name": name}
+
+    if save_type == "recent":
+      new_dest["save_type"] = "recent"
+    else:
+      new_dest["save_type"] = "favorite"
+      new_dest["label"] = save_type
+
+    val = params.get("ApiCache_NavDestinations", encoding='utf8')
+    if val is not None:
+      val = val.rstrip('\x00')
+    dests = [] if val is None else json.loads(val)
+
+    # type idx
+    type_label_ids = {"home": None, "work": None, "fav1": None, "fav2": None, "fav3": None, "recent": []}
+    idx = 0
+    for d in dests:
+      if d["save_type"] == "favorite":
+        type_label_ids[d["label"]] = idx
+      else:
+        type_label_ids["recent"].append(idx)
+      idx += 1
+
+    if save_type == "recent":
+      id = None
+      if len(type_label_ids["recent"]) > 10:
+        dests.pop(type_label_ids["recent"][-1])
+    else:
+      id = type_label_ids[save_type]
+
+    if id is None:
+      dests.insert(0, new_dest)
+    else:
+      dests[id] = new_dest
+
+    params.put("ApiCache_NavDestinations", json.dumps(dests).rstrip("\n\r"))
 

@@ -154,30 +154,39 @@ def open_error_log(file_name):
   error = f.read()
   return render_template("error_log.html", file_name=file_name, file_content=error)
 
-@app.route("/addr_input", methods=['GET'])
+@app.route("/addr_input", methods=['GET', 'POST'])
 def addr_input():
-  return render_template("addr_input.html")
-
-
-@app.route("/addr_input", methods=['POST'])
-def addr_input_post():
-  token = ""
-  lon = float(0.0)
-  lat = float(0.0)
-  valid_addr = False
-  postvars = request.form.to_dict()
-  addr, lon, lat, valid_addr, token = fleet.parse_addr(postvars, lon, lat, valid_addr, token)
-  if valid_addr:
-    return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
-  else:
+  if request.method == 'POST':
+    token = ""
+    lon = float(0.0)
+    lat = float(0.0)
+    valid_addr = False
     postvars = request.form.to_dict()
-    print(postvars)
-    addr, lon, lat, valid_addr, token = fleet.search_addr(postvars, lon, lat, valid_addr, token)
+    addr, lon, lat, valid_addr, token = fleet.parse_addr(postvars, lon, lat, valid_addr, token)
+    if not valid_addr:
+      # If address is not found, try searching
+      postvars = request.form.to_dict()
+      addr, lon, lat, valid_addr, token = fleet.search_addr(postvars, lon, lat, valid_addr, token)
     if valid_addr:
-      return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
+      # If a valid address is found, redirect to nav_confirmation
+      return redirect(url_for('nav_confirmation', addr=addr, lon=lon, lat=lat, token=token))
     else:
       return render_template("error.html")
+  else:
+    return render_template("addr_input.html")
 
+@app.route("/nav_confirmation", methods=['GET', 'POST'])
+def nav_confirmation():
+  token = request.args.get('token')
+  lon = request.args.get('lon')
+  lat = request.args.get('lat')
+  addr = request.args.get('addr')
+  if request.method == 'POST':
+    postvars = request.form.to_dict()
+    fleet.nav_confirmed(postvars, lon, lat)
+    pass
+  else:
+    return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
 
 def main():
   try:
