@@ -153,9 +153,9 @@ def addr_input():
   s_token = fleet.get_app_token()
   gmap_key = fleet.get_gmap_key()
   PrimeType = fleet.get_PrimeType()
+  lon = float(0.0)
+  lat = float(0.0)
   if request.method == 'POST':
-    lon = float(0.0)
-    lat = float(0.0)
     valid_addr = False
     postvars = request.form.to_dict()
     addr, lon, lat, valid_addr, token = fleet.parse_addr(postvars, lon, lat, valid_addr, token)
@@ -172,12 +172,16 @@ def addr_input():
     return redirect(url_for('public_token_input'))
   elif s_token == "" or s_token is None:
     return redirect(url_for('app_token_input'))
-  elif (gmap_key == "" or gmap_key is None) and SearchInput == 2:
-    return redirect(url_for('gmap_key_input'))
+  elif SearchInput == 2:
+    lon, lat = get_last_lon_lat()
+    if gmap_key == "" or gmap_key is None
+      return redirect(url_for('gmap_key_input'))
+    else:
+      return render_template("addr_input.html", gmap_key, lon=lon, lat=lat)
   elif fleet.get_nav_active():
     return render_template("nav_directions.html")
   else:
-      return render_template("addr_input.html")
+      return render_template("addr_input.html", gmap_key, lon=lon, lat=lat)
 
 @app.route("/nav_confirmation", methods=['GET', 'POST'])
 def nav_confirmation():

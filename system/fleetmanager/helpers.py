@@ -154,6 +154,11 @@ def get_PrimeType():
   PrimeType = params.get_int("PrimeType")
   return PrimeType
 
+def get_last_lon_lat()
+  last_pos = Params().get("LastGPSPosition")
+  l = json.loads(last_pos)
+  return l["longitude"], l["latitude"]
+
 def parse_addr(postvars, lon, lat, valid_addr, token):
   addr = postvars.get("fav_val", [""])
   real_addr = None
@@ -176,10 +181,8 @@ def search_addr(postvars, lon, lat, valid_addr, token):
       addr_encoded = quote(addr)
       query = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{addr_encoded}.json?access_token={token}&limit=1"
       # focus on place around last gps position
-      last_pos = Params().get("LastGPSPosition")
-      if last_pos is not None and last_pos != "":
-        l = json.loads(last_pos)
-        query += "&proximity=%s,%s" % (l["longitude"], l["latitude"])
+      lngi, lati = get_last_lon_lat()
+        query += "&proximity=%s,%s" % (lngi, lati)
       r = requests.get(query)
       if r.status_code != 200:
         return (addr, lon, lat, valid_addr, token)
