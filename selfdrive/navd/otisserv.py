@@ -255,10 +255,10 @@ class OtisServ(BaseHTTPRequestHandler):
     self.wfile.write(f.read())
     f.close()
 
-  def get_gmap_css(self):
+  def get_gmap_css(self): # no need
     self.wfile.write(bytes(self.get_parsed_template("gmap/style.css"), "utf-8"))
 
-  def get_gmap_js(self):
+  def get_gmap_js(self): # no need
     lon, lat = self.get_last_lon_lat()
     self.wfile.write(bytes(self.get_parsed_template("gmap/index.js", {"{{lat}}": lat, "{{lon}}": lon}), "utf-8"))
 
@@ -271,20 +271,20 @@ class OtisServ(BaseHTTPRequestHandler):
       return token.rstrip('\x00')
     return None
 
-  def get_amap_css(self):
+  def get_amap_css(self): # no need
     self.wfile.write(bytes(self.get_parsed_template("amap/style.css"), "utf-8"))
 
-  def get_amap_js(self):
+  def get_amap_js(self): # no need
     lon, lat = self.get_last_lon_lat()
     self.wfile.write(bytes(self.get_parsed_template("amap/index.js", {"{{lat}}": lat, "{{lon}}": lon}), "utf-8"))
 
-  def get_amap_key(self):
+  def get_amap_key(self): # no need
     token = params.get("AppleMapsKey1", encoding='utf8')
     if token is not None and token != "":
       return token.rstrip('\x00')
     return None
 
-  def get_amap_key_2(self):
+  def get_amap_key_2(self): # no need
     token = params.get("AppleMapsKey2", encoding='utf8')
     if token is not None and token != "":
       return token.rstrip('\x00')
@@ -313,7 +313,7 @@ class OtisServ(BaseHTTPRequestHandler):
         return "121.3149803", "24.996256935"
     return "-117.1662042", "32.7207742"
 
-  def get_lang(self):
+  def get_lang(self): # no need
     lang = params.get("LanguageSetting", encoding='utf8')
     try:
       if lang is not None:
@@ -327,7 +327,7 @@ class OtisServ(BaseHTTPRequestHandler):
   def display_page_gmap_key(self):
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("gmap/key_input")}), "utf-8"))
 
-  def display_page_amap_key(self):
+  def display_page_amap_key(self): # no need
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": self.get_parsed_template("amap/key_input")}), "utf-8"))
 
   def display_page_public_token(self, msg = ""):
@@ -355,10 +355,10 @@ class OtisServ(BaseHTTPRequestHandler):
     content = self.get_parsed_template("nav_directions", {"{{msg}}": msg})
     self.wfile.write(bytes(self.get_parsed_template("body", {"{{content}}": content }), "utf-8"))
 
-  def display_page_gmap(self):
+  def display_page_gmap(self): # no need
     self.wfile.write(bytes(self.get_parsed_template("gmap/index.html", {"{{gmap_key}}": self.get_gmap_key(), "{{language}}": self.get_lang()}), "utf-8"))
 
-  def display_page_amap(self):
+  def display_page_amap(self): # no need
     self.wfile.write(bytes(self.get_parsed_template("amap/index.html", {"{{amap_key}}": self.get_amap_key(), "{{amap_key_2}}": self.get_amap_key_2()}), "utf-8"))
 
   def get_parsed_template(self, name, replace = {}):
@@ -409,7 +409,7 @@ class OtisServ(BaseHTTPRequestHandler):
       postvars = {}
     return postvars
 
-  def gcj02towgs84(self, lng, lat):
+  def gcj02towgs84(self, lng, lat): # no need
     dlat = self.transform_lat(lng - 105.0, lat - 35.0)
     dlng = self.transform_lng(lng - 105.0, lat - 35.0)
     radlat = lat / 180.0 * pi
@@ -422,14 +422,14 @@ class OtisServ(BaseHTTPRequestHandler):
     mglng = lng + dlng
     return [lng * 2 - mglng, lat * 2 - mglat]
 
-  def transform_lat(self, lng, lat):
+  def transform_lat(self, lng, lat): # no need
     ret = -100.0 + 2.0 * lng + 3.0 * lat + 0.2 * lat * lat + 0.1 * lng * lat + 0.2 * math.sqrt(abs(lng))
     ret += (20.0 * math.sin(6.0 * lng * pi) + 20.0 * math.sin(2.0 * lng * pi)) * 2.0 / 3.0
     ret += (20.0 * math.sin(lat * pi) + 40.0 * math.sin(lat / 3.0 * pi)) * 2.0 / 3.0
     ret += (160.0 * math.sin(lat / 12.0 * pi) + 320 * math.sin(lat * pi / 30.0)) * 2.0 / 3.0
     return ret
 
-  def transform_lng(self, lng, lat):
+  def transform_lng(self, lng, lat): # no need
     ret = 300.0 + lng + 2.0 * lat + 0.1 * lng * lng + 0.1 * lng * lat + 0.1 * math.sqrt(abs(lng))
     ret += (20.0 * math.sin(6.0 * lng * pi) + 20.0 * math.sin(2.0 * lng * pi)) * 2.0 / 3.0
     ret += (20.0 * math.sin(lng * pi) + 40.0 * math.sin(lng / 3.0 * pi)) * 2.0 / 3.0

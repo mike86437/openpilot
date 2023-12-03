@@ -3,13 +3,14 @@ import subprocess
 from flask import render_template, request, session
 from functools import wraps
 from pathlib import Path
-from openpilot.common.params import Params
+# from openpilot.common.params import Params
 from openpilot.system.hardware import PC
 from openpilot.system.hardware.hw import Paths
 from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
 
 # otisserv conversion
+from common.params import Params
 from urllib.parse import parse_qs
 import json
 
@@ -126,10 +127,6 @@ def ffplay_mp4_wrap_process_builder(file_name):
     command_line, stdout=subprocess.PIPE
   )
 
-def parse_content_type_header(header):
-    msg = Message()
-    msg['Content-Type'] = header
-    return msg.get_content_type(), msg.get_params()
 
 def parse_POST(post_data):
   postvars = parse_qs(post_data, keep_blank_values=1)
