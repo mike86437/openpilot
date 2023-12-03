@@ -164,7 +164,7 @@ def addr_input_post():
   lon = float(0.0)
   lat = float(0.0)
   valid_addr = False
-  postvars = fleet.parse_POST(request.data)
+  postvars = request.form.to_dict()
   print(postvars)
   addr, lon, lat, valid_addr = fleet.parse_addr(postvars, lon, lat, valid_addr)
   if valid_addr:
