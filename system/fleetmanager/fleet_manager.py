@@ -158,9 +158,21 @@ def open_error_log(file_name):
 def addr_input():
   return render_template("addr_input.html")
 
-@app.route("/addr_input", methods=['POST'])
+@app.route("/addr_input", methods=['POST']) # temp
 def otisserv_addr_input():
   return handle_request(request.method)
+
+@app.route("/addr_input", methods=['POST'])
+def addr_input_post():
+  lon = float(0.0)
+  lat = float(0.0)
+  valid_addr = False
+  fleet.parse_POST(request.method)
+  addr = request.method
+  fleet.parse_addr(addr, lon, lat, valid_addr)
+  if valid_addr:
+    return render_template("nav_confirmation.html", addr, lon, lat)
+
 
 def main():
   try:

@@ -9,6 +9,11 @@ from openpilot.system.hardware.hw import Paths
 from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
 
+# otisserv conversion
+from urllib.parse import parse_qs, parse_header
+import json
+
+params = Params()
 
 # path to openpilot screen recordings and error logs
 if PC:
@@ -120,3 +125,60 @@ def ffplay_mp4_wrap_process_builder(file_name):
   return subprocess.Popen(
     command_line, stdout=subprocess.PIPE
   )
+
+def parse_POST(addr_val):
+  ctype, pdict = parse_header(addr_val.headers['content-type'])
+  if ctype == 'application/x-www-form-urlencoded':
+    length = int(addr_val.headers['content-length'])
+    postvars = parse_qs(
+      addr_val.rfile.read(length).decode('utf-8'),
+      keep_blank_values=1)
+  elif ctype == 'application/json':
+    length = int(addr_val.headers['content-length'])
+    post_data = addr_val.rfile.read(length).decode('utf-8')
+    try:
+      postvars = json.loads(post_data)
+    except json.JSONDecodeError:
+      addr_val.send_error(400, 'Invalid JSON data')
+      return None
+  else:
+    postvars = {}
+  return postvars
+
+def parse_addr(postvars, lon, lat, valid_addr):
+  if "fav_val" in postvars:
+    addr = postvars.get("fav_val")[0]
+    real_addr = None
+    lon = None
+    lat = None
+    if addr != "favorites":
+      val = params.get("ApiCache_NavDestinations", encoding='utf8')
+      if val is not None:
+        val = val.rstrip('\x00')
+        dests = json.loads(val)
+        for item in dests:
+          if "label" in item and item["label"] == addr:
+            lat = item["latitude"]
+            lon = item["longitude"]
+            real_addr = item["place_name"]
+            break
+        else:
+          real_addr = None
+  if real_addr is not None:
+    valid_addr = True
+    return real_addr, lon, lat, valid_addr
+  else:
+    valid_addr = False
+    return postvars, lon, lat, valid_addr
+
+def search_addr(postvars, lon, lat, valid_addr):
+  if "addr_val" in postvars:
+    addr = postvars.get("addr_val")[0]
+    if addr != "":
+      real_addr, lat, lon = self.query_addr(addr)
+  if real_addr is not None:
+    valid_addr = True
+    return real_addr, lon, lat, valid_addr
+  else:
+    valid_addr = False
+    return postvars, lon, lat, valid_addr
