@@ -156,8 +156,8 @@ def search_addr(postvars, lon, lat, valid_addr, token):
         query += "&proximity=%s,%s" % (l["longitude"], l["latitude"])
       r = requests.get(query)
       if r.status_code != 200:
-        return None, None, None, False, token
+        return (addr, lon, lat, valid_addr, token)
       j = json.loads(r.text)
       if not j["features"]:
-        return None, None, None, False, token
+        return (addr, lon, lat, valid_addr, token)
 
