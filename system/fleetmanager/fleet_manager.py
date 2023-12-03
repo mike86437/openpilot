@@ -164,11 +164,13 @@ def addr_input_post():
   lon = float(0.0)
   lat = float(0.0)
   valid_addr = False
-  fleet.parse_POST(request.method)
-  addr = request.method
-  fleet.parse_addr(addr, lon, lat, valid_addr)
+  postvars = fleet.parse_POST(request)
+  addr, lon, lat, valid_addr = fleet.parse_addr(postvars, lon, lat, valid_addr)
   if valid_addr:
-    return render_template("nav_confirmation.html", addr, lon, lat)
+    return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat)
+  else:
+    # Handle the case where the address is not valid
+    return render_template("error_page.html")
 
 
 def main():
