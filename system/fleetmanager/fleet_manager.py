@@ -170,8 +170,11 @@ def addr_input_post():
   if valid_addr:
     return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
   else:
-    # Handle the case where the address is not valid
-    return render_template("error.html")
+    addr, lon, lat, valid_addr = fleet.search_addr(postvars, lon, lat, valid_addr)
+    if valid_addr:
+      return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
+    else:
+      return render_template("error.html")
 
 
 def main():

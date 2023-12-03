@@ -11,8 +11,9 @@ from tools.lib.route import SegmentName
 
 # otisserv conversion
 from common.params import Params
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, unquote
 import json
+import requests
 
 params = Params()
 
@@ -147,10 +148,16 @@ def search_addr(postvars, lon, lat, valid_addr):
   if "addr_val" in postvars:
     addr = postvars.get("addr_val")
     if addr != "":
-      real_addr, lat, lon = self.query_addr(addr)
-  if real_addr is not None:
-    valid_addr = True
-    return real_addr, lon, lat, valid_addr
-  else:
-    valid_addr = False
-    return postvars, lon, lat, valid_addr
+      query = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + unquote(addr) + ".json?access_token=" + self.get_public_token() + "&limit=1"
+      # focus on place around last gps position
+      last_pos = Params().get("LastGPSPosition")
+      if last_pos is not None and last_pos != "":
+        l = json.loads(last_pos)
+        query += "&proximity=%s,%s" % (l["longitude"], l["latitude"])
+      r = requests.get(query)
+      if r.status_code != 200:
+        return None, None, None, False
+      j = json.loads(r.text)
+      if not j["features"]:
+        return None, None, None, False
+
