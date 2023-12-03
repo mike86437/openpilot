@@ -149,23 +149,29 @@ def search_addr(postvars, lon, lat, valid_addr, token):
     addr = postvars.get("addr_val")
     print(addr)
     if addr != "":
-      query = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + unquote(addr) + ".json?access_token=" + token + "&limit=1"
-      print(query)
+      # Properly encode the address to handle spaces
+      addr_encoded = quote(addr)
+      query = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{addr_encoded}.json?access_token={token}&limit=1"
+      
       # focus on place around last gps position
       last_pos = Params().get("LastGPSPosition")
       print(last_pos)
       if last_pos is not None and last_pos != "":
         l = json.loads(last_pos)
         query += "&proximity=%s,%s" % (l["longitude"], l["latitude"])
+      
       r = requests.get(query)
       if r.status_code != 200:
         return (addr, lon, lat, valid_addr, token)
+      
       j = json.loads(r.text)
       if not j["features"]:
         return (addr, lon, lat, valid_addr, token)
+      
       # Extract the relevant information from the response and update lon, lat, etc.
       lon, lat = j["features"][0]["geometry"]["coordinates"]
       valid_addr = True
+  
   return (addr, lon, lat, valid_addr, token)
 
 
