@@ -61,7 +61,7 @@
 
   <script>
     function toggleDarkMode() {
-      const htmlElement = document.getElementById('htmlElement');
+      const htmlElement = document.documentElement;
       htmlElement.classList.toggle('dark-mode');
       // Save the dark mode preference to a cookie
       setCookie('darkMode', htmlElement.classList.contains('dark-mode'), 365);
