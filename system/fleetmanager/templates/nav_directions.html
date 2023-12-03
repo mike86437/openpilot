@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-{% if PrimeType != 0 %}
+{% if PrimeType == 0 %}
 <form name="searchForm" method="post">
   <fieldset class="uk-fieldset">
     <div class="uk-margin">
@@ -22,10 +22,6 @@
     </div>
   </fieldset>
 </form>
-<p>PrimeType Value: {{ PrimeType }}</p>
-{% else %}
-  {# Debugging step to print the value of PrimeType #}
-  <p>PrimeType Value: {{ PrimeType }}</p>
 {% endif %}
 <div id="destinationHeading" style="font-weight: bold;"></div>
 <div id="jsonOutput"></div>
