@@ -128,7 +128,7 @@ def ffplay_mp4_wrap_process_builder(file_name):
     command_line, stdout=subprocess.PIPE
   )
 
-def get_public_token(self):
+def get_public_token():
   token = params.get("MapboxPublicKey", encoding='utf8')
   return token
 
