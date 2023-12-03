@@ -129,10 +129,9 @@ def ffplay_mp4_wrap_process_builder(file_name):
 
 def parse_POST(addr_val):
   parser = HeaderParser()
-  parser.feed("Content-Type: " + addr_val.headers['content-type'])
-  content_type = parser.get_content_type()
+  content_type = addr_val.headers['content-type']
+  parser.parse("Content-Type: " + content_type)
   pdict = parser.get_params()
-
   if content_type == 'application/x-www-form-urlencoded':
     length = int(addr_val.headers['content-length'])
     postvars = parse_qs(
