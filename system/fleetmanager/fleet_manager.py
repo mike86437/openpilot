@@ -174,7 +174,7 @@ def addr_input():
     return redirect(url_for('app_token_input'))
   elif SearchInput == 2:
     lon, lat = get_last_lon_lat()
-    if gmap_key == "" or gmap_key is None
+    if gmap_key == "" or gmap_key is None:
       return redirect(url_for('gmap_key_input'))
     else:
       return render_template("addr_input.html", gmap_key, lon=lon, lat=lat)
