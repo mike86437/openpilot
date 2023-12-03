@@ -161,14 +161,14 @@ def addr_input():
 
 @app.route("/addr_input", methods=['POST'])
 def addr_input_post():
+  token = ""
   lon = float(0.0)
   lat = float(0.0)
   valid_addr = False
   postvars = request.form.to_dict()
-  print(postvars)
-  addr, lon, lat, valid_addr = fleet.parse_addr(postvars, lon, lat, valid_addr)
+  addr, lon, lat, valid_addr = fleet.parse_addr(postvars, lon, lat, valid_addr, token)
   if valid_addr:
-    return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat)
+    return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token)
   else:
     # Handle the case where the address is not valid
     return render_template("error.html")

@@ -128,26 +128,20 @@ def ffplay_mp4_wrap_process_builder(file_name):
   )
 
 
-def parse_POST(post_data):
-  postvars = parse_qs(post_data, keep_blank_values=1)
-  return postvars
-
-def parse_addr(postvars, lon, lat, valid_addr):
+def parse_addr(postvars, lon, lat, valid_addr, token):
+  token = params.get("MapboxPublicKey", encoding='utf8')
   addr = postvars.get("fav_val", [""])
-  print(addr)
   real_addr = None
   if addr != "favorites":
     try:
       dests = json.loads(params.get("ApiCache_NavDestinations", encoding='utf8').rstrip('\x00'))
     except TypeError:
       dests = json.loads("[]")
-    print(dests)
     for item in dests:
       if "label" in item and item["label"] == addr:
         lat, lon, real_addr = item["latitude"], item["longitude"], item["place_name"]
         break
-  print(lat)
-  return (real_addr, lon, lat, real_addr is not None)
+  return (real_addr, lon, lat, real_addr is not None, token)
 
 def search_addr(postvars, lon, lat, valid_addr):
   if "addr_val" in postvars:
