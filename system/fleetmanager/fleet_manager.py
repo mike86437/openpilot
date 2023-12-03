@@ -50,14 +50,6 @@ def otisserv_proxy():
 def reverse_proxy(subpath):
   return handle_request(request.method, subpath)
 
-@app.route("/navdirections.json", methods=['GET'])
-def otisserv_navdirections():
-  return handle_request(request.method, "navdirections.json")
-
-@app.route("/CurrentStep.json", methods=['GET'])
-def otisserv_CurrentStep():
-  return handle_request(request.method, "CurrentStep.json")
-
 @app.route("/locations", methods=['GET'])
 def otisserv_locations():
   return handle_request(request.method, "locations")
@@ -190,6 +182,19 @@ def nav_confirmation():
     return redirect(url_for('addr_input'))
   else:
     return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
+
+@app.route("/CurrentStep.json", methods=['GET'])
+def find_CurrentStep():
+  directory = "/data/openpilot/selfdrive/manager/"
+  filename = "CurrentStep.json"
+  return send_from_directory(directory, filename, as_attachment=True)
+
+@app.route("/navdirections.json", methods=['GET'])
+def find_nav_directions():
+  directory = "/data/openpilot/selfdrive/manager/" 
+  filename = "CurrentStep.json"
+  return send_from_directory(directory, filename, as_attachment=True)
+
 
 def main():
   try:
