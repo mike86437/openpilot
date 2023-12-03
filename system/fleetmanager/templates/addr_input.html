@@ -4,8 +4,7 @@
   addr_input
 {% endblock %}
 
-{% block head %}
-  {{ super() }}
+{% block main %}
   <!-- UIkit CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.9.2/dist/css/uikit.min.css" />
 
@@ -35,9 +34,7 @@
       /* Add your styles for the button element */
     }
   </style>
-{% endblock %}
 
-{% block main %}
   <!-- Your form markup -->
   <form name="searchForm" method="post">
     <fieldset class="uk-fieldset">
