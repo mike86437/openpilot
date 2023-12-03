@@ -172,7 +172,7 @@ def addr_input_post():
   else:
     postvars = request.form.to_dict()
     print(postvars)
-    addr, lon, lat, valid_addr = fleet.search_addr(postvars, lon, lat, valid_addr, token)
+    addr, lon, lat, valid_addr, token = fleet.search_addr(postvars, lon, lat, valid_addr, token)
     if valid_addr:
       return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
     else:

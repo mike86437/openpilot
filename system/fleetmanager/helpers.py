@@ -152,14 +152,14 @@ def search_addr(postvars, lon, lat, valid_addr, token):
       # Properly encode the address to handle spaces
       addr_encoded = quote(addr)
       query = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{addr_encoded}.json?access_token={token}&limit=1"
-      
+      print(query)
       # focus on place around last gps position
       last_pos = Params().get("LastGPSPosition")
       print(last_pos)
       if last_pos is not None and last_pos != "":
         l = json.loads(last_pos)
         query += "&proximity=%s,%s" % (l["longitude"], l["latitude"])
-      
+      print(query)
       r = requests.get(query)
       if r.status_code != 200:
         return (addr, lon, lat, valid_addr, token)
