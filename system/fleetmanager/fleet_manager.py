@@ -158,9 +158,6 @@ def open_error_log(file_name):
 def addr_input():
   return render_template("addr_input.html")
 
-@app.route("/addr_input", methods=['POST']) # temp
-def otisserv_addr_input():
-  return handle_request(request.method)
 
 @app.route("/addr_input", methods=['POST'])
 def addr_input_post():
