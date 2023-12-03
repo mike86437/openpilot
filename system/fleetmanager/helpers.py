@@ -154,7 +154,7 @@ def get_PrimeType():
   PrimeType = params.get_int("PrimeType")
   return PrimeType
 
-def get_last_lon_lat()
+def get_last_lon_lat():
   last_pos = Params().get("LastGPSPosition")
   l = json.loads(last_pos)
   return l["longitude"], l["latitude"]
