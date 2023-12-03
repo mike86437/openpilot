@@ -130,7 +130,7 @@ def parse_content_type_header(header):
     msg['Content-Type'] = header
     return msg.get_content_type(), msg.get_params()
 
-def parse_POST(addr_val):
+def parse_POST(post_data):
   postvars = parse_qs(post_data, keep_blank_values=1)
   return postvars
 
