@@ -166,7 +166,7 @@ def addr_input_post():
   lat = float(0.0)
   valid_addr = False
   postvars = request.form.to_dict()
-  addr, lon, lat, valid_addr = fleet.parse_addr(postvars, lon, lat, valid_addr, token)
+  addr, lon, lat, valid_addr, token = fleet.parse_addr(postvars, lon, lat, valid_addr, token)
   if valid_addr:
     return render_template("nav_confirmation.html", addr=addr, lon=lon, lat=lat, token=token)
   else:
