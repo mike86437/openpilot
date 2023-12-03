@@ -11,7 +11,7 @@ from tools.lib.route import SegmentName
 
 # otisserv conversion
 from common.params import Params
-from urllib.parse import parse_qs, unquote
+from urllib.parse import parse_qs, quote
 import json
 import requests
 
