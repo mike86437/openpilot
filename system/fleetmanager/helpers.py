@@ -166,8 +166,10 @@ def search_addr(postvars, lon, lat, valid_addr, token):
       valid_addr = True
   return (addr, lon, lat, valid_addr, token)
 
-def nav_confirmed(postvars, lng, lat):
+def nav_confirmed(postvars):
   if postvars is not None:
+    lat = float(postvars.get("lat"))
+    lng = float(postvars.get("lon"))
     save_type = postvars.get("save_type")
     name = postvars.get("name") if postvars.get("name") is not None else ""
     params.put("NavDestination", "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
