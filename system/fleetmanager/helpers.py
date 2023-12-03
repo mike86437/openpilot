@@ -141,6 +141,7 @@ def parse_addr(postvars, lon, lat, valid_addr):
   if addr != "favorites":
     try:
       dests = json.loads(params.get("ApiCache_NavDestinations", encoding='utf8').rstrip('\x00'))
+      print(dests)
     except TypeError:
       dests = json.loads("[]")
     for item in dests:
