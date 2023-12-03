@@ -154,9 +154,13 @@ def open_error_log(file_name):
   error = f.read()
   return render_template("error_log.html", file_name=file_name, file_content=error)
 
-@app.route("/addr_input")
+@app.route("/addr_input", methods=['GET'])
 def addr_input():
   return render_template("addr_input.html")
+
+@app.route("/addr_input", methods=['POST'])
+def otisserv_addr_input():
+  return handle_request()
 
 def main():
   try:
