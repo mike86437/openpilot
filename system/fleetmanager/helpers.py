@@ -135,30 +135,15 @@ def parse_POST(post_data):
   return postvars
 
 def parse_addr(postvars, lon, lat, valid_addr):
-  if "fav_val" in postvars:
-    addr = postvars.get("fav_val")[0]
-    real_addr = None
-    lon = None
-    lat = None
-    if addr != "favorites":
-      val = params.get("ApiCache_NavDestinations", encoding='utf8')
-      if val is not None:
-        val = val.rstrip('\x00')
-        dests = json.loads(val)
-        for item in dests:
-          if "label" in item and item["label"] == addr:
-            lat = item["latitude"]
-            lon = item["longitude"]
-            real_addr = item["place_name"]
-            break
-        else:
-          real_addr = None
-  if real_addr is not None:
-    valid_addr = True
-    return real_addr, lon, lat, valid_addr
-  else:
-    valid_addr = False
-    return postvars, lon, lat, valid_addr
+  addr = postvars.get("fav_val", [""])[0]
+  real_addr = None
+  if addr != "favorites":
+    dests = json.loads(params.get("ApiCache_NavDestinations", encoding='utf8', default="[]").rstrip('\x00'))
+    for item in dests:
+      if "label" in item and item["label"] == addr:
+        lat, lon, real_addr = item["latitude"], item["longitude"], item["place_name"]
+        break
+  return (real_addr, lon, lat, real_addr is not None)
 
 def search_addr(postvars, lon, lat, valid_addr):
   if "addr_val" in postvars:
