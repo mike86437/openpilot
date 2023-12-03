@@ -43,6 +43,15 @@
         ?.split('=')[1] || null;
     }
   </script>
+    <style>
+    /* Dark mode styles */
+    #htmlElement.dark-mode,
+    #htmlElement.dark-mode input,
+    #htmlElement.dark-mode select {
+      background-color: #121212; /* Dark background color */
+      color: #ffffff; /* Light text color */
+    }
+  </style>
 </head>
 <body style="margin: 0; padding: 0;">
   <div style="display: grid; place-items: center;">
