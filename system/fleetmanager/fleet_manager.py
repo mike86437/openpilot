@@ -160,7 +160,7 @@ def addr_input():
 
 @app.route("/addr_input", methods=['POST'])
 def otisserv_addr_input():
-  return handle_request()
+  return handle_request(request.method)
 
 def main():
   try:
