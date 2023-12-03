@@ -149,7 +149,9 @@ def open_error_log(file_name):
 @app.route("/addr_input", methods=['GET', 'POST'])
 def addr_input():
   token = fleet.get_public_token()
+  print(token)
   s_token = fleet.get_app_token()
+  print(s_token)
   if request.method == 'POST':
     lon = float(0.0)
     lat = float(0.0)
@@ -167,7 +169,7 @@ def addr_input():
       return render_template("error.html")
   elif token == "" or token is None:
     return redirect(url_for('public_token_input'))
-  elif s_token == "" or token is None:
+  elif s_token == "" or s_token is None:
     return redirect(url_for('app_token_input'))
   elif fleet.get_nav_active():
     return render_template("nav_directions.html")
