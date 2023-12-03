@@ -177,11 +177,11 @@ def addr_input():
     if gmap_key == "" or gmap_key is None:
       return redirect(url_for('gmap_key_input'))
     else:
-      return render_template("addr_input.html", gmap_key, lon=lon, lat=lat)
+      return render_template("addr_input.html", gmap_key=gmap_key, lon=lon, lat=lat)
   elif fleet.get_nav_active():
     return render_template("nav_directions.html")
   else:
-      return render_template("addr_input.html", gmap_key, lon=lon, lat=lat)
+      return render_template("addr_input.html", gmap_key=gmap_key, lon=lon, lat=lat)
 
 @app.route("/nav_confirmation", methods=['GET', 'POST'])
 def nav_confirmation():
