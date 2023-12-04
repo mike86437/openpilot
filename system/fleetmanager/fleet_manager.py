@@ -131,8 +131,10 @@ def addr_input():
       return redirect(url_for('nav_confirmation', addr=addr, lon=lon, lat=lat))
     else:
       return render_template("error.html")
+  elif PrimeType != 0:
+    return render_template("prime.html", PrimeType=PrimeType)
   elif fleet.get_nav_active() or PrimeType != 0:
-    return render_template("nav_directions.html", PrimeType=PrimeType)
+    return render_template("nonprime.html", PrimeType=PrimeType)
   elif token == "" or token is None:
     return redirect(url_for('public_token_input'))
   elif s_token == "" or s_token is None:
@@ -142,9 +144,9 @@ def addr_input():
     if gmap_key == "" or gmap_key is None:
       return redirect(url_for('gmap_key_input'))
     else:
-      return render_template("addr_input.html", gmap_key=gmap_key, lon=lon, lat=lat)
+      return render_template("addr.html", gmap_key=gmap_key, lon=lon, lat=lat)
   else:
-      return render_template("addr_input.html", gmap_key=gmap_key, lon=lon, lat=lat)
+      return render_template("addr.html", gmap_key=gmap_key, lon=lon, lat=lat)
 
 @app.route("/nav_confirmation", methods=['GET', 'POST'])
 def nav_confirmation():
