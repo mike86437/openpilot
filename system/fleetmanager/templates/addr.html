@@ -5,5 +5,7 @@
 {% endblock %}
 
 {% block main %}
-{% include "addr_input.html" %}
+{% with gmap_key=gmap_key, lon=lon, lat=lat %}
+    {% include "addr_input.html" %}
+{% endwith %}
 {% endblock %}
