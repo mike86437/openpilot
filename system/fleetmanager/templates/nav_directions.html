@@ -6,7 +6,8 @@
   {% include 'addr_input.html' %}
 {% block main %}
 {% if PrimeType == 0 %}
-
+{% else %}
+{% extends "layout.html" %}
 {% endif %}
 <div id="destinationHeading" style="font-weight: bold;"></div>
 <div id="jsonOutput"></div>
