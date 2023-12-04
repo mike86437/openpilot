@@ -201,6 +201,7 @@ def set_destination(postvars, valid_addr):
   if postvars.get("latitude") is not None and postvars.get("longitude") is not None:
     postvars["lat"] = postvars.get("latitude")
     postvars["lon"] = postvars.get("longitude")
+    postvars["save_type"] = "recent"
     nav_confirmed(postvars)
     valid_addr = True
   else:
@@ -209,6 +210,7 @@ def set_destination(postvars, valid_addr):
     data, lon, lat, valid_addr, token = search_addr(addr, lon, lat, valid_addr, token)
     postvars["lat"] = lat
     postvars["lon"] = lon
+    postvars["save_type"] = "recent"
     nav_confirmed(postvars)
     valid_addr= True
   return postvars, valid_addr
