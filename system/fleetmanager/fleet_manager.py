@@ -154,8 +154,8 @@ def addr_input():
     if not valid_addr:
       # If address is not found, try searching
       postvars = request.form.to_dict()
-      addr = postvars.get(addr_val)
-      addr, lon, lat, valid_addr, token = fleet.search_addr(postvars, lon, lat, valid_addr, token)
+      addr = request.form.get('addr_val')
+      addr, lon, lat, valid_addr, token = fleet.search_addr(addr, lon, lat, valid_addr, token)
     if valid_addr:
       # If a valid address is found, redirect to nav_confirmation
       return redirect(url_for('nav_confirmation', addr=addr, lon=lon, lat=lat))
