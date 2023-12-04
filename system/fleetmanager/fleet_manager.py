@@ -14,41 +14,11 @@ from openpilot.system.hardware.hw import Paths
 from openpilot.system.swaglog import cloudlog
 
 app = Flask(__name__)
-target_server_base_url = 'http://127.0.0.1:8282/'
-
-def make_request_with_retry(method, url, data=None, headers=None):
-  retries = 3 
-  for attempt in range(retries):
-    try:
-      response = requests.request(method, url, data=data, headers=headers, stream=True)
-      return response
-    except ConnectionError as e:
-      print(f"Error: {e}. Retrying...")
-  raise e
-
-def build_target_url(subpath=''):
-  return f'{target_server_base_url}/{subpath}' if subpath else target_server_base_url
-
-def handle_request(method, subpath=''):
-  target_url = build_target_url(subpath)
-  if request.is_json:
-    data = request.data
-  else:
-    data = request.form.to_dict()
-  response = make_request_with_retry(method, target_url, data=data, headers=request.headers)
-  return Response(response.iter_content(chunk_size=128), content_type=response.headers.get('Content-type'))
 
 @app.route("/")
 def home_page():
   return render_template("index.html")
 
-@app.route("/otisserv", methods=['GET', 'POST'])
-def otisserv_proxy():
-  return handle_request(request.method)
-
-@app.route("/otisserv/<path:subpath>", methods=['GET', 'POST'])
-def reverse_proxy(subpath):
-  return handle_request(request.method, subpath)
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
