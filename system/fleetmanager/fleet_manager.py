@@ -236,7 +236,8 @@ def get_locations():
 @app.route("/set_destination", methods=['POST'])
 def set_destination():
   valid_addr = False
-  data, valid_addr = fleet.set_destination(request.data, valid_addr)
+  postvars = request.get_json()
+  data, valid_addr = fleet.set_destination(postvars, valid_addr)
   if valid_addr:
     return Response('{"success": true}', content_type='application/json')
   else:
