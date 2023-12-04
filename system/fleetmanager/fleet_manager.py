@@ -134,7 +134,7 @@ def addr_input():
   elif PrimeType != 0:
     return render_template("prime.html")
   elif fleet.get_nav_active():
-    return render_template("nonprime.html", gmap_key=gmap_key, lon=lon, lat=lat, context={'gmap_key': gmap_key, 'lon': lon, 'lat': lat})
+    return render_template("nonprime.html", gmap_key=gmap_key, lon=lon, lat=lat)
   elif token == "" or token is None:
     return redirect(url_for('public_token_input'))
   elif s_token == "" or s_token is None:
