@@ -133,7 +133,7 @@ def addr_input():
       return render_template("error.html")
   elif PrimeType != 0:
     return render_template("prime.html", PrimeType=PrimeType)
-  elif fleet.get_nav_active() or PrimeType != 0:
+  elif fleet.get_nav_active():
     return render_template("nonprime.html", PrimeType=PrimeType)
   elif token == "" or token is None:
     return redirect(url_for('public_token_input'))
