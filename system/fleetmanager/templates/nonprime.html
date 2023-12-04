@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block main %}
-{% include "addr_input.html" with context={'gmap_key': gmap_key, 'lon': lon, 'lat': lat} %}
+{% with gmap_key=gmap_key, lon=lon, lat=lat %}
+    {% include "addr_input.html" %}
+{% endwith %}
+
 {% include "nav_directions.html" %}
 {% endblock %}
