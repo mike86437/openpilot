@@ -339,6 +339,7 @@ void UIState::updateStatus() {
     }
     started_prev = scene.started;
     emit offroadTransition(!scene.started);
+    wifi->setTetheringEnabled(scene.started);
   }
 }
 
@@ -361,6 +362,7 @@ UIState::UIState(QObject *parent) : QObject(parent) {
   QObject::connect(timer, &QTimer::timeout, this, &UIState::update);
   timer->start(1000 / UI_FREQ);
 
+  wifi = new WifiManager(this);
   ui_update_params(this);
 }
 
