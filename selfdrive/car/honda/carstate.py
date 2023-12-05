@@ -108,10 +108,10 @@ class CarState(CarStateBase):
     self.cruise_setting = 0
     self.v_cruise_pcm_prev = 0
     # FrogPilot variables
-    # self.params = Params()
+    self.params = Params()
     # self.params_memory = Params("/dev/shm/params")
     # self.read_distance_lines_init = False
-    # self.read_distance_lines = self.params.get_int("LongitudinalPersonality") + 1
+    self.read_distance_lines = self.params.get_int("LongitudinalPersonality") + 1
     # self.prev_read_distance_lines = self.read_distance_lines
     self.read_test = False
 
