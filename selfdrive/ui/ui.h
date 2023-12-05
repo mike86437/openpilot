@@ -16,6 +16,7 @@
 #include "common/modeldata.h"
 #include "common/params.h"
 #include "common/timing.h"
+#include "selfdrive/ui/qt/network/wifi_manager.h"
 
 const int UI_BORDER_SIZE = 30;
 const int UI_HEADER_HEIGHT = 420;
@@ -258,6 +259,8 @@ private:
   QTimer *timer;
   bool started_prev = false;
   PrimeType prime_type = PrimeType::UNKNOWN;
+
+  WifiManager *wifi = nullptr;
   
   // FrogPilot variables
   Params params;
