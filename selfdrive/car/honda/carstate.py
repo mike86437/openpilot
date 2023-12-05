@@ -108,11 +108,11 @@ class CarState(CarStateBase):
     self.cruise_setting = 0
     self.v_cruise_pcm_prev = 0
     # FrogPilot variables
-    self.params = Params()
-    self.params_memory = Params("/dev/shm/params")
-    self.read_distance_lines_init = False
-    self.read_distance_lines = self.params.get_int("LongitudinalPersonality") + 1
-    self.prev_read_distance_lines = self.read_distance_lines
+    # self.params = Params()
+    # self.params_memory = Params("/dev/shm/params")
+    # self.read_distance_lines_init = False
+    # self.read_distance_lines = self.params.get_int("LongitudinalPersonality") + 1
+    # self.prev_read_distance_lines = self.read_distance_lines
     self.read_test = False
 
     # When available we use cp.vl["CAR_SPEED"]["ROUGH_CAR_SPEED_2"] to populate vEgoCluster
@@ -198,15 +198,31 @@ class CarState(CarStateBase):
     ret.brakeHoldActive = cp.vl["VSA_STATUS"]["BRAKE_HOLD_ACTIVE"] == 1
 
     # when user presses distance button on steering wheel
-    if self.prev_cruise_setting == 3:
-      if self.cruise_setting == 0:
-        self.prev_read_distance_lines = self.read_distance_lines
-        self.read_distance_lines = self.read_distance_lines % 3 + 1
-    if self.prev_cruise_setting == 1:
-      if self.cruise_setting == 0:
-        self.read_test = not self.read_test
-        self.params.put_bool("ReadTest", self.read_test)
-        self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
+    # Driving personalities function
+    if self.personalities_via_wheel and ret.cruiseState.available:
+      # Sync with the onroad UI button
+      if self.params_memory.get_bool("PersonalityChangedViaUI"):
+        self.personality_profile = self.params.get_int("LongitudinalPersonality")
+        self.params_memory.put_bool("PersonalityChangedViaUI", False)
+
+      # Change personality upon steering wheel button press
+      self.distance_button = self.prev_cruise_setting == 3
+
+      if self.distance_button and not self.distance_previously_pressed:
+        self.params_memory.put_bool("PersonalityChangedViaWheel", True)
+        self.personality_profile = (self.previous_personality_profile + 1) % 3
+		    self.read_distance_lines = self.personality_profile + 1
+      self.distance_previously_pressed = self.distance_button
+    
+    # if self.prev_cruise_setting == 3:
+      # if self.cruise_setting == 0:
+        # self.prev_read_distance_lines = self.read_distance_lines
+        # self.read_distance_lines = self.read_distance_lines % 3 + 1
+    # if self.prev_cruise_setting == 1:
+      # if self.cruise_setting == 0:
+        # self.read_test = not self.read_test
+        # self.params.put_bool("ReadTest", self.read_test)
+        # self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
 
     if not self.read_distance_lines_init or self.read_distance_lines != self.prev_read_distance_lines:
       self.read_distance_lines_init = True
