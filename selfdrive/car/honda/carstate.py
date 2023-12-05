@@ -111,7 +111,7 @@ class CarState(CarStateBase):
     self.params = Params()
     # self.params_memory = Params("/dev/shm/params")
     # self.read_distance_lines_init = False
-    self.read_distance_lines = self.params.get_int("LongitudinalPersonality") + 1
+    self.personality_profile = = self.params.get_int("LongitudinalPersonality")
     # self.prev_read_distance_lines = self.read_distance_lines
     self.read_test = False
 
@@ -206,13 +206,12 @@ class CarState(CarStateBase):
         self.params_memory.put_bool("PersonalityChangedViaUI", False)
 
       # Change personality upon steering wheel button press
-      self.distance_button = self.prev_cruise_setting == 3
-
-      if self.distance_button and not self.distance_previously_pressed:
-        self.params_memory.put_bool("PersonalityChangedViaWheel", True)
-        self.personality_profile = (self.previous_personality_profile + 1) % 3
-        self.read_distance_lines = self.personality_profile + 1
-      self.distance_previously_pressed = self.distance_button
+      if self.prev_cruise_setting == 3:
+        print(self.prev_cruise_setting)
+        print(self.cruise_setting)
+        if self.cruise_setting == 0
+          self.personality_profile = (self.previous_personality_profile + 1) % 3
+          self.params_memory.put_bool("PersonalityChangedViaWheel", True)
     
     # if self.prev_cruise_setting == 3:
       # if self.cruise_setting == 0:
