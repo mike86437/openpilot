@@ -111,7 +111,7 @@ class CarState(CarStateBase):
     self.params = Params()
     # self.params_memory = Params("/dev/shm/params")
     # self.read_distance_lines_init = False
-    self.personality_profile = = self.params.get_int("LongitudinalPersonality")
+    self.personality_profile = self.params.get_int("LongitudinalPersonality")
     # self.prev_read_distance_lines = self.read_distance_lines
     self.read_test = False
 
