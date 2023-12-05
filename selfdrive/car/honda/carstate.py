@@ -209,7 +209,7 @@ class CarState(CarStateBase):
       if self.prev_cruise_setting == 3:
         print(self.prev_cruise_setting)
         print(self.cruise_setting)
-        if self.cruise_setting == 0
+        if self.cruise_setting == 0:
           self.personality_profile = (self.previous_personality_profile + 1) % 3
           self.params_memory.put_bool("PersonalityChangedViaWheel", True)
     
