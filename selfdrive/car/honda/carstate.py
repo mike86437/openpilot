@@ -224,11 +224,11 @@ class CarState(CarStateBase):
         # self.params.put_bool("ReadTest", self.read_test)
         # self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
 
-    if not self.read_distance_lines_init or self.read_distance_lines != self.prev_read_distance_lines:
-      self.read_distance_lines_init = True
-      put_int_nonblocking("LongitudinalPersonality", int(min(self.read_distance_lines - 1, 2)))
-      self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
-      self.prev_read_distance_lines = self.read_distance_lines
+    # if not self.read_distance_lines_init or self.read_distance_lines != self.prev_read_distance_lines:
+      # self.read_distance_lines_init = True
+      # put_int_nonblocking("LongitudinalPersonality", int(min(self.read_distance_lines - 1, 2)))
+      # self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
+      # self.prev_read_distance_lines = self.read_distance_lines
 
     # TODO: set for all cars
     if self.CP.carFingerprint in (HONDA_BOSCH | {CAR.CIVIC, CAR.ODYSSEY, CAR.ODYSSEY_CHN, CAR.CLARITY}):
