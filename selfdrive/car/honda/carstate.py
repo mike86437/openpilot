@@ -211,7 +211,7 @@ class CarState(CarStateBase):
       if self.distance_button and not self.distance_previously_pressed:
         self.params_memory.put_bool("PersonalityChangedViaWheel", True)
         self.personality_profile = (self.previous_personality_profile + 1) % 3
-		    self.read_distance_lines = self.personality_profile + 1
+        self.read_distance_lines = self.personality_profile + 1
       self.distance_previously_pressed = self.distance_button
     
     # if self.prev_cruise_setting == 3:
