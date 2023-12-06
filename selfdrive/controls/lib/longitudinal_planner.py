@@ -111,9 +111,6 @@ class LongitudinalPlanner:
     self.v_offset = 0
     self.v_target = MIN_TARGET_V
 
-    self.read_test = False
-    self.params_memory = Params("/dev/shm/params")
-
   def read_param(self):
     try:
       self.personality = int(self.params.get('LongitudinalPersonality'))
@@ -242,13 +239,6 @@ class LongitudinalPlanner:
           v_cruise = self.slc_target
       else:
         self.slc_target = self.overridden_speed
-
-    if self.read_test:
-      v_cruise = 0.0
-      if carstate.gasPressed:
-        self.params.put_bool("ReadTest", False)
-        self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
-    self.params_memory.put_bool("NavigationConditionMet", 2 if self.read_test else 0)
 
     # Pfeiferj's Vision Turn Controller
     if self.vision_turn_controller and prev_accel_constraint:

@@ -196,27 +196,24 @@ class CarState(CarStateBase):
         self.params_memory.put_bool("PersonalityChangedViaUI", False)
 
       # Change personality upon steering wheel button press
-      if self.prev_cruise_setting == 3:
-        if self.cruise_setting == 0:
-          self.personality_profile = (self.personality_profile + 1) % 3
-          self.params_memory.put_bool("PersonalityChangedViaWheel", True)
-          self.params.put_int("LongitudinalPersonality", self.personality_profile)
-    
-    # if self.prev_cruise_setting == 3:
-      # if self.cruise_setting == 0:
-        # self.prev_read_distance_lines = self.read_distance_lines
-        # self.read_distance_lines = self.read_distance_lines % 3 + 1
-    # if self.prev_cruise_setting == 1:
-      # if self.cruise_setting == 0:
-        # self.read_test = not self.read_test
-        # self.params.put_bool("ReadTest", self.read_test)
-        # self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
+      if self.prev_cruise_setting == 3 and self.cruise_setting == 0:
+        self.personality_profile = (self.personality_profile + 1) % 3
+        self.params_memory.put_bool("PersonalityChangedViaWheel", True)
+        self.params.put_int("LongitudinalPersonality", self.personality_profile)
 
-    # if not self.read_distance_lines_init or self.read_distance_lines != self.prev_read_distance_lines:
-      # self.read_distance_lines_init = True
-      # put_int_nonblocking("LongitudinalPersonality", int(min(self.read_distance_lines - 1, 2)))
-      # self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
-      # self.prev_read_distance_lines = self.read_distance_lines
+    # Toggle Experimental Mode from steering wheel function
+    if self.experimental_mode_via_press and self.prev_cruise_setting == 1 and self.cruise_setting == 0:
+      if self.conditional_experimental_mode:
+        # Set "CEStatus" to work with "Conditional Experimental Mode"
+        conditional_status = self.params_memory.get_int("CEStatus")
+        override_value = 0 if conditional_status in (1, 2, 3, 4) else 1 if conditional_status >= 5 else 2
+        self.params_memory.put_int("CEStatus", override_value)
+      else:
+        experimental_mode = self.params.get_bool("ExperimentalMode")
+        # Invert the value of "ExperimentalMode"
+        put_bool_nonblocking("ExperimentalMode", not experimental_mode)
+          
+
 
     # TODO: set for all cars
     if self.CP.carFingerprint in (HONDA_BOSCH | {CAR.CIVIC, CAR.ODYSSEY, CAR.ODYSSEY_CHN, CAR.CLARITY}):
