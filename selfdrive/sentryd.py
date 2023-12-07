@@ -24,6 +24,22 @@ class SentryMode:
     self.transition_to_offroad_last = time.monotonic()
     self.offroad_delay = 900
 
+  def takeSnapshot(self) -> Optional[Union[str, Dict[str, str]]]:
+  from openpilot.system.camerad.snapshot.snapshot import jpeg_write, snapshot
+  ret = snapshot()
+  if ret is not None:
+    def b64jpeg(x):
+      if x is not None:
+        f = io.BytesIO()
+        jpeg_write(f, x)
+        return base64.b64encode(f.getvalue()).decode("utf-8")
+      else:
+        return None
+    return {'jpegBack': b64jpeg(ret[0]),
+            'jpegFront': b64jpeg(ret[1])}
+  else:
+    raise Exception("not available while camerad is started")
+
   def send_discord_webhook(self, webhook_url, message):
     data = {"content": message}
     headers = {"Content-Type": "application/json"}
@@ -58,6 +74,7 @@ class SentryMode:
         self.last_timestamp = t
         self.sentry_status = True
         self.secDelay += 1
+        self.takeSnapshot()
 
         if self.secDelay % 100 == 0 and self.webhook_url is not None:
           self.secDelay = 0
