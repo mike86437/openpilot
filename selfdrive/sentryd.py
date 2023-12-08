@@ -4,6 +4,7 @@ from cereal import car, messaging
 import time
 import json
 import io
+import base64
 
 import requests
 from common.params import Params
