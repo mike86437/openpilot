@@ -31,6 +31,7 @@ class SentryMode:
     self.sentryjson = {}
     self.back_image_url = ""
     self.front_image_url = ""
+    self.timedelay = 0
 
   def takeSnapshot(self) -> Optional[Union[str, Dict[str, str]]]:
     from openpilot.system.camerad.snapshot.snapshot import jpeg_write, snapshot
@@ -92,6 +93,7 @@ class SentryMode:
     result_image.save(output_path)
 
   def update(self):
+
     t = time.monotonic()
     if not self.sentryd_init:
       self.sentryjson['SentrydActive'] = False
@@ -123,6 +125,9 @@ class SentryMode:
           snapshot_result = self.takeSnapshot()
           self.back_image_url = snapshot_result.get('jpegBack')
           self.front_image_url = snapshot_result.get('jpegFront')
+          # Save base64-encoded images to actual files
+          self.base64_to_image(self.back_image_url, "back_image.jpg")
+          self.base64_to_image(self.front_image_url, "front_image.jpg")
           self.sentryjson['SentrydAlarm'] = True
           self.sentryjson['SentrydAlarmT'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
           with open('sentryjson.json', 'w') as json_file:
