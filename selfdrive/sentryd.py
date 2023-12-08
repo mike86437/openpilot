@@ -23,6 +23,7 @@ class SentryMode:
     self.webhook_url = params.get("SentryDhook", encoding='utf8')
     self.transition_to_offroad_last = time.monotonic()
     self.offroad_delay = 900
+    self.sentryd_init = False
 
   def takeSnapshot(self):
     from openpilot.system.camerad.snapshot.snapshot import jpeg_write, snapshot
@@ -57,7 +58,9 @@ class SentryMode:
   def update(self):    
 
     t = time.monotonic()
-    params.put_bool("Sentryd_Active", False)
+    if not sentryd_init:
+      params.put_bool('Sentryd_Active', False)
+      self.sentryd_init = True
     if (t - self.transition_to_offroad_last) > self.offroad_delay:
       # Extract acceleration data
       self.curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
@@ -65,7 +68,7 @@ class SentryMode:
       # Initialize
       if self.prev_accel is None:
         self.prev_accel = self.curr_accel
-        params.put_bool("Sentryd_Active", True)
+        params.put_bool('Sentryd_Active', True)
 
       # Calculate magnitude change
       delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
