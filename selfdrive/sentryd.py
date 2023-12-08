@@ -92,6 +92,15 @@ class SentryMode:
     # Save the stitched image
     result_image.save(output_path)
 
+  def save_images(self):
+    # Generate timestamps
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+
+    # Copy images to the new directory with new filenames
+    shutil.copy("back_image.jpg", "/data/media/0/sentryd/back_image_{timestamp}.jpg")
+    shutil.copy("front_image.jpg", "/data/media/0/sentryd/front_image_{timestamp}.jpg")
+    shutil.copy("360_image.jpg", "/data/media/0/sentryd/360_image_{timestamp}.jpg")
+
   def update(self):
 
     t = time.monotonic()
@@ -135,6 +144,7 @@ class SentryMode:
           message = 'ALERT! Sentry Detected Movement!'
           self.send_discord_webhook(self.webhook_url, message)
           self.stitch_images('front_image.jpg', 'back_image.jpg', '360_image.jpg')
+          self.save_images()
 
       # Trigger Reset
       elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
