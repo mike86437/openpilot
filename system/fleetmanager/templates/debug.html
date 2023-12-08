@@ -16,29 +16,32 @@
 </div>
 
 <script>
+  let lastAlarmTimestamp = null;
+
   function fetchData() {
     fetch('sentryjson.json')
       .then(response => response.json())
       .then(data => {
-        // Create an HTML string for each key-value pair
-        const htmlString = Object.entries(data)
-          .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
-          .join('');
+        // Check if the alarm timestamp has changed
+        if (lastAlarmTimestamp !== data['SentrydAlarmT']) {
+          // Create an HTML string for each key-value pair
+          const htmlString = Object.entries(data)
+            .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
+            .join('');
 
-        // Update the content in the 'debug-container' div
-        document.getElementById('debug-container').innerHTML = htmlString;
+          // Update the content in the 'debug-container' div
+          document.getElementById('debug-container').innerHTML = htmlString;
 
-        // Assuming you have 'front_image' and 'back_image' in the data
-        if ('front_image' in data && 'back_image' in data) {
           // Update the 'src' attribute of the front image
-          document.getElementById('frontImage').src = data.front_image;
+          document.getElementById('frontImage').src = '/images/front_image.jpg';
           // Update the 'src' attribute of the back image
-          document.getElementById('backImage').src = data.back_image;
+          document.getElementById('backImage').src = '/images/back_image.jpg';
 
-          // Stitch images when both front and back images are available
-          if (data.front_image && data.back_image) {
-            stitchImages(data.front_image, data.back_image);
-          }
+          // Stitch images
+          stitchImages('/images/front_image.jpg', '/images/back_image.jpg');
+
+          // Update the last alarm timestamp
+          lastAlarmTimestamp = data['SentrydAlarmT'];
         }
       })
       .catch(error => console.error('Error fetching data:', error));
