@@ -204,7 +204,7 @@ class CarState(CarStateBase):
       self.distance_previously_pressed = self.distance_button
 
     # Toggle Experimental Mode from steering wheel function
-    lkas_pressed = self.experimental_mode_via_press and self.cruise_setting == 1:
+    lkas_pressed = self.experimental_mode_via_press and self.cruise_setting == 1
     if lkas_pressed and not self.lkas_previously_pressed:
       if self.conditional_experimental_mode:
         # Set "CEStatus" to work with "Conditional Experimental Mode"
