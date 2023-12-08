@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-<script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+<script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
 <div id="debug-container" style="font-size: 28px;">
   <!-- JSON data will be displayed here -->
 </div>
@@ -18,7 +18,11 @@
     <a-assets>
         <img id="panorama" src="/images/360_image.jpg"/>
     </a-assets>
-    <a-sky src="#panorama" rotation="0 -130 0"></a-sky>
+    <a-sky src="#panorama"></a-sky>
+
+    <a-camera>
+        <a-cursor></a-cursor>
+    </a-camera>
 </a-scene>
 
 <script>
