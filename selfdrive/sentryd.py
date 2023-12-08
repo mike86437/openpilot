@@ -18,7 +18,7 @@ class SentryMode:
     self.curr_accel = 0
     self.prev_accel = None
     self.sentry_status = False
-    
+    self.params_memory = Params("/dev/shm/params")
     self.secDelay = 0
     self.webhook_url = params.get("SentryDhook", encoding='utf8')
     self.transition_to_offroad_last = time.monotonic()
@@ -59,7 +59,7 @@ class SentryMode:
 
     t = time.monotonic()
     if not self.sentryd_init:
-      params_memory.put_bool('SentrydActive', False)
+      self.params_memory.put_bool('SentrydActive', False)
       self.sentryd_init = True
     if (t - self.transition_to_offroad_last) > self.offroad_delay:
       # Extract acceleration data
@@ -68,7 +68,7 @@ class SentryMode:
       # Initialize
       if self.prev_accel is None:
         self.prev_accel = self.curr_accel
-        params_memory.put_bool('SentrydActive', True)
+        self.params_memory.put_bool('SentrydActive', True)
 
       # Calculate magnitude change
       delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
