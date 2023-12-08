@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import numpy as np
 from cereal import car, messaging
+from typing import Optional, Union, Dict
+
 import time
 import json
 import io
@@ -27,8 +29,10 @@ class SentryMode:
     self.offroad_delay = 90
     self.sentryd_init = False
     self.sentryjson = {}
+    self.back_image_url= ""
+    self.front_image_url = ""
 
-  def takeSnapshot(self):
+  def takeSnapshot(self) -> Optional[Union[str, Dict[str, Image.Image]]]::
     from openpilot.system.camerad.snapshot.snapshot import jpeg_write, snapshot
     ret = snapshot()
     if ret is not None:
@@ -45,7 +49,21 @@ class SentryMode:
       raise Exception("not available while camerad is started")
 
   def send_discord_webhook(self, webhook_url, message):
-    data = {"content": message}
+    data = {
+      "content": message,
+      "embeds": [
+        {
+          "image": {
+            "url": self.back_image_url
+          }
+        },
+        {
+          "image": {
+            "url": self.front_image_url
+          }
+        }
+      ]
+    }
     headers = {"Content-Type": "application/json"}
     response = requests.post(webhook_url, json=data, headers=headers)
     if response.status_code == 200:
@@ -89,7 +107,9 @@ class SentryMode:
 
         if self.secDelay % 100 == 0 and self.webhook_url is not None:
           self.secDelay = 0
-          self.takeSnapshot()
+          back_image_url, front_image_url = self.takeSnapshot()
+          self.sentryjson['front_image_url'] = front_image_url
+          self.sentryjson['back_image_url'] = back_image_url
           self.sentryjson['SentrydAlarm'] = True
           self.sentryjson['SentrydAlarmT'] = t
           with open('sentryjson.json', 'w') as json_file:
