@@ -18,12 +18,12 @@ class SentryMode:
     self.curr_accel = 0
     self.prev_accel = None
     self.sentry_status = False
-    self.params_memory = Params("/dev/shm/params")
     self.secDelay = 0
     self.webhook_url = params.get("SentryDhook", encoding='utf8')
     self.transition_to_offroad_last = time.monotonic()
     self.offroad_delay = 900
     self.sentryd_init = False
+    self.sentryjson = {}
 
   def takeSnapshot(self):
     from openpilot.system.camerad.snapshot.snapshot import jpeg_write, snapshot
@@ -59,7 +59,9 @@ class SentryMode:
 
     t = time.monotonic()
     if not self.sentryd_init:
-      self.params_memory.put_bool('SentrydActive', False)
+      self.sentryjson['SentrydActive'] = False
+      with open('sentryjson.json', 'w') as json_file:
+        json.dump(self.sentryjson, json_file, indent=4)
       self.sentryd_init = True
     if (t - self.transition_to_offroad_last) > self.offroad_delay:
       # Extract acceleration data
@@ -68,7 +70,9 @@ class SentryMode:
       # Initialize
       if self.prev_accel is None:
         self.prev_accel = self.curr_accel
-        self.params_memory.put_bool('SentrydActive', True)
+        self.sentryjson['SentrydActive'] = True
+        with open('sentryjson.json', 'w') as json_file:
+          json.dump(self.sentryjson, json_file, indent=4)
 
       # Calculate magnitude change
       delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
@@ -83,6 +87,10 @@ class SentryMode:
         if self.secDelay % 100 == 0 and self.webhook_url is not None:
           self.secDelay = 0
           self.takeSnapshot()
+          self.sentryjson['SentrydAlarm'] = True
+          self.sentryjson['SentrydAlarmT'] = t
+          with open('sentryjson.json', 'w') as json_file:
+            json.dump(self.sentryjson, json_file, indent=4)
           # Replace 'YOUR_WEBHOOK_URL' with the actual URL of your Discord webhook
           message = 'ALERT! Sentry Detected Movement!'
           self.send_discord_webhook(self.webhook_url, message)
@@ -91,6 +99,9 @@ class SentryMode:
       elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
         self.sentry_status = False
         print("Movement Ended")
+        self.sentryjson['SentrydAlarm'] = False
+          with open('sentryjson.json', 'w') as json_file:
+            json.dump(self.sentryjson, json_file, indent=4)
 
       self.prev_accel = self.curr_accel
 
