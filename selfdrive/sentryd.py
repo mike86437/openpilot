@@ -53,34 +53,9 @@ class SentryMode:
       file.write(binary_data)
 
   def send_discord_webhook(self, webhook_url, message):
-    data = {
-      "content": message,
-      "embeds": [
-        {
-          "image": {
-            "url": "attachment://back_image.jpg"  # Update to the actual file name
-          }
-        },
-        {
-          "image": {
-            "url": "attachment://front_image.jpg"  # Update to the actual file name
-          }
-        }
-      ]
-    }
+    data = {"content": message}
     headers = {"Content-Type": "application/json"}
-
-    # Save base64-encoded images to actual files
-    self.base64_to_image(self.back_image_url, "back_image.jpg")
-    self.base64_to_image(self.front_image_url, "front_image.jpg")
-
-    files = {
-      "file1": open("back_image.jpg", "rb"),
-      "file2": open("front_image.jpg", "rb")
-    }
-
-    response = requests.post(webhook_url, json=data, headers=headers, files=files)
-
+    response = requests.post(webhook_url, json=data, headers=headers)
     if response.status_code == 200:
       print("Message sent successfully")
     else:
