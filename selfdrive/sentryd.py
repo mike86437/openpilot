@@ -13,7 +13,7 @@ from common.params import Params
 from PIL import Image
 
 params = Params()
-SENSITIVITY_THRESHOLD = 0.05
+SENSITIVITY_THRESHOLD = 0.08
 TRIGGERED_TIME = 2
 
 
@@ -130,7 +130,7 @@ class SentryMode:
         self.sentry_status = True
         self.secDelay += 1
 
-        if self.secDelay % 100 == 0 and self.webhook_url is not None:
+        if self.secDelay % 200 == 0 and self.webhook_url is not None:
           self.secDelay = 0
           snapshot_result = self.takeSnapshot()
           self.back_image_url = snapshot_result.get('jpegBack')
