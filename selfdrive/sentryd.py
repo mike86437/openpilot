@@ -32,7 +32,7 @@ class SentryMode:
     self.back_image_url= ""
     self.front_image_url = ""
 
-  def takeSnapshot(self) -> Optional[Union[str, Dict[str, Image.Image]]]::
+  def takeSnapshot(self) -> Optional[Union[str, Dict[str, Image.Image]]]:
     from openpilot.system.camerad.snapshot.snapshot import jpeg_write, snapshot
     ret = snapshot()
     if ret is not None:
