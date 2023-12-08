@@ -58,7 +58,7 @@ class SentryMode:
   def update(self):    
 
     t = time.monotonic()
-    if not sentryd_init:
+    if not self.sentryd_init:
       params.put_bool('Sentryd_Active', False)
       self.sentryd_init = True
     if (t - self.transition_to_offroad_last) > self.offroad_delay:
