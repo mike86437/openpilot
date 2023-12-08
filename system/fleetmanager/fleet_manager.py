@@ -220,7 +220,7 @@ def debug():
   return render_template("debug.html")
 
 @app.route("/sentryjson.json", methods=['GET'])
-def find_nav_directions():
+def find_sentryjson():
   directory = "/data/openpilot/selfdrive/manager/" 
   filename = "sentryjson.json"
   return send_from_directory(directory, filename, as_attachment=True)
