@@ -2,7 +2,7 @@
 import numpy as np
 from cereal import car, messaging
 import time
-from openpilot.selfdrive.controls.lib.events import Events
+
 import requests
 from common.params import Params
 params = Params()
@@ -18,7 +18,7 @@ class SentryMode:
     self.curr_accel = 0
     self.prev_accel = None
     self.sentry_status = False
-    self.events = Events()
+    
     self.secDelay = 0
     self.webhook_url = params.get("SentryDhook", encoding='utf8')
     self.transition_to_offroad_last = time.monotonic()
@@ -55,9 +55,9 @@ class SentryMode:
     return ax_mapping[dominant_axis]
 
   def update(self):    
-    events = Events()
+
     t = time.monotonic()
-    if (t - self.transition_to_offroad_last) < self.offroad_delay:
+    if (t - self.transition_to_offroad_last) > self.offroad_delay:
       # Extract acceleration data
       self.curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
 
@@ -70,7 +70,7 @@ class SentryMode:
 
       # Trigger Check
       if delta > SENSITIVITY_THRESHOLD:
-        events.add(car.CarEvent.EventName.tooDistracted)
+
         self.last_timestamp = t
         self.sentry_status = True
         self.secDelay += 1
@@ -88,7 +88,7 @@ class SentryMode:
         print("Movement Ended")
 
       self.prev_accel = self.curr_accel
-      events.to_msg
+
 
   # def publish(self):
   #   sentry_state = messaging.new_message('sentryState')
