@@ -24,7 +24,7 @@ class SentryMode:
     self.transition_to_offroad_last = time.monotonic()
     self.offroad_delay = 900
 
-  def takeSnapshot(self) -> Optional[Union[str, Dict[str, str]]]:
+  def takeSnapshot(self):
     from openpilot.system.camerad.snapshot.snapshot import jpeg_write, snapshot
     ret = snapshot()
     if ret is not None:
