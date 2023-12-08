@@ -12,6 +12,7 @@
 <div id="image-container">
     <img id="frontImage" alt="Front Image" style="max-width: 400px; max-height: 400px;">
     <img id="backImage" alt="Back Image" style="max-width: 400px; max-height: 400px;">
+    <img id="stitchedImage" alt="Stitched Image" style="max-width: 800px; max-height: 400px;">
 </div>
 
 <script>
@@ -27,10 +28,18 @@
         // Update the content in the 'debug-container' div
         document.getElementById('debug-container').innerHTML = htmlString;
 
-        // Update the 'src' attribute of the front image
-        document.getElementById('frontImage').src = '/images/back_image.jpg';
-        // Update the 'src' attribute of the back image
-        document.getElementById('backImage').src = '/images/front_image.jpg';
+        // Assuming you have 'front_image' and 'back_image' in the data
+        if ('front_image' in data && 'back_image' in data) {
+          // Update the 'src' attribute of the front image
+          document.getElementById('frontImage').src = data.front_image;
+          // Update the 'src' attribute of the back image
+          document.getElementById('backImage').src = data.back_image;
+
+          // Stitch images when both front and back images are available
+          if (data.front_image && data.back_image) {
+            stitchImages(data.front_image, data.back_image);
+          }
+        }
       })
       .catch(error => console.error('Error fetching data:', error));
   }
@@ -40,5 +49,42 @@
 
   // Set up a timer to fetch data every 5 seconds
   setInterval(fetchData, 2000);
+
+  // Function to stitch front and back images
+  function stitchImages(frontImage, backImage) {
+    const front = new Image();
+    const back = new Image();
+
+    front.src = frontImage;
+    back.src = backImage;
+
+    Promise.all([loadImage(front), loadImage(back)])
+      .then(images => {
+        const frontWidth = images[0].width;
+        const frontHeight = images[0].height;
+        const backWidth = images[1].width;
+        const backHeight = images[1].height;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = frontWidth + backWidth;
+        canvas.height = Math.max(frontHeight, backHeight);
+
+        const context = canvas.getContext('2d');
+        context.drawImage(images[0], 0, 0);
+        context.drawImage(images[1], frontWidth, 0);
+
+        const stitchedImage = new Image();
+        stitchedImage.src = canvas.toDataURL();
+        document.getElementById('stitchedImage').src = stitchedImage.src;
+      })
+      .catch(error => console.error('Error stitching images:', error));
+  }
+
+  function loadImage(image) {
+    return new Promise((resolve, reject) => {
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+    });
+  }
 </script>
 {% endblock %}
