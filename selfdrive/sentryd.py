@@ -67,7 +67,7 @@ class SentryMode:
     dominant_axis = np.argmax(np.abs(current - previous))
     return ax_mapping[dominant_axis]
 
-  def stitch_images(front_image_path, back_image_path, output_path):
+  def stitch_images(self, front_image_path, back_image_path, output_path):
     # Open images using PIL
     front_image = Image.open(front_image_path)
     back_image = Image.open(back_image_path)
@@ -90,8 +90,6 @@ class SentryMode:
 
     # Save the stitched image
     result_image.save(output_path)
-
-
 
   def update(self):
     t = time.monotonic()
@@ -131,7 +129,7 @@ class SentryMode:
             json.dump(self.sentryjson, json_file, indent=4)
           message = 'ALERT! Sentry Detected Movement!'
           self.send_discord_webhook(self.webhook_url, message)
-          stitch_images('front_image.jpg', 'back_image.jpg', '360_image.jpg')
+          self.stitch_images('front_image.jpg', 'back_image.jpg', '360_image.jpg')
 
       # Trigger Reset
       elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
