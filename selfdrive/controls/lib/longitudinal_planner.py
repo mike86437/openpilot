@@ -350,7 +350,6 @@ class LongitudinalPlanner:
 
     self.green_light_alert = self.params.get_bool("GreenLightAlert")
     self.speed_limit_controller = self.params.get_bool("SpeedLimitController")
-    self.read_test = self.params.get_bool("ReadTest")
 
     self.vision_turn_controller = self.params.get_bool("VisionTurnControl")
     if self.vision_turn_controller:
