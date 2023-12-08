@@ -59,7 +59,7 @@ class SentryMode:
 
     t = time.monotonic()
     if not self.sentryd_init:
-      params.put_bool('Sentryd_Active', False)
+      params.put_bool('SentrydActive', False)
       self.sentryd_init = True
     if (t - self.transition_to_offroad_last) > self.offroad_delay:
       # Extract acceleration data
@@ -68,7 +68,7 @@ class SentryMode:
       # Initialize
       if self.prev_accel is None:
         self.prev_accel = self.curr_accel
-        params.put_bool('Sentryd_Active', True)
+        params.put_bool('SentrydActive', True)
 
       # Calculate magnitude change
       delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
