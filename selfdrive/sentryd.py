@@ -100,8 +100,8 @@ class SentryMode:
         self.sentry_status = False
         print("Movement Ended")
         self.sentryjson['SentrydAlarm'] = False
-          with open('sentryjson.json', 'w') as json_file:
-            json.dump(self.sentryjson, json_file, indent=4)
+        with open('sentryjson.json', 'w') as json_file:
+          json.dump(self.sentryjson, json_file, indent=4)
 
       self.prev_accel = self.curr_accel
 
