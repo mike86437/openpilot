@@ -107,9 +107,9 @@ class SentryMode:
 
         if self.secDelay % 100 == 0 and self.webhook_url is not None:
           self.secDelay = 0
-          back_image_url, front_image_url = self.takeSnapshot()
-          self.sentryjson['front_image_url'] = front_image_url
-          self.sentryjson['back_image_url'] = back_image_url
+          self.back_image_url, self.front_image_url = self.takeSnapshot()
+          self.sentryjson['front_image_url'] = self.front_image_url
+          self.sentryjson['back_image_url'] = self.back_image_url
           self.sentryjson['SentrydAlarm'] = True
           self.sentryjson['SentrydAlarmT'] = t
           with open('sentryjson.json', 'w') as json_file:
