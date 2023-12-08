@@ -3,6 +3,7 @@ import numpy as np
 from cereal import car, messaging
 import time
 import json
+import io
 
 import requests
 from common.params import Params
