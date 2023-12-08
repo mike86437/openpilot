@@ -196,13 +196,16 @@ class CarState(CarStateBase):
         self.params_memory.put_bool("PersonalityChangedViaUI", False)
 
       # Change personality upon steering wheel button press
-      if self.cruise_setting == 3:
+      self.distance_button = self.cruise_setting == 3:
+      if self.distance_button and not self.distance_previously_pressed:
         self.personality_profile = (self.personality_profile + 1) % 3
         self.params_memory.put_bool("PersonalityChangedViaWheel", True)
         self.params.put_int("LongitudinalPersonality", self.personality_profile)
+      self.distance_previously_pressed = self.distance_button
 
     # Toggle Experimental Mode from steering wheel function
-    if self.experimental_mode_via_press and self.cruise_setting == 1:
+    lkas_pressed = self.experimental_mode_via_press and self.cruise_setting == 1:
+    if lkas_pressed and not self.lkas_previously_pressed:
       if self.conditional_experimental_mode:
         # Set "CEStatus" to work with "Conditional Experimental Mode"
         conditional_status = self.params_memory.get_int("CEStatus")
@@ -212,6 +215,7 @@ class CarState(CarStateBase):
         experimental_mode = self.params.get_bool("ExperimentalMode")
         # Invert the value of "ExperimentalMode"
         put_bool_nonblocking("ExperimentalMode", not experimental_mode)
+    self.lkas_previously_pressed = lkas_pressed
           
 
 
