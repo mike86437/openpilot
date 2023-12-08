@@ -8,6 +8,7 @@ import json
 import io
 import base64
 import requests
+import shutil
 from common.params import Params
 from PIL import Image
 
