@@ -2,7 +2,7 @@
 import numpy as np
 from cereal import car, messaging
 from typing import Optional, Union, Dict
-
+from datetime import datetime
 import time
 import json
 import io
@@ -111,10 +111,9 @@ class SentryMode:
           self.sentryjson['front_image_url'] = self.front_image_url
           self.sentryjson['back_image_url'] = self.back_image_url
           self.sentryjson['SentrydAlarm'] = True
-          self.sentryjson['SentrydAlarmT'] = t
+          self.sentryjson['SentrydAlarmT'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
           with open('sentryjson.json', 'w') as json_file:
             json.dump(self.sentryjson, json_file, indent=4)
-          # Replace 'YOUR_WEBHOOK_URL' with the actual URL of your Discord webhook
           message = 'ALERT! Sentry Detected Movement!'
           self.send_discord_webhook(self.webhook_url, message)
 

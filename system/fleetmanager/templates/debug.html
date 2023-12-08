@@ -5,6 +5,10 @@
 {% endblock %}
 
 {% block main %}
+<div id="debug-container" style="font-size: 28px;">
+  <!-- JSON data will be displayed here -->
+</div>
+
   <div id="image-container">
     <img id="frontImage" alt="Front Image">
     <img id="backImage" alt="Back Image">
@@ -15,6 +19,14 @@
       fetch('sentryjson.json')
         .then(response => response.json())
         .then(data => {
+          // Create an HTML string for each key-value pair
+          const htmlString = Object.entries(data)
+            .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
+            .join('');
+  
+          // Update the content in the 'debug-container' div
+          document.getElementById('debug-container').innerHTML = htmlString;
+
           // Check if front_image_url and back_image_url exist in the data
           if ('front_image_url' in data && 'back_image_url' in data) {
             // Update the 'src' attribute of the front image
