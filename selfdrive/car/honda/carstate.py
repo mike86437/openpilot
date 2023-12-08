@@ -196,7 +196,7 @@ class CarState(CarStateBase):
         self.params_memory.put_bool("PersonalityChangedViaUI", False)
 
       # Change personality upon steering wheel button press
-      self.distance_button = self.cruise_setting == 3:
+      self.distance_button = self.cruise_setting == 3
       if self.distance_button and not self.distance_previously_pressed:
         self.personality_profile = (self.personality_profile + 1) % 3
         self.params_memory.put_bool("PersonalityChangedViaWheel", True)
@@ -216,8 +216,6 @@ class CarState(CarStateBase):
         # Invert the value of "ExperimentalMode"
         put_bool_nonblocking("ExperimentalMode", not experimental_mode)
     self.lkas_previously_pressed = lkas_pressed
-          
-
 
     # TODO: set for all cars
     if self.CP.carFingerprint in (HONDA_BOSCH | {CAR.CIVIC, CAR.ODYSSEY, CAR.ODYSSEY_CHN, CAR.CLARITY}):
