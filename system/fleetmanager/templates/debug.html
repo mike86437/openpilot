@@ -16,6 +16,7 @@
 
 <script>
   let lastAlarmTimestamp = null;
+  let aFrameLoaded = false;
 
   function fetchData() {
     fetch('sentryjson.json')
@@ -36,8 +37,8 @@
           // Update the 'src' attribute of the back image
           document.getElementById('backImage').src = '/images/back_image.jpg';
 
-          // Check if 360_image.jpg exists
-          if ('360_image.jpg' in data) {
+          // Check if A-Frame is not loaded and 360_image.jpg exists
+          if (!aFrameLoaded && checkImageExists('/images/360_image.jpg')) {
             // Load A-Frame content
             loadAFrameContent();
           }
@@ -55,6 +56,13 @@
   // Set up a timer to fetch data every 5 seconds
   setInterval(fetchData, 2000);
 
+  function checkImageExists(imageUrl) {
+    const http = new XMLHttpRequest();
+    http.open('HEAD', imageUrl, false);
+    http.send();
+    return http.status !== 404;
+  }
+
   function loadAFrameContent() {
     // Load A-Frame script dynamically
     const aframeScript = document.createElement('script');
@@ -62,6 +70,7 @@
     aframeScript.onload = function () {
       // A-Frame has been loaded, create A-Frame scene
       createAFrameScene();
+      aFrameLoaded = true;
     };
     document.head.appendChild(aframeScript);
   }
