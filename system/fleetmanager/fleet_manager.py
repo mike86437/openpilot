@@ -215,6 +215,10 @@ def set_destination():
   else:
     return Response('{"success": false}', content_type='application/json')
 
+@app.route("/debug")
+def debug():
+  return render_template("debug.html")
+
 
 def main():
   try:

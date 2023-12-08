@@ -23,7 +23,7 @@ class SentryMode:
     self.secDelay = 0
     self.webhook_url = params.get("SentryDhook", encoding='utf8')
     self.transition_to_offroad_last = time.monotonic()
-    self.offroad_delay = 900
+    self.offroad_delay = 90
     self.sentryd_init = False
     self.sentryjson = {}
 
