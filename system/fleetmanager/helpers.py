@@ -21,9 +21,12 @@ params = Params()
 if PC:
   SCREENRECORD_PATH = os.path.join(str(Path.home()), ".comma", "media", "0", "videos", "")
   ERROR_LOGS_PATH = os.path.join(str(Path.home()), ".comma", "community", "crashes", "")
+  SENTRYD_PATH = os.path.join(str(Path.home()), ".comma", "media", "0", "sentryd", "")
 else:
   SCREENRECORD_PATH = "/data/media/0/videos/"
   ERROR_LOGS_PATH = "/data/community/crashes/"
+  SENTRYD_PATH = "/data/media/0/sentryd/"
+
 
 
 def list_files(path):
