@@ -225,6 +225,11 @@ def find_sentryjson():
   filename = "sentryjson.json"
   return send_from_directory(directory, filename, as_attachment=True)
 
+@app.route("/images/<filename>", methods=['GET'])
+def serve_image(filename):
+  directory = "/data/openpilot/selfdrive/manager/"
+  return send_from_directory(directory, filename, as_attachment=True)
+
 
 def main():
   try:

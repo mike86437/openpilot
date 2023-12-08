@@ -7,9 +7,9 @@ import time
 import json
 import io
 import base64
-
 import requests
 from common.params import Params
+
 params = Params()
 SENSITIVITY_THRESHOLD = 0.05
 TRIGGERED_TIME = 2
@@ -19,7 +19,6 @@ class SentryMode:
 
   def __init__(self):
     self.sm = messaging.SubMaster(['accelerometer'], poll=['accelerometer'])
-    # self.pm = messaging.PubMaster(['sentryState'])
     self.curr_accel = 0
     self.prev_accel = None
     self.sentry_status = False
@@ -29,7 +28,7 @@ class SentryMode:
     self.offroad_delay = 90
     self.sentryd_init = False
     self.sentryjson = {}
-    self.back_image_url= ""
+    self.back_image_url = ""
     self.front_image_url = ""
 
   def takeSnapshot(self) -> Optional[Union[str, Dict[str, str]]]:
@@ -48,24 +47,40 @@ class SentryMode:
     else:
       raise Exception("not available while camerad is started")
 
+  def base64_to_image(self, base64_data, output_file):
+    binary_data = base64.b64decode(base64_data)
+    with open(output_file, 'wb') as file:
+      file.write(binary_data)
+
   def send_discord_webhook(self, webhook_url, message):
     data = {
       "content": message,
       "embeds": [
         {
           "image": {
-            "url": self.back_image_url
+            "url": "attachment://back_image.jpg"  # Update to the actual file name
           }
         },
         {
           "image": {
-            "url": self.front_image_url
+            "url": "attachment://front_image.jpg"  # Update to the actual file name
           }
         }
       ]
     }
     headers = {"Content-Type": "application/json"}
-    response = requests.post(webhook_url, json=data, headers=headers)
+
+    # Save base64-encoded images to actual files
+    self.base64_to_image(self.back_image_url, "back_image.jpg")
+    self.base64_to_image(self.front_image_url, "front_image.jpg")
+
+    files = {
+      "file1": open("back_image.jpg", "rb"),
+      "file2": open("front_image.jpg", "rb")
+    }
+
+    response = requests.post(webhook_url, json=data, headers=headers, files=files)
+
     if response.status_code == 200:
       print("Message sent successfully")
     else:
@@ -76,8 +91,7 @@ class SentryMode:
     dominant_axis = np.argmax(np.abs(current - previous))
     return ax_mapping[dominant_axis]
 
-  def update(self):    
-
+  def update(self):
     t = time.monotonic()
     if not self.sentryd_init:
       self.sentryjson['SentrydActive'] = False
@@ -100,7 +114,6 @@ class SentryMode:
 
       # Trigger Check
       if delta > SENSITIVITY_THRESHOLD:
-
         self.last_timestamp = t
         self.sentry_status = True
         self.secDelay += 1
@@ -110,8 +123,6 @@ class SentryMode:
           snapshot_result = self.takeSnapshot()
           self.back_image_url = snapshot_result.get('jpegBack')
           self.front_image_url = snapshot_result.get('jpegFront')
-          self.sentryjson['front_image_url'] = self.front_image_url
-          self.sentryjson['back_image_url'] = self.back_image_url
           self.sentryjson['SentrydAlarm'] = True
           self.sentryjson['SentrydAlarmT'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
           with open('sentryjson.json', 'w') as json_file:
@@ -129,18 +140,10 @@ class SentryMode:
 
       self.prev_accel = self.curr_accel
 
-
-  # def publish(self):
-  #   sentry_state = messaging.new_message('sentryState')
-  #   sentry_state.sentryState.status = bool(self.sentry_status)
-  #   self.pm.send('sentryState', sentry_state)
-
-
   def start(self):
     while True:
       self.sm.update()
       self.update()
-      # self.publish()
 
 
 def main():

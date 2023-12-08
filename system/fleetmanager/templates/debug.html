@@ -9,39 +9,36 @@
   <!-- JSON data will be displayed here -->
 </div>
 
-  <div id="image-container">
-    <img id="frontImage" alt="Front Image">
-    <img id="backImage" alt="Back Image">
-  </div>
-  
-  <script>
-    function fetchData() {
-      fetch('sentryjson.json')
-        .then(response => response.json())
-        .then(data => {
-          // Create an HTML string for each key-value pair
-          const htmlString = Object.entries(data)
-            .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
-            .join('');
-  
-          // Update the content in the 'debug-container' div
-          document.getElementById('debug-container').innerHTML = htmlString;
+<div id="image-container">
+  <img id="frontImage" alt="Front Image">
+  <img id="backImage" alt="Back Image">
+</div>
 
-          // Check if front_image_url and back_image_url exist in the data
-          if ('front_image_url' in data && 'back_image_url' in data) {
-            // Update the 'src' attribute of the front image
-            document.getElementById('frontImage').src = data.front_image_url;
-            // Update the 'src' attribute of the back image
-            document.getElementById('backImage').src = data.back_image_url;
-          }
-        })
-        .catch(error => console.error('Error fetching data:', error));
-    }
-  
-    // Initial fetch
-    fetchData();
-  
-    // Set up a timer to fetch data every 5 seconds
-    setInterval(fetchData, 2000);
-  </script>
+<script>
+  function fetchData() {
+    fetch('sentryjson.json')
+      .then(response => response.json())
+      .then(data => {
+        // Create an HTML string for each key-value pair
+        const htmlString = Object.entries(data)
+          .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
+          .join('');
+
+        // Update the content in the 'debug-container' div
+        document.getElementById('debug-container').innerHTML = htmlString;
+
+        // Update the 'src' attribute of the front image
+        document.getElementById('frontImage').src = '/images/back_image.jpg';
+        // Update the 'src' attribute of the back image
+        document.getElementById('backImage').src = '/images/front_image.jpg';
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }
+
+  // Initial fetch
+  fetchData();
+
+  // Set up a timer to fetch data every 5 seconds
+  setInterval(fetchData, 2000);
+</script>
 {% endblock %}
