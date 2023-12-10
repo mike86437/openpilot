@@ -132,7 +132,9 @@ class SentryMode:
       delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
 
       # Trigger Check
-      if delta > SENSITIVITY_THRESHOLD:
+      if delta > SENSITIVITY_THRESHOLD or params.get_bool("SentryD"):
+        if params.get_bool("SentryD"):
+          params.put_bool("SentryD", False)
         self.last_timestamp = t
         self.sentry_status = True
         self.secDelay += 1
