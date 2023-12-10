@@ -35,7 +35,7 @@ class SentryMode:
     self.timedelay = 0
 
   def takeSnapshot(self) -> Optional[Dict[str, str]]:
-    from openpilot.system.camerad.snapshot.snapshot import snapshot
+    from openpilot.system.camerad.snapshot.snapshot import snapshot, jpeg_write
     pic, fpic = snapshot()
     if pic is not None:
       print(pic.shape)
