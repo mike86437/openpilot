@@ -36,9 +36,17 @@ class SentryMode:
 
   def takeSnapshot(self) -> Optional[Dict[str, str]]:
     from openpilot.system.camerad.snapshot.snapshot import snapshot
-    ret = snapshot()
-    if ret is not None:
-      return {'jpegBack': ret[0], 'jpegFront': ret[1]}
+    pic, fpic = snapshot()
+    if pic is not None:
+    print(pic.shape)
+    jpeg_write("back_image.jpg", pic)
+    if fpic is not None:
+      jpeg_write("front_image.jpg", fpic)
+    if pic is not None and fpic is not None:
+      self.stitch_images('front_image.jpg', 'back_image.jpg', '360_image.jpg')
+    self.save_images()
+    if pic is not None:
+      return 
     else:
       raise Exception("not available while camerad is started")
 
@@ -93,9 +101,12 @@ class SentryMode:
     os.makedirs(target_directory, exist_ok=True)
 
     # Copy images to the new directory with new filenames
-    shutil.copy("back_image.jpg", f"{target_directory}back_image_{timestamp}.jpg")
-    shutil.copy("front_image.jpg", f"{target_directory}front_image_{timestamp}.jpg")
-    shutil.copy("360_image.jpg", f"{target_directory}360_image_{timestamp}.jpg")
+    if "back_image.jpg" is not None:
+      shutil.copy("back_image.jpg", f"{target_directory}back_image_{timestamp}.jpg")
+    if "front_image.jpg" is not None:
+      shutil.copy("front_image.jpg", f"{target_directory}front_image_{timestamp}.jpg")
+    if "ba360_imageck_image.jpg" is not None:
+      shutil.copy("360_image.jpg", f"{target_directory}360_image_{timestamp}.jpg")
 
   def update(self):
 
@@ -127,7 +138,7 @@ class SentryMode:
 
         if self.secDelay % 200 == 0 and self.webhook_url is not None:
           self.secDelay = 0
-          snapshot_result = self.take_snapshot()
+          self.take_snapshot()
           self.back_image = snapshot_result.get('jpegBack')
           self.front_image = snapshot_result.get('jpegFront')
           
