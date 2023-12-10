@@ -82,7 +82,7 @@ def snapshot():
     return None, None
 
   front_camera_allowed = params.get_bool("RecordFront")
-  params.put_bool("IsTakingSnapshot", True)
+  # params.put_bool("IsTakingSnapshot", True)
   set_offroad_alert("Offroad_IsTakingSnapshot", True)
   time.sleep(2.0)  # Give thermald time to read the param, or if just started give camerad time to start
 
