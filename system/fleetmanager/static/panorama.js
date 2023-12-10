@@ -26,7 +26,7 @@ function init() {
     const geometry = new THREE.SphereGeometry(500, 60, 40);
 
     // Flip the geometry inside out so that the image is displayed on the inside of the sphere
-    geometry.scale(1, 1, 1);
+    geometry.scale(-1, 1, 1);
 
     // Create a new material with the loaded texture
     const material = new THREE.MeshBasicMaterial({
