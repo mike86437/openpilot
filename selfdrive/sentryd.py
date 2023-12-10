@@ -38,8 +38,8 @@ class SentryMode:
     from openpilot.system.camerad.snapshot.snapshot import snapshot
     pic, fpic = snapshot()
     if pic is not None:
-    print(pic.shape)
-    jpeg_write("back_image.jpg", pic)
+      print(pic.shape)
+      jpeg_write("back_image.jpg", pic)
     if fpic is not None:
       jpeg_write("front_image.jpg", fpic)
     if pic is not None and fpic is not None:
