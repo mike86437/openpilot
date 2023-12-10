@@ -19,7 +19,7 @@
 {% for row in rows %}
     <a href="/sentryd/{{ row }}">{{ row }}</a><br>
 {% endfor %}
-
+<script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
 <style>
   #aframe-container {
     width: 400px; /* Set your desired width */
@@ -36,7 +36,7 @@
   </a-scene>
 </div>
 
-<script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
 
 <script>
   let lastAlarmTimestamp = null;
