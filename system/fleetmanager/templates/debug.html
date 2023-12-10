@@ -19,9 +19,10 @@
 {% for row in rows %}
     <a href="/sentryd/{{ row }}">{{ row }}</a><br>
 {% endfor %}
+<canvas id="panoramaCanvas" style="width: 100%; height: 400px;"></canvas>
+
 <script>
   let lastAlarmTimestamp = null;
-  let aFrameLoaded = false;
 
   function fetchData() {
     fetch('sentryjson.json')
@@ -42,10 +43,11 @@
           // Update the 'src' attribute of the back image
           document.getElementById('backImage').src = '/images/back_image.jpg';
 
-          // Check if A-Frame is not loaded and 360_image.jpg exists
-          if (!aFrameLoaded && checkImageExists('/images/360_image.jpg')) {
-            // Load A-Frame content
-            loadAFrameContent();
+          // Check if the canvas exists
+          const canvas = document.getElementById('panoramaCanvas');
+          if (canvas) {
+            // Load 360-degree image on the canvas
+            loadPanoramaImage('/images/360_image.jpg', canvas);
           }
 
           // Update the last alarm timestamp
@@ -61,53 +63,15 @@
   // Set up a timer to fetch data every 5 seconds
   setInterval(fetchData, 2000);
 
-  function checkImageExists(imageUrl) {
-    const http = new XMLHttpRequest();
-    http.open('HEAD', imageUrl, false);
-    http.send();
-    return http.status !== 404;
-  }
+  function loadPanoramaImage(imageUrl, canvas) {
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.src = imageUrl;
 
-  function loadAFrameContent() {
-    // Load A-Frame script dynamically
-    const aframeScript = document.createElement('script');
-    aframeScript.src = 'https://aframe.io/releases/1.2.0/aframe.min.js';
-    aframeScript.onload = function () {
-      // A-Frame has been loaded, create A-Frame scene
-      createAFrameScene();
-      aFrameLoaded = true;
+    img.onload = function () {
+      // Draw the image on the canvas
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
-    document.head.appendChild(aframeScript);
-  }
-
-  function createAFrameScene() {
-    const aScene = document.createElement('a-scene');
-
-    // Set A-Frame scene attributes for size control
-    aScene.setAttribute('embedded', 'true'); // Allows the A-Frame scene to be embedded in a webpage
-    aScene.setAttribute('arjs', 'trackingMethod: best;'); // Optional AR.js configuration
-
-    // Create A-Frame assets
-    const aAssets = document.createElement('a-assets');
-    const panoramaImg = document.createElement('img');
-    panoramaImg.id = 'panorama';
-    panoramaImg.src = '/images/360_image.jpg';
-    aAssets.appendChild(panoramaImg);
-    aScene.appendChild(aAssets);
-
-    // Create A-Frame sky
-    const aSky = document.createElement('a-sky');
-    aSky.setAttribute('src', '#panorama');
-    aScene.appendChild(aSky);
-
-    // Create A-Frame camera with cursor
-    const aCamera = document.createElement('a-camera');
-    const aCursor = document.createElement('a-cursor');
-    aCamera.appendChild(aCursor);
-    aScene.appendChild(aCamera);
-
-    // Append A-Frame scene to the body
-    document.body.appendChild(aScene);
   }
 </script>
 {% endblock %}
