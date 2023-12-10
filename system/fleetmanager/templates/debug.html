@@ -20,10 +20,16 @@
     <a href="/sentryd/{{ row }}">{{ row }}</a><br>
 {% endfor %}
 
-<div id="panorama-container"></div>
-<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
-<script src="/static/panorama.js"></script>
+
+  <a-scene>
+    <a-sky src="/images/360_image.jpg" rotation="0 -130 0"></a-sky>
+    <a-camera>
+      <a-cursor></a-cursor>
+    </a-camera>
+  </a-scene>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+
 
 <script>
   let lastAlarmTimestamp = null;
