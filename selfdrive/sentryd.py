@@ -97,7 +97,7 @@ class SentryMode:
 
   def save_images(self):
     # Generate timestamps
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     # Create the target directory if it doesn't exist
     target_directory = f"/data/media/0/sentryd/"
     os.makedirs(target_directory, exist_ok=True)
@@ -148,14 +148,6 @@ class SentryMode:
             params.put_bool("SentryD", False)
           self.secDelay = 0
           self.takeSnapshot()
-          self.back_image = snapshot_result.get('jpegBack')
-          self.front_image = snapshot_result.get('jpegFront')
-          
-          with open('back_image.jpg', 'wb') as back_file:
-            back_file.write(self.back_image)
-          
-          with open('front_image.jpg', 'wb') as front_file:
-            front_file.write(self.front_image)
 
           self.sentryjson['SentrydAlarm'] = True
           self.sentryjson['SentrydAlarmT'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -164,8 +156,6 @@ class SentryMode:
 
           message = 'ALERT! Sentry Detected Movement!'
           self.send_discord_webhook(self.webhook_url, message)
-          self.stitch_images('front_image.jpg', 'back_image.jpg', '360_image.jpg')
-          self.save_images()
 
       # Trigger Reset
       elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
