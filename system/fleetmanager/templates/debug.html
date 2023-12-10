@@ -40,39 +40,94 @@
 
 
 <script>
-  let lastAlarmTimestamp = null;
-
-  function fetchData() {
-    fetch('sentryjson.json')
-      .then(response => response.json())
-      .then(data => {
-        // Check if the alarm timestamp has changed
-        if (lastAlarmTimestamp !== data['SentrydAlarmT']) {
-          // Create an HTML string for each key-value pair
-          const htmlString = Object.entries(data)
-            .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
-            .join('');
-
-          // Update the content in the 'debug-container' div
-          document.getElementById('debug-container').innerHTML = htmlString;
-
-          // Update the 'src' attribute of the front image
-          document.getElementById('frontImage').src = '/images/front_image.jpg';
-          // Update the 'src' attribute of the back image
-          document.getElementById('backImage').src = '/images/back_image.jpg';
-
-          // Update the last alarm timestamp
-          lastAlarmTimestamp = data['SentrydAlarmT'];
-        }
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }
-
-  // Initial fetch
-  fetchData();
-
-  // Set up a timer to fetch data every 5 seconds
-  setInterval(fetchData, 2000);
-
-</script>
-{% endblock %}
+    let lastAlarmTimestamp = null;
+    let aFrameLoaded = false;
+  
+    function fetchData() {
+      fetch('sentryjson.json')
+        .then(response => response.json())
+        .then(data => {
+          // Check if the alarm timestamp has changed
+          if (lastAlarmTimestamp !== data['SentrydAlarmT']) {
+            // Create an HTML string for each key-value pair
+            const htmlString = Object.entries(data)
+              .map(([key, value]) => `<strong>${key}:</strong> ${value}<br>`)
+              .join('');
+  
+            // Update the content in the 'debug-container' div
+            document.getElementById('debug-container').innerHTML = htmlString;
+  
+            // Update the 'src' attribute of the front image
+            document.getElementById('frontImage').src = '/images/front_image.jpg';
+            // Update the 'src' attribute of the back image
+            document.getElementById('backImage').src = '/images/back_image.jpg';
+  
+            // Check if A-Frame is not loaded and 360_image.jpg exists
+            if (!aFrameLoaded && checkImageExists('/images/360_image.jpg')) {
+              // Load A-Frame content
+              loadAFrameContent();
+            }
+  
+            // Update the last alarm timestamp
+            lastAlarmTimestamp = data['SentrydAlarmT'];
+          }
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    }
+  
+    // Initial fetch
+    fetchData();
+  
+    // Set up a timer to fetch data every 5 seconds
+    setInterval(fetchData, 2000);
+  
+    function checkImageExists(imageUrl) {
+      const http = new XMLHttpRequest();
+      http.open('HEAD', imageUrl, false);
+      http.send();
+      return http.status !== 404;
+    }
+  
+    function loadAFrameContent() {
+      // Load A-Frame script dynamically
+      const aframeScript = document.createElement('script');
+      aframeScript.src = 'https://aframe.io/releases/1.2.0/aframe.min.js';
+      aframeScript.onload = function () {
+        // A-Frame has been loaded, create A-Frame scene
+        createAFrameScene();
+        aFrameLoaded = true;
+      };
+      document.head.appendChild(aframeScript);
+    }
+  
+    function createAFrameScene() {
+      const aScene = document.createElement('a-scene');
+  
+      // Set A-Frame scene attributes for size control
+      aScene.setAttribute('embedded', 'true'); // Allows the A-Frame scene to be embedded in a webpage
+      aScene.setAttribute('arjs', 'trackingMethod: best;'); // Optional AR.js configuration
+  
+      // Create A-Frame assets
+      const aAssets = document.createElement('a-assets');
+      const panoramaImg = document.createElement('img');
+      panoramaImg.id = 'panorama';
+      panoramaImg.src = '/images/360_image.jpg';
+      aAssets.appendChild(panoramaImg);
+      aScene.appendChild(aAssets);
+  
+      // Create A-Frame sky
+      const aSky = document.createElement('a-sky');
+      aSky.setAttribute('src', '#panorama');
+      aScene.appendChild(aSky);
+  
+      // Create A-Frame camera with cursor
+      const aCamera = document.createElement('a-camera');
+      const aCursor = document.createElement('a-cursor');
+      aCamera.appendChild(aCursor);
+      aScene.appendChild(aCamera);
+  
+      // Append A-Frame scene to the body
+      document.body.appendChild(aScene);
+    }
+  </script>
+  {% endblock %}
