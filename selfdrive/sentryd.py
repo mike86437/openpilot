@@ -138,7 +138,7 @@ class SentryMode:
 
         if self.secDelay % 200 == 0 and self.webhook_url is not None:
           self.secDelay = 0
-          self.take_snapshot()
+          self.takeSnapshot()
           self.back_image = snapshot_result.get('jpegBack')
           self.front_image = snapshot_result.get('jpegFront')
           
