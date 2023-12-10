@@ -13,12 +13,7 @@
     <img id="frontImage" alt="Front Image" style="max-width: 400px; max-height: 400px;">
     <img id="backImage" alt="Back Image" style="max-width: 400px; max-height: 400px;">
 </div>
-<br>
-<h1>SentryD Logs</h1>
-<br>
-{% for row in rows %}
-    <a href="/sentryd/{{ row }}">{{ row }}</a><br>
-{% endfor %}
+
 <script>
     let lastAlarmTimestamp = null;
     let aFrameLoaded = false;
@@ -111,4 +106,10 @@
       document.body.appendChild(aScene);
     }
   </script>
+  <br>
+  <h1>SentryD Logs</h1>
+  <br>
+  {% for row in rows %}
+      <a href="/sentryd/{{ row }}">{{ row }}</a><br>
+  {% endfor %}
   {% endblock %}
