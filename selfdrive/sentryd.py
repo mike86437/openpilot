@@ -34,6 +34,7 @@ class SentryMode:
     self.back_image_url = ""
     self.front_image_url = ""
     self.timedelay = 0
+    self.check_params = 0
 
   def takeSnapshot(self) -> Optional[Dict[str, str]]:
     from openpilot.system.camerad.snapshot.snapshot import snapshot, jpeg_write
@@ -131,15 +132,20 @@ class SentryMode:
       # Calculate magnitude change
       delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
 
+      self.check_params += self.check_params
+      if self.check_params % 200 == 0:
+        params = Params()
+        self.check_params = 0
+
       # Trigger Check
       if delta > SENSITIVITY_THRESHOLD or params.get_bool("SentryD"):
-        if params.get_bool("SentryD"):
-          params.put_bool("SentryD", False)
         self.last_timestamp = t
         self.sentry_status = True
         self.secDelay += 1
 
-        if self.secDelay % 150 == 0 and self.webhook_url is not None:
+        if self.secDelay % 150 == 0 and self.webhook_url is not None or params.get_bool("SentryD"):
+          if params.get_bool("SentryD"):
+            params.put_bool("SentryD", False)
           self.secDelay = 0
           self.takeSnapshot()
           self.back_image = snapshot_result.get('jpegBack')
