@@ -221,10 +221,8 @@ def debug():
 
 @app.route("/sentryd/<file_name>")
 def open_sentryd_log(file_name):
-  file_path = fleet.SENTRYD_PATH + file_name
-  with open(file_path, 'rb') as f:
-    file_content = f.read()
-  return render_template("sentryd_log.html", file_name=file_name, file_content=file_content)
+    file_path = fleet.SENTRYD_PATH + file_name
+    return render_template("sentryd_log.html", file_name=file_name, file_path=file_path)
 
 
 @app.route("/sentryjson.json", methods=['GET'])

@@ -19,7 +19,9 @@
 {% for row in rows %}
     <a href="/sentryd/{{ row }}">{{ row }}</a><br>
 {% endfor %}
-<canvas id="panoramaCanvas" style="width: 100%; height: 400px;"></canvas>
+<div id="panoramaContainer" style="width: 100%; height: 400px;"></div>
+
+<script src="https://threejs.org/build/three.js"></script>
 
 <script>
   let lastAlarmTimestamp = null;
@@ -43,11 +45,11 @@
           // Update the 'src' attribute of the back image
           document.getElementById('backImage').src = '/images/back_image.jpg';
 
-          // Check if the canvas exists
-          const canvas = document.getElementById('panoramaCanvas');
-          if (canvas) {
-            // Load 360-degree image on the canvas
-            loadPanoramaImage('/images/360_image.jpg', canvas);
+          // Check if the container exists
+          const container = document.getElementById('panoramaContainer');
+          if (container) {
+            // Load 360-degree image using Three.js
+            loadPanoramaImage('/images/360_image.jpg', container);
           }
 
           // Update the last alarm timestamp
@@ -63,15 +65,31 @@
   // Set up a timer to fetch data every 5 seconds
   setInterval(fetchData, 2000);
 
-  function loadPanoramaImage(imageUrl, canvas) {
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    img.src = imageUrl;
+  function loadPanoramaImage(imageUrl, container) {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
 
-    img.onload = function () {
-      // Draw the image on the canvas
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    container.appendChild(renderer.domElement);
+
+    const geometry = new THREE.SphereGeometry(500, 60, 40);
+    const material = new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load(imageUrl), side: THREE.DoubleSide });
+    const sphere = new THREE.Mesh(geometry, material);
+
+    scene.add(sphere);
+
+    camera.position.z = 0.01;
+
+    const animate = function () {
+      requestAnimationFrame(animate);
+
+      sphere.rotation.y += 0.005;
+
+      renderer.render(scene, camera);
     };
+
+    animate();
   }
 </script>
 {% endblock %}

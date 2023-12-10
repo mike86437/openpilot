@@ -8,9 +8,6 @@ SentryD Log
     <br>
     <h1>SentryD Log of<br>{{ file_name }}</h1>
     <br>
-{% endblock %}
-
-{% block unformated %}
-    <pre style="font-size: x-small; margin: 20px;">{{ file_content }}</pre>
+    <img src="/sentryd/{{ file_name }}" style="max-width: 100%; height: auto;">
     <br><br>
 {% endblock %}
