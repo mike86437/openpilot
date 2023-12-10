@@ -34,19 +34,11 @@ class SentryMode:
     self.front_image_url = ""
     self.timedelay = 0
 
-  def takeSnapshot(self) -> Optional[Union[str, Dict[str, str]]]:
-    from openpilot.system.camerad.snapshot.snapshot import jpeg_write, snapshot
+  def takeSnapshot(self) -> Optional[Dict[str, str]]:
+    from openpilot.system.camerad.snapshot.snapshot import snapshot
     ret = snapshot()
     if ret is not None:
-      def b64jpeg(x):
-        if x is not None:
-          f = io.BytesIO()
-          jpeg_write(f, x)
-          return base64.b64encode(f.getvalue()).decode("utf-8")
-        else:
-          return None
-      return {'jpegBack': b64jpeg(ret[0]),
-              'jpegFront': b64jpeg(ret[1])}
+      return {'jpegBack': ret[0], 'jpegFront': ret[1]}
     else:
       raise Exception("not available while camerad is started")
 
@@ -96,11 +88,14 @@ class SentryMode:
   def save_images(self):
     # Generate timestamps
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    # Create the target directory if it doesn't exist
+    target_directory = f"/data/media/0/sentryd/"
+    os.makedirs(target_directory, exist_ok=True)
 
     # Copy images to the new directory with new filenames
-    shutil.copy("back_image.jpg", "/data/media/0/sentryd/back_image_{timestamp}.jpg")
-    shutil.copy("front_image.jpg", "/data/media/0/sentryd/front_image_{timestamp}.jpg")
-    shutil.copy("360_image.jpg", "/data/media/0/sentryd/360_image_{timestamp}.jpg")
+    shutil.copy("back_image.jpg", f"{target_directory}back_image_{timestamp}.jpg")
+    shutil.copy("front_image.jpg", f"{target_directory}front_image_{timestamp}.jpg")
+    shutil.copy("360_image.jpg", f"{target_directory}360_image_{timestamp}.jpg")
 
   def update(self):
 
@@ -132,16 +127,21 @@ class SentryMode:
 
         if self.secDelay % 200 == 0 and self.webhook_url is not None:
           self.secDelay = 0
-          snapshot_result = self.takeSnapshot()
-          self.back_image_url = snapshot_result.get('jpegBack')
-          self.front_image_url = snapshot_result.get('jpegFront')
-          # Save base64-encoded images to actual files
-          self.base64_to_image(self.back_image_url, "back_image.jpg")
-          self.base64_to_image(self.front_image_url, "front_image.jpg")
+          snapshot_result = self.take_snapshot()
+          self.back_image = snapshot_result.get('jpegBack')
+          self.front_image = snapshot_result.get('jpegFront')
+          
+          with open('back_image.jpg', 'wb') as back_file:
+            back_file.write(self.back_image)
+          
+          with open('front_image.jpg', 'wb') as front_file:
+            front_file.write(self.front_image)
+
           self.sentryjson['SentrydAlarm'] = True
           self.sentryjson['SentrydAlarmT'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
           with open('sentryjson.json', 'w') as json_file:
             json.dump(self.sentryjson, json_file, indent=4)
+
           message = 'ALERT! Sentry Detected Movement!'
           self.send_discord_webhook(self.webhook_url, message)
           self.stitch_images('front_image.jpg', 'back_image.jpg', '360_image.jpg')
