@@ -14,10 +14,10 @@
     <img id="backImage" alt="Back Image" style="max-width: 400px; max-height: 400px;">
 </div>
 <br>
-<h1>Error Logs</h1>
+<h1>SentryD Logs</h1>
 <br>
 {% for row in rows %}
-    <a href="/sentryd_logs/{{ row }}">{{ row }}</a><br>
+    <a href="/sentryd/{{ row }}">{{ row }}</a><br>
 {% endfor %}
 <script>
   let lastAlarmTimestamp = null;

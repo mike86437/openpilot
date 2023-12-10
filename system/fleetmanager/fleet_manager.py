@@ -221,7 +221,7 @@ def debug():
 
 @app.route("/sentryd/<file_name>")
 def open_sentryd_log(file_name):
-  f = open(fleet.ERROR_LOGS_PATH + file_name)
+  f = open(fleet.SENTRYD_PATH + file_name)
   error = f.read()
   return render_template("sentryd_log.html", file_name=file_name, file_content=error)
 
