@@ -19,10 +19,6 @@
 {% for row in rows %}
     <a href="/sentryd/{{ row }}">{{ row }}</a><br>
 {% endfor %}
-<div id="panoramaContainer" style="width: 100%; height: 400px;"></div>
-
-<script src="https://threejs.org/build/three.js"></script>
-
 
 <div id="panorama-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
@@ -51,13 +47,6 @@
           // Update the 'src' attribute of the back image
           document.getElementById('backImage').src = '/images/back_image.jpg';
 
-          // Check if the container exists
-          const container = document.getElementById('panoramaContainer');
-          if (container) {
-            // Load 360-degree image using Three.js
-            loadPanoramaImage('/images/360_image.jpg', container);
-          }
-
           // Update the last alarm timestamp
           lastAlarmTimestamp = data['SentrydAlarmT'];
         }
@@ -71,32 +60,5 @@
   // Set up a timer to fetch data every 5 seconds
   setInterval(fetchData, 2000);
 
-  function loadPanoramaImage(imageUrl, container) {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.appendChild(renderer.domElement);
-
-    const geometry = new THREE.SphereGeometry(500, 60, 40);
-    const texture = new THREE.TextureLoader().load(imageUrl);
-    const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-    const sphere = new THREE.Mesh(geometry, material);
-
-    scene.add(sphere);
-
-    camera.position.z = 0.01;
-
-    const animate = function () {
-      requestAnimationFrame(animate);
-
-      sphere.rotation.y += 0.005;
-
-      renderer.render(scene, camera);
-    };
-
-    animate();
-  }
 </script>
 {% endblock %}
