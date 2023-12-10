@@ -6,6 +6,7 @@ from datetime import datetime
 import time
 import json
 import io
+import os
 import base64
 import requests
 import shutil
@@ -136,7 +137,7 @@ class SentryMode:
         self.sentry_status = True
         self.secDelay += 1
 
-        if self.secDelay % 200 == 0 and self.webhook_url is not None:
+        if self.secDelay % 0 == 150 and self.webhook_url is not None:
           self.secDelay = 0
           self.takeSnapshot()
           self.back_image = snapshot_result.get('jpegBack')
