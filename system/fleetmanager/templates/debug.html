@@ -71,7 +71,7 @@
     function loadAFrameContent() {
       // Load A-Frame script dynamically
       const aframeScript = document.createElement('script');
-      aframeScript.src = 'https://aframe.io/releases/1.0.4/aframe.min.js';
+      aframeScript.src = 'https://aframe.io/releases/1.5.0/aframe.min.js';
       aframeScript.onload = function () {
         // A-Frame has been loaded, create A-Frame scene
         createAFrameScene();
@@ -85,8 +85,9 @@
   
       // Set A-Frame scene attributes for size control
       aScene.setAttribute('embedded', 'true'); // Allows the A-Frame scene to be embedded in a webpage
-
+      aScene.setAttribute('arjs', 'trackingMethod: best;');
       aScene.setAttribute('device-orientation-permission-ui', 'enabled: false');
+      aScene.setAttribute('enterVREnabled', 'enabled: true');
   
       // Create A-Frame assets
       const aAssets = document.createElement('a-assets');
