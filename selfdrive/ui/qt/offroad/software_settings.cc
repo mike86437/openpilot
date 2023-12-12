@@ -2,6 +2,8 @@
 
 #include <cassert>
 #include <cmath>
+#include <iomanip>
+#include <sstream>
 #include <string>
 
 #include <QDebug>
@@ -29,6 +31,28 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
   // current version
   versionLbl = new LabelControl(tr("Current Version"), "");
   addItem(versionLbl);
+
+  // update scheduler
+  std::vector<QString> scheduleOptions{tr("Manually"), tr("Daily"), tr("Weekly")};
+  ButtonParamControl *preferredSchedule = new ButtonParamControl("UpdateSchedule", tr("Update Scheduler"),
+                                          tr("Choose the update frequency for FrogPilot's automatic updates.\n\n"
+                                          "This feature will handle the download, installation, and device reboot for a seamless 'Set and Forget' experience.\n\n"
+                                          "Weekly updates start at midnight every Sunday."),
+                                          "",
+                                          scheduleOptions);
+  schedule = params.getInt("UpdateSchedule");
+  addItem(preferredSchedule);
+
+  std::map<int, QString> timeLabels;
+  for (int i = 0; i < 24; ++i) {
+    QString hour = QString::number(i % 12 == 0 ? 12 : i % 12);
+    QString meridiem = i < 12 ? "AM" : "PM";
+    timeLabels[i] = QString("%1:00 %2").arg(hour, meridiem);
+  }
+
+  updateTime = new ParamValueControl("UpdateTime", tr("Update Time"), tr("Set your desired update time for automatic updates."), "", 0, 23, timeLabels);
+  time = params.getInt("UpdateTime");
+  addItem(updateTime);
 
   // download update btn
   downloadBtn = new ButtonControl(tr("Download"), tr("CHECK"));
@@ -94,6 +118,8 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
 
   fs_watch = new ParamWatcher(this);
   QObject::connect(fs_watch, &ParamWatcher::paramChanged, [=](const QString &param_name, const QString &param_value) {
+    schedule = params.getInt("UpdateSchedule");
+    time = params.getInt("UpdateTime");
     updateLabels();
   });
 
@@ -101,6 +127,8 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
     is_onroad = !offroad;
     updateLabels();
   });
+
+  QObject::connect(uiState(), &UIState::uiUpdate, this, &SoftwarePanel::automaticUpdate);
 
   updateLabels();
 }
@@ -118,6 +146,9 @@ void SoftwarePanel::updateLabels() {
   fs_watch->addParam("UpdateFailedCount");
   fs_watch->addParam("UpdaterState");
   fs_watch->addParam("UpdateAvailable");
+
+  fs_watch->addParam("UpdateSchedule");
+  fs_watch->addParam("UpdateTime");
 
   if (!isVisible()) {
     return;
@@ -161,5 +192,42 @@ void SoftwarePanel::updateLabels() {
   installBtn->setValue(QString::fromStdString(params.get("UpdaterNewDescription")));
   installBtn->setDescription(QString::fromStdString(params.get("UpdaterNewReleaseNotes")));
 
+  updateTime->setVisible(params.getInt("UpdateSchedule"));
+
   update();
+}
+
+void SoftwarePanel::automaticUpdate() {
+  static bool automaticDownloadCompleted = false;
+  const bool wifi = (*uiState()->sm)["deviceState"].getDeviceState().getNetworkType() == cereal::DeviceState::NetworkType::WIFI;
+
+  if (automaticDownloadCompleted && installBtn->isVisible()) {
+    params.putBool("DoReboot", true);
+    return;
+  }
+
+  if (schedule == 0 || is_onroad || !wifi) {
+    return;
+  }
+
+  std::time_t currentTime = std::time(nullptr);
+  std::tm now = *std::localtime(&currentTime);
+
+  std::string lastUpdateStr = params.get("Updated");
+  std::tm lastUpdate = {};
+  if (sscanf(lastUpdateStr.c_str(), "%d-%d-%d %d:%d:%d",
+             &lastUpdate.tm_year, &lastUpdate.tm_mon, &lastUpdate.tm_mday,
+             &lastUpdate.tm_hour, &lastUpdate.tm_min, &lastUpdate.tm_sec) == 6) {
+    lastUpdate.tm_year -= 1900;
+    lastUpdate.tm_mon -= 1;
+  }
+  std::time_t lastUpdateTime = std::mktime(&lastUpdate);
+
+  if (!automaticDownloadCompleted) {
+    if ((schedule == 1 && (now.tm_yday > lastUpdate.tm_yday || (now.tm_yday == lastUpdate.tm_yday && now.tm_hour >= time))) ||
+        (schedule == 2 && now.tm_wday >= 0 && (now.tm_yday / 7) != (std::localtime(&lastUpdateTime)->tm_yday / 7))) {
+      std::system("pkill -SIGHUP -f selfdrive.updated");
+      automaticDownloadCompleted = true;
+    }
+  }
 }
