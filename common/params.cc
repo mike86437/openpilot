@@ -222,6 +222,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"AlwaysOnLateralMain", PERSISTENT},
     {"AMapKey1", PERSISTENT},
     {"AMapKey2", PERSISTENT},
+    {"ApiCache_DriveStats", PERSISTENT},
     {"AverageCurvature", PERSISTENT},
     {"BlindSpotPath", PERSISTENT},
     {"CameraFPS", PERSISTENT},
