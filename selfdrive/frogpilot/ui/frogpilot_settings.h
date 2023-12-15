@@ -270,10 +270,10 @@ ParamController(LaneLinesWidth, "LaneLinesWidth", "Lanes", "Customize the lane l
   return std::clamp(v, 0, isMetric ? 60 : 24);
 )
 
-ParamController(Model, "Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nFV = Farmville(Default)\nNLP = New Lemon Pie\nBD = Blue Diamond", "../assets/offroad/icon_calibration.png",
+ParamController(Model, "Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nBD = Blue Diamond (Default)\nFV = Farmville\nNLP = New Lemon Pie\nBDv1 = Blue Diamond V1", "../assets/offroad/icon_calibration.png",
   const int model = params.getInt("Model");
-  return model == 0 ? "FV" : model == 1 ? "NLP" : "BD";,
-  return v >= 0 ? v % 3 : 2;
+  return model == 0 ? "BD" : model == 1 ? "FV" : model == 2 ? "NLP" : "BDv1";,
+  return v >= 0 ? v % 4 : 3;
 )
 
 ParamController(Offset1, "Offset1", "0-34", "Set the speed limit offset when the speed limit is between 0 and 34 mph.", "../assets/icon_blank.png",
