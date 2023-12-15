@@ -24,6 +24,8 @@
     jsonOutputDiv.appendChild(imageElement);
   }
 
+  let jsonOutputDiv;
+
   async function loadCurrentStep() {
     try {
       const response = await fetch('CurrentStep.json'); // Load CurrentStep.json
