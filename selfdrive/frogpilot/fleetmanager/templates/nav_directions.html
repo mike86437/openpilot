@@ -102,14 +102,18 @@
           if (i === 0) {
             jsonOutputDiv.innerHTML += `
             <hr>
+            <span>
             <img src="/navigation/direction_depart.png" alt="${maneuverType} icon" width="50" height="50">
             <p>${instruction0}</p>
+            </span>
             <hr>
             `;
           }
           jsonOutputDiv.innerHTML += `
+          <span>
           <img src="/navigation/direction_${sanitizedManeuverType}${sanitizedModifier}.png" alt="${maneuverType} icon">
           <p>In ${distance.toFixed(1)} ${useMetricUnits ? 'km' : 'miles'}: ${instruction}</p>
+          </span>
           <hr>
           `;
         }
