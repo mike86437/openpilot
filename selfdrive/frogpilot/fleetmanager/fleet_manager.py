@@ -215,6 +215,11 @@ def set_destination():
   else:
     return Response('{"success": false}', content_type='application/json')
 
+@app.route("/navigation/<file_name>", methods=['GET'])
+def find_navicon(file_name):
+  directory = "/data/openpilot/selfdrive/assets/"
+  return send_from_directory(directory, file_name, as_attachment=True)
+
 
 def main():
   try:
