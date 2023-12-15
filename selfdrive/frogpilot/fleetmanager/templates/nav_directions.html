@@ -109,7 +109,7 @@
           }
           const sanitizedManeuverType = maneuverType.replace(/\s+/g, '_');
           const sanitizedModifier = modifier ? `_${modifier.replace(/\s+/g, '_')}` : '';
-          const filterStyle = htmlElement.classList.contains('dark-mode') ? 'filter: invert(100%);' : '';
+          const filterStyle = !htmlElement.classList.contains('dark-mode') ? 'filter: invert(100%);' : '';
           // Display the values on the webpage
           if (i === 0) {
             jsonOutputDiv.innerHTML += `
