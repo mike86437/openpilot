@@ -1594,8 +1594,8 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
     {8, "Experimental Mode activated due to" + (mapOpen ? " speed" : " speed being less than " + QString::number(conditionalSpeed) + (is_metric ? " kph" : " mph"))},
     {9, "Experimental Mode activated for slower lead"},
     {10, "Experimental Mode activated for turn" + (mapOpen ? "" : QString(" / lane change"))},
-    {11, "Experimental Mode activated for stop" + (mapOpen ? "" : QString(" sign / stop light"))},
-    {12, "Experimental Mode activated for curve"}
+    {11, "Experimental Mode activated for curve"},
+    {12, "Experimental Mode activated for stop" + (mapOpen ? "" : QString(" sign / stop light"))}
   };
 
   if (alwaysOnLateral) {
