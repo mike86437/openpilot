@@ -217,7 +217,7 @@ def set_destination():
 
 @app.route("/navigation/<file_name>", methods=['GET'])
 def find_navicon(file_name):
-  directory = "/data/openpilot/selfdrive/assets/"
+  directory = "/data/openpilot/selfdrive/assets/navigation/"
   return send_from_directory(directory, file_name, as_attachment=True)
 
 
