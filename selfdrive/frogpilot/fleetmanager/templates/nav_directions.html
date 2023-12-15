@@ -8,6 +8,8 @@
   let jsonData = null;
   let initNav = 0;
 
+  let jsonOutputDiv = null;
+
   function getImageFilename(maneuverType, modifier) {
       const sanitizedManeuverType = maneuverType.replace(/\s+/g, '_');
       const sanitizedModifier = modifier ? `_${modifier.replace(/\s+/g, '_')}` : '';
@@ -23,8 +25,6 @@
     // Append the image element to the jsonOutputDiv
     jsonOutputDiv.appendChild(imageElement);
   }
-
-  let jsonOutputDiv;
 
   async function loadCurrentStep() {
     try {
