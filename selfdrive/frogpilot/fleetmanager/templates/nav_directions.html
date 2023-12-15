@@ -86,8 +86,8 @@
           const step = steps[i];
           const instruction0 = steps[i].maneuver.instruction;
           const instruction = steps[i + 1].maneuver.instruction;
-          const maneuverType = steps[i].maneuver.type;
-          const modifier = steps[i].maneuver.modifier;
+          const maneuverType = steps[i + 1].maneuver.type;
+          const modifier = steps[i + 1].maneuver.modifier;
           let distance = step.distance;
 
           if (!useMetricUnits) {
@@ -102,7 +102,7 @@
           if (i === 0) {
             jsonOutputDiv.innerHTML += `
             <hr>
-            <img src="/navigation/direction_${sanitizedManeuverType}${sanitizedModifier}.png" alt="${maneuverType} icon">
+            <img src="/navigation/direction_depart.png" alt="${maneuverType} icon" width="50" height="50">
             <p>${instruction0}</p>
             <hr>
             `;
