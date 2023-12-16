@@ -17,7 +17,7 @@
     <br>
     current view: <span id="currentview"></span>
     <br>
-    <a onclick="downloadRoute('{{ route }}-{{ query_type }}.mp4', '/footage/full/{{ query_type }}/{{ route }}')">download full route {{ query_type }}</a>
+    <a onclick="downloadRoute('{{ route }}-{{ query_type }}.mp4', '/footage/full/{{ query_type }}/{{ route }}')" style="cursor: pointer; color: blue; text-decoration: underline;">download full route {{ query_type }}</a>
 
     <script>
       function downloadRoute(filename, url) {
