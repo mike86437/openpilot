@@ -113,6 +113,8 @@ class LongitudinalPlanner:
     self.v_offset = 0
     self.v_target = MIN_TARGET_V
 
+    self.set_zero = False
+
   def read_param(self):
     try:
       self.personality = int(self.params.get('LongitudinalPersonality'))
