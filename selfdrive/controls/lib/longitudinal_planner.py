@@ -269,7 +269,7 @@ class LongitudinalPlanner:
     if self.set_zero:
       v_cruise = 0.0
       if carState.gasPressed:
-        self.params.put_bool("SetZero", True)
+        self.params.put_bool("SetZero", False)
         self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
 
     self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
