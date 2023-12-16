@@ -179,13 +179,6 @@ class LongitudinalPlanner:
     if force_slow_decel:
       v_cruise = 0.0
     
-    # Set v_cruise to zero on long press
-    if self.set_zero:
-      v_cruise = 0.0
-      if carState.gasPressed:
-        self.params.put_bool("SetZero", True)
-        self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
-    
     # clip limits, cannot init MPC outside of bounds
     accel_limits_turns[0] = min(accel_limits_turns[0], self.a_desired + 0.05)
     accel_limits_turns[1] = max(accel_limits_turns[1], self.a_desired - 0.05)
@@ -269,6 +262,13 @@ class LongitudinalPlanner:
       v_cruise = np.clip(v_cruise, MIN_TARGET_V, self.v_target)
     else:
       self.v_offset = 0
+
+    # Set v_cruise to zero on long press
+    if self.set_zero:
+      v_cruise = 0.0
+      if carState.gasPressed:
+        self.params.put_bool("SetZero", True)
+        self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
 
     self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
