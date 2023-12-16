@@ -178,6 +178,14 @@ class LongitudinalPlanner:
 
     if force_slow_decel:
       v_cruise = 0.0
+    
+    # Set v_cruise to zero on long press
+    if self.set_zero:
+      v_cruise = 0.0
+      if carState.gasPressed:
+        self.params.put_bool("SetZero", True)
+        self.params_memory.put_bool("FrogPilotTogglesUpdated", True)
+    
     # clip limits, cannot init MPC outside of bounds
     accel_limits_turns[0] = min(accel_limits_turns[0], self.a_desired + 0.05)
     accel_limits_turns[1] = max(accel_limits_turns[1], self.a_desired - 0.05)
@@ -345,6 +353,7 @@ class LongitudinalPlanner:
       if not self.params.get_bool("ExperimentalMode"):
         self.params.put_bool("ExperimentalMode", True)
 
+    self.set_zero = self.params.get_bool("SetZero")
     self.custom_personalities = self.params.get_bool("CustomPersonalities")
     self.aggressive_follow = self.params.get_int("AggressiveFollow") / 10
     self.standard_follow = self.params.get_int("StandardFollow") / 10
