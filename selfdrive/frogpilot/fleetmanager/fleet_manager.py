@@ -13,9 +13,11 @@ import openpilot.selfdrive.frogpilot.fleetmanager.helpers as fleet
 from openpilot.system.hardware.hw import Paths
 from openpilot.common.swaglog import cloudlog
 from flask_socketio import SocketIO
+from flask_cors import CORS
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+CORS(app, origins='*')
 
 @app.route("/")
 def home_page():
