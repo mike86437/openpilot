@@ -198,6 +198,11 @@ class CarState(CarStateBase):
         self.personality_profile = self.params.get_int("LongitudinalPersonality")
         self.params_memory.put_bool("PersonalityChangedViaUI", False)
 
+      # Change personality upon steering wheel button press
+      if self.prev_cruise_setting == 3 and self.cruise_setting == 0 and 1 < self.distance_btn_counter < 50:
+        self.personality_profile = (self.personality_profile + 1) % 3
+        self.params_memory.put_bool("PersonalityChangedViaWheel", True)
+        self.params.put_int("LongitudinalPersonality", self.personality_profile)
       # Set v_cruise to 0 on long press
       if self.cruise_setting == 3:
         self.distance_btn_counter += 1
@@ -207,11 +212,7 @@ class CarState(CarStateBase):
           self.distance_btn_counter = 0
       else:
         self.distance_btn_counter = 0
-      # Change personality upon steering wheel button press
-      if self.prev_cruise_setting == 3 and self.cruise_setting == 0 and self.distance_btn_counter < 50:
-        self.personality_profile = (self.personality_profile + 1) % 3
-        self.params_memory.put_bool("PersonalityChangedViaWheel", True)
-        self.params.put_int("LongitudinalPersonality", self.personality_profile)
+      
 
     # Set v_cruise to 0 on long press
     if self.experimental_mode_via_press:
