@@ -21,6 +21,8 @@ def main():
 
   finally:
     # This block will not be reached in an infinite loop
+    socket.close()
+    context.term()
 
 if __name__ == "__main__":
   main()
