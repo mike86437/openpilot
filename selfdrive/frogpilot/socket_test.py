@@ -10,9 +10,9 @@ def main():
     socket.bind("tcp://0.0.0.0:5555")
 
     try:
-        # Publish messages
-        for i in range(5):
-            message = f"Hello World {i}"
+        # Publish messages indefinitely
+        while True:
+            message = "Hello World"
             socket.send_string(message)
             time.sleep(1)
 
@@ -20,9 +20,7 @@ def main():
         logging.error(f"Error: {e}")
 
     finally:
-        # Release resources
-        socket.close()
-        context.term()
+        # This block will not be reached in an infinite loop
 
 if __name__ == "__main__":
     main()
