@@ -5,23 +5,24 @@
 {% endblock %}
 
 {% block main %}
-<div id="message-container"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
-<script>
-    const socket = io.connect('{{ url_for("socket", _external=True) }}');
+    <div id="message-container"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+    <script>
+        const socket = io.connect('{{ url_for("socket") }}');
 
-    socket.on('message', function (data) {
-        const receivedMessage = data;
-        const messageContainer = document.getElementById("message-container");
-        messageContainer.innerHTML = receivedMessage;
-    });
+        socket.on('message', function (data) {
+            console.log('Received message from server:', data);
+            const messageContainer = document.getElementById("message-container");
+            messageContainer.innerHTML = data;
+        });
 
-    function sendMessage() {
-        const message = document.getElementById('input-message').value;
-        socket.emit('message', message);
-    }
-</script>
+        function sendMessage() {
+            const message = document.getElementById('input-message').value;
+            console.log('Sending message from client:', message);
+            socket.emit('message', message);
+        }
+    </script>
 
-<input type="text" id="input-message" placeholder="Type a message">
-<button onclick="sendMessage()">Send Message</button>
+    <input type="text" id="input-message" placeholder="Type a message">
+    <button onclick="sendMessage()">Send Message</button>
 {% endblock %}
