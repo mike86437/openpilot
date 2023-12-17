@@ -25,6 +25,7 @@
 
 #include "selfdrive/frogpilot/ui/frogpilot_settings.h"
 #include "selfdrive/frogpilot/ui/vehicle_settings.h"
+#include "selfdrive/frogpilot/ui/visual_settings.h"
 #include "selfdrive/frogpilot/navigation/ui/navigation_settings.h"
 
 TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {

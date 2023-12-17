@@ -123,69 +123,6 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(QWidget *parent) : FrogPilotPanel
   setInitialToggleStates();
 }
 
-FrogPilotVisualsPanel::FrogPilotVisualsPanel(QWidget *parent) : FrogPilotPanel(parent) {
-  mainLayout = new QVBoxLayout(this);
-
-  QLabel *const descriptionLabel = new QLabel("Click on the toggle names to see a detailed toggle description", this);
-  mainLayout->addWidget(descriptionLabel);
-  mainLayout->addSpacing(25);
-  mainLayout->addWidget(whiteHorizontalLine());
-
-  static const std::vector<std::tuple<QString, QString, QString, QString>> toggles = {
-    {"CustomTheme", "Custom Theme", "Enable the ability to use custom themes.", "../frogpilot/assets/wheel_images/frog.png"},
-    {"CameraView", "Camera View (Cosmetic Only)", "Set your preferred camera view for the onroad UI. This toggle is purely cosmetic and will not affect openpilot's use of the other cameras.", "../frogpilot/assets/toggle_icons/icon_camera.png"},
-    {"Compass", "Compass", "Add a compass to the onroad UI that indicates your current driving direction.", "../frogpilot/assets/toggle_icons/icon_compass.png"},
-    {"CustomUI", "Custom UI", "Customize the UI to your liking.", "../assets/offroad/icon_road.png"},
-    {"DriverCamera", "Driver Camera On Reverse", "Displays the driver camera when in reverse.", "../assets/img_driver_face_static.png"},
-    {"GreenLightAlert", "Green Light Alert", "Displays an alert when a light turns from red to green.", "../frogpilot/assets/toggle_icons/icon_green_light.png"},
-    {"RotatingWheel", "Rotating Steering Wheel", "The steering wheel in top right corner of the onroad UI rotates alongside your physical steering wheel.", "../frogpilot/assets/toggle_icons/icon_rotate.png"},
-    {"ScreenBrightness", "Screen Brightness", "Choose a custom screen brightness level or use the default 'Auto' brightness setting.", "../frogpilot/assets/toggle_icons/icon_light.png"},
-    {"SilentMode", "Silent Mode", "Disables all openpilot sounds for a completely silent experience.", "../frogpilot/assets/toggle_icons/icon_mute.png"},
-    {"WheelIcon", "Steering Wheel Icon", "Replace the stock openpilot steering wheel icon with a custom icon.\n\nWant to submit your own steering wheel? Message me on Discord\n@FrogsGoMoo!", "../assets/offroad/icon_openpilot.png"},
-  };
-
-  for (const auto &[key, label, desc, icon] : toggles) {
-    ParamControl *control = createParamControl(key, label, desc, icon, this);
-    if (key == "CameraView") {
-      mainLayout->addWidget(new CameraView());
-      mainLayout->addWidget(horizontalLine());
-    } else if (key == "CustomUI") {
-      createSubControl(key, label, desc, icon, {
-        createDualParamControl(new LaneLinesWidth(), new RoadEdgesWidth()),
-        createDualParamControl(new PathWidth(), new PathEdgeWidth())
-      });
-      createSubButtonControl(key, {
-        {"AccelerationPath", "Acceleration Path"},
-        {"AdjacentPath", "Adjacent Paths"},
-        {"BlindSpotPath", "Blind Spot Path"},
-      }, mainLayout);
-      createSubButtonControl(key, {
-        {"ShowFPS", "FPS Counter"},
-        {"LeadInfo", "Lead Info and Logics"},
-        {"RoadNameUI", "Road Name"},
-      }, mainLayout);
-      createSubButtonControl(key, {
-        {"UnlimitedLength", "'Unlimited' Road UI Length"},
-      }, mainLayout);
-    } else if (key == "CustomTheme") {
-      createSubControl(key, label, desc, icon, {
-        createDualParamControl(new CustomColors(), new CustomIcons()),
-        createDualParamControl(new CustomSignals(), new CustomSounds()),
-      });
-    } else if (key == "ScreenBrightness") {
-      mainLayout->addWidget(new ScreenBrightness());
-      mainLayout->addWidget(horizontalLine());
-    } else if (key == "WheelIcon") {
-      mainLayout->addWidget(new WheelIcon());
-      mainLayout->addWidget(horizontalLine());
-    } else {
-      mainLayout->addWidget(control);
-      if (key != std::get<0>(toggles.back())) mainLayout->addWidget(horizontalLine());
-    }
-  }
-  setInitialToggleStates();
-}
-
 ParamControl *FrogPilotPanel::createParamControl(const QString &key, const QString &label, const QString &desc, const QString &icon, QWidget *parent) {
   ParamControl *control = new ParamControl(key, label, desc, icon);
   connect(control, &ParamControl::toggleFlipped, [=](bool state) {
@@ -261,7 +198,7 @@ QFrame *FrogPilotPanel::whiteHorizontalLine(QWidget *parent) const {
   return line;
 }
 
-QWidget *FrogPilotPanel::createDualParamControl(ParamValueControl *control1, ParamValueControl *control2) {
+QWidget *FrogPilotPanel::createDualParamControl(ParamValueControlOld *control1, ParamValueControlOld *control2) {
   QWidget *mainControl = new QWidget(this);
   QHBoxLayout *layout = new QHBoxLayout();
 

@@ -280,6 +280,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"MapTargetVelocities", PERSISTENT},
     {"Model", PERSISTENT},
     {"ModelList", PERSISTENT},
+    {"ModelUI", PERSISTENT},
     {"MTSCEnabled", PERSISTENT},
     {"MuteDM", PERSISTENT},
     {"MuteDoor", PERSISTENT},

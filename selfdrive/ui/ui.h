@@ -179,7 +179,7 @@ typedef struct UIScene {
   bool blind_spot_right;
   bool compass;
   bool conditional_experimental;
-  bool custom_road_ui;
+  bool custom_onroad_ui;
   bool custom_theme;
   bool driver_camera;
   bool enabled;
@@ -187,6 +187,7 @@ typedef struct UIScene {
   bool experimental_mode_via_press;
   bool lead_info;
   bool map_open;
+  bool model_ui;
   bool mute_dm;
   bool personalities_via_screen;
   bool road_name_ui;
