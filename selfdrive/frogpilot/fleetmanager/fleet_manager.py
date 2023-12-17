@@ -38,7 +38,7 @@ def handle_message(message):
 
 @app.route("/socket")
 def socket():
-  socket_url = url_for('socket', _external=True)
+  socket_url = url_for('socket', _external=True)[:-7]
   return render_template("socket_test.html", server_ip = socket_url)
 
 @app.route("/footage/full/<cameratype>/<route>")
