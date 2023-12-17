@@ -7,21 +7,35 @@
 {% block main %}
 <div id="message-container"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/zeromq@5.2.0/dist/zeromq.js"></script>
 <script>
-    const socket = new zmq.Subscriber();
+    const socket = new WebSocket("ws://localhost:8765");
 
-    // Connect to the ZeroMQ server
-    socket.connect('tcp://your-server-ip:5555');
-    socket.subscribe('');
+    // Event listener for when the connection is established
+    socket.onopen = event => {
+        console.log("WebSocket connection opened");
+    };
 
     // Event listener for incoming messages
-    socket.on('message', (message) => {
-        const receivedMessage = message.toString();
+    socket.onmessage = event => {
+        const receivedMessage = event.data;
 
         // Display the received message on the webpage
         const messageContainer = document.getElementById("message-container");
         messageContainer.innerHTML = receivedMessage;
-    });
+    };
+
+    // Event listener for connection close
+    socket.onclose = event => {
+        if (event.wasClean) {
+            console.log(`WebSocket connection closed cleanly, code=${event.code}, reason=${event.reason}`);
+        } else {
+            console.error("WebSocket connection abruptly closed");
+        }
+    };
+
+    // Event listener for errors
+    socket.onerror = event => {
+        console.error("WebSocket error:", event);
+    };
 </script>
 {% endblock %}

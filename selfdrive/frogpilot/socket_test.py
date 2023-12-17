@@ -1,28 +1,25 @@
-import zmq
-import time
-import logging
+import asyncio
+import websockets
 
-logging.basicConfig(level=logging.DEBUG)
+async def handle_connection(websocket, path):
+    try:
+        while True:
+            message = "Hello World"
+            await websocket.send(message)
+            await asyncio.sleep(1)
+    except websockets.exceptions.ConnectionClosedError:
+        print("WebSocket connection closed")
 
-def main():
-  context = zmq.Context()
-  socket = context.socket(zmq.PUB)
-  socket.bind("tcp://0.0.0.0:5555")
+# Start WebSocket server
+start_server = websockets.serve(handle_connection, "localhost", 8765)
 
-  try:
-    # Publish messages indefinitely
-    while True:
-      message = "Hello World"
-      socket.send_string(message)
-      time.sleep(1)
-
-  except Exception as e:
-    logging.error(f"Error: {e}")
-
-  finally:
-    # This block will not be reached in an infinite loop
-    socket.close()
-    context.term()
-
-if __name__ == "__main__":
-  main()
+try:
+    # Run the server
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
+except KeyboardInterrupt:
+    print("Server interrupted, closing...")
+finally:
+    start_server.close()
+    asyncio.get_event_loop().run_until_complete(start_server.wait_closed())
+    asyncio.get_event_loop().close()
