@@ -8,7 +8,7 @@
 <div id="message-container"></div>
 
 <script>
-    const socket = io.connect('http://localhost:5000');
+    const socket = io.connect('http://localhost:8082');
 
     socket.on('message', function (data) {
         const receivedMessage = data;
