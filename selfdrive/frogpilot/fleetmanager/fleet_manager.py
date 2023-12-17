@@ -36,6 +36,11 @@ def handle_message(message):
   print('Received message:', message)
   socketio.emit('message', 'Server says: ' + message)
 
+@app.route("/socket")
+def socket():
+  socket_url = url_for('socket', _external=True)
+  return render_template("socket_test.html", server_ip = socket_url)
+
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
   chunk_size = 1024 * 512  # 5KiB
@@ -111,10 +116,6 @@ def download_file(clip):
 @app.route("/about")
 def about():
   return render_template("about.html")
-
-@app.route("/socket")
-def socket():
-  return render_template("socket_test.html")
 
 
 @app.route("/error_logs")
