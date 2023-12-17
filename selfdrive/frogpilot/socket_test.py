@@ -10,16 +10,21 @@ async def handle_connection(websocket, path):
     except websockets.exceptions.ConnectionClosedError:
         print("WebSocket connection closed")
 
-# Start WebSocket server
-start_server = websockets.serve(handle_connection, "localhost", 8765)
+async def main():
+    # Start WebSocket server
+    start_server = websockets.serve(handle_connection, "localhost", 8765)
 
-try:
-    # Run the server
-    asyncio.get_event_loop().run_until_complete(start_server)
-    asyncio.get_event_loop().run_forever()
-except KeyboardInterrupt:
-    print("Server interrupted, closing...")
-finally:
-    start_server.close()
-    asyncio.get_event_loop().run_until_complete(start_server.wait_closed())
-    asyncio.get_event_loop().close()
+    try:
+        # Run the server
+        await start_server
+        await asyncio.Future()  # Keep the main coroutine running
+
+    except KeyboardInterrupt:
+        print("Server interrupted, closing...")
+
+    finally:
+        start_server.close()
+        await start_server.wait_closed()
+
+if __name__ == "__main__":
+    asyncio.run(main())
