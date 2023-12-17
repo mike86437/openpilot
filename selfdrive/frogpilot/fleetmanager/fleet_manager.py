@@ -96,6 +96,10 @@ def download_file(clip):
 def about():
   return render_template("about.html")
 
+@app.route("/socket")
+def socket():
+  return render_template("socket_test.html")
+
 
 @app.route("/error_logs")
 def error_logs():

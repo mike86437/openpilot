@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Socket Test
+{% endblock %}
+
+{% block main %}
+<div id="message-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/zeromq@5.2.0/dist/zeromq.js"></script>
+<script>
+    const socket = new zmq.Subscriber();
+
+    // Connect to the ZeroMQ server
+    socket.connect('tcp://your-server-ip:5555');
+    socket.subscribe('');
+
+    // Event listener for incoming messages
+    socket.on('message', (message) => {
+        const receivedMessage = message.toString();
+
+        // Display the received message on the webpage
+        const messageContainer = document.getElementById("message-container");
+        messageContainer.innerHTML = receivedMessage;
+    });
+</script>
+{% endblock %}
