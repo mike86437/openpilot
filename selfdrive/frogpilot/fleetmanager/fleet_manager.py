@@ -12,13 +12,27 @@ from openpilot.common.realtime import set_core_affinity
 import openpilot.selfdrive.frogpilot.fleetmanager.helpers as fleet
 from openpilot.system.hardware.hw import Paths
 from openpilot.common.swaglog import cloudlog
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 @app.route("/")
 def home_page():
   return render_template("index.html")
 
+@socketio.on('connect')
+def handle_connect():
+  print('WebSocket client connected')
+
+@socketio.on('disconnect')
+def handle_disconnect():
+  print('WebSocket client disconnected')
+
+@socketio.on('message')
+def handle_message(message):
+  print('Received message:', message)
+  socketio.emit('message', 'Server says: ' + message)
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
@@ -231,7 +245,7 @@ def main():
   except Exception:
     cloudlog.exception("fleet_manager: failed to set core affinity")
   app.secret_key = secrets.token_hex(32)
-  app.run(host="0.0.0.0", port=8082)
+  socketio.run(app, host='0.0.0.0', port=8082)
 
 
 if __name__ == '__main__':

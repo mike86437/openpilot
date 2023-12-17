@@ -8,34 +8,20 @@
 <div id="message-container"></div>
 
 <script>
-    const socket = new WebSocket("ws://10.0.0.41:8765");
+    const socket = io.connect('http://localhost:5000');
 
-    // Event listener for when the connection is established
-    socket.onopen = event => {
-        console.log("WebSocket connection opened");
-    };
-
-    // Event listener for incoming messages
-    socket.onmessage = event => {
-        const receivedMessage = event.data;
-
-        // Display the received message on the webpage
+    socket.on('message', function (data) {
+        const receivedMessage = data;
         const messageContainer = document.getElementById("message-container");
         messageContainer.innerHTML = receivedMessage;
-    };
+    });
 
-    // Event listener for connection close
-    socket.onclose = event => {
-        if (event.wasClean) {
-            console.log(`WebSocket connection closed cleanly, code=${event.code}, reason=${event.reason}`);
-        } else {
-            console.error("WebSocket connection abruptly closed");
-        }
-    };
-
-    // Event listener for errors
-    socket.onerror = event => {
-        console.error("WebSocket error:", event);
-    };
+    function sendMessage() {
+        const message = document.getElementById('input-message').value;
+        socket.emit('message', message);
+    }
 </script>
+
+<input type="text" id="input-message" placeholder="Type a message">
+<button onclick="sendMessage()">Send Message</button>
 {% endblock %}
