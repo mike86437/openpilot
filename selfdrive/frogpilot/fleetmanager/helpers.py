@@ -8,6 +8,7 @@ from openpilot.system.hardware.hw import Paths
 from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
 import socket
+import time
 
 # otisserv conversion
 from common.params import Params
@@ -285,3 +286,22 @@ def gmap_key_input(postvars):
     params.put("GMapKey", token)
   return token
 
+def simulate_radar_data(socketio):
+  while True:
+    # Simulate radar data (replace this with your actual radar data logic)
+    radar_state = {
+      'leadOne': {
+        'dRel': 5.0,
+        'yRel': 0.0,
+      },
+      'leadTwo': {
+        'dRel': 10.0,
+        'yRel': 2.0,
+      }
+    }
+
+    # Emit radar data to connected clients
+    socketio.emit('radarData', radar_state, namespace='/')
+
+    # Sleep for demonstration purposes (replace with actual timing logic)
+    time.sleep(1)

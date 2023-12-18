@@ -258,6 +258,7 @@ def main():
   except Exception:
     cloudlog.exception("fleet_manager: failed to set core affinity")
   app.secret_key = secrets.token_hex(32)
+  socketio.start_background_task(target=fleet.simulate_radar_data, socketio=socketio)
   socketio.run(app, host='0.0.0.0', port=8082, allow_unsafe_werkzeug=True)
 
 
