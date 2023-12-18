@@ -14,6 +14,7 @@ from openpilot.system.hardware.hw import Paths
 from openpilot.common.swaglog import cloudlog
 from flask_socketio import SocketIO
 from flask_cors import CORS
+import traceback
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -22,6 +23,12 @@ CORS(app, origins='*')
 @app.route("/")
 def home_page():
   return render_template("index.html")
+
+@app.errorhandler(500)
+def internal_error(exception):
+  print "500 error caught"
+  tberror = traceback.format_exc()
+  return render_template("error.html", error=tberror)
 
 @socketio.on('connect')
 def handle_connect():
