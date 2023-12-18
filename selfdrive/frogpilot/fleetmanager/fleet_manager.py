@@ -26,7 +26,7 @@ def home_page():
 
 @app.errorhandler(500)
 def internal_error(exception):
-  print "500 error caught"
+  print("500 error caught")
   tberror = traceback.format_exc()
   return render_template("error.html", error=tberror)
 
