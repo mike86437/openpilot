@@ -9,6 +9,7 @@ from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
 import socket
 import time
+from cereal.messaging import SubMaster
 
 # otisserv conversion
 from common.params import Params
@@ -288,17 +289,9 @@ def gmap_key_input(postvars):
 
 def simulate_radar_data(socketio):
   while True:
-    # Simulate radar data (replace this with your actual radar data logic)
-    radar_state = {
-      'leadOne': {
-        'dRel': 5.0,
-        'yRel': 0.0,
-      },
-      'leadTwo': {
-        'dRel': 10.0,
-        'yRel': 2.0,
-      }
-    }
+    sm = SubMaster(['radarState'])
+    sm.update()
+    radar_state = sm['radarState']
 
     # Emit radar data to connected clients
     socketio.emit('radarData', radar_state, namespace='/')
