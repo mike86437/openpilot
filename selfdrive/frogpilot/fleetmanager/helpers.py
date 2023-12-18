@@ -195,7 +195,7 @@ def search_addr(postvars, lon, lat, valid_addr, token):
         return (addr, lon, lat, valid_addr, token)
       lon, lat = j["features"][0]["geometry"]["coordinates"]
       valid_addr = True
-  return (addr, lon, lat, valid_addr, token)
+  return (addr, lon, lat, valid_addr)
 
 def set_destination(postvars, valid_addr):
   if postvars.get("latitude") is not None and postvars.get("longitude") is not None:
