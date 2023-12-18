@@ -16,7 +16,7 @@
         const carHeight = 40;
         const leadVehicleSize = 30;
 
-        const socket = io.connect('http://10.0.0.41:8082');
+        const socket = io.connect('{{ server_ip }}');
         const radarStateInfo = document.getElementById("radarStateInfo");
 
         socket.on('radarData', function (radarState) {
