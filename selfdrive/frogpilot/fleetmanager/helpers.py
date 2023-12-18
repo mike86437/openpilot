@@ -293,8 +293,23 @@ def simulate_radar_data(socketio):
     sm.update()
     radar_state = sm['radarState']
 
+    # Serialize radar_state
+    serialized_radar_state = {
+        'leadOne': {
+            'dRel': radar_state.leadOne.dRel,
+            'yRel': radar_state.leadOne.yRel,
+            # Add other relevant fields as needed
+        },
+        'leadTwo': {
+            'dRel': radar_state.leadTwo.dRel,
+            'yRel': radar_state.leadTwo.yRel,
+            # Add other relevant fields as needed
+        },
+        # Add other fields as needed
+    }
+
     # Emit radar data to connected clients
-    socketio.emit('radarData', radar_state, namespace='/')
+    socketio.emit('radarData', serialized_radar_state, namespace='/')
 
     # Sleep for demonstration purposes (replace with actual timing logic)
     time.sleep(1)
