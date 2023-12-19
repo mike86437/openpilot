@@ -23,28 +23,31 @@
     const socket = io.connect('{{ server_ip }}');
 
     socket.on('radarData', function (radarState) {
-      // Clear the canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Draw the driver's car at the bottom center
+  const carX = (canvas.width - carWidth) / 2;
+  const carY = canvas.height - carHeight;
+  
+  // Clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw the driver's car at the bottom center
-      const carX = (canvas.width - carWidth) / 2;
-      const carY = canvas.height - carHeight;
-      ctx.fillStyle = "green";  // Change color to green for the driver's car
-      ctx.fillRect(carX, carY, carWidth, carHeight);
+  // Set the fill style for the driver's car
+  ctx.fillStyle = "green";
+  ctx.fillRect(carX, carY, carWidth, carHeight);
 
-      // Draw lead vehicle (leadOne) in blue
-      if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
-        drawLeadVehicle(radarState.leadOne, "blue");
-      }
+  // Draw lead vehicle (leadOne) in blue
+  if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
+    drawLeadVehicle(radarState.leadOne, "blue");
+  }
 
-      // Draw LiveTracks in red or orange based on oncoming attribute
-      for (const liveTrack of radarState.liveTracks) {
-        if (liveTrack.dRel < maxDRel && Math.abs(liveTrack.yRel) < maxYRel) {
-          const color = liveTrack.oncoming ? "orange" : "red";
-          drawLiveTrack(liveTrack, color);
-        }
-      }
-    });
+  // Draw LiveTracks in red or orange based on oncoming attribute
+  for (const liveTrack of radarState.liveTracks) {
+    if (liveTrack.dRel < maxDRel && Math.abs(liveTrack.yRel) < maxYRel) {
+      const color = liveTrack.oncoming ? "orange" : "red";
+      drawLiveTrack(liveTrack, color);
+    }
+  }
+});
+
 
     function drawLeadVehicle(leadData, color) {
       // Skip drawing if dRel is equal to 0
