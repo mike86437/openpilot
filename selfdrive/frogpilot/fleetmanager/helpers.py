@@ -311,9 +311,23 @@ def simulate_radar_data(socketio):
     }
 
     # Serialize lane data
+    serialized_lane_lines = []
+    for lane_line in model_data.laneLines:
+      serialized_lane_lines.append({
+        'lane_attr': lane_line.lane_attr,  # Replace with actual attribute names
+        # Add other relevant fields as needed
+      })
+
+    serialized_road_edges = []
+    for road_edge in model_data.roadEdges:
+      serialized_road_edges.append({
+        'road_attr': road_edge.road_attr,  # Replace with actual attribute names
+        # Add other relevant fields as needed
+      })
+
     serialized_lane_data = {
-      'laneLines': model_data.laneLines,
-      'roadEdges': model_data.roadEdges,
+      'laneLines': serialized_lane_lines,
+      'roadEdges': serialized_road_edges,
       # Add other relevant fields as needed
     }
 
@@ -325,4 +339,5 @@ def simulate_radar_data(socketio):
 
     # Sleep for demonstration purposes (replace with actual timing logic)
     time.sleep(1)
+
 
