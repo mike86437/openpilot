@@ -313,15 +313,16 @@ def simulate_radar_data(socketio):
 
     # Serialize liveTracks
     serialized_live_tracks = []
-    for i in range(live_tracks.__len__()):
-      track = live_tracks[i]
-      serialized_live_tracks.append({
+    for track in live_tracks.liveTracks:
+      track_dict = {
         'trackId': track.trackId,
         'dRel': track.dRel,
         'yRel': track.yRel,
         'oncoming': track.oncoming,
         # Add other relevant fields as needed
-      })
+      }
+      serialized_live_tracks.append(track_dict)
+
 
     # Serialize lane data
     serialized_lane_data = {
@@ -339,4 +340,3 @@ def simulate_radar_data(socketio):
 
     # Sleep for demonstration purposes (replace with actual timing logic)
     time.sleep(1)
-
