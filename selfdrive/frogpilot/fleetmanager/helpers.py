@@ -10,6 +10,7 @@ from tools.lib.route import SegmentName
 import socket
 import time
 from cereal.messaging import SubMaster
+from cereal import car
 
 # otisserv conversion
 from common.params import Params
@@ -292,7 +293,7 @@ def simulate_radar_data(socketio):
     sm = SubMaster(['radarState', 'modelDataV2', 'liveTracks'])
     sm.update()
     radar_state = sm['radarState']
-    model_data = sm['modelDataV2']
+    model_data = sm['modelV2']
     live_tracks = sm['liveTracks']
 
     # Serialize radar_state
