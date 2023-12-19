@@ -298,13 +298,13 @@ def simulate_radar_data(socketio):
     # Serialize radar_state
     serialized_radar_state = {
       'leadOne': {
-        'dRel': radar_state.leadOne.dRel,
-        'yRel': radar_state.leadOne.yRel,
+        'dRel': radar_state.leadOne.dRel if radar_state.leadOne else None,
+        'yRel': radar_state.leadOne.yRel if radar_state.leadOne else None,
         # Add other relevant fields as needed
       },
       'leadTwo': {
-        'dRel': radar_state.leadTwo.dRel,
-        'yRel': radar_state.leadTwo.yRel,
+        'dRel': radar_state.leadTwo.dRel if radar_state.leadTwo else None,
+        'yRel': radar_state.leadTwo.yRel if radar_state.leadTwo else None,
         # Add other relevant fields as needed
       },
       # Add other fields as needed
@@ -339,5 +339,6 @@ def simulate_radar_data(socketio):
 
     # Sleep for demonstration purposes (replace with actual timing logic)
     time.sleep(1)
+
 
 
