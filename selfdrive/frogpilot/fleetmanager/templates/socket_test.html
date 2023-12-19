@@ -10,67 +10,66 @@
   <script>
     const canvas = document.getElementById("radarCanvas");
     const ctx = canvas.getContext("2d");
-
+  
     const carWidth = 20;
     const carHeight = 40;
     const leadVehicleSize = 30;
-
+  
     const maxDRel = 150; // Adjust as needed
     const maxYRel = 30; // Adjust as needed
     const yRelScalingFactor = 10; // Adjust as needed
     const dRelScalingFactor = 4; // Adjust as needed
-
-    const socket = io.connect('{{ server_ip }}');
-
-    socket.on('radarData', function (radarState) {
-  // Draw the driver's car at the bottom center
-  const carX = (canvas.width - carWidth) / 2;
-  const carY = canvas.height - carHeight;
   
-  // Clear the canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Set the fill style for the driver's car
-  ctx.fillStyle = "green";
-  ctx.fillRect(carX, carY, carWidth, carHeight);
-
-  console.log('Lead One - dRel:', radarState.leadOne.dRel, 'yRel:', radarState.leadOne.yRel);
-
-
-  // Draw lead vehicle (leadOne) in blue
-  if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
-    drawLeadVehicle(radarState.leadOne, "blue");
-  }
-
-  // Draw LiveTracks in red or orange based on oncoming attribute
-  for (const liveTrack of radarState.liveTracks) {
-    if (liveTrack.dRel < maxDRel && Math.abs(liveTrack.yRel) < maxYRel) {
-      const color = liveTrack.oncoming ? "orange" : "red";
-      drawLiveTrack(liveTrack, color);
-    }
-  }
-});
-
-
+    const socket = io.connect('{{ server_ip }}');
+  
+    socket.on('radarData', function (radarState) {
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+      // Draw the driver's car at the bottom center
+      const carX = (canvas.width - carWidth) / 2;
+      const carY = canvas.height - carHeight;
+  
+      // Set the fill style for the driver's car
+      ctx.fillStyle = "green";
+      ctx.fillRect(carX, carY, carWidth, carHeight);
+  
+      console.log('Lead One - dRel:', radarState.leadOne.dRel, 'yRel:', radarState.leadOne.yRel);
+  
+      // Draw lead vehicle (leadOne) in blue
+      if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
+        drawLeadVehicle(radarState.leadOne, "blue");
+      }
+  
+      // Draw LiveTracks in red or orange based on oncoming attribute
+      for (const liveTrack of radarState.liveTracks) {
+        if (liveTrack.dRel < maxDRel && Math.abs(liveTrack.yRel) < maxYRel) {
+          const color = liveTrack.oncoming ? "orange" : "red";
+          drawLiveTrack(liveTrack, color);
+        }
+      }
+    });
+  
     function drawLeadVehicle(leadData, color) {
       // Skip drawing if dRel is equal to 0
       if (leadData.dRel === 0) {
         return;
       }
-
+  
       const leadX = canvas.width / 2 + leadData.yRel * yRelScalingFactor;
       const leadY = canvas.height - leadData.dRel * dRelScalingFactor;
-
+  
       ctx.fillStyle = color;
       ctx.fillRect(leadX - leadVehicleSize / 2, leadY - leadVehicleSize / 2, leadVehicleSize, leadVehicleSize);
     }
-
+  
     function drawLiveTrack(liveTrack, color) {
       const trackX = canvas.width / 2 + liveTrack.yRel * yRelScalingFactor;
       const trackY = canvas.height - liveTrack.dRel * dRelScalingFactor;
-
+  
       ctx.fillStyle = color;
       ctx.fillRect(trackX, trackY, 10, 10); // Adjust size as needed
     }
   </script>
+  
 {% endblock %}
