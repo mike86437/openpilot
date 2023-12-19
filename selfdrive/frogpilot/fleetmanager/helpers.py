@@ -313,7 +313,8 @@ def simulate_radar_data(socketio):
 
     # Serialize liveTracks
     serialized_live_tracks = []
-    for track in live_tracks.liveTracks:
+    for i in range(live_tracks.__len__()):
+      track = live_tracks[i]
       serialized_live_tracks.append({
         'trackId': track.trackId,
         'dRel': track.dRel,
@@ -338,3 +339,4 @@ def simulate_radar_data(socketio):
 
     # Sleep for demonstration purposes (replace with actual timing logic)
     time.sleep(1)
+
