@@ -10,7 +10,7 @@ from tools.lib.route import SegmentName
 import socket
 import time
 from cereal.messaging import SubMaster
-from cereal import car
+from cereal import car, log
 
 # otisserv conversion
 from common.params import Params
