@@ -34,6 +34,9 @@
   ctx.fillStyle = "green";
   ctx.fillRect(carX, carY, carWidth, carHeight);
 
+  console.log('Lead One - dRel:', radarState.leadOne.dRel, 'yRel:', radarState.leadOne.yRel);
+
+
   // Draw lead vehicle (leadOne) in blue
   if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
     drawLeadVehicle(radarState.leadOne, "blue");
