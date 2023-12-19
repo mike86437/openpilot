@@ -6,7 +6,6 @@
 
 {% block main %}
     <canvas id="radarCanvas" width="800" height="600"></canvas>
-    <div id="radarStateInfo"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
     <script>
         const canvas = document.getElementById("radarCanvas");
@@ -16,13 +15,12 @@
         const carHeight = 40;
         const leadVehicleSize = 30;
 
-        const socket = io.connect('{{ server_ip }}');
-        const radarStateInfo = document.getElementById("radarStateInfo");
+        const maxDRel = 150; // Adjust as needed
+        const maxYRel = 30; // Adjust as needed
+
+        const socket = io.connect('http://10.0.0.41:8082');
 
         socket.on('radarData', function (radarState) {
-            // Log radarState to the browser console
-            console.log('Received radarState:', radarState);
-
             // Clear the canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -32,12 +30,18 @@
             ctx.fillStyle = "blue";
             ctx.fillRect(carX, carY, carWidth, carHeight);
 
-            // Draw lead vehicles
-            drawLeadVehicle(radarState.leadOne, "red");
-            drawLeadVehicle(radarState.leadTwo, "green");
+            // Draw lead vehicle (leadOne) in blue
+            if (radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
+                drawLeadVehicle(radarState.leadOne, "blue");
+            }
 
-            // Display radarState information on the screen
-            radarStateInfo.innerHTML = `<pre>${JSON.stringify(radarState, null, 2)}</pre>`;
+            // Draw LiveTracks in red or orange based on oncoming attribute
+            for (const liveTrack of radarState.liveTracks) {
+                if (liveTrack.dRel < maxDRel && Math.abs(liveTrack.yRel) < maxYRel) {
+                    const color = liveTrack.oncoming ? "orange" : "red";
+                    drawLiveTrack(liveTrack, color);
+                }
+            }
         });
 
         function drawLeadVehicle(leadData, color) {
@@ -46,6 +50,14 @@
 
             ctx.fillStyle = color;
             ctx.fillRect(leadX - leadVehicleSize / 2, leadY - leadVehicleSize / 2, leadVehicleSize, leadVehicleSize);
+        }
+
+        function drawLiveTrack(liveTrack, color) {
+            const trackX = canvas.width / 2 + liveTrack.yRel * 10; // Adjust multiplier as needed
+            const trackY = canvas.height - liveTrack.dRel * 10; // Adjust multiplier as needed
+
+            ctx.fillStyle = color;
+            ctx.fillRect(trackX, trackY, 10, 10); // Adjust size as needed
         }
     </script>
 {% endblock %}

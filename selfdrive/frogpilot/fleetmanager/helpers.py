@@ -289,27 +289,51 @@ def gmap_key_input(postvars):
 
 def simulate_radar_data(socketio):
   while True:
-    sm = SubMaster(['radarState'])
+    sm = SubMaster(['radarState', 'modelDataV2', 'liveTracks'])
     sm.update()
     radar_state = sm['radarState']
+    model_data = sm['modelDataV2']
+    live_tracks = sm['liveTracks']
 
     # Serialize radar_state
     serialized_radar_state = {
-        'leadOne': {
-            'dRel': radar_state.leadOne.dRel,
-            'yRel': radar_state.leadOne.yRel,
-            # Add other relevant fields as needed
-        },
-        'leadTwo': {
-            'dRel': radar_state.leadTwo.dRel,
-            'yRel': radar_state.leadTwo.yRel,
-            # Add other relevant fields as needed
-        },
-        # Add other fields as needed
+      'leadOne': {
+        'dRel': radar_state.leadOne.dRel,
+        'yRel': radar_state.leadOne.yRel,
+        # Add other relevant fields as needed
+      },
+      'leadTwo': {
+        'dRel': radar_state.leadTwo.dRel,
+        'yRel': radar_state.leadTwo.yRel,
+        # Add other relevant fields as needed
+      },
+      # Add other fields as needed
     }
 
-    # Emit radar data to connected clients
-    socketio.emit('radarData', serialized_radar_state, namespace='/')
+    # Serialize liveTracks
+    serialized_live_tracks = []
+    for track in live_tracks.liveTracks:
+      serialized_live_tracks.append({
+        'trackId': track.trackId,
+        'dRel': track.dRel,
+        'yRel': track.yRel,
+        'oncoming': track.oncoming,
+        # Add other relevant fields as needed
+      })
+
+    # Serialize lane data
+    serialized_lane_data = {
+      'laneLines': model_data.laneLines,
+      'roadEdges': model_data.roadEdges,
+      # Add other relevant fields as needed
+    }
+
+    # Emit all serialized data to connected clients
+    socketio.emit('radarData', {
+      'radarState': serialized_radar_state,
+      'liveTracks': serialized_live_tracks,
+      'laneData': serialized_lane_data
+    }, namespace='/')
 
     # Sleep for demonstration purposes (replace with actual timing logic)
     time.sleep(1)
