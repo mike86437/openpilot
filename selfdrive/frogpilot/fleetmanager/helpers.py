@@ -9,7 +9,7 @@ from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
 import socket
 import time
-# from cereal.messaging import SubMaster
+from cereal.messaging import SubMaster
 from cereal import messaging, car, log
 
 # otisserv conversion
