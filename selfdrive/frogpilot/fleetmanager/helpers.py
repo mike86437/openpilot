@@ -290,11 +290,10 @@ def gmap_key_input(postvars):
 
 def simulate_radar_data(socketio):
   while True:
-    sm = SubMaster(['radarState', 'modelV2', 'liveTracks'])
+    sm = SubMaster(['radarState', 'modelV2'])
     sm.update()
     radar_state = sm['radarState']
     model_data = sm['modelV2']
-    live_tracks = sm['liveTracks']
 
     # Serialize radar_state
     serialized_radar_state = {
@@ -311,19 +310,6 @@ def simulate_radar_data(socketio):
       # Add other fields as needed
     }
 
-    # Serialize liveTracks
-    serialized_live_tracks = []
-    for track in live_tracks.liveTracks:
-      track_dict = {
-        'trackId': track.trackId,
-        'dRel': track.dRel,
-        'yRel': track.yRel,
-        'oncoming': track.oncoming,
-        # Add other relevant fields as needed
-      }
-      serialized_live_tracks.append(track_dict)
-
-
     # Serialize lane data
     serialized_lane_data = {
       'laneLines': model_data.laneLines,
@@ -334,9 +320,9 @@ def simulate_radar_data(socketio):
     # Emit all serialized data to connected clients
     socketio.emit('radarData', {
       'radarState': serialized_radar_state,
-      'liveTracks': serialized_live_tracks,
       'laneData': serialized_lane_data
     }, namespace='/')
 
     # Sleep for demonstration purposes (replace with actual timing logic)
     time.sleep(1)
+

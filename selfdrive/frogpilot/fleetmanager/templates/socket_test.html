@@ -41,13 +41,7 @@
         drawLeadVehicle(radarState.leadOne, "blue");
       }
   
-      // Draw LiveTracks in red or orange based on oncoming attribute
-      for (const liveTrack of radarState.liveTracks) {
-        if (liveTrack.dRel < maxDRel && Math.abs(liveTrack.yRel) < maxYRel) {
-          const color = liveTrack.oncoming ? "orange" : "red";
-          drawLiveTrack(liveTrack, color);
-        }
-      }
+      // Skip drawing LiveTracks (removed this portion)
     });
   
     function drawLeadVehicle(leadData, color) {
@@ -61,14 +55,6 @@
   
       ctx.fillStyle = color;
       ctx.fillRect(leadX - leadVehicleSize / 2, leadY - leadVehicleSize / 2, leadVehicleSize, leadVehicleSize);
-    }
-  
-    function drawLiveTrack(liveTrack, color) {
-      const trackX = canvas.width / 2 + liveTrack.yRel * yRelScalingFactor;
-      const trackY = canvas.height - liveTrack.dRel * dRelScalingFactor;
-  
-      ctx.fillStyle = color;
-      ctx.fillRect(trackX, trackY, 10, 10); // Adjust size as needed
     }
   </script>
   
