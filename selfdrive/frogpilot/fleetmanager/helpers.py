@@ -290,7 +290,7 @@ def gmap_key_input(postvars):
 
 def simulate_radar_data(socketio):
   while True:
-    sm = SubMaster(['radarState', 'modelDataV2', 'liveTracks'])
+    sm = SubMaster(['radarState', 'modelV2', 'liveTracks'])
     sm.update()
     radar_state = sm['radarState']
     model_data = sm['modelV2']
