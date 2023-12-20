@@ -50,7 +50,7 @@
         return;
       }
   
-      const leadX = canvas.width / 2 + leadData.yRel * yRelScalingFactor - leadVehicleSize / 2;
+      const leadX = canvas.width / 2 - leadData.yRel * yRelScalingFactor - leadVehicleSize / 2;
       const leadY = canvas.height - leadData.dRel * dRelScalingFactor - leadVehicleSize / 2;
   
       ctx.drawImage(leadVehicleImage, leadX, leadY, leadVehicleSize, leadVehicleSize);

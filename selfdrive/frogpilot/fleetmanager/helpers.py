@@ -310,9 +310,7 @@ def simulate_radar_data(socketio):
     }
 
     # Emit all serialized data to connected clients
-    socketio.emit('radarData', {
-      'radarState': serialized_radar_state
-    }, namespace='/')
+    socketio.emit('radarData', serialized_radar_state, namespace='/')
 
     # Sleep for demonstration purposes (replace with actual timing logic)
     time.sleep(1)
