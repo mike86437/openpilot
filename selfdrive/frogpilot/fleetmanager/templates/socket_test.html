@@ -11,8 +11,12 @@
     const canvas = document.getElementById("radarCanvas");
     const ctx = canvas.getContext("2d");
   
-    const carWidth = 20;
-    const carHeight = 40;
+    const carImage = new Image();
+    carImage.src = "/static/player_straight.png";
+
+    const leadVehicleImage = new Image();
+    leadVehicleImage.src = "/static/car01.png";
+  
     const leadVehicleSize = 30;
   
     const maxDRel = 150; // Adjust as needed
@@ -27,12 +31,10 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
   
       // Draw the driver's car at the bottom center
-      const carX = (canvas.width - carWidth) / 2;
-      const carY = canvas.height - carHeight;
-  
-      // Set the fill style for the driver's car
-      ctx.fillStyle = "green";
-      ctx.fillRect(carX, carY, carWidth, carHeight);
+      const carX = (canvas.width - carImage.width) / 2;
+      const carY = canvas.height - carImage.height;
+
+      ctx.drawImage(carImage, carX, carY, carImage.width, carImage.height);
   
       console.log('Lead One - dRel:', radarState.leadOne.dRel, 'yRel:', radarState.leadOne.yRel);
   
@@ -48,11 +50,10 @@
         return;
       }
   
-      const leadX = canvas.width / 2 + leadData.yRel * yRelScalingFactor;
-      const leadY = canvas.height - leadData.dRel * dRelScalingFactor;
+      const leadX = canvas.width / 2 + leadData.yRel * yRelScalingFactor - leadVehicleSize / 2;
+      const leadY = canvas.height - leadData.dRel * dRelScalingFactor - leadVehicleSize / 2;
   
-      ctx.fillStyle = color;
-      ctx.fillRect(leadX - leadVehicleSize / 2, leadY - leadVehicleSize / 2, leadVehicleSize, leadVehicleSize);
+      ctx.drawImage(leadVehicleImage, leadX, leadY, leadVehicleSize, leadVehicleSize);
     }
   </script>
   
