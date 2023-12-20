@@ -40,14 +40,6 @@
       if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
         drawLeadVehicle(radarState.leadOne, "blue");
       }
-
-      // Draw lane lines (example, replace with actual logic)
-      ctx.beginPath();
-      ctx.moveTo(100, 0); // Example starting point
-      ctx.lineTo(100, canvas.height); // Example ending point
-      ctx.strokeStyle = 'white'; // Example color
-      ctx.stroke();
-      // Add more lane lines drawing logic as needed
     });
   
     function drawLeadVehicle(leadData, color) {
