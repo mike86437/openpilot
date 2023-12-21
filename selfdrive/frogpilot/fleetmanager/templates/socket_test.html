@@ -60,7 +60,7 @@
       ctx.fillStyle = "white";
       ctx.textAlign = "center";
       vEgo = radarState.vego * 2.237
-      ctx.fillText(`Speed: ${vEgo.toFixed(1)} mph`, canvas.width / 2, 30);
+      ctx.fillText(`Speed: ${vEgo.toFixed(1)} mph`, canvas.width / 2, 90);  // Adjusted y-coordinate to shift down by 60 pixels
     });
   
     function drawLeadVehicle(leadData, color) {
