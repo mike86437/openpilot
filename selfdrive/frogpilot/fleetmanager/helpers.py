@@ -293,7 +293,7 @@ def simulate_radar_data(socketio):
   gyRel = 0
   gv_ego = 0
   while True:
-    sm = SubMaster(['radarState', 'carState'])
+    sm = SubMaster(['carState', 'radarState', 'modelV2'], poll=['radarState', 'modelV2'], ignore_avg_freq=['radarState'])
     sm.update()
     dRel = sm['radarState'].leadOne.dRel
     yRel = sm['radarState'].leadOne.yRel
