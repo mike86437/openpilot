@@ -7,6 +7,10 @@ from openpilot.system.hardware import PC
 from openpilot.system.hardware.hw import Paths
 from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
+import socket
+import time
+from cereal.messaging import SubMaster
+from cereal import messaging, car, log
 
 # otisserv conversion
 from common.params import Params
@@ -283,3 +287,42 @@ def gmap_key_input(postvars):
     token = postvars.get("gmap_key_val").strip()
     params.put("GMapKey", token)
   return token
+
+def simulate_radar_data(socketio):
+  gdRel = 0
+  gyRel = 0
+  gv_ego = 0
+  while True:
+    sm = SubMaster(['carState', 'radarState', 'modelV2'], poll=['radarState', 'modelV2'], ignore_avg_freq=['radarState'])
+    sm.update()
+    dRel = sm['radarState'].leadOne.dRel
+    yRel = sm['radarState'].leadOne.yRel
+    v_ego = sm['carState'].vEgo
+    print(dRel)
+    print(yRel)
+    print(v_ego)
+
+    if dRel != 0:
+      gdRel = dRel
+    if yRel != 0:
+      gyRel = yRel
+    gv_ego = v_ego
+    print(gdRel)
+    print(gyRel)
+    print(gv_ego)
+    # Serialize radar_state
+    serialized_radar_state = {
+      'leadOne': {
+        'dRel': gdRel if gdRel else None,
+        'yRel': gyRel if gyRel else None,
+        # Add other relevant fields as needed
+      },
+      'vego': gv_ego if gv_ego else 22,
+    }
+
+    # Emit all serialized data to connected clients
+    socketio.emit('radarData', serialized_radar_state, namespace='/')
+    time.sleep(1)
+
+
+

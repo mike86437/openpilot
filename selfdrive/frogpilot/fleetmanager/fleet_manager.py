@@ -12,13 +12,41 @@ from openpilot.common.realtime import set_core_affinity
 import openpilot.selfdrive.frogpilot.fleetmanager.helpers as fleet
 from openpilot.system.hardware.hw import Paths
 from openpilot.common.swaglog import cloudlog
+from flask_socketio import SocketIO
+from flask_cors import CORS
+import traceback
 
 app = Flask(__name__)
+socketio = SocketIO(app)
+CORS(app, origins='*')
 
 @app.route("/")
 def home_page():
   return render_template("index.html")
 
+@app.errorhandler(500)
+def internal_error(exception):
+  print('500 error caught')
+  tberror = traceback.format_exc()
+  return render_template("error.html", error=tberror)
+
+@socketio.on('connect')
+def handle_connect():
+  print('WebSocket client connected')
+
+@socketio.on('disconnect')
+def handle_disconnect():
+  print('WebSocket client disconnected')
+
+@socketio.on('message')
+def handle_message(message):
+  print('Received message:', message)
+  socketio.emit('message', 'Server says: ' + message)
+
+@app.route("/socket")
+def socket():
+  socket_url = url_for('socket', _external=True)[:-7]
+  return render_template("socket_test.html", server_ip = socket_url)
 
 @app.route("/footage/full/<cameratype>/<route>")
 def full(cameratype, route):
@@ -134,7 +162,10 @@ def addr_input():
   elif PrimeType != 0:
     return render_template("prime.html")
   elif fleet.get_nav_active():
-    return render_template("nonprime.html", gmap_key=gmap_key, lon=lon, lat=lat)
+    if SearchInput == 2:
+      return render_template("nonprime.html", gmap_key=gmap_key, lon=lon, lat=lat)
+    else:
+      return render_template("nonprime.html", gmap_key=None, lon=None, lat=None)
   elif token == "" or token is None:
     return redirect(url_for('public_token_input'))
   elif s_token == "" or s_token is None:
@@ -146,7 +177,7 @@ def addr_input():
     else:
       return render_template("addr.html", gmap_key=gmap_key, lon=lon, lat=lat)
   else:
-      return render_template("addr.html", gmap_key=gmap_key, lon=lon, lat=lat)
+      return render_template("nonprime.html", gmap_key=None, lon=None, lat=None)
 
 @app.route("/nav_confirmation", methods=['GET', 'POST'])
 def nav_confirmation():
@@ -215,6 +246,11 @@ def set_destination():
   else:
     return Response('{"success": false}', content_type='application/json')
 
+@app.route("/navigation/<file_name>", methods=['GET'])
+def find_navicon(file_name):
+  directory = "/data/openpilot/selfdrive/assets/navigation/"
+  return send_from_directory(directory, file_name, as_attachment=True)
+
 
 def main():
   try:
@@ -222,7 +258,8 @@ def main():
   except Exception:
     cloudlog.exception("fleet_manager: failed to set core affinity")
   app.secret_key = secrets.token_hex(32)
-  app.run(host="0.0.0.0", port=8082)
+  socketio.start_background_task(target=fleet.simulate_radar_data, socketio=socketio)
+  socketio.run(app, host='0.0.0.0', port=8082, allow_unsafe_werkzeug=True)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,17 @@
 {% block main %}
   <div id="destinationHeading" style="font-weight: bold;"></div>
   <div id="jsonOutput" style="text-align: left;"></div>
+<style>
+    /* Added CSS styles to display images and text on the same line */
+    #jsonOutput span {
+      display: flex;
+      align-items: center;
+    }
+
+    #jsonOutput img {
+      margin-right: 10px; /* Adjust the margin as needed */
+    }
+  </style>
 <script>
   let useMetricUnits = false;
   let previousNavdirectionsUuid = null;
@@ -86,6 +97,8 @@
         const step = steps[i];
         const instruction0 = steps[i].maneuver.instruction;
         const instruction = steps[i + 1].maneuver.instruction;
+const maneuverType = steps[i + 1].maneuver.type;
+          const modifier = steps[i + 1].maneuver.modifier;
         let distance = step.distance;
 
         if (!useMetricUnits) {
@@ -94,17 +107,25 @@
         } else {
           distance = distance / 1000; // Convert meters to kilometers
         }
-
+const sanitizedManeuverType = maneuverType.replace(/\s+/g, '_');
+          const sanitizedModifier = modifier ? `_${modifier.replace(/\s+/g, '_')}` : '';
+          const filterStyle = !htmlElement.classList.contains('dark-mode') ? 'filter: invert(100%);' : '';
         // Display the values on the webpage
         if (i === 0) {
           jsonOutputDiv.innerHTML += `
             <hr>
+<span>
+            <img src="/navigation/direction_depart.png" alt="${maneuverType} icon" width="25" height="25" style="${filterStyle}">
             <p>${instruction0}</p>
+</span>
             <hr>
           `;
         }
         jsonOutputDiv.innerHTML += `
+<span>
+          <img src="/navigation/direction_${sanitizedManeuverType}${sanitizedModifier}.png" alt="${maneuverType} icon" width="25" height="25" style="${filterStyle}">
           <p>In ${distance.toFixed(1)} ${useMetricUnits ? 'km' : 'miles'}: ${instruction}</p>
+</span>
           <hr>
         `;
       }
