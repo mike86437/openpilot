@@ -11,16 +11,17 @@
     const canvas = document.getElementById("radarCanvas");
     const ctx = canvas.getContext("2d");
 
-    // Load background image
     const backgroundImage = new Image();
     backgroundImage.src = "/static/background.png";
 
+    backgroundImage.onload = function() {
     // Set canvas size to match the background image
-    // canvas.width = backgroundImage.width;
-    // canvas.height = backgroundImage.height;
+    canvas.width = backgroundImage.width;
+    canvas.height = backgroundImage.height;
 
     // Draw the background image on the canvas
     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    };
   
     const carImage = new Image();
     carImage.src = "/static/player_straight.png";
