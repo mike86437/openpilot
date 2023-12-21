@@ -290,15 +290,16 @@ def gmap_key_input(postvars):
 
 def simulate_radar_data(socketio):
   while True:
-    sm = SubMaster(['radarState'])
+    sm = SubMaster(['radarState', 'carState'])
     sm.update()
     radar_state = sm['radarState']
+    v_ego = sm['carState'].vEgo
 
     # Serialize radar_state
     serialized_radar_state = {
       'leadOne': {
-        'dRel': radar_state.leadOne.dRel if radar_state.leadOne else None,
-        'yRel': radar_state.leadOne.yRel if radar_state.leadOne else None,
+        'dRel': radar_state.leadOne.dRel if radar_state.leadOne else 25,
+        'yRel': radar_state.leadOne.yRel if radar_state.leadOne else 5,
         # Add other relevant fields as needed
       },
       'leadTwo': {
@@ -306,7 +307,7 @@ def simulate_radar_data(socketio):
         'yRel': radar_state.leadTwo.yRel if radar_state.leadTwo else None,
         # Add other relevant fields as needed
       },
-      # Add other fields as needed
+      'vego': v_ego if v_ego else 22,
     }
 
     # Emit all serialized data to connected clients
