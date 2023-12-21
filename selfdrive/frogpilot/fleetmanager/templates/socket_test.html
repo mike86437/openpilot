@@ -11,62 +11,49 @@
     const canvas = document.getElementById("radarCanvas");
     const ctx = canvas.getContext("2d");
 
-    const backgroundImage = new Image();
-    backgroundImage.src = "/static/background.png";
-
-    backgroundImage.onload = function() {
-    // Set canvas size to match the background image
-    canvas.width = backgroundImage.width;
-    canvas.height = backgroundImage.height;
-
-    // Draw the background image on the canvas
-    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-    };
-  
-    const carImage = new Image();
-    carImage.src = "/static/player_straight.png";
-
-    const leadVehicleImage = new Image();
-    leadVehicleImage.src = "/static/car01.png";
-  
-    const leadVehicleSize = 60;
-  
-    const maxDRel = 150; // Adjust as needed
-    const maxYRel = 30; // Adjust as needed
-    const yRelScalingFactor = 10; // Adjust as needed
-    const dRelScalingFactor = 4; // Adjust as needed
-  
     const socket = io.connect('{{ server_ip }}');
-  
-    socket.on('radarData', function (radarState) {
-      // Clear the canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-      // Draw the driver's car at the bottom center
-      const carX = (canvas.width - carImage.width) / 2;
-      const carY = canvas.height - carImage.height;
 
-      // ctx.drawImage(carImage, carX, carY, carImage.width, carImage.height);
-  
-      console.log('Lead One - dRel:', radarState.leadOne.dRel, 'yRel:', radarState.leadOne.yRel);
-  
-      // Draw lead vehicle (leadOne) in blue
-      if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
-        drawLeadVehicle(radarState.leadOne, "blue");
-      }
-    });
-  
-    function drawLeadVehicle(leadData, color) {
-      // Skip drawing if dRel is equal to 0
-      if (leadData.dRel === 0) {
-        return;
-      }
-  
-      const leadX = canvas.width / 2 + leadData.yRel * yRelScalingFactor - leadVehicleSize / 2;
-      const leadY = canvas.height - leadData.dRel * dRelScalingFactor - leadVehicleSize / 2;
-  
-      ctx.drawImage(leadVehicleImage, leadX, leadY, leadVehicleSize, leadVehicleSize);
-    }
+// Load background image
+const backgroundImage = new Image();
+backgroundImage.src = "/static/background.png";
+
+backgroundImage.onload = function() {
+  // Set canvas size to match the background image
+  canvas.width = backgroundImage.width;
+  canvas.height = backgroundImage.height;
+
+  // Draw the background image on the canvas
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+};
+
+// Rest of your code...
+socket.on('radarData', function (radarState) {
+  // Clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw the driver's car at the bottom center
+  const carX = (canvas.width - carImage.width) / 2;
+  const carY = canvas.height - carImage.height;
+
+  // Draw other elements...
+
+  // Draw lead vehicle (leadOne) in blue
+  if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
+    drawLeadVehicle(radarState.leadOne, "blue");
+  }
+});
+
+function drawLeadVehicle(leadData, color) {
+  // Skip drawing if dRel is equal to 0
+  if (leadData.dRel === 0) {
+    return;
+  }
+
+  const leadX = canvas.width / 2 + leadData.yRel * yRelScalingFactor - leadVehicleSize / 2;
+  const leadY = canvas.height - leadData.dRel * dRelScalingFactor - leadVehicleSize / 2;
+
+  ctx.drawImage(leadVehicleImage, leadX, leadY, leadVehicleSize, leadVehicleSize);
+}
   </script>
   
 {% endblock %}
