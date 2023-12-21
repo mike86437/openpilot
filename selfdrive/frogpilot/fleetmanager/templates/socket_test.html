@@ -28,13 +28,13 @@
     const leadVehicleImage = new Image();
     leadVehicleImage.src = "/static/car01.png";
   
-    const leadVehicleSize = 30;
-  
     const maxDRel = 150; // Adjust as needed
     const maxYRel = 30; // Adjust as needed
-    const yRelScalingFactor = 10; // Adjust as needed
     const dRelScalingFactor = 2; // Adjust as needed
-  
+
+    let leadVehicleSize; // Declare leadVehicleSize
+    let yRelScalingFactor; // Declare yRelScalingFactor
+
     const socket = io.connect('{{ server_ip }}');
   
     socket.on('radarData', function (radarState) {
@@ -46,10 +46,16 @@
       const carX = (canvas.width - carImage.width) / 2;
       const carY = canvas.height - carImage.height;
 
-      // ctx.drawImage(carImage, carX, carY, carImage.width, carImage.height);
-      console.log('Lead One - dRel:', radarState.leadOne.dRel, 'yRel:', radarState.leadOne.yRel);
+      // Calculate yRelScalingFactor using linear interpolation
+      const maxyRelScalingFactor = 1;  // Scaling factor when dRel is maxDRel
+      const minyRelScalingFactor = 10;  // Scaling factor when dRel is 0
+      yRelScalingFactor = minyRelScalingFactor - (minyRelScalingFactor - maxyRelScalingFactor) * (radarState.leadOne.dRel / maxDRel);
 
-  
+      // Calculate leadVehicleSize using linear interpolation
+      const maxLeadVehicleSize = 10;  // Size when dRel is maxDRel
+      const minLeadVehicleSize = 50;  // Size when dRel is 0
+      leadVehicleSize = minLeadVehicleSize - (minLeadVehicleSize - maxLeadVehicleSize) * (radarState.leadOne.dRel / maxDRel);
+
       // Draw lead vehicle (leadOne) in blue
       if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
         drawLeadVehicle(radarState.leadOne, "blue");
@@ -59,7 +65,7 @@
       ctx.font = "30px 'Digital-7'";
       ctx.fillStyle = "white";
       ctx.textAlign = "center";
-      vEgo = radarState.vego * 2.237
+      const vEgo = radarState.vego * 2.237;
       ctx.fillText(`Speed: ${vEgo.toFixed(1)} mph`, canvas.width / 2, 75);
     });
   
@@ -71,7 +77,8 @@
   
       const leadX = canvas.width / 2 + leadData.yRel * yRelScalingFactor - leadVehicleSize / 2;
       const leadY = canvas.height - 60 - leadData.dRel * dRelScalingFactor - leadVehicleSize / 2;
-  
+
+      // Use leadVehicleSize in your drawLeadVehicle function
       ctx.drawImage(leadVehicleImage, leadX, leadY, leadVehicleSize, leadVehicleSize);
     }
   </script>
