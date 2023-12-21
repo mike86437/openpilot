@@ -298,8 +298,8 @@ def simulate_radar_data(socketio):
     # Serialize radar_state
     serialized_radar_state = {
       'leadOne': {
-        'dRel': radar_state.leadOne.dRel if radar_state.leadOne else 25,
-        'yRel': radar_state.leadOne.yRel if radar_state.leadOne else 5,
+        'dRel': 25,
+        'yRel': 5,
         # Add other relevant fields as needed
       },
       'leadTwo': {
