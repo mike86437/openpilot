@@ -25,8 +25,12 @@
     const carImage = new Image();
     carImage.src = "/static/player_straight.png";
 
-    const leadVehicleImage = new Image();
-    leadVehicleImage.src = "/static/car01.png";
+    const leadVehicleImages = [
+      "/static/car01.png",
+      "/static/car02.png",
+      "/static/car03.png",
+      "/static/car04.png",
+    ];
   
     const maxDRel = 100; // Adjust as needed
     const maxYRel = 30; // Adjust as needed
@@ -58,16 +62,16 @@
 
       // Draw lead vehicle (leadOne) in blue
       if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
-        drawLeadVehicle(radarState.leadOne, "blue");
+        drawLeadVehicle(radarState.leadOne, "blue", 0);
       }
       if (radarState.leadTwo.dRel !== 0 && radarState.leadTwo.dRel < maxDRel && Math.abs(radarState.leadTwo.yRel) < maxYRel) {
-        drawLeadVehicle(radarState.leadTwo, "green");
+        drawLeadVehicle(radarState.leadTwo, "green", 1);
       }
       if (radarState.leadThree.dRel !== 0 && radarState.leadThree.dRel < maxDRel && Math.abs(radarState.leadThree.yRel) < maxYRel) {
-        drawLeadVehicle(radarState.leadThree, "red");
+        drawLeadVehicle(radarState.leadThree, "red", 2);
       }
       if (radarState.leadFour.dRel !== 0 && radarState.leadFour.dRel < maxDRel && Math.abs(radarState.leadFour.yRel) < maxYRel) {
-        drawLeadVehicle(radarState.leadFour, "yellow");
+        drawLeadVehicle(radarState.leadFour, "brown", 3);
       }
       console.log('Lead One - dRel:', radarState.leadOne.dRel, 'yRel:', radarState.leadOne.yRel);
       console.log('Lead Two - dRel:', radarState.leadTwo.dRel, 'yRel:', radarState.leadTwo.yRel);
@@ -81,7 +85,7 @@
       ctx.fillText(`Speed: ${vEgo.toFixed(1)} mph`, canvas.width / 2, 75);
     });
   
-    function drawLeadVehicle(leadData, color) {
+    function drawLeadVehicle(leadData, color, leadIndex) {
       // Skip drawing if dRel is equal to 0
       if (leadData.dRel === 0) {
         return;
@@ -90,6 +94,8 @@
       const leadX = (canvas.width / 2) - (leadData.yRel * yRelScalingFactor) - (leadVehicleSize / 2);
       const leadY = (canvas.height - 60) - (leadData.dRel * dRelScalingFactor) - (leadVehicleSize / 2);
 
+      const leadVehicleImage = new Image();
+      leadVehicleImage.src = leadVehicleImages[leadIndex];
       // Use leadVehicleSize in your drawLeadVehicle function
       ctx.drawImage(leadVehicleImage, leadX, leadY, leadVehicleSize, leadVehicleSize);
     }
