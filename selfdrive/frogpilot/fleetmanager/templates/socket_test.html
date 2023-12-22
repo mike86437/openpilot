@@ -75,7 +75,7 @@
         return;
       }
   
-      const leadX = (canvas.width / 2) - (leadData.yRel * yRelScalingFactor) + (leadVehicleSize / 2);
+      const leadX = (canvas.width / 2) - (leadData.yRel * yRelScalingFactor) - (leadVehicleSize / 2);
       const leadY = (canvas.height - 60) - (leadData.dRel * dRelScalingFactor) - (leadVehicleSize / 2);
 
       // Use leadVehicleSize in your drawLeadVehicle function
