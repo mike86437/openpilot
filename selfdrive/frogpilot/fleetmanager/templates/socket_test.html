@@ -62,9 +62,9 @@
 
       // Draw lead vehicle (leadOne) in blue
       if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
-        drawLeadVehicle(radarState.leadOne, "blue", 0);
+        drawLeadVehicle(radarState.leadOne, "blue", 1);
       }
-      console.log('Lead One - dRel:', radarState.leadOne.dRel, 'yRel:', radarState.leadOne.yRel);
+      console.log('Lead One - dRel:', radarState.leadOne.dRel, 'yRel:', radarState.leadOne.yRel, 'vEgo:', radarState.vego);
       // Display speed at the center top with a digital font
       ctx.font = "30px 'Digital-7'";
       ctx.fillStyle = "white";
