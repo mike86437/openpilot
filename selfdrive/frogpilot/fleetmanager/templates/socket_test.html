@@ -63,10 +63,16 @@
       if (radarState.leadTwo.dRel !== 0 && radarState.leadTwo.dRel < maxDRel && Math.abs(radarState.leadTwo.yRel) < maxYRel) {
         drawLeadVehicle(radarState.leadTwo, "green");
       }
-
+      if (radarState.leadThree.dRel !== 0 && radarState.leadThree.dRel < maxDRel && Math.abs(radarState.leadThree.yRel) < maxYRel) {
+        drawLeadVehicle(radarState.leadThree, "red");
+      }
+      if (radarState.leadFour.dRel !== 0 && radarState.leadFour.dRel < maxDRel && Math.abs(radarState.leadFour.yRel) < maxYRel) {
+        drawLeadVehicle(radarState.leadFour, "yellow");
+      }
       console.log('Lead One - dRel:', radarState.leadOne.dRel, 'yRel:', radarState.leadOne.yRel);
       console.log('Lead Two - dRel:', radarState.leadTwo.dRel, 'yRel:', radarState.leadTwo.yRel);
-
+      console.log('Lead Three - dRel:', radarState.leadThree.dRel, 'yRel:', radarState.leadThree.yRel);
+      console.log('Lead Four - dRel:', radarState.leadFour.dRel, 'yRel:', radarState.leadFour.yRel);
       // Display speed at the center top with a digital font
       ctx.font = "30px 'Digital-7'";
       ctx.fillStyle = "white";
