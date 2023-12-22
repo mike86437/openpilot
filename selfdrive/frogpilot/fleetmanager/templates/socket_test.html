@@ -60,6 +60,15 @@
       if (radarState.leadOne.dRel !== 0 && radarState.leadOne.dRel < maxDRel && Math.abs(radarState.leadOne.yRel) < maxYRel) {
         drawLeadVehicle(radarState.leadOne, "blue");
       }
+      if (radarState.leadTwo.dRel !== 0 && radarState.leadTwo.dRel < maxDRel && Math.abs(radarState.leadTwo.yRel) < maxYRel) {
+        drawLeadVehicle(radarState.leadTwo, "green");
+      }
+      if (radarState.leadThree.dRel !== 0 && radarState.leadThree.dRel < maxDRel && Math.abs(radarState.leadThree.yRel) < maxYRel) {
+        drawLeadVehicle(radarState.leadThree, "red");
+      }
+      if (radarState.leadFour.dRel !== 0 && radarState.leadFour.dRel < maxDRel && Math.abs(radarState.leadFour.yRel) < maxYRel) {
+        drawLeadVehicle(radarState.leadFour, "yellow");
+      }
 
       // Display speed at the center top with a digital font
       ctx.font = "30px 'Digital-7'";

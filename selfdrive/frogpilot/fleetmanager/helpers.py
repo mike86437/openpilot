@@ -318,6 +318,21 @@ def simulate_radar_data(socketio):
         'yRel': yRel if yRel else None,
         # Add other relevant fields as needed
       },
+      'leadTwo': {
+        'dRel': gdRel if gdRel else None,
+        'yRel': yRel if yRel else None,
+        # Add other relevant fields as needed
+      },
+      'leadThree': {
+        'dRel': gdRel if gdRel else None,
+        'yRel': yRel if yRel else None,
+        # Add other relevant fields as needed
+      },
+      'leadFour': {
+        'dRel': gdRel if gdRel else None,
+        'yRel': yRel if yRel else None,
+        # Add other relevant fields as needed
+      },
       'vego': gv_ego if gv_ego else None,
     }
 
