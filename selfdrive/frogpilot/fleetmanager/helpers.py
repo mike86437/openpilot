@@ -294,16 +294,10 @@ def simulate_radar_data(socketio):
   ecounter, ecounter2, ecounter3, ecounter4 = 0, 0, 0, 0
   gv_ego = 0
   while True:
-    sm = SubMaster(['carState', 'radarState', 'modelV2'], poll=['radarState', 'modelV2'], ignore_avg_freq=['radarState'])
+    sm = SubMaster(['carState', 'radarState'], poll=['radarState'], ignore_avg_freq=['radarState'])
     sm.update()
     dRel = sm['radarState'].leadOne.dRel
     yRel = sm['radarState'].leadOne.yRel
-    dRel2 = sm['radarState'].leadTwo.dRel
-    yRel2 = sm['radarState'].leadTwo.yRel
-    dRel3 = sm['radarState'].leadThree.dRel
-    yRel3 = sm['radarState'].leadThree.yRel
-    dRel4 = sm['radarState'].leadFour.dRel
-    yRel4 = sm['radarState'].leadFour.yRel
     v_ego = sm['carState'].vEgo
 
     if dRel == 0:
@@ -311,21 +305,6 @@ def simulate_radar_data(socketio):
       if dcounter == 5:
         gdRel = dRel
         dcounter = 0
-    if dRel2 == 0:
-      dcounter2 += 1
-      if dcounter2 == 5:
-        gdRel2 = dRel2
-        dcounter2 = 0
-    if dRel3 == 0:
-      dcounter3 += 1
-      if dcounter3 == 5:
-        gdRel3 = dRel3
-        dcounter2 = 0
-    if dRel4 == 0:
-      dcounter4 += 1
-      if dcounter4 == 5:
-        gdRel4 = dRel3
-        dcounter4 = 0
     if v_ego == 0:
       ecounter += 1
       if ecounter == 5:
@@ -339,27 +318,9 @@ def simulate_radar_data(socketio):
         'yRel': yRel if yRel else None,
         # Add other relevant fields as needed
       },
-      'leadTwo': {
-        'dRel': gdRel2 if gdRel2 else 0,
-        'yRel': yRel2 if yRel2 else None,
-        # Add other relevant fields as needed
-      },
-      'leadThree': {
-        'dRel': gdRel3 if gdRel3 else 0,
-        'yRel': yRel3 if yRel3 else None,
-        # Add other relevant fields as needed
-      },
-      'leadFour': {
-        'dRel': gdRel4 if gdRel4 else 0,
-        'yRel': yRel4 if yRel4 else None,
-        # Add other relevant fields as needed
-      },
       'vego': gv_ego if gv_ego else None,
     }
 
     # Emit all serialized data to connected clients
     socketio.emit('radarData', serialized_radar_state, namespace='/')
-    time.sleep(0.5)
-
-
-
+    time.sleep(1)
