@@ -289,9 +289,9 @@ def gmap_key_input(postvars):
   return token
 
 def simulate_radar_data(socketio):
-  gdRel, gdRel2, gdRel3, gdRel4 = 0, 0, 0, 0
-  dcounter, dcounter2, dcounter3, dcounter4  = 0, 0, 0, 0
-  ecounter, ecounter2, ecounter3, ecounter4 = 0, 0, 0, 0
+  gdRel = 0
+  dcounter  = 0
+  ecounter = 0
   gv_ego = 0
   while True:
     sm = SubMaster(['carState', 'radarState'], poll=['radarState'], ignore_avg_freq=['radarState'])
