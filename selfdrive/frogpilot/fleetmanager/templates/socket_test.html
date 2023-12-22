@@ -28,7 +28,7 @@
     const leadVehicleImage = new Image();
     leadVehicleImage.src = "/static/car01.png";
   
-    const maxDRel = 150; // Adjust as needed
+    const maxDRel = 100; // Adjust as needed
     const maxYRel = 30; // Adjust as needed
     const dRelScalingFactor = 2; // Adjust as needed
 
@@ -75,8 +75,8 @@
         return;
       }
   
-      const leadX = canvas.width / 2 + leadData.yRel * yRelScalingFactor - leadVehicleSize / 2;
-      const leadY = canvas.height - 60 - leadData.dRel * dRelScalingFactor - leadVehicleSize / 2;
+      const leadX = (canvas.width / 2) + (leadData.yRel * yRelScalingFactor) + (leadVehicleSize / 2);
+      const leadY = (canvas.height - 60) - (leadData.dRel * dRelScalingFactor) - (leadVehicleSize / 2);
 
       // Use leadVehicleSize in your drawLeadVehicle function
       ctx.drawImage(leadVehicleImage, leadX, leadY, leadVehicleSize, leadVehicleSize);
