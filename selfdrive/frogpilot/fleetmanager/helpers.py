@@ -290,7 +290,8 @@ def gmap_key_input(postvars):
 
 def simulate_radar_data(socketio):
   gdRel = 0
-  gyRel = 0
+  dcounter = 0
+  ecounter = 0
   gv_ego = 0
   while True:
     sm = SubMaster(['carState', 'radarState', 'modelV2'], poll=['radarState', 'modelV2'], ignore_avg_freq=['radarState'])
@@ -298,31 +299,31 @@ def simulate_radar_data(socketio):
     dRel = sm['radarState'].leadOne.dRel
     yRel = sm['radarState'].leadOne.yRel
     v_ego = sm['carState'].vEgo
-    print(dRel)
-    print(yRel)
-    print(v_ego)
 
-    if dRel != 0:
-      gdRel = dRel
-    if yRel != 0:
-      gyRel = yRel
-    gv_ego = v_ego
-    print(gdRel)
-    print(gyRel)
-    print(gv_ego)
+    if dRel == 0:
+      v_ego += 1
+      if dcounter == 5:
+        gdRel = dRel
+        dcounter = 0
+    if v_ego == 0:
+      ecounter += 1
+      if ecounter == 5:
+        gv_ego = v_ego
+        ecounter = 0
+
     # Serialize radar_state
     serialized_radar_state = {
       'leadOne': {
         'dRel': gdRel if gdRel else None,
-        'yRel': gyRel if gyRel else None,
+        'yRel': yRel if yRel else None,
         # Add other relevant fields as needed
       },
-      'vego': gv_ego if gv_ego else 22,
+      'vego': gv_ego if gv_ego else None,
     }
 
     # Emit all serialized data to connected clients
     socketio.emit('radarData', serialized_radar_state, namespace='/')
-    time.sleep(1)
+    time.sleep(0.5)
 
 
 
