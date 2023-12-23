@@ -305,11 +305,15 @@ def simulate_radar_data(socketio):
       if dcounter == 5:
         gdRel = dRel
         dcounter = 0
+    else:
+      gdRel = dRel
     if v_ego == 0:
       ecounter += 1
       if ecounter == 5:
         gv_ego = v_ego
         ecounter = 0
+    else:
+      gv_ego = v_ego
 
     # Serialize radar_state
     serialized_radar_state = {
