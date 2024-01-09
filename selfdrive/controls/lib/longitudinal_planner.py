@@ -209,7 +209,11 @@ class LongitudinalPlanner:
       self.mtsc_target = v_cruise
       self.vtsc_target = v_cruise
 
-    self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
+    lead_xv_0 = self.mpc.process_lead(sm['radarState'].leadOne)
+    lead_xv_1 = self.mpc.process_lead(sm['radarState'].leadOne)
+    v_lead0 = lead_xv_0[0,1]
+    v_lead1 = lead_xv_1[0,1]
+    self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality, v_lead0, v_lead1)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
     x, v, a, j = self.parse_model(sm['modelV2'], self.v_model_error)

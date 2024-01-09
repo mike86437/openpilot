@@ -299,15 +299,24 @@ class LongitudinalMpc:
     for i in range(N):
       self.solver.cost_set(i, 'Zl', Zl)
 
-  def set_weights(self, prev_accel_constraint=True, custom_personalities=False, aggressive_jerk=0.5, standard_jerk=1.0, relaxed_jerk=1.0, personality=log.LongitudinalPersonality.standard):
+  def set_weights(self, prev_accel_constraint=True, custom_personalities=False, aggressive_jerk=0.5, standard_jerk=1.0, relaxed_jerk=1.0, personality=log.LongitudinalPersonality.standard, v_lead0=0, v_lead1=0):
     jerk_factor = get_jerk_factor(custom_personalities, aggressive_jerk, standard_jerk, relaxed_jerk, personality)
+    v_ego = self.x0[1]
+    v_ego_bps = [0, 10]
+    # KRKeegan adjustments to improve sluggish acceleration
+    # do not apply to deceleration
+    j_ego_v_ego = 1
+    a_change_v_ego = 1
+    if (v_lead0 - v_ego >= 0) and (v_lead1 - v_ego >= 0):
+      j_ego_v_ego = np.interp(v_ego, v_ego_bps, [.01, 1.])
+      a_change_v_ego = np.interp(v_ego, v_ego_bps, [.01, 1.]) 
     if self.mode == 'acc':
       a_change_cost = A_CHANGE_COST if prev_accel_constraint else 0
-      cost_weights = [X_EGO_OBSTACLE_COST, X_EGO_COST, V_EGO_COST, A_EGO_COST, jerk_factor * a_change_cost, jerk_factor * J_EGO_COST]
+      cost_weights = [X_EGO_OBSTACLE_COST, X_EGO_COST, V_EGO_COST, A_EGO_COST, jerk_factor * a_change_cost * a_change_v_ego, jerk_factor * J_EGO_COST * j_ego_v_ego]
       constraint_cost_weights = [LIMIT_COST, LIMIT_COST, LIMIT_COST, DANGER_ZONE_COST]
     elif self.mode == 'blended':
       a_change_cost = 40.0 if prev_accel_constraint else 0
-      cost_weights = [0., 0.1, 0.2, 5.0, a_change_cost, 1.0]
+      cost_weights = [0., 0.1, 0.2, 5.0, a_change_cost * a_change_v_ego, 1.0]
       constraint_cost_weights = [LIMIT_COST, LIMIT_COST, LIMIT_COST, 50.0]
     else:
       raise NotImplementedError(f'Planner mode {self.mode} not recognized in planner cost set')
