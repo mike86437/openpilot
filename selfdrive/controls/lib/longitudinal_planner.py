@@ -134,8 +134,8 @@ class LongitudinalPlanner:
     accel_limits_turns[0] = min(accel_limits_turns[0], self.a_desired + 0.05)
     accel_limits_turns[1] = max(accel_limits_turns[1], self.a_desired - 0.05)
 
-    lead_xv_0 = self.mpc.process_lead(sm['radarState'].leadOne)
-    lead_xv_1 = self.mpc.process_lead(sm['radarState'].leadOne)
+    lead_xv_0 = self.mpc.process_lead(sm['radarState'].leadOne, frogpilot_planner.increased_stopping_distance)
+    lead_xv_1 = self.mpc.process_lead(sm['radarState'].leadOne, frogpilot_planner.increased_stopping_distance)
     v_lead0 = lead_xv_0[0,1]
     v_lead1 = lead_xv_1[0,1]
     self.mpc.set_weights(prev_accel_constraint, frogpilot_planner.custom_personalities, frogpilot_planner.aggressive_jerk, frogpilot_planner.standard_jerk, frogpilot_planner.relaxed_jerk, v_lead0, v_lead1, personality=self.personality)
