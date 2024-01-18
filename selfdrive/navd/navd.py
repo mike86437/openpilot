@@ -359,7 +359,7 @@ class RouteEngine:
 
         # Calculate the distance to the stopSign or trafficLight
         distance_to_condition = self.last_position.distance_to(self.stop_coord[index])
-        if distance_to_condition < max((seconds_to_stop * v_ego), 25):
+        if distance_to_condition < max((seconds_to_stop * v_ego), 25) and v_ego > 11.176:
           self.nav_condition = True
         else:
           self.nav_condition = False  # Not approaching any stopSign or trafficLight
