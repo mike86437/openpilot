@@ -127,6 +127,9 @@ def ffplay_mp4_wrap_process_builder(file_name):
     command_line, stdout=subprocess.PIPE
   )
 
+def get_params():
+  params = Params()
+
 def get_nav_active():
   if params.get("NavDestination", encoding='utf8') is not None:
     return True
