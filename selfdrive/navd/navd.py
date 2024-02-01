@@ -369,6 +369,12 @@ class RouteEngine:
       if self.step_idx + 1 < len(self.route):
         self.step_idx += 1
         self.reset_recompute_limits()
+        # Update the 'CurrentStep' value in the JSON
+        if 'routes' in self.r2 and len(self.r2['routes']) > 0:
+          self.r3['CurrentStep'] = self.step_idx
+        # Write the modified JSON data back to the file
+        with open('CurrentStep.json', 'w') as json_file:
+          json.dump(self.r3, json_file, indent=4)
       else:
         cloudlog.warning("Destination reached")
 
