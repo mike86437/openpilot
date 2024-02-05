@@ -33,7 +33,7 @@ def list_files(path):
 def listdir_by_creation(d: str) -> List[str]:
   if not os.path.isdir(d):
     return []
-  print("listdir_by_creation ", path)
+  print("listdir_by_creation ", d)
   try:
     paths = [f for f in os.listdir(d) if os.path.isdir(os.path.join(d, f))]
     paths = sorted(paths, key=get_directory_sort)
@@ -43,7 +43,7 @@ def listdir_by_creation(d: str) -> List[str]:
     return []
 
 def get_directory_sort(d: str) -> List[str]:
-  print("get_directory_sort ", path)
+  print("get_directory_sort ", d)
   return [s.rjust(10, '0') for s in d.rsplit('--', 1)]
 
 
