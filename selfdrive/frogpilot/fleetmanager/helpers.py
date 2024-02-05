@@ -32,6 +32,7 @@ def list_files(path):
 
 def listdir_by_creation(d: str) -> List[str]:
   if not os.path.isdir(d):
+    print("not os.path.isdir(d)")
     return []
   print("listdir_by_creation ", d)
   try:
