@@ -5,7 +5,8 @@ from functools import wraps
 from pathlib import Path
 from openpilot.system.hardware import PC
 from openpilot.system.hardware.hw import Paths
-from openpilot.system.loggerd.uploader import listdir_by_creation
+# from openpilot.system.loggerd.uploader import listdir_by_creation
+from typing import List
 from tools.lib.route import SegmentName
 
 # otisserv conversion
@@ -28,6 +29,22 @@ else:
 def list_files(path):
   print("list_files ", path)
   return sorted(listdir_by_creation(path), reverse=True)
+
+def listdir_by_creation(d: str) -> List[str]:
+  if not os.path.isdir(d):
+    return []
+  print("listdir_by_creation ", path)
+  try:
+    paths = [f for f in os.listdir(d) if os.path.isdir(os.path.join(d, f))]
+    paths = sorted(paths, key=get_directory_sort)
+    return paths
+  except OSError:
+    print("listdir_by_creation failed")
+    return []
+
+def get_directory_sort(d: str) -> List[str]:
+  print("get_directory_sort ", path)
+  return [s.rjust(10, '0') for s in d.rsplit('--', 1)]
 
 
 def is_valid_segment(segment):
