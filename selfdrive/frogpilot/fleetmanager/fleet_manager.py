@@ -76,7 +76,7 @@ def footage():
 @app.route("/screenrecords/")
 @app.route("/screenrecords")
 def screenrecords():
-  rows = fleet.list_file(fleet.SCREENRECORD_PATH)
+  rows = fleet.list_files(fleet.SCREENRECORD_PATH)
   if not rows:
     return render_template("error.html", error="no screenrecords found at:<br><br>" + fleet.SCREENRECORD_PATH)
   return render_template("screenrecords.html", rows=rows, clip=rows[0])
