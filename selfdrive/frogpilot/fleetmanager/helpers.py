@@ -38,7 +38,7 @@ def listdir_by_creation(d: str) -> List[str]:
   try:
     paths = [f for f in os.listdir(d) if os.path.isdir(os.path.join(d, f))]
     paths = sorted(paths, key=get_directory_sort)
-    print("get_directory_sort ", d)
+    print("get_file_sort ", f)
     return paths
   except OSError:
     print("listdir_by_creation failed")
