@@ -61,7 +61,7 @@ def list_files_by_creation(d: str) -> List[str]:
     files = sorted(files, key=os.path.getctime)  # Sort files by creation time
     return files
   except OSError as e:
-    raise OSError(f"Error listing files in {d}: {e}")
+    raise OSError(f"Error listing by creation in {d}: {e}")
 
 def get_directory_sort(d: str) -> List[str]:
   print("get_directory_sort ", d)
