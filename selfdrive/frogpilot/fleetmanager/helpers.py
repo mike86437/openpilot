@@ -46,18 +46,22 @@ def listdir_by_creation(d: str) -> List[str]:
 
 def list_file(path):
   print("list_files ", path)
-  return sorted(list_files_by_creation(path), reverse=True)
+  try:
+    return sorted(list_files_by_creation(path), reverse=True)
+  except Exception as e:
+    print(f"Error listing files in {path}: {e}")
+    return []
 
 def list_files_by_creation(d: str) -> List[str]:
   if not os.path.isdir(d):
-    return []
+    raise ValueError(f"{d} is not a valid directory.")
+
   try:
     files = [f for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]  # Check if each entry is a file
     files = sorted(files, key=os.path.getctime)  # Sort files by creation time
     return files
-  except OSError:
-    print("list_files_by_creation failed")
-    return []
+  except OSError as e:
+    raise OSError(f"Error listing files in {d}: {e}")
 
 def get_directory_sort(d: str) -> List[str]:
   print("get_directory_sort ", d)
