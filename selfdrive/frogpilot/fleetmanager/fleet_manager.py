@@ -116,6 +116,7 @@ def open_error_log(file_name):
 
 @app.route("/addr_input", methods=['GET', 'POST'])
 def addr_input():
+  preload = fleet.preload_favs(home, work, fav1, fav2, fav3)
   SearchInput = fleet.get_SearchInput()
   token = fleet.get_public_token()
   s_token = fleet.get_app_token()
@@ -141,9 +142,9 @@ def addr_input():
     return render_template("prime.html")
   elif fleet.get_nav_active():
     if SearchInput == 2:
-      return render_template("nonprime.html", gmap_key=gmap_key, lon=lon, lat=lat, home="test")
+      return render_template("nonprime.html", gmap_key=gmap_key, lon=lon, lat=lat, home=preload[0], work=preload[1], fav1=preload[2], fav2=preload[3], fav3=preload[4])
     else:
-      return render_template("nonprime.html", gmap_key=None, lon=None, lat=None)
+      return render_template("nonprime.html", gmap_key=None, lon=None, lat=None, home=preload[0], work=preload[1], fav1=preload[2], fav2=preload[3], fav3=preload[4])
   elif token == "" or token is None:
     return redirect(url_for('public_token_input'))
   elif s_token == "" or s_token is None:
@@ -153,9 +154,9 @@ def addr_input():
     if gmap_key == "" or gmap_key is None:
       return redirect(url_for('gmap_key_input'))
     else:
-      return render_template("addr.html", gmap_key=gmap_key, lon=lon, lat=lat, home="test")
+      return render_template("addr.html", gmap_key=gmap_key, lon=lon, lat=lat, home=preload[0], work=preload[1], fav1=preload[2], fav2=preload[3], fav3=preload[4])
   else:
-      return render_template("addr.html", gmap_key=None, lon=None, lat=None)
+      return render_template("addr.html", gmap_key=None, lon=None, lat=None, home=preload[0], work=preload[1], fav1=preload[2], fav2=preload[3], fav3=preload[4])
 
 @app.route("/nav_confirmation", methods=['GET', 'POST'])
 def nav_confirmation():

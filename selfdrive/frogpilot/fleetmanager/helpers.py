@@ -166,12 +166,27 @@ def get_locations():
   data = params.get("ApiCache_NavDestinations", encoding='utf-8')
   return data
 
+def preload_favs(home, work, fav1, fav2, fav3):
+  try:
+    nav_destinations = json.loads(params.get("ApiCache_NavDestinations", encoding='utf8').rstrip('\x00'))
+  except TypeError:
+    return (None, None, None, None, None)
+
+  locations = {"home": None, "work": None, "fav1": None, "fav2": None, "fav3": None}
+
+  for item in nav_destinations:
+    label = item.get("label")
+    if label in locations and locations[label] is None:
+      locations[label] = item.get("place_name")
+
+  return tuple(locations.values())
+
 def parse_addr(postvars, lon, lat, valid_addr, token):
   addr = postvars.get("fav_val", [""])
   real_addr = None
   if addr != "favorites":
     try:
-      dests = json.loads(params.get("ApiCache_NavDestinations", encoding='utf8').rstrip('\x00'))
+      dests = json.loads(params.get("ApiCache_NavDestinations", encoding='utf8'))
     except TypeError:
       dests = json.loads("[]")
     for item in dests:
