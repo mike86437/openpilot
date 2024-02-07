@@ -3,7 +3,7 @@
   <form name="searchForm" method="post">
     <fieldset class="uk-fieldset">
       <div class="uk-margin">
-        {% if home and work and fav1 and fav2 and fav3 %}
+        {% if home or work or fav1 or fav2 or fav3 %}
         <select class="uk-select" name="fav_val">
           <option value="favorites">Select Saved Destinations</option>
           {% if home %} <option value="home">Home: {{home}}</option> {% endif %}
