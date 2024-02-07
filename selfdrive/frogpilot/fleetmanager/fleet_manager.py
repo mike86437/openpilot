@@ -116,7 +116,7 @@ def open_error_log(file_name):
 
 @app.route("/addr_input", methods=['GET', 'POST'])
 def addr_input():
-  preload = fleet.preload_favs(home, work, fav1, fav2, fav3)
+  preload = fleet.preload_favs()
   SearchInput = fleet.get_SearchInput()
   token = fleet.get_public_token()
   s_token = fleet.get_app_token()
