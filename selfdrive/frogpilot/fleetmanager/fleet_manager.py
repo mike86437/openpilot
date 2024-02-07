@@ -105,7 +105,7 @@ def about():
 
 @app.route("/error_logs")
 def error_logs():
-  return render_template("error_logs.html", rows=fleet.list_files(fleet.ERROR_LOGS_PATH))
+  return render_template("error_logs.html", rows=fleet.list_file(fleet.ERROR_LOGS_PATH))
 
 
 @app.route("/error_logs/<file_name>")
