@@ -25,10 +25,10 @@ else:
   ERROR_LOGS_PATH = "/data/community/crashes/"
 
 
-def list_files(path):
+def list_files(path): # still used for footage
   return sorted(listdir_by_creation(path), reverse=True)
 
-def list_file(path):
+def list_file(path): # new function for screenrecords/error-logs
   files = os.listdir(path)
   sorted_files = sorted(files, reverse=True)
   return sorted_files
