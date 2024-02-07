@@ -141,7 +141,7 @@ def addr_input():
     return render_template("prime.html")
   elif fleet.get_nav_active():
     if SearchInput == 2:
-      return render_template("nonprime.html", gmap_key=gmap_key, lon=lon, lat=lat, Home="test")
+      return render_template("nonprime.html", gmap_key=gmap_key, lon=lon, lat=lat, home="test")
     else:
       return render_template("nonprime.html", gmap_key=None, lon=None, lat=None)
   elif token == "" or token is None:
@@ -153,7 +153,7 @@ def addr_input():
     if gmap_key == "" or gmap_key is None:
       return redirect(url_for('gmap_key_input'))
     else:
-      return render_template("addr.html", gmap_key=gmap_key, lon=lon, lat=lat)
+      return render_template("addr.html", gmap_key=gmap_key, lon=lon, lat=lat, home="test")
   else:
       return render_template("addr.html", gmap_key=None, lon=None, lat=None)
 
