@@ -29,7 +29,9 @@ def list_files(path):
   return sorted(listdir_by_creation(path), reverse=True)
 
 def list_file(path):
-  return os.listdir(path)
+  files = os.listdir(path)
+  sorted_files = sorted(files, reverse=True)
+  return sorted_files
 
 def is_valid_segment(segment):
   try:
