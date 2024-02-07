@@ -5,8 +5,7 @@ from functools import wraps
 from pathlib import Path
 from openpilot.system.hardware import PC
 from openpilot.system.hardware.hw import Paths
-# from openpilot.system.loggerd.uploader import listdir_by_creation
-from typing import List
+from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
 
 # otisserv conversion
@@ -27,46 +26,10 @@ else:
 
 
 def list_files(path):
-  print("list_files ", path)
   return sorted(listdir_by_creation(path), reverse=True)
 
-def listdir_by_creation(d: str) -> List[str]:
-  if not os.path.isdir(d):
-    print("not os.path.isdir(d)")
-    return []
-  print("listdir_by_creation ", d)
-  try:
-    paths = [f for f in os.listdir(d) if os.path.isdir(os.path.join(d, f))]
-    paths = sorted(paths, key=get_directory_sort)
-    print("get_file_sort ", paths)
-    return paths
-  except OSError:
-    print("listdir_by_creation failed")
-    return []
-
 def list_file(path):
-  print("list_files ", path)
-  try:
-    return os.listdir(path)
-  except Exception as e:
-    print(f"Error listing files in {path}: {e}")
-    return []
-
-def list_files_by_creation(d: str) -> List[str]:
-  if not os.path.isdir(d):
-    raise ValueError(f"{d} is not a valid directory.")
-
-  try:
-    files = [f for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))]  # Check if each entry is a file
-    files = sorted(files, key=os.path.getctime)  # Sort files by creation time
-    return files
-  except OSError as e:
-    raise OSError(f"Error listing by creation in {d}: {e}")
-
-def get_directory_sort(d: str) -> List[str]:
-  print("get_directory_sort ", d)
-  return [s.rjust(10, '0') for s in d.rsplit('--', 1)]
-
+  return os.listdir(path)
 
 def is_valid_segment(segment):
   try:
@@ -165,9 +128,6 @@ def ffplay_mp4_wrap_process_builder(file_name):
   return subprocess.Popen(
     command_line, stdout=subprocess.PIPE
   )
-
-def get_params():
-  params = Params()
 
 def get_nav_active():
   if params.get("NavDestination", encoding='utf8') is not None:
