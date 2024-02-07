@@ -47,7 +47,7 @@ def listdir_by_creation(d: str) -> List[str]:
 def list_file(path):
   print("list_files ", path)
   try:
-    return sorted(list_files_by_creation(path), reverse=True)
+    return os.listdir(path)
   except Exception as e:
     print(f"Error listing files in {path}: {e}")
     return []
