@@ -171,6 +171,8 @@ class RouteEngine:
 
     coords_str = ';'.join([f'{lon},{lat}' for lon, lat in coords])
     url = self.mapbox_host + '/directions/v5/mapbox/driving-traffic/' + coords_str
+    full_url = requests.Request('GET', url, params=params).prepare().url
+    print(full_url)
     try:
       resp = requests.get(url, params=params, timeout=10)
       if resp.status_code != 200:
