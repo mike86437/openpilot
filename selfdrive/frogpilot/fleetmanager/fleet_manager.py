@@ -145,6 +145,10 @@ def addr_input():
     amap_key, amap_key_2 = fleet.get_amap_key()
     if amap_key == "" or amap_key is None or amap_key_2 == "" or amap_key_2 is None:
       return redirect(url_for('amap_key_input'))
+    elif token == "" or token is None:
+      return redirect(url_for('public_token_input'))
+    elif s_token == "" or s_token is None:
+      return redirect(url_for('app_token_input'))
     else:
       return redirect(url_for('amap_addr_input'))
   elif fleet.get_nav_active():
