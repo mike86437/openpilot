@@ -15,6 +15,11 @@ import json
 import requests
 import math
 
+pi = 3.1415926535897932384626
+x_pi = 3.14159265358979324 * 3000.0 / 180.0
+a = 6378245.0
+ee = 0.00669342162296594323
+
 params = Params()
 
 # path to openpilot screen recordings and error logs
