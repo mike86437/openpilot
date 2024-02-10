@@ -140,6 +140,13 @@ def addr_input():
       return render_template("error.html")
   elif PrimeType != 0:
     return render_template("prime.html")
+  # amap stuff
+  elif SearchInput == 1:
+    amap_key, amap_key_2 = fleet.get_amap_key()
+    if amap_key == "" or amap_key is None or amap_key_2 == "" or amap_key_2 is None:
+      return redirect(url_for('amap_key_input'))
+    else:
+      return redirect(url_for('amap_addr_input'))
   elif fleet.get_nav_active():
     if SearchInput == 2:
       return render_template("nonprime.html", gmap_key=gmap_key, lon=lon, lat=lat, home=preload[0], work=preload[1], fav1=preload[2], fav2=preload[3], fav3=preload[4])
@@ -197,6 +204,26 @@ def gmap_key_input():
     return redirect(url_for('addr_input'))
   else:
     return render_template("gmap_key_input.html")
+
+@app.route("/amap_key_input", methods=['GET', 'POST'])
+def amap_key_input():
+  if request.method == 'POST':
+    postvars = request.form.to_dict()
+    fleet.amap_key_input(postvars)
+    return redirect(url_for('amap_addr_input'))
+  else:
+    return render_template("amap_key_input.html")
+
+@app.route("/amap_addr_input", methods=['GET', 'POST'])
+def amap_addr_input():
+  if request.method == 'POST':
+    postvars = request.form.to_dict()
+    fleet.nav_confirmed(postvars)
+    return redirect(url_for('amap_addr_input'))
+  else:
+    lon, lat = fleet.get_last_lon_lat()
+    amap_key, amap_key_2 = fleet.get_amap_key()
+    return render_template("amap_addr_input.html", lon=lon, lat=lat, amap_key=amap_key, amap_key_2=amap_key_2)
 
 @app.route("/CurrentStep.json", methods=['GET'])
 def find_CurrentStep():

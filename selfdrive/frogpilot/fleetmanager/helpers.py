@@ -151,6 +151,11 @@ def get_gmap_key():
   token = params.get("GMapKey", encoding='utf8')
   return token.strip() if token is not None else None
 
+def get_amap_key():
+  token = params.get("AMapKey1", encoding='utf8')
+  token2 = params.get("AMapKey2", encoding='utf8')
+  return (token.strip() if token is not None else None, token2.strip() if token2 is not None else None)
+
 def get_SearchInput():
   SearchInput = params.get_int("SearchInput")
   return SearchInput
@@ -161,7 +166,10 @@ def get_PrimeType():
 
 def get_last_lon_lat():
   last_pos = params.get("LastGPSPosition")
-  l = json.loads(last_pos)
+  if last_pos:
+    l = json.loads(last_pos)
+  else:
+    return 0.0, 0.0
   return l["longitude"], l["latitude"]
 
 def get_locations():
@@ -241,6 +249,19 @@ def nav_confirmed(postvars):
     lng = float(postvars.get("lon"))
     save_type = postvars.get("save_type")
     name = postvars.get("name") if postvars.get("name") is not None else ""
+    if params.get_int("SearchInput") == 1:
+      dlat = self.transform_lat(lng - 105.0, lat - 35.0)
+      dlng = self.transform_lng(lng - 105.0, lat - 35.0)
+      radlat = lat / 180.0 * pi
+      magic = math.sin(radlat)
+      magic = 1 - ee * magic * magic
+      sqrtmagic = math.sqrt(magic)
+      dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * pi)
+      dlng = (dlng * 180.0) / (a / sqrtmagic * math.cos(radlat) * pi)
+      mglat = lat + dlat
+      mglng = lng + dlng
+      lng = lng * 2 - mglng
+      lat = lat * 2 - mglat
     params.put("NavDestination", "{\"latitude\": %f, \"longitude\": %f, \"place_name\": \"%s\"}" % (lat, lng, name))
     if name == "":
       name =  str(lat) + "," + str(lng)
@@ -303,4 +324,14 @@ def gmap_key_input(postvars):
   else:
     token = postvars.get("gmap_key_val").strip()
     params.put("GMapKey", token)
+  return token
+
+def amap_key_input(postvars):
+  if postvars is None or "amap_key_val" not in postvars or postvars.get("amap_key_val")[0] == "":
+    return postvars
+  else:
+    token = postvars.get("amap_key_val").strip()
+    token2 = postvars.get("amap_key_val_2").strip()
+    params.put("AMapKey1", token)
+    params.put("AMapKey2", token2)
   return token
