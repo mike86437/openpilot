@@ -307,7 +307,7 @@ void MapWindow::initializeGL() {
 
   m_map->setMargins({0, 350, 0, 50});
   m_map->setPitch(MIN_PITCH);
-  QString MAPBOX_STYLE = QString::fromStdString(Params().get("OPKRMapboxStyleSelect"));
+  QString MAPBOX_STYLE = QString::fromStdString(Params().get("LongitudinalPersonality"));
   if (MAPBOX_STYLE == "0") {
     m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj"); // comma
   } else if (MAPBOX_STYLE == "1") {
