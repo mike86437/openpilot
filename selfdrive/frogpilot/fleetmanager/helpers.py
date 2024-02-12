@@ -82,11 +82,13 @@ def all_routes():
   return sorted(unique_routes, reverse=True)
 
 def preserved_routes():
-  segment_names = preserved_segment_names()
-  preserved_segments = get_preserved_segments()
+  # segment_names = preserved_segment_names()
+  # preserved_segments = get_preserved_segments()
   # route_names = [segment_name.route_name for segment_name in segment_names]
   # route_times = [route_name.time_str for route_name in route_names]
   # unique_routes = list(dict.fromkeys(route_times))
+  dirs = listdir_by_creation(Paths.log_root())
+  preserved_segments = get_preserved_segments(dirs)
   return sorted(preserved_segments, reverse=True)
 
 def segments_in_route(route):
