@@ -72,6 +72,10 @@ def route(route):
 def footage():
   return render_template("footage.html", rows=fleet.all_routes())
 
+@app.route("/preserved/")
+@app.route("/preserved")
+def preserved():
+  return render_template("preserved.html", rows=fleet.preserved_routes())
 
 @app.route("/screenrecords/")
 @app.route("/screenrecords")
