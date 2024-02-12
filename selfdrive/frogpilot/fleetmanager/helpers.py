@@ -8,6 +8,7 @@ from openpilot.system.hardware.hw import Paths
 from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
 from typing import List
+from openpilot.system.loggerd.xattr_cache import getxattr
 
 # otisserv conversion
 from common.params import Params
