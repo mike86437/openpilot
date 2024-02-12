@@ -76,7 +76,7 @@ def footage():
 @app.route("/preserved")
 def preserved():
   links = ""
-  segment = fleet.preserved_routes()
+  segments = fleet.preserved_routes()
   for segment in segments:
     split_segment = segment.split("--")
     links += "<a href='"+split_segment[1]("--")+split_segment[2]+"?"+split_segment[3]("--")+","+query_type+"'>"+segment+"</a><br>"
