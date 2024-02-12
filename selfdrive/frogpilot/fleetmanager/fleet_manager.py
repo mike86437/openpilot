@@ -75,6 +75,7 @@ def footage():
 @app.route("/preserved/")
 @app.route("/preserved")
 def preserved():
+  query_type = "qcamera"
   links = ""
   segments = fleet.preserved_routes()
   for segment in segments:
