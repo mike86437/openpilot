@@ -6,10 +6,10 @@
 
 {% block main %}
     <br>
-    <h1>Dashcam Routes</h1>
+    <h1>Preserved Dashcam Routes</h1>
     <br>
     {% for row in rows %}
-        <a href="/footage/{{ row }}">{{ row }}</a><br>
+        {{ row }}<br>
     {% endfor %}
     <br><br>
 {% endblock %}

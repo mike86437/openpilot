@@ -100,6 +100,27 @@ def preserved_routes():
 def has_preserve_xattr(d: str) -> bool:
   return getxattr(os.path.join(Paths.log_root(), d), PRESERVE_ATTR_NAME) == PRESERVE_ATTR_VALUE
 
+def get_preserved_segments(dirs_by_creation: List[str]) -> List[str]:
+  preserved = []
+  for n, d in enumerate(filter(has_preserve_xattr, reversed(dirs_by_creation))):
+    if n == PRESERVE_COUNT:
+      break
+    date_str, _, seg_str = d.rpartition("--")
+
+    # ignore non-segment directories
+    if not date_str:
+      continue
+    try:
+      seg_num = int(seg_str)
+    except ValueError:
+      continue
+
+    # preserve segment and its prior
+    preserved.append(d)
+    preserved.append(f"{date_str}--{seg_num - 1}")
+
+  return preserved
+
 def segments_in_route(route):
   segment_names = [segment_name for segment_name in all_segment_names() if segment_name.time_str == route]
   segments = [segment_name.time_str + "--" + str(segment_name.segment_num) for segment_name in segment_names]
@@ -386,23 +407,3 @@ def transform_lng(lng, lat):
   ret += (150.0 * math.sin(lng / 12.0 * pi) + 300.0 * math.sin(lng / 30.0 * pi)) * 2.0 / 3.0
   return ret
 
-def get_preserved_segments(dirs_by_creation: List[str]) -> List[str]:
-  preserved = []
-  for n, d in enumerate(filter(has_preserve_xattr, reversed(dirs_by_creation))):
-    if n == PRESERVE_COUNT:
-      break
-    date_str, _, seg_str = d.rpartition("--")
-
-    # ignore non-segment directories
-    if not date_str:
-      continue
-    try:
-      seg_num = int(seg_str)
-    except ValueError:
-      continue
-
-    # preserve segment and its prior
-    preserved.append(d)
-    preserved.append(f"{date_str}--{seg_num - 1}")
-
-  return preserved

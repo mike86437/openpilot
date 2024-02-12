@@ -75,7 +75,9 @@ def footage():
 @app.route("/preserved/")
 @app.route("/preserved")
 def preserved():
-  return render_template("preserved.html", rows=fleet.preserved_routes())
+  segment = fleet.preserved_routes()
+  links += "<a href='"+route+"?"+segment.split("--")[2]+","+query_type+"'>"+segment+"</a><br>"
+  return render_template("preserved.html", rows=links)
 
 @app.route("/screenrecords/")
 @app.route("/screenrecords")
