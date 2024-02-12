@@ -23,6 +23,11 @@ ee = 0.00669342162296594323
 
 params = Params()
 
+PRESERVE_ATTR_NAME = 'user.preserve'
+PRESERVE_ATTR_VALUE = b'1'
+PRESERVE_COUNT = 5
+
+
 # path to openpilot screen recordings and error logs
 if PC:
   SCREENRECORD_PATH = os.path.join(str(Path.home()), ".comma", "media", "0", "videos", "")
@@ -90,6 +95,9 @@ def preserved_routes():
   dirs = listdir_by_creation(Paths.log_root())
   preserved_segments = get_preserved_segments(dirs)
   return sorted(preserved_segments, reverse=True)
+
+def has_preserve_xattr(d: str) -> bool:
+  return getxattr(os.path.join(Paths.log_root(), d), PRESERVE_ATTR_NAME) == PRESERVE_ATTR_VALUE
 
 def segments_in_route(route):
   segment_names = [segment_name for segment_name in all_segment_names() if segment_name.time_str == route]
