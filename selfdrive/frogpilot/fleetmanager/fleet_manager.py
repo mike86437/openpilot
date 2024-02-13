@@ -80,7 +80,7 @@ def preserved():
   segments = fleet.preserved_routes()
   for segment in segments:
     split_segment = segment.split("--")
-    links += f"<a href='{split_segment[1]}?{split_segment[2]},{query_type}'>{segment}</a><br>"
+    links += f"<a href='footage/{split_segment[0]}--{split_segment[1]}?{split_segment[2]},{query_type}'>{segment}</a><br>"
   return render_template("preserved.html", rows=links)
 
 @app.route("/screenrecords/")
