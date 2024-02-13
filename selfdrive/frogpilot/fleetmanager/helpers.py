@@ -114,9 +114,9 @@ def get_preserved_segments(dirs_by_creation: List[str]) -> List[str]:
       seg_num = int(seg_str)
     except ValueError:
       continue
-      # preserve segment and its prior
-      preserved.append(d)
-      if seg_num > 0:
+    # preserve segment and its prior
+    preserved.append(d)
+    if seg_num > 0:
       preserved.append(f"{date_str}--{seg_num - 1}")
 
   return preserved
