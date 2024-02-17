@@ -134,11 +134,11 @@ def get_preserved_segments(dirs_by_creation: List[str]) -> List[str]:
 
   return preserved
 
-def video_to_gif(input_path, output_path, fps=10):
-  if os.path.exists(output_path):
-    return
+def video_to_gif(input_path, output_path, fps=1):
+  # if os.path.exists(output_path):
+  #  return
   # Run ffmpeg command to convert video to gif
-  subprocess.call(['ffmpeg', '-i', input_path, '-vf', 'fps={}'.format(fps), output_path])
+  subprocess.call(['ffmpeg', '-y', '-i', input_path, '-vf', f'fps={fps}', output_path])
 
 def segments_in_route(route):
   segment_names = [segment_name for segment_name in all_segment_names() if segment_name.time_str == route]
