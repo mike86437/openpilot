@@ -92,7 +92,14 @@ def route(route):
 @app.route("/footage/")
 @app.route("/footage")
 def footage():
-  return render_template("footage.html", rows=fleet.all_routes())
+  route_paths = fleet.all_routes()
+  gifs = []
+  for route_path in route_paths:
+    input_path = os.path.join(route_path, "---0/qcamera.ts")
+    output_path = os.path.join(route_path, "---0/preview.gif")
+    fleet.video_to_gif(input_path, output_path)
+    gifs.append(output_path)
+  return render_template("footage.html", rows=route_paths, gifs=gifs)
 
 @app.route("/preserved/")
 @app.route("/preserved")
@@ -294,6 +301,11 @@ def set_destination():
 @app.route("/navigation/<file_name>", methods=['GET'])
 def find_navicon(file_name):
   directory = "/data/openpilot/selfdrive/assets/navigation/"
+  return send_from_directory(directory, file_name, as_attachment=True)
+
+@app.route("/previewgif/<file_name>", methods=['GET'])
+def find_previewgif(file_name):
+  directory = "/data/media/0/realdata/"
   return send_from_directory(directory, file_name, as_attachment=True)
 
 
