@@ -119,7 +119,7 @@ def preserved():
     gif_path = segment + "/preview.gif"
     gifs.append(gif_path)
   
-  zipped = zip(route_paths, gifs) 
+  zipped = zip(route_paths, gifs, segments) 
   return render_template("preserved.html", zipped=zipped)
 
 @app.route("/screenrecords/")
