@@ -134,32 +134,11 @@ def get_preserved_segments(dirs_by_creation: List[str]) -> List[str]:
 
   return preserved
 
-def video_to_gif(input_path, output_path, fps=1):
+def video_to_gif(input_path, output_path, fps=10):
   # if os.path.exists(output_path):
   #  return
-  # Run ffmpeg command to convert video to gif
-  resolution = (320, 240)
-  
-  # Construct ffmpeg command
-  command = ['ffmpeg', '-y']
-  
-  # Set video filters (scale and fps)
-  command += ['-vf', f'fps={fps},scale={resolution[0]}:{resolution[1]}:flags=lanczos']
-  
-  # Set palettegen filter
-  command += ['-vf', 'palettegen=stats_mode=diff[pal]']
-  
-  # Set paletteuse filter
-  command += ['-i', input_path, '-lavfi', '[0:v][pal]paletteuse=dither=none:diff_mode=rectangle']
-  
-  # Set output duration
-  command += ['-t', '10']
-  
-  # Output file
-  command += [output_path]
-  
-  # Run ffmpeg command
-  subprocess.call(command)
+  # Run ffmpeg command to convert video to gif  
+  subprocess.call(['ffmpeg', '-y', '-t 10' '-i', input_path, '-vf "fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse"', output_path])
   print(f"GIF file created: {output_path}")
 
 def segments_in_route(route):
