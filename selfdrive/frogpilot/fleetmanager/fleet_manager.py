@@ -305,14 +305,10 @@ def find_navicon(file_name):
   directory = "/data/openpilot/selfdrive/assets/navigation/"
   return send_from_directory(directory, file_name, as_attachment=True)
 
-@app.route("/previewgif/<file_name>", methods=['GET'])
+@app.route("/previewgif/<path:file_path>", methods=['GET'])
 def find_previewgif(file_name):
   directory = "/data/media/0/realdata/"
-  directory_path, filename = file_name.rsplit('/', 1)
-  print(directory)
-  print(directory_path)
-  print(filename)
-  return send_from_directory(directory + directory_path, filename, as_attachment=True)
+  return send_from_directory(directory, file_path, as_attachment=True)
 
 
 def main():
