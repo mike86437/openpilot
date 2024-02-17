@@ -9,7 +9,7 @@
     <h1>Dashcam Routes</h1>
     <br>
     <div class="row">
-        {% for row, gif in zip(rows, gifs) %}
+        {% for row, gif in zipped %}
         <div class="col-md-4">
             <div class="card mb-4 shadow-sm">
                 <img src="/previewgif/{{ gif }}" class="card-img-top" alt="GIF">

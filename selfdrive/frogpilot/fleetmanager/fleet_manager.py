@@ -100,7 +100,8 @@ def footage():
     fleet.video_to_gif(input_path, output_path)
     gif_path = route_path + "--0/preview.gif"
     gifs.append(gif_path)
-  return render_template("footage.html", rows=route_paths, gifs=gifs)
+  zipped = zip(route_paths, gifs)  
+  return render_template("footage.html", zipped_data=zipped_data)
 
 @app.route("/preserved/")
 @app.route("/preserved")
