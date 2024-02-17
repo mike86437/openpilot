@@ -70,6 +70,10 @@ def list_file(path): # new function for screenrecords/error-logs
     sorted_files = sorted(files, reverse=True)
   else:
     return []  # Return an empty list if there are no files or directory
+  files = os.listdir(path)
+  if not files:
+    return []  # Return an empty list if there are no files
+  sorted_files = sorted(files, reverse=True)
   return sorted_files
 
 
