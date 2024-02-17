@@ -72,6 +72,16 @@ def route(route):
 def footage():
   return render_template("footage.html", rows=fleet.all_routes())
 
+@app.route("/preserved/")
+@app.route("/preserved")
+def preserved():
+  query_type = "qcamera"
+  links = ""
+  segments = fleet.preserved_routes()
+  for segment in segments:
+    split_segment = segment.split("--")
+    links += f"<a href='footage/{split_segment[0]}--{split_segment[1]}?{split_segment[2]},{query_type}'>{segment}</a><br>"
+  return render_template("preserved.html", links=links)
 
 @app.route("/screenrecords/")
 @app.route("/screenrecords")

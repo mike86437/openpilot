@@ -7,6 +7,8 @@ from openpilot.system.hardware import PC
 from openpilot.system.hardware.hw import Paths
 from openpilot.system.loggerd.uploader import listdir_by_creation
 from tools.lib.route import SegmentName
+from typing import List
+from openpilot.system.loggerd.xattr_cache import getxattr
 
 # otisserv conversion
 from common.params import Params
@@ -21,6 +23,11 @@ a = 6378245.0
 ee = 0.00669342162296594323
 
 params = Params()
+
+PRESERVE_ATTR_NAME = 'user.preserve'
+PRESERVE_ATTR_VALUE = b'1'
+PRESERVE_COUNT = 5
+
 
 # path to openpilot screen recordings and error logs
 if PC:
@@ -71,6 +78,32 @@ def all_routes():
   unique_routes = list(dict.fromkeys(route_times))
   return sorted(unique_routes, reverse=True)
 
+def preserved_routes():
+  dirs = listdir_by_creation(Paths.log_root())
+  preserved_segments = get_preserved_segments(dirs)
+  return sorted(preserved_segments, reverse=True)
+
+def has_preserve_xattr(d: str) -> bool:
+  return getxattr(os.path.join(Paths.log_root(), d), PRESERVE_ATTR_NAME) == PRESERVE_ATTR_VALUE
+
+def get_preserved_segments(dirs_by_creation: List[str]) -> List[str]:
+  preserved = []
+  for n, d in enumerate(filter(has_preserve_xattr, reversed(dirs_by_creation))):
+    if n == PRESERVE_COUNT:
+      break
+    date_str, _, seg_str = d.rpartition("--")
+
+    # ignore non-segment directories
+    if not date_str:
+      continue
+    try:
+      seg_num = int(seg_str)
+    except ValueError:
+      continue
+    # preserve segment and its prior
+    preserved.append(d)
+
+  return preserved
 
 def segments_in_route(route):
   segment_names = [segment_name for segment_name in all_segment_names() if segment_name.time_str == route]
