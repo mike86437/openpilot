@@ -148,8 +148,8 @@ def video_to_gif(input_path, output_path, fps=1, duration=6):
   print(f"GIF file created: {output_path}")
 
 def video_to_img(input_path, output_path, fps=1, duration=6):
-  # if os.path.exists(output_path):
-  #  return
+  if os.path.exists(output_path):
+    return
   # Run ffmpeg command to convert video to gif  
   subprocess.run(['ffmpeg', '-y', '-i', input_path, '-ss', '5', '-vframes', '1', output_path])
   print(f"GIF file created: {output_path}")
