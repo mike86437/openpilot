@@ -138,7 +138,7 @@ def video_to_gif(input_path, output_path, fps=10):
   # if os.path.exists(output_path):
   #  return
   # Run ffmpeg command to convert video to gif  
-  subprocess.call(['ffmpeg', '-y', '-i', input_path, '-vf "fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse"', output_path])
+  subprocess.call(['ffmpeg', '-y', '-i', input_path, '-vf', f'fps={fps},scale=320:-1:flags=lanczos,palettegen[p];[0:v][p]paletteuse', output_path])
   print(f"GIF file created: {output_path}")
 
 def segments_in_route(route):
