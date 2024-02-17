@@ -65,8 +65,11 @@ def list_files(path): # still used for footage
 
 
 def list_file(path): # new function for screenrecords/error-logs
-  files = os.listdir(path)
-  sorted_files = sorted(files, reverse=True)
+  if os.path.exists(path):
+    files = os.listdir(path)
+    sorted_files = sorted(files, reverse=True)
+  else:
+    return []  # Return an empty list if there are no files or directory
   return sorted_files
 
 
