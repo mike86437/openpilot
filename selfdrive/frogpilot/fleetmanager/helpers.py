@@ -147,6 +147,13 @@ def video_to_gif(input_path, output_path, fps=1, duration=6):
   subprocess.run(command)
   print(f"GIF file created: {output_path}")
 
+def video_to_img(input_path, output_path, fps=1, duration=6):
+  # if os.path.exists(output_path):
+  #  return
+  # Run ffmpeg command to convert video to gif  
+  subprocess.run(['ffmpeg', '-y', '-i', input_path, '-ss', '5', '-vframes', '1', output_path])
+  print(f"GIF file created: {output_path}")
+
 def segments_in_route(route):
   segment_names = [segment_name for segment_name in all_segment_names() if segment_name.time_str == route]
   segments = [segment_name.time_str + "--" + str(segment_name.segment_num) for segment_name in segment_names]
