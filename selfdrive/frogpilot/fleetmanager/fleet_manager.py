@@ -306,7 +306,7 @@ def find_navicon(file_name):
   return send_from_directory(directory, file_name, as_attachment=True)
 
 @app.route("/previewgif/<path:file_path>", methods=['GET'])
-def find_previewgif(file_name):
+def find_previewgif(file_path):
   directory = "/data/media/0/realdata/"
   return send_from_directory(directory, file_path, as_attachment=True)
 
