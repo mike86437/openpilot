@@ -95,6 +95,7 @@ def footage():
   route_paths = fleet.all_routes()
   gifs = []
   for route_path in route_paths:
+    route_path = route_path[:-1]
     input_path = os.path.join(route_path, "---0/qcamera.ts")
     output_path = os.path.join(route_path, "---0/preview.gif")
     fleet.video_to_gif(input_path, output_path)
