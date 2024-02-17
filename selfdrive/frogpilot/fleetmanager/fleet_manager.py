@@ -101,7 +101,7 @@ def footage():
     gif_path = route_path + "--0/preview.gif"
     gifs.append(gif_path)
   zipped = zip(route_paths, gifs)  
-  return render_template("footage.html", zipped_data=zipped_data)
+  return render_template("footage.html", zipped=zipped)
 
 @app.route("/preserved/")
 @app.route("/preserved")
