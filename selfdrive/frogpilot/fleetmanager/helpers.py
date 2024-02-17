@@ -135,8 +135,8 @@ def get_preserved_segments(dirs_by_creation: List[str]) -> List[str]:
   return preserved
 
 def video_to_gif(input_path, output_path, fps=1, duration=10):
-  # if os.path.exists(output_path):
-  #  return
+  if os.path.exists(output_path):
+    return
   # Run ffmpeg command to convert video to gif  
   command = [
     'ffmpeg', '-y', '-i', input_path,
