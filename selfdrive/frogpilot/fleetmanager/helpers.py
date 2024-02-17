@@ -144,16 +144,13 @@ def video_to_gif(input_path, output_path, fps=1):
   command = ['ffmpeg', '-y']
   
   # Set video filters (scale and fps)
-  command += ['-vf', f'scale={resolution[0]}:{resolution[1]}:flags=lanczos,fps={fps}']
+  command += ['-filter_complex', f'[0:v]fps={fps},scale={resolution[0]}:{resolution[1]}:flags=lanczos[x];[x][0:v]palettegen=stats_mode=diff [x]; [x][0:v] paletteuse=dither=none:diff_mode=rectangle']
   
   # Input file
   command += ['-i', input_path]
   
   # Set output duration
   command += ['-t', '10']
-  
-  # Palettegen filter for creating palette
-  command += ['-lavfi', f'palettegen=stats_mode=diff [x]; [x][0:v] paletteuse=dither=none:diff_mode=rectangle']
   
   # Output file
   command += [output_path]
