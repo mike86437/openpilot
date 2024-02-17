@@ -309,6 +309,9 @@ def find_navicon(file_name):
 def find_previewgif(file_name):
   directory = "/data/media/0/realdata/"
   directory_path, filename = file_name.rsplit('/', 1)
+  print(directory)
+  print(directory_path)
+  print(filename)
   return send_from_directory(directory + directory_path, filename, as_attachment=True)
 
 
