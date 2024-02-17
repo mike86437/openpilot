@@ -139,12 +139,28 @@ def video_to_gif(input_path, output_path, fps=1):
   #  return
   # Run ffmpeg command to convert video to gif
   resolution = (320, 240)
-  command = ['ffmpeg', '-y', '-i', input_path]
-  command += ['-vf', f'fps={fps},scale={resolution[0]}:{resolution[1]}:flags=lanczos,palettegen=stats_mode=diff']
-  command += ['-i', input_path, '-lavfi', f'fps={fps},scale={resolution[0]}:{resolution[1]}:flags=lanczos [x]; [x][1:v] paletteuse=dither=none:diff_mode=rectangle']
+  
+  # Construct ffmpeg command
+  command = ['ffmpeg', '-y']
+  
+  # Set video filters (scale and fps)
+  command += ['-vf', f'scale={resolution[0]}:{resolution[1]}:flags=lanczos,fps={fps}']
+  
+  # Input file
+  command += ['-i', input_path]
+  
+  # Set output duration
   command += ['-t', '10']
+  
+  # Palettegen filter for creating palette
+  command += ['-lavfi', f'palettegen=stats_mode=diff [x]; [x][0:v] paletteuse=dither=none:diff_mode=rectangle']
+  
+  # Output file
   command += [output_path]
+  
+  # Run ffmpeg command
   subprocess.call(command)
+  print(f"GIF file created: {output_path}")
 
 def segments_in_route(route):
   segment_names = [segment_name for segment_name in all_segment_names() if segment_name.time_str == route]
