@@ -12,8 +12,10 @@
         {% for row, gif in zipped %}
         <div class="col-md-4">
             <div class="card mb-4 shadow-sm">
-                <div class="gif-container" onmouseenter="playGif('{{ gif }}')" onmouseleave="stopGif('{{ row }}')">
-                    <img src="/previewgif/{{ gif }}" class="card-img-top static-gif" alt="GIF" id="{{ row }}">
+                <!-- Add a container for the GIF -->
+                <div class="gif-container" onmouseenter="loadGif('{{ gif }}')" onmouseleave="unloadGif('{{ row }}')">
+                    <!-- Initially display only the first frame -->
+                    <img src="" class="card-img-top static-gif" alt="GIF" id="{{ row }}" data-src="/previewgif/{{ gif }}">
                 </div>
                 <div class="card-body">
                     <p class="card-text">{{ row }}</p>
