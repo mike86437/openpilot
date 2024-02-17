@@ -144,7 +144,7 @@ def video_to_gif(input_path, output_path, fps=1):
   command = ['ffmpeg', '-y']
   
   # Set video filters (scale and fps)
-  command += ['-filter_complex', f'[0:v]fps={fps},scale={resolution[0]}:{resolution[1]}:flags=lanczos[x];[x][0:v]palettegen=stats_mode=diff [x]; [x][0:v] paletteuse=dither=none:diff_mode=rectangle']
+  command += ['-filter_complex', f'[0:v]fps={fps},scale={resolution[0]}:{resolution[1]}:flags=lanczos[x];[x]palettegen=stats_mode=diff [pal];[x][pal]paletteuse=dither=none:diff_mode=rectangle']
   
   # Input file
   command += ['-i', input_path]
