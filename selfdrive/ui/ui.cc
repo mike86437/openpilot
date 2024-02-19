@@ -329,7 +329,7 @@ void ui_update_frogpilot_params(UIState *s) {
   scene.path_width = params.getInt("PathWidth") / 10.0 * (scene.is_metric ? 1 : FOOT_TO_METER) / 2;
   scene.road_edge_width = params.getInt("RoadEdgesWidth") * (scene.is_metric ? 1 : INCH_TO_CM) / 200;
   scene.unlimited_road_ui_length = params.getBool("UnlimitedLength") && scene.model_ui;
-
+  scene.mute_dm = params.getBool("FireTheBabysitter");
   scene.numerical_temp = params.getBool("NumericalTemp");
 
   bool quality_of_life_controls = params.getBool("QOLControls");
