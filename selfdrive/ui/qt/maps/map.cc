@@ -197,8 +197,7 @@ void MapWindow::updateState(const UIState &s) {
   }
 
   if (loaded_once && (sm.rcv_frame("uiPlan") != model_rcv_frame)) {
-    m = sm["uiPlan"].getUiPlan().getPosition(); // XYZTData in device frame
-    auto model_path = model_to_collection(locationd_location.getCalibratedOrientationECEF(), locationd_location.getPositionECEF(), m);
+    auto model_path = model_to_collection(locationd_location.getCalibratedOrientationECEF(), locationd_location.getPositionECEF(), sm["uiPlan"].getUiPlan().getPosition());
     QMapLibre::Feature model_path_feature(QMapLibre::Feature::LineStringType, model_path, {}, {});
     QVariantMap modelV2Path;
     modelV2Path["type"] =  "geojson";
