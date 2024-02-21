@@ -446,7 +446,6 @@ void ExperimentalButton::paintEvent(QPaintEvent *event) {
 
   if (!(scene.show_driver_camera || scene.map_open && scene.full_map)) {
     if (rotatingWheel || firefoxRandomEventTriggered) {
-      drawIconRotate(p, QPoint(btn_size / 2, btn_size / 2 + y_offset), img, background_color, 0, steeringAngleDeg);
     } else {
       drawIcon(p, QPoint(btn_size / 2, btn_size / 2 + y_offset), img, background_color, 0);
     }
