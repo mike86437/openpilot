@@ -435,14 +435,14 @@ void ExperimentalButton::paintEvent(QPaintEvent *event) {
   QPainter p(this);
   // Custom steering wheel icon
   engage_img = wheelImages[wheelIcon];
-  QPixmap img = wheelIcon ? engage_img : (experimental_mode ? experimental_img : engage_img);
+  QPixmap img = wheelIcon ? engage_img : (experimental_mode ? engage_img : engage_img);
 
   QColor background_color = wheelIcon && !isDown() && engageable ?
-      (scene.always_on_lateral_active ? QColor(10, 186, 181, 255) :
-      (scene.conditional_status == 1 ? QColor(255, 246, 0, 255) :
-      (experimental_mode ? QColor(218, 111, 37, 241) :
-      (scene.navigate_on_openpilot ? QColor(49, 161, 238, 255) : QColor(0, 0, 0, 166))))) :
-      QColor(0, 0, 0, 166);
+      (scene.always_on_lateral_active ? QColor(0, 0, 0, 0) :
+      (scene.conditional_status == 1 ? QColor(0, 0, 0, 0) :
+      (experimental_mode ? QColor(0, 0, 0, 0) :
+      (scene.navigate_on_openpilot ? QColor(0, 0, 0, 0) : QColor(0, 0, 0, 0))))) :
+      QColor(0, 0, 0, 0);
 
   if (!(scene.show_driver_camera || scene.map_open && scene.full_map)) {
     if (rotatingWheel || firefoxRandomEventTriggered) {
