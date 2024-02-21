@@ -177,17 +177,6 @@ void MapWindow::updateState(const UIState &s) {
     uiState()->scene.navigate_on_openpilot = nav_enabled;
   }
 
-  if (loaded_once && (sm.rcv_frame("uiPlan") != model_rcv_frame)) {
-    m = sm["uiPlan"].getUiPlan().getPosition(); // XYZTData in device frame
-    auto model_path = model_to_collection(locationd_location.getCalibratedOrientationECEF(), locationd_location.getPositionECEF(), m);
-    QMapLibre::Feature model_path_feature(QMapLibre::Feature::LineStringType, model_path, {}, {});
-    QVariantMap modelV2Path;
-    modelV2Path["type"] =  "geojson";
-    modelV2Path["data"] = QVariant::fromValue<QMapLibre::Feature>(model_path_feature);
-    m_map->updateSource("modelPathSource", modelV2Path);
-    model_rcv_frame = sm.rcv_frame("uiPlan");
- }
-
   if (sm.updated("liveLocationKalman")) {
     auto locationd_location = sm["liveLocationKalman"].getLiveLocationKalman();
     auto locationd_pos = locationd_location.getPositionGeodetic();
@@ -206,6 +195,17 @@ void MapWindow::updateState(const UIState &s) {
       velocity_filter.update(std::max(10.0, locationd_velocity.getValue()[0]));
     }
   }
+
+  if (loaded_once && (sm.rcv_frame("uiPlan") != model_rcv_frame)) {
+    m = sm["uiPlan"].getUiPlan().getPosition(); // XYZTData in device frame
+    auto model_path = model_to_collection(locationd_location.getCalibratedOrientationECEF(), locationd_location.getPositionECEF(), m);
+    QMapLibre::Feature model_path_feature(QMapLibre::Feature::LineStringType, model_path, {}, {});
+    QVariantMap modelV2Path;
+    modelV2Path["type"] =  "geojson";
+    modelV2Path["data"] = QVariant::fromValue<QMapLibre::Feature>(model_path_feature);
+    m_map->updateSource("modelPathSource", modelV2Path);
+    model_rcv_frame = sm.rcv_frame("uiPlan");
+ }
 
   if (sm.updated("navRoute") && sm["navRoute"].getNavRoute().getCoordinates().size()) {
     auto nav_dest = coordinate_from_param("NavDestination");
