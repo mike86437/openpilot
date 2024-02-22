@@ -350,30 +350,6 @@ class Controls:
       desired_lane = frogpilot_plan.laneWidthLeft if direction == LaneChangeDirection.left else frogpilot_plan.laneWidthRight
       lane_available = desired_lane >= self.lane_detection_width
 
-      if (CS.leftBlindspot and direction == LaneChangeDirection.left) or \
-         (CS.rightBlindspot and direction == LaneChangeDirection.right):
-        if self.loud_blindspot_alert:
-          self.events.add(EventName.laneChangeBlockedLoud)
-        else:
-          self.events.add(EventName.laneChangeBlocked)
-      elif not lane_available:
-        self.events.add(EventName.noLaneAvailable)
-      else:
-        if direction == LaneChangeDirection.left:
-          # self.events.add(EventName.preLaneChangeLeft)
-        else:
-          # self.events.add(EventName.preLaneChangeRight)
-    elif self.sm['modelV2'].meta.laneChangeState in (LaneChangeState.laneChangeStarting,
-                                                    LaneChangeState.laneChangeFinishing):
-      # self.events.add(EventName.laneChange)
-
-    # Handle turning
-    if not CS.standstill:
-      if self.sm['modelV2'].meta.turnDirection == Desire.turnLeft:
-        # self.events.add(EventName.turningLeft)
-      elif self.sm['modelV2'].meta.turnDirection == Desire.turnRight:
-        # self.events.add(EventName.turningRight)
-
     for i, pandaState in enumerate(self.sm['pandaStates']):
       # All pandas must match the list of safetyConfigs, and if outside this list, must be silent or noOutput
       if i < len(self.CP.safetyConfigs):
