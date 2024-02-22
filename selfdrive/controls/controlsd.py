@@ -360,19 +360,19 @@ class Controls:
         self.events.add(EventName.noLaneAvailable)
       else:
         if direction == LaneChangeDirection.left:
-          self.events.add(EventName.preLaneChangeLeft)
+          # self.events.add(EventName.preLaneChangeLeft)
         else:
-          self.events.add(EventName.preLaneChangeRight)
+          # self.events.add(EventName.preLaneChangeRight)
     elif self.sm['modelV2'].meta.laneChangeState in (LaneChangeState.laneChangeStarting,
                                                     LaneChangeState.laneChangeFinishing):
-      self.events.add(EventName.laneChange)
+      # self.events.add(EventName.laneChange)
 
     # Handle turning
     if not CS.standstill:
       if self.sm['modelV2'].meta.turnDirection == Desire.turnLeft:
-        self.events.add(EventName.turningLeft)
+        # self.events.add(EventName.turningLeft)
       elif self.sm['modelV2'].meta.turnDirection == Desire.turnRight:
-        self.events.add(EventName.turningRight)
+        # self.events.add(EventName.turningRight)
 
     for i, pandaState in enumerate(self.sm['pandaStates']):
       # All pandas must match the list of safetyConfigs, and if outside this list, must be silent or noOutput
