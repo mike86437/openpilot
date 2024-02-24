@@ -79,37 +79,6 @@ void MapWindow::initLayers() {
     m_map->setPaintProperty("modelPathLayer", "line-width", 5.0);
     m_map->setLayoutProperty("modelPathLayer", "line-cap", "round");
   }
-  if (!m_map->layerExists("pinLayer")) {
-    qDebug() << "Initializing pinLayer";
-    m_map->addImage("default_marker", QImage("../assets/navigation/default_marker.svg"));
-    QVariantMap pin;
-    pin["type"] = "symbol";
-    pin["source"] = "pinSource";
-    m_map->addLayer("pinLayer", pin);
-    m_map->setLayoutProperty("pinLayer", "icon-pitch-alignment", "viewport");
-    m_map->setLayoutProperty("pinLayer", "icon-image", "default_marker");
-    m_map->setLayoutProperty("pinLayer", "icon-ignore-placement", true);
-    m_map->setLayoutProperty("pinLayer", "icon-allow-overlap", true);
-    m_map->setLayoutProperty("pinLayer", "symbol-sort-key", 0);
-    m_map->setLayoutProperty("pinLayer", "icon-anchor", "bottom");
-  }
-  if (!m_map->layerExists("carPosLayer")) {
-    qDebug() << "Initializing carPosLayer";
-    m_map->addImage("label-arrow", QImage("../assets/images/triangle.svg"));
-
-    QVariantMap carPos;
-    carPos["type"] = "symbol";
-    carPos["source"] = "carPosSource";
-    m_map->addLayer("carPosLayer", carPos);
-    m_map->setLayoutProperty("carPosLayer", "icon-pitch-alignment", "map");
-    m_map->setLayoutProperty("carPosLayer", "icon-image", "label-arrow");
-    m_map->setLayoutProperty("carPosLayer", "icon-size", 0.5);
-    m_map->setLayoutProperty("carPosLayer", "icon-ignore-placement", true);
-    m_map->setLayoutProperty("carPosLayer", "icon-allow-overlap", true);
-    // TODO: remove, symbol-sort-key does not seem to matter outside of each layer
-    m_map->setLayoutProperty("carPosLayer", "symbol-sort-key", 0);
-  }
-
   if (!m_map->layerExists("buildingsLayer")) {
     qDebug() << "Initializing buildingsLayer";
     QVariantMap buildings;
@@ -152,6 +121,36 @@ void MapWindow::initLayers() {
     m_map->setPaintProperty("buildingsLayer", "fill-extrusion-height", fillExtrusionHight);
     m_map->setPaintProperty("buildingsLayer", "fill-extrusion-base", fillExtrusionBase);
     m_map->setLayoutProperty("buildingsLayer", "visibility", "visible");
+  }
+  if (!m_map->layerExists("pinLayer")) {
+    qDebug() << "Initializing pinLayer";
+    m_map->addImage("default_marker", QImage("../assets/navigation/default_marker.svg"));
+    QVariantMap pin;
+    pin["type"] = "symbol";
+    pin["source"] = "pinSource";
+    m_map->addLayer("pinLayer", pin);
+    m_map->setLayoutProperty("pinLayer", "icon-pitch-alignment", "viewport");
+    m_map->setLayoutProperty("pinLayer", "icon-image", "default_marker");
+    m_map->setLayoutProperty("pinLayer", "icon-ignore-placement", true);
+    m_map->setLayoutProperty("pinLayer", "icon-allow-overlap", true);
+    m_map->setLayoutProperty("pinLayer", "symbol-sort-key", 0);
+    m_map->setLayoutProperty("pinLayer", "icon-anchor", "bottom");
+  }
+  if (!m_map->layerExists("carPosLayer")) {
+    qDebug() << "Initializing carPosLayer";
+    m_map->addImage("label-arrow", QImage("../assets/images/triangle.svg"));
+
+    QVariantMap carPos;
+    carPos["type"] = "symbol";
+    carPos["source"] = "carPosSource";
+    m_map->addLayer("carPosLayer", carPos);
+    m_map->setLayoutProperty("carPosLayer", "icon-pitch-alignment", "map");
+    m_map->setLayoutProperty("carPosLayer", "icon-image", "label-arrow");
+    m_map->setLayoutProperty("carPosLayer", "icon-size", 0.5);
+    m_map->setLayoutProperty("carPosLayer", "icon-ignore-placement", true);
+    m_map->setLayoutProperty("carPosLayer", "icon-allow-overlap", true);
+    // TODO: remove, symbol-sort-key does not seem to matter outside of each layer
+    m_map->setLayoutProperty("carPosLayer", "symbol-sort-key", 0);
   }
 }
 
