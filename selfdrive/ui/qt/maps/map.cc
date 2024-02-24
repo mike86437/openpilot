@@ -323,7 +323,7 @@ void MapWindow::initializeGL() {
   } else if (MAPBOX_STYLE == "1") {
     m_map->setStyleUrl("mapbox://styles/mapbox/navigation-night-v1"); 
   } else if (MAPBOX_STYLE == "2") {
-    m_map->setStyleUrl("mapbox://styles/mapbox/satellite-streets-v12"); // sat
+    m_map->setStyleUrl("mapbox://styles/mike854/clt0hm8mw01ok01p4blkr27jp"); // sat hybrid
   } else {
     m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj"); // comma
   }
