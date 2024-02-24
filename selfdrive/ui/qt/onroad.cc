@@ -177,7 +177,7 @@ void OnroadWindow::mousePressEvent(QMouseEvent* e) {
     if (!clickTimer.isActive()) {
       map->setVisible(show_map && !map->isVisible());
       if (scene.full_map) {
-        map->setFixedWidth(width());
+        map->setFixedWidth(width()- UI_BORDER_SIZE);
       } else {
         map->setFixedWidth(topWidget(this)->width() / 2 - UI_BORDER_SIZE);
       }
