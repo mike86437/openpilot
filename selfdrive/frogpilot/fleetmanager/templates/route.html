@@ -31,10 +31,11 @@
       list: [{{ segments  }}],
       q_segment: {{ query_segment }},
       index: (function() {
-        for (var i = 0; i < this.list.length; i++) {
-          var segment = this.list[i];
+        var self = this;
+        for (var i = 0; i < self.list.length; i++) {
+          var segment = self.list[i];
           var q_val = segment.split('--').slice(2).join('--');
-          if (parseInt(q_val) === this.q_segment) {
+          if (parseInt(q_val) === self.q_segment) {
             return i; // Return the index if found
           }
         }
