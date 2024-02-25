@@ -29,7 +29,7 @@
     var video = document.getElementById('video');
     var tracks = {
       list: [{{ segments  }}],
-      q_segment = {{ query_segment }},
+      q_segment: {{ query_segment }},
       index: (function() {
         for (var i = 0; i < this.list.length; i++) {
           var segment = this.list[i];
