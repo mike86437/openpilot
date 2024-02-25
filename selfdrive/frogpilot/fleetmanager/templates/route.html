@@ -27,20 +27,20 @@
     {{ links }}
     <script>
     var video = document.getElementById('video');
-    var tracks = {
-      list: [{{ segments  }}],
-      q_segment: {{ query_segment }},
-      index: (function() {
-        var self = this;
-        for (var i = 0; i < self.list.length; i++) {
-          var segment = self.list[i];
+    var segments = [{{ segments  }}];
+    var q_segment = {{ query_segment }};
+    var q_index = 0;
+    for (var i = 0; i < segments.length; i++) {
+          var segment = segments[i];
           var q_val = segment.split('--').slice(2).join('--');
-          if (parseInt(q_val) === self.q_segment) {
-            return i; // Return the index if found
+          if (parseInt(q_val) === q_segment) {
+            q_index = i;
+            break
           }
         }
-        return 0; // Default to index 0 if not found
-      })(),
+    var tracks = {
+      list: segments,
+      index: q_index,
       next: function() {
         if (this.index == this.list.length - 1) this.index = 0;
         else {
