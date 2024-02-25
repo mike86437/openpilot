@@ -179,7 +179,7 @@ class Controls:
     self.params_memory = Params("/dev/shm/params")
 
     self.frogpilot_variables = SimpleNamespace()
-
+    mute_dm = True
     self.driving_gear = False
     self.fcw_random_event_triggered = False
     self.openpilot_crashed = False
@@ -198,6 +198,9 @@ class Controls:
     ignore = self.sensor_packets + ['testJoystick']
     if SIMULATION:
       ignore += ['driverCameraState', 'managerState']
+    if mute_dm:
+      ignore += ['driverMonitoringState']
+      self.params.put_bool("DmModelInitialized", True)
     self.sm = messaging.SubMaster(['deviceState', 'pandaStates', 'peripheralState', 'modelV2', 'liveCalibration',
                                    'driverMonitoringState', 'longitudinalPlan', 'liveLocationKalman',
                                    'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters',

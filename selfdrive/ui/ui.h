@@ -200,6 +200,7 @@ typedef struct UIScene {
   bool lead_info;
   bool map_open;
   bool model_ui;
+bool mute_dm;
   bool numerical_temp;
   bool parked;
   bool pedals_on_ui;
