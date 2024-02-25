@@ -826,8 +826,8 @@ class Controls:
     if self.frogpilot_variables.conditional_experimental_mode:
       self.experimental_mode = frogpilot_plan.conditionalExperimental
 
-    # Only enable Sport+ above 5 m/s to prevent street race invitations
-    self.frogpilot_variables.sport_plus = self.sport_plus and CS.vEgo > CRUISING_SPEED
+    # Enable Sport+ street race
+    self.frogpilot_variables.sport_plus = self.sport_plus
 
     # Gear Check
     self.driving_gear = CS.gearShifter not in (GearShifter.neutral, GearShifter.park, GearShifter.reverse, GearShifter.unknown)
