@@ -13,7 +13,7 @@
 const int INTERACTION_TIMEOUT = 100;
 
 const float MAX_ZOOM = 17;
-const float MIN_ZOOM = 14;
+const float MIN_ZOOM = 15;
 const float MAX_PITCH = 50;
 const float MIN_PITCH = 0;
 const float MAP_SCALE = 2;
@@ -307,7 +307,16 @@ void MapWindow::initializeGL() {
 
   m_map->setMargins({0, 350, 0, 50});
   m_map->setPitch(MIN_PITCH);
-  m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj");
+  QString MAPBOX_STYLE = QString::fromStdString(Params().get("MapStyle"));
+  if (MAPBOX_STYLE == "0") {
+    m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj"); // comma
+  } else if (MAPBOX_STYLE == "1") {
+    m_map->setStyleUrl("mapbox://styles/mapbox/navigation-night-v1"); 
+  } else if (MAPBOX_STYLE == "2") {
+    m_map->setStyleUrl("mapbox://styles/mike854/clt0hm8mw01ok01p4blkr27jp"); // sat hybrid
+  } else {
+    m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj"); // comma
+  }
 
   QObject::connect(m_map.data(), &QMapLibre::Map::mapChanged, [=](QMapLibre::Map::MapChange change) {
     // set global animation duration to 0 ms so visibility changes are instant
