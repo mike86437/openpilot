@@ -29,7 +29,17 @@
     var video = document.getElementById('video');
     var tracks = {
       list: [{{ segments  }}],
-      index: {{ query_segment }},
+      q_segment: {{ query_segment }},
+      index: (function() {
+        for (var i = 0; i < tracks.list.length; i++) {
+          var segment = tracks.list[i];
+          var q_val = segment.split('--').slice(2).join('--');
+          if (parseInt(q_val) === tracks.q_segment) {
+            return i; // Return the index if found
+          }
+        }
+        return 0; // Default to index 0 if not found
+      })(),
       next: function() {
         if (this.index == this.list.length - 1) this.index = 0;
         else {
