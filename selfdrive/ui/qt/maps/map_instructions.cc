@@ -12,12 +12,14 @@ MapInstructions::MapInstructions(QWidget *parent) : QWidget(parent) {
   is_rhd = Params().getBool("IsRhdDetected");
   QVBoxLayout *main_layout = new QVBoxLayout(this);
   main_layout->setContentsMargins(11, UI_BORDER_SIZE, 11, 20);
+  main_layout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
   QHBoxLayout *top_layout = new QHBoxLayout;
   top_layout->addWidget(icon_01 = new QLabel, 0, Qt::AlignTop);
 
   QVBoxLayout *right_layout = new QVBoxLayout;
   right_layout->setContentsMargins(9, 9, 9, 0);
+  right_layout->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
   right_layout->addWidget(distance = new QLabel);
   distance->setStyleSheet(R"(font-size: 90px;)");
 

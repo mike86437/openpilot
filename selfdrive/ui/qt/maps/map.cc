@@ -13,7 +13,7 @@
 const int INTERACTION_TIMEOUT = 100;
 
 const float MAX_ZOOM = 17;
-const float MIN_ZOOM = 14;
+const float MIN_ZOOM = 15;
 const float MAX_PITCH = 50;
 const float MIN_PITCH = 0;
 const float MAP_SCALE = 2;
