@@ -17,8 +17,8 @@ A_CRUISE_MAX_BP_CUSTOM = [0.,    3,   6.,   8.,  11.,  15.,  20.,  25.,  30., 55
 A_CRUISE_MIN_VALS_ECO = [-0.001, -0.010, -0.28, -0.56, -0.56]
 A_CRUISE_MAX_VALS_ECO = [3.5, 3.2, 2.3, 2.0, 1.15, .80, .58, .36, .30, .091]
 
-A_CRUISE_MIN_VALS_SPORT = [-0.50, -0.52, -0.55, -0.57, -0.60]
-A_CRUISE_MAX_VALS_SPORT = [3.5, 3.5, 3.3, 2.8, 1.5, 1.0, .75, .6, .38, .2]
+A_CRUISE_MIN_VALS_SPORT = [-1.50, -1.52, -1.55, -1.57, -1.60]
+A_CRUISE_MAX_VALS_SPORT = [4.0, 3.75, 3.65, 3.3, 2.8, 1.5, 1.0, .75, .75, .75]
 
 THRESHOLD = 5  # Time threshold (0.25s)
 
