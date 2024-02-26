@@ -223,6 +223,7 @@ OffroadHome::OffroadHome(QWidget* parent) : QFrame(parent) {
   MODEL_NAME = {
     {"los-angeles", "Los Angeles"},
     {"certified-herbalist", "Certified Herbalist"},
+    {"certified-herbalist-lateral-refinements", "Certified Herbalist Lateral Refinements"},
   };
 }
 
