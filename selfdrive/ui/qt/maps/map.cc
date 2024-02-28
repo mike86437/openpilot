@@ -317,16 +317,21 @@ void MapWindow::initializeGL() {
 
   m_map->setMargins({0, 350, 0, 50});
   m_map->setPitch(MIN_PITCH);
-  QString MAPBOX_STYLE = QString::fromStdString(Params().get("MapStyle"));
-  if (MAPBOX_STYLE == "0") {
-    m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj"); // comma
-  } else if (MAPBOX_STYLE == "1") {
-    m_map->setStyleUrl("mapbox://styles/mapbox/navigation-night-v1"); 
-  } else if (MAPBOX_STYLE == "2") {
-    m_map->setStyleUrl("mapbox://styles/mike854/clt0hm8mw01ok01p4blkr27jp"); // sat hybrid
-  } else {
-    m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj"); // comma
+  int map_style = uiState()->scene.map_style;
+
+  if (map_style != previous_map_style) {
+    if (map_style == 1) {
+      m_map->setStyleUrl("mapbox://styles/mapbox/navigation-night-v1"); // MapBox Dark Mode
+    } else if (map_style == 2) {
+      m_map->setStyleUrl("mapbox://styles/mike854/clt0hm8mw01ok01p4blkr27jp"); // Satellite hybrid
+    } else if (map_style == 3) {
+      m_map->setStyleUrl("mapbox://styles/mike854/clt4vmkdg00ca01qpch646mgi"); // Satellite new
+    } else {
+      m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj"); // Default
+    }
   }
+
+  previous_map_style = map_style;
 
   QObject::connect(m_map.data(), &QMapLibre::Map::mapChanged, [=](QMapLibre::Map::MapChange change) {
     // set global animation duration to 0 ms so visibility changes are instant

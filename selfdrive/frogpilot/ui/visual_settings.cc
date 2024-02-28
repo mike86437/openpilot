@@ -51,6 +51,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : FrogPilot
     {"DriveStats", "Drive Stats In Home Screen", "Display your device's drive stats in the home screen.", ""},
     {"FullMap", "Full Sized Map", "Maximize the size of the map in the onroad UI.", ""},
     {"HideSpeed", "Hide Speed", "Hide the speed indicator in the onroad UI. Additional toggle allows it to be hidden/shown via tapping the speed itself.", ""},
+    {"MapStyle", "Map Style", "Use a custom map style to be used for 'Navigate on openpilot'.", ""},
     {"WheelSpeed", "Use Wheel Speed", "Use the wheel speed metric as opposed to the artificial speed.", ""},
 
     {"RandomEvents", "Random Events", "Enjoy a bit of unpredictability with random events that can occur during certain driving conditions.", "../frogpilot/assets/toggle_icons/icon_random.png"},
@@ -171,6 +172,10 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : FrogPilot
       std::vector<QString> hideSpeedToggles{"HideSpeedUI"};
       std::vector<QString> hideSpeedToggleNames{tr("Control Via UI")};
       toggle = new FrogPilotParamToggleControl(param, title, desc, icon, hideSpeedToggles, hideSpeedToggleNames);
+    } else if (param == "MapStyle") {
+      std::vector<QString> mapStyleOptions{tr("Stock"), tr("Dark Mode"), tr("Satellite Hybrid"), tr("Test")};
+      FrogPilotButtonParamControl *mapStyleSelection = new FrogPilotButtonParamControl(param, title, desc, icon, mapStyleOptions);
+      toggle = mapStyleSelection;
 
     } else if (param == "ScreenBrightness") {
       std::map<int, QString> brightnessLabels;
