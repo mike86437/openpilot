@@ -325,7 +325,7 @@ void MapWindow::initializeGL() {
     } else if (map_style == 2) {
       m_map->setStyleUrl("mapbox://styles/mike854/clt0hm8mw01ok01p4blkr27jp"); // Satellite hybrid
     } else if (map_style == 3) {
-      m_map->setStyleUrl("https://studio.mapbox.com/styles/mapbox/traffic-night-v2/"); // Traffic
+      m_map->setStyleUrl("mapbox:/styles/mapbox/traffic-night-v2/"); // Traffic
     } else {
       m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj"); // Default
     }
