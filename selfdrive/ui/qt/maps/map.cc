@@ -305,9 +305,9 @@ void MapWindow::updateState(const UIState &s) {
       {4, "mapbox://styles/mapbox/dark-v10"},  // Mapbox Dark
       {5, "mapbox://styles/mapbox/satellite-v9"},  // Mapbox Satellite
       {6, "mapbox://styles/mapbox/satellite-streets-v11"},  // Mapbox Satellite Streets
-      {7, "mapbox://styles/mapbox/navigation-day-v1"},  // Mapbox Navigation Day
-      {8, "mapbox://styles/mapbox/navigation-night-v1"},  // Mapbox Navigation Night
-      {9, "mapbox://styles/mapbox/traffic-night-v2 "},  // Mapbox Traffic Night
+      {7, "mapbox://styles/mike854/clt6d3ca9004o01qk84jsebtr"},  // mike854 Satellite Streets
+      {8, "mapbox://styles/mike854/clt6czp9y02na01p6gooy0mh1"},  // Mapbox Dark 2
+      {9, "mapbox://styles/mapbox/traffic-night-v2"},  // mike854 Traffic Night
       {10, "mapbox://styles/mike854/clt0hm8mw01ok01p4blkr27jp"},  // mike854's (Satellite hybrid)
     };
 

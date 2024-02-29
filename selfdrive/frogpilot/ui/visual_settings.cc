@@ -183,9 +183,9 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : FrogPilot
         {5, tr("Mapbox Satellite")},
         {6, tr("Mapbox Satellite Streets")},
         {7, tr("Mapbox Navigation Day")},
-        {8, tr("Mapbox Navigation Night")},
+        {8, tr("mike854 Dark")},
         {9, tr("Mapbox Traffic Night")},
-        {10, tr("mike854's (Satellite hybrid)")},
+        {10, tr("mike854's (Satellite hybrid)")}, 
       };
 
       QStringList styles = styleMap.values();
