@@ -38,7 +38,7 @@ def always_run(started, params, params_memory, CP: car.CarParams) -> bool:
   return True
 
 def only_onroad(started: bool, params, params_memory, CP: car.CarParams) -> bool:
-  return started
+  return started or params.get_bool("TestOnroad")
 
 def only_offroad(started, params, params_memory, CP: car.CarParams) -> bool:
   return not started
