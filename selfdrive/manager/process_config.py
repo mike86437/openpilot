@@ -61,9 +61,9 @@ procs = [
   DaemonProcess("manage_athenad", "selfdrive.athena.manage_athenad", "AthenadPid"),
 
   NativeProcess("camerad", "system/camerad", ["./camerad"], driverview),
-  NativeProcess("logcatd", "system/logcatd", ["./logcatd"], (enable_logging and only_onroad)),
-  NativeProcess("proclogd", "system/proclogd", ["./proclogd"], enable_logging),
-  PythonProcess("logmessaged", "system.logmessaged", (enable_logging and only_onroad),
+  NativeProcess("logcatd", "system/logcatd", ["./logcatd"], enable_logging),
+  NativeProcess("proclogd", "system/proclogd", ["./proclogd"], (enable_logging and only_onroad)),
+  PythonProcess("logmessaged", "system.logmessaged", enable_logging),
   PythonProcess("micd", "system.micd", iscar),
   PythonProcess("timed", "system.timed", always_run, enabled=not PC),
 
