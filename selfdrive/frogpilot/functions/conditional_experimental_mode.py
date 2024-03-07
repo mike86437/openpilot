@@ -1,3 +1,4 @@
+import numpy as np
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.numpy_fast import interp
 
