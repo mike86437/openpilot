@@ -24,6 +24,7 @@ class ConditionalExperimentalMode:
     self.lead_stopping = False
     self.red_light_detected = False
     self.slower_lead_detected = False
+    self.lead_turtle = False
 
     self.previous_status_value = 0
     self.previous_v_ego = 0
@@ -36,10 +37,14 @@ class ConditionalExperimentalMode:
     self.slow_lead_mac = MovingAverageCalculator()
     self.slowing_down_mac = MovingAverageCalculator()
     self.stop_light_mac = MovingAverageCalculator()
+    self.detect_turtle_gmac = GenericMovingAverageCalculator()
 
   def update(self, carState, enabled, frogpilotNavigation, modelData, radarState, road_curvature, t_follow, v_ego):
     lead = radarState.leadOne
     v_lead = lead.vLead
+    lead_distance = radarState.leadOne.dRel
+    v_ego_kph = v_ego * 3.6
+    dvratio = lead_distance/np.where(v_ego_kph == 0, 1, v_ego_kph)
 
     # Set the value of "overridden"
     if self.experimental_mode_via_press:
@@ -48,7 +53,7 @@ class ConditionalExperimentalMode:
       overridden = 0
 
     # Update Experimental Mode based on the current driving conditions
-    condition_met = self.check_conditions(carState, frogpilotNavigation, modelData, v_ego)
+    condition_met = self.check_conditions(carState, frogpilotNavigation, modelData, standstill, v_ego, v_ego_kph, dvratio)
     if ((not self.experimental_mode and condition_met and overridden not in (1, 3)) or overridden in (2, 4)) and enabled:
       self.experimental_mode = True
     elif (self.experimental_mode and not condition_met and overridden not in (2, 4)) or overridden in (1, 3) or not enabled:
@@ -89,7 +94,7 @@ class ConditionalExperimentalMode:
       return True
 
     # Slower lead check
-    if self.slower_lead and self.slower_lead_detected:
+    if self.slower_lead and (self.slower_lead_detected or self.detect_turtle(dvratio,v_ego_kph)):
       self.status_value = 10
       return True
 
@@ -109,6 +114,16 @@ class ConditionalExperimentalMode:
       return True
 
     return False
+
+  # New Slower Lead detect condition, example: drel is 55m and v_ego_kph is 100kph and dvratio is 0.55, when drel below 55m then condition is True, 
+  # 0.55 can make a toggle in setting menu to let the user decide the safety distance for their preferences
+  def detect_turtle(self, dvratio,v_ego_kph):
+    self.detect_turtle_gmac.add_data(dvratio < 0.55 and dvratio > 0.05 and v_ego_kph > 5)
+    self.lead_turtle = self.detect_turtle_gmac.get_moving_average() >= 0.2
+    if self.lead_turtle:
+      return True
+    else:
+      return False
 
   def update_conditions(self, lead, modelData, radarState, road_curvature, t_follow, v_ego, v_lead):
     self.lead_detection(lead)
