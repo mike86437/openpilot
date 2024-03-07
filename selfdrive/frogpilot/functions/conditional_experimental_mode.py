@@ -37,7 +37,7 @@ class ConditionalExperimentalMode:
     self.slow_lead_mac = MovingAverageCalculator()
     self.slowing_down_mac = MovingAverageCalculator()
     self.stop_light_mac = MovingAverageCalculator()
-    self.detect_turtle_gmac = GenericMovingAverageCalculator()
+    self.detect_turtle_gmac = MovingAverageCalculator()
 
   def update(self, carState, enabled, frogpilotNavigation, modelData, radarState, road_curvature, t_follow, v_ego):
     lead = radarState.leadOne
