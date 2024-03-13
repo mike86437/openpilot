@@ -180,7 +180,7 @@ class Controls:
     self.params_storage = Params("/persist/comma/params")
 
     self.frogpilot_variables = SimpleNamespace()
-
+    mute_dm = True
     self.drive_added = False
     self.driving_gear = False
     self.fcw_random_event_triggered = False
@@ -205,7 +205,9 @@ class Controls:
                                    'testJoystick', 'frogpilotPlan'] + self.camera_packets + self.sensor_packets,
                                   ignore_alive=ignore, ignore_avg_freq=ignore+['radarState', 'testJoystick'], ignore_valid=['testJoystick', ],
                                   frequency=int(1/DT_CTRL))
-
+    if mute_dm:
+      ignore += ['driverMonitoringState']
+      self.params.put_bool("DmModelInitialized", True)
     self.joystick_mode = self.params.get_bool("JoystickDebugMode")
 
     # set alternative experiences from parameters
