@@ -1057,7 +1057,13 @@ void AnnotatedCameraWidget::drawLead(QPainter &painter, const cereal::RadarState
   float g_yo = sz / 10;
 
   QPointF glow[] = {{x + (sz * 1.35) + g_xo, y + sz + g_yo}, {x, y - g_yo}, {x - (sz * 1.35) - g_xo, y + sz + g_yo}};
-  painter.setBrush(QColor(218, 202, 37, 255));
+  if (lead_data.getRadarTrackId() == -1) {
+    painter.setBrush(QColor(218, 202, 37, 255));
+  }
+  else {
+    painter.setBrush(QColor(0, 153, 255, 255));
+  }
+  
   painter.drawPolygon(glow, std::size(glow));
 
   // chevron
@@ -1075,16 +1081,18 @@ void AnnotatedCameraWidget::drawLead(QPainter &painter, const cereal::RadarState
   if (leadInfo) {
     // Declare the variables
     float lead_speed = std::max(lead_data.getVLead(), 0.0f);  // Ensure lead speed doesn't go under 0 m/s cause that's dumb
+    float model_prob = std::max(lead_data.getModelProb(), 0.0f);
 
     // Form the text and center it below the chevron
     painter.setPen(Qt::white);
     painter.setFont(InterFont(35, QFont::Bold));
 
-    QString text = QString("%1 %2 | %3 %4")
+    QString text = QString("%1 %2 | %3 %4 | %5%%")
                            .arg(qRound(d_rel * distanceConversion))
                            .arg(leadDistanceUnit)
                            .arg(qRound(lead_speed * speedConversion))
-                           .arg(leadSpeedUnit);
+                           .arg(leadSpeedUnit)
+                           .arg(qRound(model_prob * 100));
 
     // Calculate the text starting position
     QFontMetrics metrics(painter.font());
