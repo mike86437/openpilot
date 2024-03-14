@@ -1086,7 +1086,7 @@ void AnnotatedCameraWidget::drawLead(QPainter &painter, const cereal::RadarState
                            .arg(leadDistanceUnit)
                            .arg(qRound(lead_speed * speedConversion))
                            .arg(leadSpeedUnit)
-                           .arg(model_prob * 100, 0, 'f', 2, '0');
+                           .arg(qRound(model_prob * 100));
 
     // Calculate the text starting position
     QFontMetrics metrics(painter.font());
