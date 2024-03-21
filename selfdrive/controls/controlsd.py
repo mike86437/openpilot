@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from typing import SupportsFloat
 
 import cereal.messaging as messaging
+import openpilot.selfdrive.sentry as sentry
 
 from cereal import car, custom, log
 from cereal.visionipc import VisionIpcClient, VisionStreamType
@@ -194,6 +195,7 @@ class Controls:
     self.onroad_distance_pressed = False
     self.previously_enabled = False
 
+    self.crashed_timer = 0
     self.previous_lead_distance = 0
 
     self.green_light_mac = MovingAverageCalculator()
@@ -947,6 +949,9 @@ class Controls:
 
       if lead_departing:
         self.events.add(EventName.leadDeparting)
+
+    if os.path.isfile(os.path.join(sentry.CRASHES_DIR, 'error.txt')) and self.crashed_timer < 10:
+      self.events.add(EventName.openpilotCrashed)
 
     if self.sm.frame == 550 and self.CP.lateralTuning.which() == 'torque' and self.CI.use_nnff:
       self.events.add(EventName.torqueNNLoad)
