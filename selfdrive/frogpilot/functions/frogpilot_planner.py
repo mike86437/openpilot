@@ -99,9 +99,24 @@ class FrogPilotPlanner:
     self.stop_distance = STOP_DISTANCE
 
     # Update the max allowed speed
-    self.v_cruise = self.update_v_cruise(carState, controlsState, enabled, modelData, v_cruise, v_ego)
+    self.v_cruise = self.update_v_cruise(carState, controlsState, enabled, modelData, v_cruise, v_ego, sm['radarState'])
 
-  def update_v_cruise(self, carState, controlsState, enabled, modelData, v_cruise, v_ego):
+  def update_v_cruise(self, carState, controlsState, enabled, modelData, v_cruise, v_ego, radarState):
+
+    # Try this
+    lead = radarState.leadOne
+    v_lead = lead.vLead
+    d_rel = lead.dRel
+    # Calculate relative velocity
+    v_rel = v_ego - v_lead
+    if lead and d_rel > 25 and v_rel > 11:
+      # Calculate deceleration rate
+      decelRate = ((v_ego - v_lead) ** 2) / (2 * dRel)
+      # Trim speed target 1 second from now
+      slowdown_target = v_ego - decelRate
+    else:
+      slowdown_target = v_cruise
+    
     # Offsets to adjust the max speed to match the cluster
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
     v_ego_diff = v_ego_cluster - v_ego
@@ -176,7 +191,7 @@ class FrogPilotPlanner:
     else:
       self.vtsc_target = v_cruise
 
-    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target]
+    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, slowdown_target]
     filtered_targets = [target for target in targets if target > CRUISING_SPEED]
 
     return min(filtered_targets + [v_cruise]) if filtered_targets else v_cruise
