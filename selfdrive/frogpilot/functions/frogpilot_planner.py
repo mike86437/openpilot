@@ -115,8 +115,9 @@ class FrogPilotPlanner:
       decelRate = ((v_ego - v_lead) ** 2) / (2 * d_rel)
       # Trim speed target 1 second from now
       slowdown_target = v_ego - decelRate
-      self.fpf.update_cestatus_distance()
-      self.latched = True
+      if not self.latched:
+        self.fpf.update_cestatus_distance()
+        self.latched = True
     else:
       if self.latched:
         self.latched = False
