@@ -119,6 +119,7 @@ class FrogPilotPlanner:
       self.latched = True
     else:
       if self.latched:
+        self.latched = False
         self.fpf.update_cestatus_distance()
       slowdown_target = v_cruise
     
