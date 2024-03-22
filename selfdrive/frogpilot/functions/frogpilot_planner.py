@@ -114,7 +114,11 @@ class FrogPilotPlanner:
       decelRate = ((v_ego - v_lead) ** 2) / (2 * d_rel)
       # Trim speed target 1 second from now
       slowdown_target = v_ego - decelRate
+      self.fpf.update_cestatus_distance()
+      latched = True
     else:
+      if latched:
+        self.fpf.update_cestatus_distance()
       slowdown_target = v_cruise
     
     # Offsets to adjust the max speed to match the cluster
