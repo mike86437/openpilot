@@ -39,6 +39,7 @@ class FrogPilotPlanner:
     self.stop_distance = 0
     self.v_cruise = 0
     self.vtsc_target = 0
+    self.latched = False
 
     self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
 
@@ -115,9 +116,9 @@ class FrogPilotPlanner:
       # Trim speed target 1 second from now
       slowdown_target = v_ego - decelRate
       self.fpf.update_cestatus_distance()
-      latched = True
+      self.latched = True
     else:
-      if latched:
+      if self.latched:
         self.fpf.update_cestatus_distance()
       slowdown_target = v_cruise
     
