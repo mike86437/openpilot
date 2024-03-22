@@ -111,7 +111,7 @@ class FrogPilotPlanner:
     v_rel = v_ego - v_lead
     if lead and d_rel > 25 and v_rel > 11:
       # Calculate deceleration rate
-      decelRate = ((v_ego - v_lead) ** 2) / (2 * dRel)
+      decelRate = ((v_ego - v_lead) ** 2) / (2 * d_rel)
       # Trim speed target 1 second from now
       slowdown_target = v_ego - decelRate
     else:
