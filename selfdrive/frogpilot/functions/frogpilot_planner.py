@@ -118,9 +118,11 @@ class FrogPilotPlanner:
     if self.pd_rel == 0:
       self.pd_rel = d_rel
       self.pdt = time.monotonic()
-    dt = time.monotonic() - self.pdt
-    calc_vrel = (d_rel - self.pd_rel) / dt
+    now = time.monotonic()
+    dt = now - self.pdt
+    calc_vrel = (d_rel - self.pd_rel) / dt if dt > 0 else 0
     self.pd_rel = d_rel
+    self.pdt = now
     
     if lead and d_rel > 25 and ((use_radar and v_rel > 11) or (use_voacc and calc_vrel > 11)):
       # Calculate deceleration rate
