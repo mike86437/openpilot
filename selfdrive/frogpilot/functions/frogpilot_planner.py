@@ -107,24 +107,28 @@ class FrogPilotPlanner:
   def update_v_cruise(self, carState, controlsState, enabled, modelData, v_cruise, v_ego, radarState):
 
     # Try this
+    use_radar = False
+    use_voacc = True
+    d_rel = lead.dRel
     lead = radarState.leadOne
     v_lead = lead.vLead
-    d_rel = lead.dRel
     # Calculate relative velocity
     v_rel = v_ego - v_lead
-    if self.pd_rel == 0:
+    # Calculate vrel using 2 frames and time
+    if use_voacc:  
+      if self.pd_rel == 0:
+        self.pd_rel = d_rel
+        pdt = time.monotonic()
+      dt = time.monotonic() - pdt
+      calc_vrel = (d_rel - self.pd_rel) / dt
       self.pd_rel = d_rel
-      pdt = time.monotonic()
-    dt = time.monotonic() - pdt
-    calc_vrel = (d_rel - self.pd_rel) / dt
-    self.pd_rel = d_rel
-    
-    if lead and d_rel > 25 and v_rel > 11 or calc_vrel > 11:
+    else:
+      calc_vrel = 0
+    if lead and d_rel > 25 and ((use_radar and v_rel > 11) or (use_voacc and calc_vrel > 11)):
       # Calculate deceleration rate
-      decelRate1 = (v_rel ** 2) / (2 * d_rel)
-      decelRate2 = (calc_vrel ** 2) / (2 * d_rel)
-      # Trim speed target 2 second from now
-      decelRate = max(decelRate1, decelRate2) * 2
+      decelRate1 = (v_rel ** 2) / (2 * d_rel) * 2 if use_radar else 0
+      decelRate2 = (calc_vrel ** 2) / (2 * d_rel) * 2 if use_voacc else 0
+      decelRate = max(decelRate1, decelRate2)
       slowdown_target = v_ego - decelRate
       if not self.latched:
         self.fpf.update_cestatus_distance()
