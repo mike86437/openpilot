@@ -122,7 +122,7 @@ class FrogPilotPlanner:
     calc_vrel = (d_rel - self.pd_rel) / dt
     self.pd_rel = d_rel
     
-    if lead and d_rel > 25 and v_rel > 11 or calc_vrel > 11:
+    if lead and d_rel > 25 and ((use_radar and v_rel > 11) or (use_voacc and calc_vrel > 11)):
       # Calculate deceleration rate
       decelRate1 = (v_rel ** 2) / (2 * d_rel) * 2 if use_radar else 0
       decelRate2 = (calc_vrel ** 2) / (2 * d_rel) * 2 if use_voacc else 0
