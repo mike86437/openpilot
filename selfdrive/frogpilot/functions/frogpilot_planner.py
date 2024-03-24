@@ -39,6 +39,7 @@ class FrogPilotPlanner:
     self.stop_distance = 0
     self.v_cruise = 0
     self.vtsc_target = 0
+    self.latched = False
 
     self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
 
@@ -99,9 +100,30 @@ class FrogPilotPlanner:
     self.stop_distance = STOP_DISTANCE
 
     # Update the max allowed speed
-    self.v_cruise = self.update_v_cruise(carState, controlsState, enabled, modelData, v_cruise, v_ego)
+    self.v_cruise = self.update_v_cruise(carState, controlsState, enabled, modelData, v_cruise, v_ego, sm['radarState'])
 
-  def update_v_cruise(self, carState, controlsState, enabled, modelData, v_cruise, v_ego):
+  def update_v_cruise(self, carState, controlsState, enabled, modelData, v_cruise, v_ego, radarState):
+
+    # Try this
+    lead = radarState.leadOne
+    v_lead = lead.vLead
+    d_rel = lead.dRel
+    # Calculate relative velocity
+    v_rel = v_ego - v_lead
+    if lead and d_rel > 25 and v_rel > 11:
+      # Calculate deceleration rate
+      decelRate = ((v_ego - v_lead) ** 2) / (2 * d_rel)
+      # Trim speed target 1 second from now
+      slowdown_target = v_ego - decelRate
+      if not self.latched:
+        self.fpf.update_cestatus_distance()
+        self.latched = True
+    else:
+      if self.latched:
+        self.latched = False
+        self.fpf.update_cestatus_distance()
+      slowdown_target = v_cruise
+
     # Offsets to adjust the max speed to match the cluster
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
     v_ego_diff = v_ego_cluster - v_ego
@@ -176,7 +198,7 @@ class FrogPilotPlanner:
     else:
       self.vtsc_target = v_cruise
 
-    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target]
+    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, slowdown_target]
     filtered_targets = [target for target in targets if target > CRUISING_SPEED]
 
     return min(filtered_targets) if filtered_targets else v_cruise
