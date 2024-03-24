@@ -1,5 +1,6 @@
 import cereal.messaging as messaging
 import numpy as np
+import time
 
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.numpy_fast import clip, interp
@@ -40,6 +41,7 @@ class FrogPilotPlanner:
     self.v_cruise = 0
     self.vtsc_target = 0
     self.latched = False
+    self.pd_rel = 0
 
     self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
 
@@ -105,15 +107,27 @@ class FrogPilotPlanner:
   def update_v_cruise(self, carState, controlsState, enabled, modelData, v_cruise, v_ego, radarState):
 
     # Try this
+    use_radar = True
+    use_voacc = True
     lead = radarState.leadOne
-    v_lead = lead.vLead
     d_rel = lead.dRel
+    v_lead = lead.vLead
     # Calculate relative velocity
     v_rel = v_ego - v_lead
-    if lead and d_rel > 25 and v_rel > 11:
+    if self.pd_rel == 0:
+      self.pd_rel = d_rel
+      self.pdt = time.monotonic()
+    now = time.monotonic()
+    dt = now - self.pdt
+    calc_vrel = (d_rel - self.pd_rel) / dt if dt > 0 else 0
+    self.pd_rel = d_rel
+    self.pdt = now
+    
+    if lead and d_rel > 25 and ((use_radar and v_rel > 11) or (use_voacc and calc_vrel > 11)):
       # Calculate deceleration rate
-      decelRate = ((v_ego - v_lead) ** 2) / (2 * d_rel)
-      # Trim speed target 1 second from now
+      decelRate1 = (v_rel ** 2) / (2 * d_rel) * 2 if use_radar else 0
+      decelRate2 = (calc_vrel ** 2) / (2 * d_rel) * 2 if use_voacc else 0
+      decelRate = max(decelRate1, decelRate2)
       slowdown_target = v_ego - decelRate
       if not self.latched:
         self.fpf.update_cestatus_distance()
