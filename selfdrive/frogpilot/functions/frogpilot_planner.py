@@ -42,6 +42,7 @@ class FrogPilotPlanner:
     self.vtsc_target = 0
     self.latched = False
     self.pd_rel = 0
+    self.pdt = time.monotonic()
 
     self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
 
@@ -114,8 +115,8 @@ class FrogPilotPlanner:
     v_rel = v_ego - v_lead
     if self.pd_rel == 0:
       self.pd_rel = d_rel
-      pdt = time.monotonic()
-    dt = time.monotonic() - pdt
+      self.pdt = time.monotonic()
+    dt = time.monotonic() - self.pdt
     calc_vrel = (d_rel - self.pd_rel) / dt
     self.pd_rel = d_rel
     
