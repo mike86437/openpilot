@@ -42,6 +42,7 @@ class FrogPilotPlanner:
     self.vtsc_target = 0
     self.latched = False
     self.pd_rel = 0
+    self.pdt = time.monotonic()
 
     self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
 
@@ -114,17 +115,14 @@ class FrogPilotPlanner:
     v_lead = lead.vLead
     # Calculate relative velocity
     v_rel = v_ego - v_lead
-    # Calculate vrel using 2 frames and time
-    if use_voacc:  
-      if self.pd_rel == 0:
-        self.pd_rel = d_rel
-        pdt = time.monotonic()
-      dt = time.monotonic() - pdt
-      calc_vrel = (d_rel - self.pd_rel) / dt
+    if self.pd_rel == 0:
       self.pd_rel = d_rel
-    else:
-      calc_vrel = 0
-    if lead and d_rel > 25 and ((use_radar and v_rel > 11) or (use_voacc and calc_vrel > 11)):
+      self.pdt = time.monotonic()
+    dt = time.monotonic() - self.pdt
+    calc_vrel = (d_rel - self.pd_rel) / dt
+    self.pd_rel = d_rel
+    
+    if lead and d_rel > 25 and v_rel > 11 or calc_vrel > 11:
       # Calculate deceleration rate
       decelRate1 = (v_rel ** 2) / (2 * d_rel) * 2 if use_radar else 0
       decelRate2 = (calc_vrel ** 2) / (2 * d_rel) * 2 if use_voacc else 0
