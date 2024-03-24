@@ -1,5 +1,6 @@
 import cereal.messaging as messaging
 import numpy as np
+import time
 
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.numpy_fast import clip, interp
@@ -40,6 +41,7 @@ class FrogPilotPlanner:
     self.v_cruise = 0
     self.vtsc_target = 0
     self.latched = False
+    self.pd_rel = 0
 
     self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
 
@@ -110,10 +112,19 @@ class FrogPilotPlanner:
     d_rel = lead.dRel
     # Calculate relative velocity
     v_rel = v_ego - v_lead
-    if lead and d_rel > 25 and v_rel > 11:
+    if self.pd_rel == 0:
+      self.pd_rel = d_rel
+      pdt = time.monotonic()
+    dt = time.monotonic() - pdt
+    calc_vrel = (d_rel - self.pd_rel) / dt
+    self.pd_rel = d_rel
+    
+    if lead and d_rel > 25 and v_rel > 11 or calc_vrel > 11:
       # Calculate deceleration rate
-      decelRate = ((v_ego - v_lead) ** 2) / (2 * d_rel)
-      # Trim speed target 1 second from now
+      decelRate1 = (v_rel ** 2) / (2 * d_rel)
+      decelRate2 = (calc_vrel ** 2) / (2 * d_rel)
+      # Trim speed target 2 second from now
+      decelRate = max(decelRate1, decelRate2) * 2
       slowdown_target = v_ego - decelRate
       if not self.latched:
         self.fpf.update_cestatus_distance()
