@@ -51,7 +51,7 @@ sound_list: Dict[int, Tuple[str, Optional[int], float]] = {
   AudibleAlert.uwu: ("uwu.wav", 1, MAX_VOLUME),
 
   # Other
-  AudibleAlert.goat: ("goat.wav", 1, MAX_VOLUME),
+  AudibleAlert.goat: ("goat.wav", None, MAX_VOLUME),
 }
 
 def check_controls_timeout_alert(sm):
@@ -72,7 +72,12 @@ class Soundd:
 
     self.random_events_directory = BASEDIR + "/selfdrive/frogpilot/assets/random_events/sounds/"
 
-    self.update_frogpilot_params()
+    self.random_events_map = {
+      AudibleAlert.angry: MAX_VOLUME,
+      AudibleAlert.fart: MAX_VOLUME,
+      AudibleAlert.firefox: MAX_VOLUME,
+      AudibleAlert.noice: MAX_VOLUME,
+    }
 
     self.load_sounds()
 
@@ -89,6 +94,9 @@ class Soundd:
 
     # Load all sounds
     for sound in sound_list:
+      if sound == AudibleAlert.goat and not self.goat_scream:
+        continue
+
       filename, play_count, volume = sound_list[sound]
 
       if os.path.exists(os.path.join(self.random_events_directory, filename)):
@@ -185,22 +193,13 @@ class Soundd:
 
         rk.keep_time()
 
-        assert stream.active
-
         # Update FrogPilot parameters
         if self.params_memory.get_bool("FrogPilotTogglesUpdated"):
           self.update_frogpilot_params()
 
-  def update_frogpilot_params(self):
-    self.random_events_map = {
-      AudibleAlert.angry: MAX_VOLUME,
-      AudibleAlert.fart: MAX_VOLUME,
-      AudibleAlert.firefox: MAX_VOLUME,
-      AudibleAlert.nessie: MAX_VOLUME,
-      AudibleAlert.noice: MAX_VOLUME,
-      AudibleAlert.uwu: MAX_VOLUME,
-    }
+        assert stream.active
 
+  def update_frogpilot_params(self):
     self.alert_volume_control = self.params.get_bool("AlertVolumeControl")
 
     self.volume_map = {
@@ -215,13 +214,15 @@ class Soundd:
       AudibleAlert.warningSoft: self.params.get_int("WarningSoftVolume"),
       AudibleAlert.warningImmediate: self.params.get_int("WarningImmediateVolume"),
 
-      AudibleAlert.goat: self.params.get_int("WarningSoftVolume"),
+      AudibleAlert.goat: self.params.get_int("PromptVolume"),
     }
 
     custom_theme = self.params.get_bool("CustomTheme")
     custom_sounds = self.params.get_int("CustomSounds") if custom_theme else 0
+    self.goat_scream = custom_sounds == 1 and self.params.get_bool("GoatScream")
 
     theme_configuration = {
+      0: "stock",
       1: "frog_theme",
       2: "tesla_theme",
       3: "stalin_theme"
