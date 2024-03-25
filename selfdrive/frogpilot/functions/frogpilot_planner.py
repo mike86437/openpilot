@@ -110,8 +110,8 @@ class FrogPilotPlanner:
     # Try this
     use_radar = False
     use_voacc = True
-    d_rel = lead.dRel
     lead = radarState.leadOne
+    d_rel = lead.dRel
     v_lead = lead.vLead
     # Calculate relative velocity
     v_rel = v_ego - v_lead
