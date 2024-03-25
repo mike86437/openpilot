@@ -9,7 +9,7 @@ from openpilot.selfdrive.controls.lib.desire_helper import LANE_CHANGE_SPEED_MIN
 from openpilot.selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import STOP_DISTANCE
 from openpilot.selfdrive.controls.lib.longitudinal_planner import A_CRUISE_MIN, get_max_accel
 
-from openpilot.selfdrive.frogpilot.functions.frogpilot_functions import CITY_SPEED_LIMIT, CRUISING_SPEED, FrogPilotFunctions
+from openpilot.selfdrive.frogpilot.functions.frogpilot_functions import CITY_SPEED_LIMIT, CRUISING_SPEED, FrogPilotFunctions, MovingAverageCalculator
 
 from openpilot.selfdrive.frogpilot.functions.conditional_experimental_mode import ConditionalExperimentalMode
 from openpilot.selfdrive.frogpilot.functions.map_turn_speed_controller import MapTurnSpeedController
@@ -42,7 +42,11 @@ class FrogPilotPlanner:
     self.vtsc_target = 0
     self.latched = False
     self.pd_rel = 0
+    self.dt = time.monotonic()
     self.pdt = time.monotonic()
+    self.counter = 0
+    self.calc_vrel = = MovingAverageCalculator()
+    self.delay_vrel = False
 
     self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
 
@@ -117,17 +121,27 @@ class FrogPilotPlanner:
     v_rel = v_ego - v_lead
     if self.pd_rel == 0:
       self.pd_rel = d_rel
-      self.pdt = time.monotonic()
-    now = time.monotonic()
-    dt = now - self.pdt
-    calc_vrel = (d_rel - self.pd_rel) / dt if dt > 0 else 0
+      now = time.monotonic()
+      self.dt = now - self.pdt
+    self.calc_vrel.add_data((d_rel - self.pd_rel) / self.dt if self.dt > 0 else 0)
+    # Delay vrel as real until counter reaches 10
+    if self.counter > 10:
+      self.delay_vrel = True
+    else:
+      self.delay_vrel = False
+    # Reset data
     self.pd_rel = d_rel
     self.pdt = now
+    if lead:
+      self.counter += 1
+    else:
+      self.counter = 0
+      self.calc_vrel.reset_data()
     
-    if lead and d_rel > 25 and ((use_radar and v_rel > 11) or (use_voacc and calc_vrel > 11)):
+    if lead and d_rel > 25 and ((use_radar and v_rel > 11) or (use_voacc and self.calc_vrel.get_moving_average() > 11 and self.delay_vrel)):
       # Calculate deceleration rate
       decelRate1 = (v_rel ** 2) / (2 * d_rel) * 2 if use_radar else 0
-      decelRate2 = (calc_vrel ** 2) / (2 * d_rel) * 2 if use_voacc else 0
+      decelRate2 = (self.calc_vrel.get_moving_average() ** 2) / (2 * d_rel) * 2 if use_voacc else 0
       decelRate = max(decelRate1, decelRate2)
       slowdown_target = v_ego - decelRate
       if not self.latched:
