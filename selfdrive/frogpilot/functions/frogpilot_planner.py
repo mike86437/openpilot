@@ -108,7 +108,7 @@ class FrogPilotPlanner:
   def update_v_cruise(self, carState, controlsState, enabled, modelData, v_cruise, v_ego, radarState):
 
     # Try this
-    use_radar = False
+    use_radar = True
     use_voacc = True
     lead = radarState.leadOne
     d_rel = lead.dRel
