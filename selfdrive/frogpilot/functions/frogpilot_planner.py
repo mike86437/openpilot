@@ -45,7 +45,7 @@ class FrogPilotPlanner:
     self.dt = time.monotonic()
     self.pdt = time.monotonic()
     self.counter = 0
-    self.calc_vrel = = MovingAverageCalculator()
+    self.calc_vrel = MovingAverageCalculator()
     self.delay_vrel = False
 
     self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
