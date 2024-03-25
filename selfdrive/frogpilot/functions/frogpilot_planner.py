@@ -124,8 +124,8 @@ class FrogPilotPlanner:
       now = time.monotonic()
       self.dt = now - self.pdt
     self.calc_vrel.add_data((d_rel - self.pd_rel) / self.dt if self.dt > 0 else 0)
-    # Delay vrel as real until counter reaches 10
-    if self.counter > 10:
+    # Delay vrel as real until counter reaches 5
+    if self.counter > 5:
       self.delay_vrel = True
     else:
       self.delay_vrel = False
