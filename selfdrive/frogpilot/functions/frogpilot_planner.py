@@ -113,7 +113,7 @@ class FrogPilotPlanner:
 
     # Try this
     use_radar = True
-    use_voacc = True
+    use_voacc = False
     lead = radarState.leadOne
     d_rel = lead.dRel
     v_lead = lead.vLead
@@ -144,13 +144,13 @@ class FrogPilotPlanner:
       decelRate2 = (self.calc_vrel.get_moving_average() ** 2) / (2 * d_rel) * 2 if use_voacc else 0
       decelRate = max(decelRate1, decelRate2)
       slowdown_target = v_ego - decelRate
-      if not self.latched:
-        self.fpf.update_cestatus_distance()
-        self.latched = True
+      # if not self.latched:
+      #   self.fpf.update_cestatus_distance()
+      #   self.latched = True
     else:
-      if self.latched:
-        self.latched = False
-        self.fpf.update_cestatus_distance()
+      # if self.latched:
+      #   self.latched = False
+      #   self.fpf.update_cestatus_distance()
       slowdown_target = v_cruise
     
     # Offsets to adjust the max speed to match the cluster
