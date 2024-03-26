@@ -252,6 +252,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"DisableOnroadUploads", PERSISTENT},
     {"DisableOpenpilotLongitudinal", PERSISTENT},
     {"DisengageVolume", PERSISTENT},
+    {"DragonPilotTune", PERSISTENT},
     {"DynamicPathWidth", PERSISTENT},
     {"EngageVolume", PERSISTENT},
     {"FrogPilotTogglesUpdated", PERSISTENT},
