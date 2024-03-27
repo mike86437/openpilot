@@ -10,6 +10,7 @@ from openpilot.selfdrive.car.honda.values import CAR, DBC, STEER_THRESHOLD, HOND
                                                  HONDA_NIDEC_ALT_SCM_MESSAGES, HONDA_BOSCH_RADARLESS, \
                                                  HondaFlags
 from openpilot.selfdrive.car.interfaces import CarStateBase
+from openpilot.selfdrive.controls.lib.drive_helpers import CRUISE_LONG_PRESS
 
 TransmissionType = car.CarParams.TransmissionType
 
@@ -278,24 +279,23 @@ class CarState(CarStateBase):
 
       # Change personality upon steering wheel button press
       distance_button = self.cruise_setting == 3
+      if distance_pressed:
+        self.distance_pressed_counter += 1
+      elif self.distance_previously_pressed:
+        # Set the distance lines on the dash to match the new personality if the button was held down for less than 0.5 seconds
+        if self.distance_pressed_counter < CRUISE_LONG_PRESS:
+          self.personality_profile = (self.previous_personality_profile + 2) % 3
+          self.fpf.distance_button_function(self.previous_personality_profile)
+        self.distance_pressed_counter = 0
 
-      if distance_button and not self.distance_previously_pressed:
-        self.personality_profile = (self.previous_personality_profile + 2) % 3
-      self.distance_previously_pressed = distance_button
-
-      if self.personality_profile != self.previous_personality_profile:
-        self.fpf.distance_button_function(self.personality_profile)
-        self.previous_personality_profile = self.personality_profile
-
-    # Toggle Experimental Mode from steering wheel function
-    if frogpilot_variables.experimental_mode_via_lkas and ret.cruiseState.available:
-      lkas_pressed = self.cruise_setting == 1
-      if lkas_pressed and not self.lkas_previously_pressed:
+      # Switch the current state of Experimental Mode if the button is held down for 0.5 seconds
+      if self.distance_pressed_counter == CRUISE_LONG_PRESS and frogpilot_variables.experimental_mode_via_distance:
         if frogpilot_variables.conditional_experimental_mode:
-          self.fpf.update_cestatus_lkas()
+          self.fpf.update_cestatus_distance()
         else:
           self.fpf.update_experimental_mode()
-      self.lkas_previously_pressed = lkas_pressed
+
+      self.distance_previously_pressed = distance_button
 
     return ret
 
