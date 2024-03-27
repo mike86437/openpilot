@@ -372,6 +372,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"SetSpeedOffset", PERSISTENT},
     {"ShowCPU", PERSISTENT},
     {"ShowGPU", PERSISTENT},
+    {"ShowIP", PERSISTENT},
     {"ShowMemoryUsage", PERSISTENT},
     {"ShowStorageLeft", PERSISTENT},
     {"ShowStorageUsed", PERSISTENT},
