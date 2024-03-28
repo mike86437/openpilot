@@ -278,7 +278,7 @@ class CarState(CarStateBase):
         self.fpf.reset_personality_changed_param()
 
       # Change personality upon steering wheel button press
-      distance_button = self.cruise_setting == 3
+      distance_pressed = self.cruise_setting == 3
       if distance_pressed:
         self.distance_pressed_counter += 1
       elif self.distance_previously_pressed:
@@ -295,7 +295,7 @@ class CarState(CarStateBase):
         else:
           self.fpf.update_experimental_mode()
 
-      self.distance_previously_pressed = distance_button
+      self.distance_previously_pressed = distance_pressed
 
     return ret
 
