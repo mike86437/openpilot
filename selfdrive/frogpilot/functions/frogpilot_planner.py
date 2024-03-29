@@ -4,6 +4,7 @@ import time
 
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.numpy_fast import clip, interp
+from openpilot.common.params import Params
 from openpilot.selfdrive.car.interfaces import ACCEL_MIN, ACCEL_MAX
 from openpilot.selfdrive.controls.lib.desire_helper import LANE_CHANGE_SPEED_MIN
 from openpilot.selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import STOP_DISTANCE
