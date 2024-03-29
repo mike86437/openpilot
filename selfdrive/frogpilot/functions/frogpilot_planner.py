@@ -152,6 +152,11 @@ class FrogPilotPlanner:
       #   self.latched = False
       #   self.fpf.update_cestatus_distance()
       slowdown_target = v_cruise
+
+    if self.params.get_bool("SetZero"):
+      slowdown_target = 0
+    else:
+      slowdown_target = v_cruise
     
     # Offsets to adjust the max speed to match the cluster
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
