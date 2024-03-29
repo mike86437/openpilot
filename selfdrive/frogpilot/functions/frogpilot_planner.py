@@ -24,6 +24,7 @@ class FrogPilotPlanner:
   def __init__(self, CP, params, params_memory):
     self.CP = CP
     self.params_memory = params_memory
+    self.params = Params()
 
     self.fpf = FrogPilotFunctions()
 
