@@ -154,7 +154,7 @@ class FrogPilotPlanner:
       #   self.latched = False
       #   self.fpf.update_cestatus_distance()
       slowdown_target = v_cruise
-
+    self.params = Params()
     if self.params.get_bool("SetZero"):
       slowdown_target = 0
     else:
