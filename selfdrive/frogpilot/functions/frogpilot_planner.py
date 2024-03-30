@@ -157,6 +157,7 @@ class FrogPilotPlanner:
     self.params = Params()
     if self.params.get_bool("SetZero"):
       slowdown_target = 0
+      print("Set Zero")
     else:
       slowdown_target = v_cruise
     
