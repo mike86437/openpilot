@@ -156,10 +156,10 @@ class FrogPilotPlanner:
       slowdown_target = v_cruise
     self.params = Params()
     if self.params.get_bool("SetZero"):
-      slowdown_target = 0
+      zero_target = 0
       print("Set Zero")
     else:
-      slowdown_target = v_cruise
+      zero_target = v_cruise
     
     # Offsets to adjust the max speed to match the cluster
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
@@ -235,7 +235,7 @@ class FrogPilotPlanner:
     else:
       self.vtsc_target = v_cruise
 
-    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, slowdown_target]
+    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, slowdown_target, zero_target]
     filtered_targets = [target for target in targets if target > CRUISING_SPEED]
 
     return min(filtered_targets + [v_cruise]) if filtered_targets else v_cruise
