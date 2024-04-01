@@ -87,6 +87,8 @@ def frogpilot_thread():
 
       if started:
         frogpilot_plannerd.update_frogpilot_params()
+      else:
+        frogpilot_functions.backup_toggles()
 
     if not time_validated:
       time_validated = system_time_valid()
