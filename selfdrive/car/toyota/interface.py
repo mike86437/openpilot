@@ -163,6 +163,20 @@ class CarInterface(CarInterfaceBase):
       tune.kpV = [0.8, 1.]
       tune.kiBP = [0., 5.]
       tune.kiV = [0.3, 1.]
+    elif params.get_bool("FrogsGoMooTune"):
+      # on stock Toyota this is -2.5
+      ret.stopAccel = -2.5
+      ret.stoppingDecelRate = 0.3
+
+      # In MPH  = [ 0,   30,   50, 65]
+      tune.kiBP = [0., 13.5, 22.3, 29]
+      tune.kpBP = [0., 13.5, 22.3, 29]
+
+      tune.kiV = [.60, .45, .30, .15]
+      tune.kpV = [1.50, 1.00, 0.75, 0.50]
+
+      ret.vEgoStopping = 0.15
+      ret.vEgoStarting = 0.15
     elif (candidate in TSS2_CAR or ret.enableGasInterceptor) and params.get_bool("DragonPilotTune"):
       # Credit goes to the DragonPilot team!
       tune.deadzoneBP = [0., 16., 20., 30.]
