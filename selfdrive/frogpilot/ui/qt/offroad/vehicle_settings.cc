@@ -110,6 +110,8 @@ FrogPilotVehiclesPanel::FrogPilotVehiclesPanel(SettingsWindow *parent) : FrogPil
   });
 
   std::vector<std::tuple<QString, QString, QString, QString>> vehicleToggles {
+    {"LongPitch", tr("Long Pitch Compensation"), tr("Smoothen out the gas and pedal controls."), ""},
+
     {"LongitudinalTune", tr("Longitudinal Tune"), tr("Use a custom Toyota longitudinal tune.\n\nCydia = More focused on TSS-P vehicles but works for all Toyotas\n\nDragonPilot = Focused on TSS2 vehicles\n\nFrogPilot = Takes the best of both worlds with some personal tweaks focused around FrogsGoMoo's 2019 Lexus ES 350"), ""},
   };
 
@@ -242,7 +244,7 @@ void FrogPilotVehiclesPanel::hideToggles() {
   std::set<QString> evCarKeys = {};
   std::set<QString> gmTruckKeys = {};
   std::set<QString> imprezaKeys = {};
-  std::set<QString> longitudinalKeys = {"LongitudinalTune"};
+  std::set<QString> longitudinalKeys = {"LongitudinalTune", "LongPitch"};
   std::set<QString> sngKeys = {};
 
   for (auto &[key, toggle] : toggles) {
