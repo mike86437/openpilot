@@ -15,6 +15,7 @@ from openpilot.system.hardware import HARDWARE
 
 from openpilot.selfdrive.frogpilot.controls.frogpilot_plannerd import FrogPilotPlannerd
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_functions import FrogPilotFunctions
+from openpilot.selfdrive.frogpilot.controls.lib.theme_manager import ThemeManager
 
 WIFI = log.DeviceState.NetworkType.wifi
 
@@ -37,13 +38,15 @@ def github_pinged(url="https://github.com", timeout=5):
   except urllib.error.URLError:
     return False
 
-def time_checks(automatic_updates, deviceState, params):
+def time_checks(automatic_updates, deviceState, params, theme_manager):
   if github_pinged():
     screen_off = deviceState.screenBrightnessPercent == 0
     wifi_connection = deviceState.networkType == WIFI
 
     if automatic_updates and screen_off and wifi_connection:
       automatic_update_check(params)
+
+  theme_manager.update_holiday()
 
 def frogpilot_thread():
   config_realtime_process(5, Priority.CTRL_LOW)
@@ -52,6 +55,7 @@ def frogpilot_thread():
   params_memory = Params("/dev/shm/params")
 
   frogpilot_functions = FrogPilotFunctions()
+  theme_manager = ThemeManager()
 
   CP = None
 
@@ -96,7 +100,7 @@ def frogpilot_thread():
         continue
 
     if datetime.datetime.now().second == 0 or first_run or params_memory.get_bool("ManualUpdateInitiated"):
-      time_check = threading.Thread(target=time_checks, args=(automatic_updates, deviceState, params,))
+      time_check = threading.Thread(target=time_checks, args=(automatic_updates, deviceState, params, theme_manager,))
       time_check.start()
 
       first_run = False
