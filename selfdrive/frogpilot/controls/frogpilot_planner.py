@@ -92,8 +92,14 @@ class FrogPilotPlanner:
     if radarState.leadOne.status and self.CP.openpilotLongitudinalControl:
       base_jerk = get_jerk_factor(self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, controlsState.personality)
       base_t_follow = get_T_FOLLOW(self.custom_personalities, self.aggressive_follow, self.standard_follow, self.relaxed_follow, controlsState.personality)
+      self.safe_obstacle_distance = int(np.mean(get_safe_obstacle_distance(v_ego, self.t_follow)))
+      self.safe_obstacle_distance_stock = int(np.mean(get_safe_obstacle_distance(v_ego, base_t_follow)))
+      self.stopped_equivalence_factor = int(np.mean(get_stopped_equivalence_factor(v_lead)))
       self.jerk, self.t_follow = self.update_follow_values(base_jerk, radarState, base_t_follow, v_ego, v_lead)
     else:
+      self.safe_obstacle_distance = 0
+      self.safe_obstacle_distance_stock = 0
+      self.stopped_equivalence_factor = 0
       self.t_follow = 1.45
 
     self.v_cruise = self.update_v_cruise(carState, controlsState, controlsState.enabled, liveLocationKalman, modelData, road_curvature, v_cruise, v_ego)
@@ -134,7 +140,11 @@ class FrogPilotPlanner:
     frogpilotPlan = frogpilot_plan_send.frogpilotPlan
 
     frogpilotPlan.conditionalExperimental = self.cem.experimental_mode
+    frogpilotPlan.desiredFollowDistance = self.safe_obstacle_distance - self.stopped_equivalence_factor
     frogpilotPlan.jerk = float(self.jerk)
+    frogpilotPlan.safeObstacleDistance = self.safe_obstacle_distance
+    frogpilotPlan.safeObstacleDistanceStock = self.safe_obstacle_distance_stock
+    frogpilotPlan.stoppedEquivalenceFactor = self.stopped_equivalence_factor
     frogpilotPlan.laneWidthLeft = self.lane_width_left
     frogpilotPlan.laneWidthRight = self.lane_width_right
     frogpilotPlan.minAcceleration = self.min_accel
