@@ -1,6 +1,18 @@
 #include "selfdrive/frogpilot/ui/qt/offroad/vehicle_settings.h"
 
 FrogPilotVehiclesPanel::FrogPilotVehiclesPanel(SettingsWindow *parent) : FrogPilotListWidget(parent) {
+  disableOpenpilotLong = new ParamControl("DisableOpenpilotLongitudinal", tr("Disable openpilot Longitudinal Control"), tr("Disable openpilot longitudinal control and use stock ACC instead."), "", this);
+  addItem(disableOpenpilotLong);
+
+  QObject::connect(disableOpenpilotLong, &ToggleControl::toggleFlipped, [=]() {
+    if (started) {
+      if (FrogPilotConfirmationDialog::toggle(tr("Reboot required to take effect."), tr("Reboot Now"), this)) {
+        Hardware::reboot();
+      }
+    }
+    updateCarToggles();
+  });
+
   std::vector<std::tuple<QString, QString, QString, QString>> vehicleToggles {
     {"LongitudinalTune", tr("Longitudinal Tune"), tr("Use a custom Toyota longitudinal tune.\n\nCydia = More focused on TSS-P vehicles but works for all Toyotas\n\nDragonPilot = Focused on TSS2 vehicles\n\nFrogPilot = Takes the best of both worlds with some personal tweaks focused around FrogsGoMoo's 2019 Lexus ES 350"), ""},
   };
@@ -104,6 +116,8 @@ void FrogPilotVehiclesPanel::updateCarToggles() {
 }
 
 void FrogPilotVehiclesPanel::hideToggles() {
+  disableOpenpilotLong->setVisible(hasOpenpilotLongitudinal && !hasExperimentalOpenpilotLongitudinal);
+
   bool gm = carMake == "Buick" || carMake == "Cadillac" || carMake == "Chevrolet" || carMake == "GM" || carMake == "GMC";
   bool subaru = carMake == "Subaru";
   bool toyota = carMake == "Lexus" || carMake == "Toyota";
@@ -118,7 +132,7 @@ void FrogPilotVehiclesPanel::hideToggles() {
     if (toggle) {
       toggle->setVisible(false);
 
-      if (!hasOpenpilotLongitudinal && longitudinalKeys.find(key.c_str()) != longitudinalKeys.end()) {
+      if ((!hasOpenpilotLongitudinal || params.getBool("DisableOpenpilotLongitudinal")) && longitudinalKeys.find(key.c_str()) != longitudinalKeys.end()) {
         continue;
       }
 
