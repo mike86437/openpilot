@@ -40,7 +40,7 @@ private:
   std::set<QString> deviceManagementKeys = {"DeviceShutdown", "LowVoltageShutdown", "MuteOverheated", "NoLogging", "NoUploads", "OfflineMode"};
   std::set<QString> experimentalModeActivationKeys = {"ExperimentalModeViaDistance", "ExperimentalModeViaLKAS", "ExperimentalModeViaTap"};
   std::set<QString> laneChangeKeys = {};
-  std::set<QString> lateralTuneKeys = {"ForceAutoTune"};
+  std::set<QString> lateralTuneKeys = {"ForceAutoTune", "NNFF", "NNFFLite"};
   std::set<QString> longitudinalTuneKeys = {"AccelerationProfile", "AggressiveAcceleration", "DecelerationProfile", "StoppingDistance"};
   std::set<QString> mtscKeys = {"DisableMTSCSmoothing", "MTSCAggressiveness", "MTSCCurvatureCheck"};
   std::set<QString> qolKeys = {"CustomCruise", "DisableOnroadUploads", "HigherBitrate", "ReverseCruise"};
@@ -56,6 +56,8 @@ private:
   Params paramsMemory{"/dev/shm/params"};
 
   bool hasAutoTune;
+  bool hasCommaNNFFSupport;
+  bool hasNNFFLog;
   bool hasOpenpilotLongitudinal;
   bool hasPCMCruise;
   bool isMetric;
