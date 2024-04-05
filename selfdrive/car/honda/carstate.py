@@ -307,13 +307,18 @@ class CarState(CarStateBase):
     if lkas_pressed:
         self.lkas_pressed_counter += 1
     elif self.lkas_previously_pressed:
-      if self.lkas_pressed_counter < CRUISE_LONG_PRESS or (self.set_25 and ret.gasPressed):
+      if self.lkas_pressed_counter < CRUISE_LONG_PRESS:
         self.params.put_bool("Set25", not self.set_25)
         self.set_25 = not self.set_25
       self.lkas_pressed_counter = 0
-    if self.lkas_pressed_counter == CRUISE_LONG_PRESS or (self.set_zero and ret.gasPressed):
+    if self.lkas_pressed_counter == CRUISE_LONG_PRESS:
       self.params.put_bool("SetZero", not self.set_zero)
       self.set_zero = not self.set_zero
+    if (self.set_25 or self.set_zero) and ret.gasPressed:
+      self.params.put_bool("Set25", False)
+      self.set_25 = False
+      self.params.put_bool("SetZero", False)
+      self.set_zero = False
 
     self.lkas_previously_pressed = lkas_pressed
 
