@@ -156,8 +156,7 @@ class FrogPilotPlanner:
       slowdown_target = v_cruise
     self.params = Params()
     if self.params.get_bool("SetZero"):
-      zero_target = 0
-      print("Set Zero")
+      zero_target = 11.176
     else:
       zero_target = v_cruise
     
@@ -238,7 +237,7 @@ class FrogPilotPlanner:
     targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, slowdown_target, zero_target]
     filtered_targets = [target for target in targets if target > CRUISING_SPEED]
 
-    return min(filtered_targets + [v_cruise, zero_target]) if filtered_targets else v_cruise
+    return min(filtered_targets + [v_cruise,, slowdown_target, zero_target]) if filtered_targets else v_cruise
 
   def publish(self, sm, pm, mpc):
     frogpilot_plan_send = messaging.new_message('frogpilotPlan')
