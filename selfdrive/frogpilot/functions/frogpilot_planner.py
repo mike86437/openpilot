@@ -49,6 +49,8 @@ class FrogPilotPlanner:
     self.counter = 0
     self.calc_vrel = MovingAverageCalculator()
     self.delay_vrel = False
+    self.slowdown_target = v_cruise
+    self.zero_target = v_cruise
 
     self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
 
@@ -145,7 +147,7 @@ class FrogPilotPlanner:
       decelRate1 = (v_rel ** 2) / (2 * d_rel) * 2 if use_radar else 0
       decelRate2 = (self.calc_vrel.get_moving_average() ** 2) / (2 * d_rel) * 2 if use_voacc else 0
       decelRate = max(decelRate1, decelRate2)
-      slowdown_target = v_ego - decelRate
+      self.slowdown_target = v_ego - decelRate
       # if not self.latched:
       #   self.fpf.update_cestatus_distance()
       #   self.latched = True
@@ -153,12 +155,14 @@ class FrogPilotPlanner:
       # if self.latched:
       #   self.latched = False
       #   self.fpf.update_cestatus_distance()
-      slowdown_target = v_cruise
+      self.slowdown_target = v_cruise
     self.params = Params()
     if self.params.get_bool("SetZero"):
-      zero_target = 11.176
+      self.zero_target = 0
+    elif self.params.get_bool("Set25"):
+      self.zero_target = 11.176
     else:
-      zero_target = v_cruise
+      self.zero_target = v_cruise
     
     # Offsets to adjust the max speed to match the cluster
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
@@ -234,17 +238,17 @@ class FrogPilotPlanner:
     else:
       self.vtsc_target = v_cruise
 
-    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, slowdown_target, zero_target]
+    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.slowdown_target, self.zero_target]
     filtered_targets = [target for target in targets if target > CRUISING_SPEED]
 
-    return min(filtered_targets + [v_cruise, slowdown_target, zero_target]) if filtered_targets else v_cruise
+    return min(filtered_targets + [v_cruise, self.slowdown_target, self.zero_target]) if filtered_targets else v_cruise
 
   def publish(self, sm, pm, mpc):
     frogpilot_plan_send = messaging.new_message('frogpilotPlan')
     frogpilot_plan_send.valid = sm.all_checks(service_list=['carState', 'controlsState'])
     frogpilotPlan = frogpilot_plan_send.frogpilotPlan
 
-    frogpilotPlan.adjustedCruise = float(min(self.mtsc_target, self.vtsc_target) * (CV.MS_TO_KPH if self.is_metric else CV.MS_TO_MPH))
+    frogpilotPlan.adjustedCruise = float(min(self.mtsc_target, self.vtsc_target, self.slowdown_target, self.zero_target) * (CV.MS_TO_KPH if self.is_metric else CV.MS_TO_MPH))
     frogpilotPlan.conditionalExperimental = self.cem.experimental_mode
 
     frogpilotPlan.desiredFollowDistance = mpc.safe_obstacle_distance - mpc.stopped_equivalence_factor

@@ -506,6 +506,7 @@ class CarStateBase(ABC):
     self.lkas_previously_pressed = False
 
     self.distance_pressed_counter = 0
+    self.lkas_pressed_counter = 0
     self.personality_profile = self.fpf.current_personality
     self.previous_personality_profile = self.personality_profile
 

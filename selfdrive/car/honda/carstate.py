@@ -114,6 +114,7 @@ class CarState(CarStateBase):
     self.dash_speed_seen = False
 
     self.set_zero = False
+    self.set_25 = False
 
   def update(self, cp, cp_cam, cp_body, frogpilot_variables):
     ret = car.CarState.new_message()
@@ -303,9 +304,17 @@ class CarState(CarStateBase):
 
     # Toggle Manual Stop Mode from steering wheel function
     lkas_pressed = self.cruise_setting == 1
-    if (lkas_pressed and not self.lkas_previously_pressed) or (self.set_zero and ret.gasPressed):
+    if lkas_pressed:
+        self.lkas_pressed_counter += 1
+    elif self.lkas_previously_pressed:
+      if self.lkas_pressed_counter < CRUISE_LONG_PRESS or (self.set_25 and ret.gasPressed):
+        self.params.put_bool("Set25", not self.set_25)
+        self.set_25 = not self.set_25
+      self.lkas_pressed_counter = 0
+    if self.lkas_pressed_counter == CRUISE_LONG_PRESS or (self.set_zero and ret.gasPressed):
       self.params.put_bool("SetZero", not self.set_zero)
-      self.set_zero = not self.set_zero
+        self.set_zero = not self.set_zero
+
     self.lkas_previously_pressed = lkas_pressed
 
     return ret
