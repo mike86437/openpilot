@@ -49,8 +49,8 @@ class FrogPilotPlanner:
     self.counter = 0
     self.calc_vrel = MovingAverageCalculator()
     self.delay_vrel = False
-    self.slowdown_target = v_cruise
-    self.zero_target = v_cruise
+    self.slowdown_target = 50
+    self.zero_target = 50
 
     self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
 
