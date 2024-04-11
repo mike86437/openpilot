@@ -22,8 +22,12 @@ private:
   void showEvent(QShowEvent *event, const UIState &s);
   void updateCarToggles();
   void updateMetric();
-  void updateState();
+  void updateState(const UIState &s);
   void updateToggles();
+
+  ButtonControl *deleteModelBtn;
+  ButtonControl *downloadModelBtn;
+  ButtonControl *selectModelBtn;
 
   FrogPilotDualParamControl *aggressiveProfile;
   FrogPilotDualParamControl *conditionalSpeedsImperial;
@@ -60,6 +64,5 @@ private:
   bool isMetric = params.getBool("IsMetric");
   bool isStaging;
   bool isToyota;
-  bool online;
   bool started;
 };
