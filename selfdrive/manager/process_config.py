@@ -5,6 +5,9 @@ from openpilot.common.params import Params
 from openpilot.system.hardware import PC, TICI
 from openpilot.selfdrive.manager.process import PythonProcess, NativeProcess, DaemonProcess
 
+from openpilot.selfdrive.frogpilot.controls.lib.model_manager import RADARLESS_MODELS
+
+RADARLESS = Params().get("Model", encoding='utf-8') in RADARLESS_MODELS
 WEBCAM = os.getenv("USE_WEBCAM") is not None
 
 def driverview(started: bool, params: Params, CP: car.CarParams) -> bool:
@@ -85,7 +88,8 @@ procs = [
   NativeProcess("ubloxd", "system/ubloxd", ["./ubloxd"], ublox, enabled=TICI),
   PythonProcess("pigeond", "system.ubloxd.pigeond", ublox, enabled=TICI),
   PythonProcess("plannerd", "selfdrive.controls.plannerd", only_onroad),
-  PythonProcess("radard", "selfdrive.controls.radard", only_onroad),
+  PythonProcess("radard", "selfdrive.controls.radard", only_onroad, enabled=not RADARLESS),
+  PythonProcess("radardless", "selfdrive.controls.radardless", only_onroad, enabled=RADARLESS),
   PythonProcess("thermald", "selfdrive.thermald.thermald", always_run),
   PythonProcess("tombstoned", "selfdrive.tombstoned", always_run, enabled=not PC),
   PythonProcess("updated", "selfdrive.updated.updated", only_offroad, enabled=not PC),
