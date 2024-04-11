@@ -15,6 +15,7 @@ from openpilot.system.hardware import HARDWARE
 
 from openpilot.selfdrive.frogpilot.controls.frogpilot_plannerd import FrogPilotPlannerd
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_functions import FrogPilotFunctions
+from openpilot.selfdrive.frogpilot.controls.lib.model_manager import DEFAULT_MODEL, DEFAULT_MODEL_NAME, download_model, populate_models
 from openpilot.selfdrive.frogpilot.controls.lib.theme_manager import ThemeManager
 
 WIFI = log.DeviceState.NetworkType.wifi
@@ -40,6 +41,8 @@ def github_pinged(url="https://github.com", timeout=5):
 
 def time_checks(automatic_updates, deviceState, params, theme_manager):
   if github_pinged():
+    populate_models()
+
     screen_off = deviceState.screenBrightnessPercent == 0
     wifi_connection = deviceState.networkType == WIFI
 
@@ -86,8 +89,15 @@ def frogpilot_thread():
                                   sm['liveLocationKalman'], sm['modelV2'], sm['radarState'])
         frogpilot_plannerd.publish(sm, pm)
 
+    if params_memory.get("ModelToDownload", encoding='utf-8') is not None and github_pinged():
+      download_model()
+
     if params_memory.get_bool("FrogPilotTogglesUpdated"):
       automatic_updates = params.get_bool("AutomaticUpdates")
+
+      if not params.get_bool("ModelSelector"):
+        params.put("Model", DEFAULT_MODEL)
+        params.put("ModelName", DEFAULT_MODEL_NAME)
 
       if started:
         frogpilot_plannerd.update_frogpilot_params()
