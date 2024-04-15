@@ -247,6 +247,7 @@ static void update_state(UIState *s) {
     auto frogpilotPlan = sm["frogpilotPlan"].getFrogpilotPlan();
     scene.acceleration_jerk = frogpilotPlan.getAccelerationJerk();
     scene.acceleration_jerk_stock = frogpilotPlan.getAccelerationJerkStock();
+    scene.adjusted_cruise = frogpilotPlan.getAdjustedCruise();
     scene.desired_follow = frogpilotPlan.getDesiredFollowDistance();
     scene.ego_jerk = frogpilotPlan.getEgoJerk();
     scene.ego_jerk_stock = frogpilotPlan.getEgoJerkStock();
@@ -319,6 +320,7 @@ void ui_update_frogpilot_params(UIState *s) {
   scene.custom_signals = custom_theme ? params.getInt("CustomSignals") : 0;
   scene.holiday_themes = custom_theme && params.getBool("HolidayThemes");
 
+  scene.disable_smoothing_mtsc = params.getBool("MTSCEnabled") && params.getBool("DisableMTSCSmoothing");
   scene.experimental_mode_via_screen = scene.longitudinal_control && params.getBool("ExperimentalModeActivation") && params.getBool("ExperimentalModeViaTap");
 
   scene.model_ui = params.getBool("ModelUI");
