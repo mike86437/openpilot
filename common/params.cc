@@ -413,6 +413,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"StandbyMode", PERSISTENT},
     {"StockTune", PERSISTENT},
     {"StoppingDistance", PERSISTENT},
+    {"TacoTune", PERSISTENT},
     {"TetheringEnabled", PERSISTENT},
     {"ToyotaDoors", PERSISTENT},
     {"UnlimitedLength", PERSISTENT},
