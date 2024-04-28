@@ -211,6 +211,7 @@ typedef struct UIScene {
   bool live_valid;
   bool map_open;
   bool model_ui;
+  bool mute_dm;
   bool numerical_temp;
   bool online;
   bool onroad_distance_button;
