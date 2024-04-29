@@ -212,6 +212,7 @@ class Controls:
     self.previous_speed_limit = 0
     self.random_event_timer = 0
     self.speed_limit_timer = 0
+    self.set_25 = False
 
     self.green_light_mac = MovingAverageCalculator()
 
@@ -1113,6 +1114,8 @@ class Controls:
         conditional_status = self.params_memory.get_int("CEStatus")
         override_value = 0 if conditional_status in {1, 2, 3, 4, 5, 6} else 3 if conditional_status >= 7 else 4
         self.params_memory.put_int("CEStatus", override_value)
+        self.params.put_bool("Set25", not self.set_25)
+        self.set_25 = not self.set_25
       else:
         self.params.put_bool_nonblocking("ExperimentalMode", not self.experimental_mode)
 
