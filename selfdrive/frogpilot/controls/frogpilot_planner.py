@@ -74,7 +74,7 @@ class FrogPilotPlanner:
     self.slc_target = 0
     self.t_follow = 0
     self.vtsc_target = 0
-    self.25_target = 50
+    self.target25 = 50
 
   def update(self, carState, controlsState, frogpilotCarControl, frogpilotNavigation, liveLocationKalman, modelData, radarState):
     v_cruise_kph = min(controlsState.vCruise, V_CRUISE_MAX)
