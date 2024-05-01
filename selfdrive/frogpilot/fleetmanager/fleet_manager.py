@@ -342,7 +342,7 @@ def main():
   except Exception:
     cloudlog.exception("fleet_manager: failed to set core affinity")
   app.secret_key = secrets.token_hex(32)
-  app.run(host="0.0.0.0", port=8082)
+  app.run(host="0.0.0.0", port=80)
 
 
 if __name__ == '__main__':
