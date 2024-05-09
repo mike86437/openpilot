@@ -204,6 +204,7 @@ class CarInterface(CarInterfaceBase):
 
     elif candidate == CAR.CLARITY:
       ret.safetyConfigs[0].safetyParam |= Panda.FLAG_HONDA_CLARITY
+      print("clarity panda flag")
       if eps_modified:
         for fw in car_fw:
           if fw.ecu == "eps" and b"-" not in fw.fwVersion and b"," in fw.fwVersion:
