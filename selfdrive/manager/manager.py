@@ -56,13 +56,14 @@ def manager_init(frogpilot_functions) -> None:
 
   params = Params()
   params_storage = Params("/persist/params")
+  params_tracking = Params("/persist/tracking")
   params.clear_all(ParamKeyType.CLEAR_ON_MANAGER_START)
   params.clear_all(ParamKeyType.CLEAR_ON_ONROAD_TRANSITION)
   params.clear_all(ParamKeyType.CLEAR_ON_OFFROAD_TRANSITION)
   if is_release_branch():
     params.clear_all(ParamKeyType.DEVELOPMENT_ONLY)
 
-  frogpilot_functions.convert_params(params, params_storage)
+  frogpilot_functions.convert_params(params, params_storage, params_tracking)
 
   default_params: list[tuple[str, str | bytes]] = [
     ("CarParamsPersistent", ""),
@@ -311,13 +312,30 @@ def manager_init(frogpilot_functions) -> None:
 
   # set unset params
   for k, v in default_params:
-    if params.get(k) is None:
+    if params.get(k) is None or params.get_bool("DoToggleReset"):
       if params_storage.get(k) is None:
         params.put(k, v)
       else:
         params.put(k, params_storage.get(k))
     else:
       params_storage.put(k, params.get(k))
+
+  params.put_bool("DoToggleReset", False)
+
+  tracking_params: list[tuple[str, str | bytes]] = [
+    ("FrogPilotDrives", "0"),
+    ("FrogPilotKilometers", "0"),
+    ("FrogPilotMinutes", "0"),
+  ]
+
+  for k, v in tracking_params:
+    if params.get(k) is None:
+      if params_tracking.get(k) is None:
+        params.put(k, v)
+      else:
+        params.put(k, params_tracking.get(k))
+    else:
+      params_tracking.put(k, params.get(k))
 
   # Create folders needed for msgq
   try:

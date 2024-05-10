@@ -117,9 +117,21 @@ class FrogPilotFunctions:
       cls.run_cmd(cmd, f"Successfully backed up toggles to {backup_folder_name}.", f"Failed to backup toggles to {backup_folder_name}.")
 
   @classmethod
-  def convert_params(cls, params, params_storage):
+  def convert_params(cls, params, params_storage, params_tracking):
     if params.get("InstallDate") == "November 21, 2023 - 02:10PM":
       params.remove("InstallDate")
+
+    param_mappings = {
+      "FrogPilotDrives": (params_storage.get_int, params_tracking.put_int),
+      "FrogPilotKilometers": (params_storage.get_float, params_tracking.put_float),
+      "FrogPilotMinutes": (params_storage.get_float, params_tracking.put_float)
+    }
+
+    for key, (getter, setter) in param_mappings.items():
+      value = getter(key)
+      if value is not None:
+        setter(key, value)
+        params_storage.remove(key)
 
     version = 1
 
