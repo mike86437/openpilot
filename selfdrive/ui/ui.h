@@ -266,6 +266,7 @@ typedef struct UIScene {
   float lat_accel;
   float path_edge_width;
   float path_width;
+  float road_edge_width;
   float speed_jerk;
   float speed_jerk_difference;
   float speed_limit;
