@@ -108,7 +108,9 @@ class FrogPilotPlanner:
       self.cem.update(carState, controlsState.enabled, frogpilotNavigation, self.lead_one, modelData, self.road_curvature, self.t_follow, v_ego, frogpilot_toggles)
 
   def update_follow_values(self, v_ego, v_lead, frogpilot_toggles):
-    lead_distance = self.lead_one.dRel
+    distance_offset = max(frogpilot_toggles.increased_stopping_distance + min(CITY_SPEED_LIMIT - v_ego, 0), 0)
+    lead_distance = self.lead_one.dRel - distance_offset
+    stopping_distance = STOP_DISTANCE + distance_offset
 
     # Offset by FrogAi for FrogPilot for a more natural approach to a faster lead
     if frogpilot_toggles.aggressive_acceleration_experimental and v_lead > v_ego:
