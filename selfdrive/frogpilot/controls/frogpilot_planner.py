@@ -54,9 +54,7 @@ def get_max_accel_sport(v_ego):
   return interp(v_ego, A_CRUISE_MAX_BP_CUSTOM, A_CRUISE_MAX_VALS_SPORT)
 
 class FrogPilotPlanner:
-  def __init__(self, CP):
-    self.CP = CP
-
+  def __init__(self):
     self.params_memory = Params("/dev/shm/params")
 
     self.cem = ConditionalExperimentalMode()
@@ -112,11 +110,10 @@ class FrogPilotPlanner:
       else:
         self.max_accel = get_max_accel(v_ego)
 
-    if v_cruise_changed:
-      if controlsState.experimentalMode:
-        self.min_accel = ACCEL_MIN
-      else:
-        self.min_accel = A_CRUISE_MIN
+    if controlsState.experimentalMode:
+      self.min_accel = ACCEL_MIN
+    elif v_cruise_changed:
+      self.min_accel = A_CRUISE_MIN
     elif frogpilot_toggles.map_deceleration and (eco_gear or sport_gear):
       if eco_gear:
         self.min_accel = get_min_accel_eco(v_ego)
@@ -127,8 +124,6 @@ class FrogPilotPlanner:
         self.min_accel = get_min_accel_eco(v_ego)
       elif frogpilot_toggles.deceleration_profile == 2:
         self.min_accel = get_min_accel_sport(v_ego)
-      elif controlsState.experimentalMode:
-        self.min_accel = ACCEL_MIN
       else:
         self.min_accel = A_CRUISE_MIN
 
@@ -150,15 +145,13 @@ class FrogPilotPlanner:
                                                                           frogpilot_toggles.standard_jerk_acceleration, frogpilot_toggles.standard_jerk_speed,
                                                                           frogpilot_toggles.relaxed_jerk_acceleration, frogpilot_toggles.relaxed_jerk_speed,
                                                                           controlsState.personality)
-
       self.t_follow = get_T_FOLLOW(frogpilot_toggles.custom_personalities, frogpilot_toggles.aggressive_follow,
                                    frogpilot_toggles.standard_follow, frogpilot_toggles.relaxed_follow, controlsState.personality)
 
-    if self.lead_one.status and self.CP.openpilotLongitudinalControl:
-      self.update_follow_values(frogpilotCarControl.trafficModeActive, v_ego, v_lead, frogpilot_toggles)
-
-      self.safe_obstacle_distance = int(np.mean(get_safe_obstacle_distance(v_ego, self.t_follow)))
+    if self.lead_one.status:
       self.safe_obstacle_distance_stock = int(np.mean(get_safe_obstacle_distance(v_ego, self.t_follow)))
+      self.update_follow_values(frogpilotCarControl.trafficModeActive, v_ego, v_lead, frogpilot_toggles)
+      self.safe_obstacle_distance = int(np.mean(get_safe_obstacle_distance(v_ego, self.t_follow)))
       self.stopped_equivalence_factor = int(np.mean(get_stopped_equivalence_factor(v_lead)))
     else:
       self.acceleration_jerk = self.base_acceleration_jerk
@@ -174,17 +167,17 @@ class FrogPilotPlanner:
       self.cem.update(carState, controlsState.enabled, frogpilotNavigation, self.lead_one, modelData, self.road_curvature, self.t_follow, v_ego, frogpilot_toggles)
 
   def update_follow_values(self, trafficModeActive, v_ego, v_lead, frogpilot_toggles):
-    distance_offset = frogpilot_toggles.increased_stopping_distance + min(CITY_SPEED_LIMIT - v_ego, 0) if not trafficModeActive else 0
+    distance_offset = max(frogpilot_toggles.increased_stopping_distance + min(CITY_SPEED_LIMIT - v_ego, 0), 0) if not trafficModeActive else 0
     lead_distance = self.lead_one.dRel - distance_offset
     stopping_distance = STOP_DISTANCE + distance_offset
 
     # Offset by FrogAi for FrogPilot for a more natural approach to a faster lead
     if frogpilot_toggles.aggressive_acceleration_experimental and v_lead > v_ego:
       distance_factor = np.maximum(lead_distance - (v_ego * self.t_follow), 1)
-      standstill_offset = max(stopping_distance - v_ego, 0)
-      acceleration_offset = np.clip((v_lead - v_ego) + (standstill_offset * max(v_lead - v_ego, 0)) - COMFORT_BRAKE, 1, distance_factor)
-      self.acceleration_jerk /= acceleration_offset
-      self.speed_jerk /= acceleration_offset
+      standstill_offset = max(stopping_distance - v_ego, 0) * max(v_lead - v_ego, 0)
+      acceleration_offset = np.clip((v_lead - v_ego) + standstill_offset - COMFORT_BRAKE, 1, distance_factor)
+      self.acceleration_jerk = self.base_acceleration_jerk / acceleration_offset
+      self.speed_jerk = self.base_speed_jerk / acceleration_offset
       self.t_follow /= acceleration_offset
     elif frogpilot_toggles.aggressive_acceleration and v_lead > v_ego:
       distance_factor = np.maximum(lead_distance - (v_lead * self.t_follow), 1)
@@ -198,8 +191,8 @@ class FrogPilotPlanner:
       far_lead_offset = max(lead_distance - (v_ego * self.t_follow) - stopping_distance + (v_lead - CITY_SPEED_LIMIT), 0) if frogpilot_toggles.smoother_braking_far_lead else 0
       braking_offset = np.clip((v_ego - v_lead) + far_lead_offset - COMFORT_BRAKE, 1, distance_factor)
       if frogpilot_toggles.smoother_braking_jerk:
-        self.acceleration_jerk *= np.minimum(braking_offset, COMFORT_BRAKE / 2)
-        self.speed_jerk *= np.minimum(braking_offset, COMFORT_BRAKE * 2)
+        self.acceleration_jerk = self.base_acceleration_jerk * np.minimum(braking_offset, COMFORT_BRAKE / 2)
+        self.speed_jerk = self.base_speed_jerk * np.minimum(braking_offset, COMFORT_BRAKE * 2)
       self.t_follow /= braking_offset
 
   def update_v_cruise(self, carState, controlsState, enabled, frogpilotCarState, frogpilotNavigation, liveLocationKalman, modelData, v_cruise, v_ego, frogpilot_toggles):

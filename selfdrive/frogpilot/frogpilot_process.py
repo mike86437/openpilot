@@ -8,7 +8,7 @@ import urllib.request
 
 import cereal.messaging as messaging
 
-from cereal import car, log
+from cereal import log
 from openpilot.common.params import Params
 from openpilot.common.realtime import DT_MDL, Priority, config_realtime_process
 from openpilot.common.time import system_time_valid
@@ -80,9 +80,9 @@ def frogpilot_thread(frogpilot_toggles):
   params_memory = Params("/dev/shm/params")
 
   frogpilot_functions = FrogPilotFunctions()
+  frogpilot_planner = FrogPilotPlanner()
   theme_manager = ThemeManager()
 
-  CP = None
   current_day = None
 
   first_run = True
@@ -102,16 +102,10 @@ def frogpilot_thread(frogpilot_toggles):
     deviceState = sm['deviceState']
     started = deviceState.started
 
-    if started:
-      if CP is None:
-        with car.CarParams.from_bytes(params.get("CarParams", block=True)) as msg:
-          CP = msg
-          frogpilot_planner = FrogPilotPlanner(CP)
-
-      if sm.updated['modelV2']:
-        frogpilot_planner.update(sm['carState'], sm['controlsState'], sm['frogpilotCarControl'], sm['frogpilotCarState'],
-                                 sm['frogpilotNavigation'], sm['liveLocationKalman'], sm['modelV2'], sm['radarState'], frogpilot_toggles)
-        frogpilot_planner.publish(sm, pm, frogpilot_toggles)
+    if started and sm.updated['modelV2']:
+      frogpilot_planner.update(sm['carState'], sm['controlsState'], sm['frogpilotCarControl'], sm['frogpilotCarState'],
+                               sm['frogpilotNavigation'], sm['liveLocationKalman'], sm['modelV2'], sm['radarState'], frogpilot_toggles)
+      frogpilot_planner.publish(sm, pm, frogpilot_toggles)
 
     if params_memory.get("ModelToDownload", encoding='utf-8') is not None:
       download_model()
