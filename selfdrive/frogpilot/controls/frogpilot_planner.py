@@ -62,6 +62,7 @@ class FrogPilotPlanner:
     self.mtsc = MapTurnSpeedController()
 
     self.override_slc = False
+    self.slower_lead = False
 
     self.acceleration_jerk = 0
     self.base_acceleration_jerk = 0
@@ -164,7 +165,7 @@ class FrogPilotPlanner:
     self.v_cruise = self.update_v_cruise(carState, controlsState, controlsState.enabled, frogpilotCarState, frogpilotNavigation, liveLocationKalman, modelData, v_cruise, v_ego, frogpilot_toggles)
 
     if frogpilot_toggles.conditional_experimental_mode or frogpilot_toggles.green_light_alert:
-      self.cem.update(carState, controlsState.enabled, frogpilotNavigation, self.lead_one, modelData, self.road_curvature, self.t_follow, v_ego, frogpilot_toggles)
+      self.cem.update(carState, controlsState.enabled, frogpilotNavigation, self.lead_one, modelData, self.road_curvature, self.slower_lead, v_ego, frogpilot_toggles)
 
   def update_follow_values(self, trafficModeActive, v_ego, v_lead, frogpilot_toggles):
     distance_offset = max(frogpilot_toggles.increased_stopping_distance + min(CITY_SPEED_LIMIT - v_ego, 0), 0) if not trafficModeActive else 0
@@ -186,14 +187,16 @@ class FrogPilotPlanner:
       self.t_follow /= acceleration_offset
 
     # Offset by FrogAi for FrogPilot for a more natural approach to a slower lead
-    if frogpilot_toggles.smoother_braking and v_lead < v_ego:
+    if (frogpilot_toggles.conditional_experimental_mode or frogpilot_toggles.smoother_braking) and v_lead < v_ego:
       distance_factor = np.maximum(lead_distance - (v_lead * self.t_follow), 1)
       far_lead_offset = max(lead_distance - (v_ego * self.t_follow) - stopping_distance + (v_lead - CITY_SPEED_LIMIT), 0) if frogpilot_toggles.smoother_braking_far_lead else 0
       braking_offset = np.clip((v_ego - v_lead) + far_lead_offset - COMFORT_BRAKE, 1, distance_factor)
-      if frogpilot_toggles.smoother_braking_jerk:
-        self.acceleration_jerk = self.base_acceleration_jerk * np.minimum(braking_offset, COMFORT_BRAKE / 2)
-        self.speed_jerk = self.base_speed_jerk * np.minimum(braking_offset, COMFORT_BRAKE * 2)
-      self.t_follow /= braking_offset
+      if frogpilot_toggles.smoother_braking:
+        self.t_follow /= braking_offset
+        if frogpilot_toggles.smoother_braking_jerk:
+          self.acceleration_jerk = self.base_acceleration_jerk * np.minimum(braking_offset, COMFORT_BRAKE / 2)
+          self.speed_jerk = self.base_speed_jerk * np.minimum(braking_offset, COMFORT_BRAKE * 2)
+      self.slower_lead = np.clip(braking_offset - far_lead_offset, 1, distance_factor) > 1
 
   def update_v_cruise(self, carState, controlsState, enabled, frogpilotCarState, frogpilotNavigation, liveLocationKalman, modelData, v_cruise, v_ego, frogpilot_toggles):
     gps_check = (liveLocationKalman.status == log.LiveLocationKalman.Status.valid) and liveLocationKalman.positionGeodetic.valid and liveLocationKalman.gpsOK

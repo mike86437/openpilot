@@ -32,7 +32,7 @@ class ConditionalExperimentalMode:
     self.slowing_down_mac = MovingAverageCalculator()
     self.stop_light_mac = MovingAverageCalculator()
 
-  def update(self, carState, enabled, frogpilotNavigation, lead, modelData, road_curvature, t_follow, v_ego, frogpilot_toggles):
+  def update(self, carState, enabled, frogpilotNavigation, lead, modelData, road_curvature, slower_lead, v_ego, frogpilot_toggles):
     lead_distance = lead.dRel
     standstill = carState.standstill
     v_lead = lead.vLead
@@ -42,7 +42,7 @@ class ConditionalExperimentalMode:
     else:
       overridden = 0
 
-    self.update_conditions(lead_distance, lead.status, modelData, road_curvature, standstill, t_follow, v_ego, v_lead, frogpilot_toggles)
+    self.update_conditions(lead_distance, lead.status, modelData, road_curvature, standstill, slower_lead, v_ego, v_lead, frogpilot_toggles)
 
     condition_met = self.check_conditions(carState, frogpilotNavigation, lead, modelData, standstill, v_ego, frogpilot_toggles) and enabled
     if condition_met and overridden not in {1, 3, 5} or overridden in {2, 4, 6}:
@@ -96,10 +96,10 @@ class ConditionalExperimentalMode:
 
     return False
 
-  def update_conditions(self, lead_distance, lead_status, modelData, road_curvature, standstill, t_follow, v_ego, v_lead, frogpilot_toggles):
+  def update_conditions(self, lead_distance, lead_status, modelData, road_curvature, standstill, slower_lead, v_ego, v_lead, frogpilot_toggles):
     self.lead_detection(lead_status)
     self.road_curvature(road_curvature, v_ego, frogpilot_toggles)
-    self.slow_lead(lead_distance, t_follow, v_ego)
+    self.slow_lead(slower_lead)
     self.stop_sign_and_light(lead_distance, modelData, standstill, v_ego, v_lead, frogpilot_toggles)
 
   def lead_detection(self, lead_status):
@@ -136,11 +136,9 @@ class ConditionalExperimentalMode:
       self.curvature_mac.reset_data()
       self.curve_detected = False
 
-  def slow_lead(self, lead_distance, t_follow, v_ego):
+  def slow_lead(self, slower_lead):
     if self.lead_detected:
-      slower_lead_ahead = lead_distance < (v_ego - 1) * t_follow
-
-      self.slow_lead_mac.add_data(slower_lead_ahead)
+      self.slow_lead_mac.add_data(slower_lead)
       self.slower_lead_detected = self.slow_lead_mac.get_moving_average() >= PROBABILITY
     else:
       self.slow_lead_mac.reset_data()
