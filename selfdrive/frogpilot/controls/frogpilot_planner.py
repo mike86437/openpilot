@@ -265,7 +265,7 @@ class FrogPilotPlanner:
       return min(filtered_targets)
     # Check if v_ego is greater than v_cruise and limit it to max 5 over v_cruise
     elif v_ego > v_cruise:
-      return min(v_ego - 0.01, v_cruise + 2.2352)
+      return min(v_ego - 0.5, v_cruise + 2.2352)
     # Default case: return v_cruise
     else:
       return v_cruise
