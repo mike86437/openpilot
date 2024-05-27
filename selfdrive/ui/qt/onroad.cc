@@ -924,6 +924,7 @@ void AnnotatedCameraWidget::drawLaneLines(QPainter &painter, const UIState *s) {
   painter.save();
 
   SubMaster &sm = *(s->sm);
+  const float v_ego = sm["carState"].getCarState().getVEgo();
 
   // lanelines
   for (int i = 0; i < std::size(scene.lane_line_vertices); ++i) {
@@ -1010,7 +1011,7 @@ void AnnotatedCameraWidget::drawLaneLines(QPainter &painter, const UIState *s) {
     // Test Rainbow Path
     const float hue_shift_speed = 1.1; // Adjust this value to control the speed of the rainbow scroll
     static float hue_base = 0.0; // Base hue that changes over time
-    hue_base = fmod(hue_base + hue_shift_speed, 360.0); // Update base hue to create scrolling effect
+    hue_base = fmod(hue_base + v_ego * hue_shift_speed, 360.0); // Update base hue to create scrolling effect
 
     for (int i = 0; i <= 50; ++i) { // Create 50 gradient stops for a smooth rainbow
       float position = static_cast<float>(i) / 50.0; // Position of the gradient stop
