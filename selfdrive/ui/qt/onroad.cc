@@ -1009,7 +1009,7 @@ void AnnotatedCameraWidget::drawLaneLines(QPainter &painter, const UIState *s) {
     }
   } else {
     // Test Rainbow Path
-    const float hue_shift_speed = 1.1; // Adjust this value to control the speed of the rainbow scroll
+    const float hue_shift_speed = 0.5; // Adjust this value to control the speed of the rainbow scroll
     static float hue_base = 0.0; // Base hue that changes over time
     hue_base = fmod(hue_base + v_ego * hue_shift_speed, 360.0); // Update base hue to create scrolling effect
 
