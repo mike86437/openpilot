@@ -1007,9 +1007,16 @@ void AnnotatedCameraWidget::drawLaneLines(QPainter &painter, const UIState *s) {
       bg.setColorAt(entry.first, entry.second.color());
     }
   } else {
-    bg.setColorAt(0.0, QColor::fromHslF(148 / 360., 0.94, 0.51, 0.4));
-    bg.setColorAt(0.5, QColor::fromHslF(112 / 360., 1.0, 0.68, 0.35));
-    bg.setColorAt(1.0, QColor::fromHslF(112 / 360., 1.0, 0.68, 0.0));
+    // Test Rainbow Path
+    const float hue_shift_speed = 0.1; // Adjust this value to control the speed of the rainbow scroll
+    float hue_base = fmod(5 * hue_shift_speed, 360.0); // Calculate base hue based on v_ego
+
+    for (int i = 0; i <= 10; ++i) { // Create 10 gradient stops for a smooth rainbow
+      float position = static_cast<float>(i) / 10.0; // Position of the gradient stop
+      float hue = fmod(hue_base + position * 360.0, 360.0); // Calculate the hue for the current position
+      QColor color = QColor::fromHslF(hue / 360.0, 1.0, 0.5, 1.0); // Create the color with full saturation and 50% lightness
+      bg.setColorAt(position, color); // Set the gradient stop
+    }
   }
 
   painter.setBrush(bg);
