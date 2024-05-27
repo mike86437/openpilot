@@ -818,6 +818,7 @@ void AnnotatedCameraWidget::drawLaneLines(QPainter &painter, const UIState *s) {
   painter.save();
 
   SubMaster &sm = *(s->sm);
+  const float v_ego = sm["carState"].getCarState().getVEgo();
 
   // lanelines
   for (int i = 0; i < std::size(scene.lane_line_vertices); ++i) {
@@ -906,9 +907,17 @@ void AnnotatedCameraWidget::drawLaneLines(QPainter &painter, const UIState *s) {
     }
 
   } else {
-    bg.setColorAt(0.0, QColor::fromHslF(148 / 360., 0.94, 0.51, 0.4));
-    bg.setColorAt(0.5, QColor::fromHslF(112 / 360., 1.0, 0.68, 0.35));
-    bg.setColorAt(1.0, QColor::fromHslF(112 / 360., 1.0, 0.68, 0.0));
+    // Test Rainbow Path
+    const float hue_shift_speed = 0.5; // Adjust this value to control the speed of the rainbow scroll
+    static float hue_base = 0.0; // Base hue that changes over time
+    hue_base = fmod(hue_base + v_ego * hue_shift_speed, 360.0); // Update base hue to create scrolling effect
+
+    for (int i = 0; i <= 50; ++i) { // Create 50 gradient stops for a smooth rainbow
+      float position = static_cast<float>(i) / 50.0; // Position of the gradient stop
+      float hue = fmod(hue_base + position * 360.0, 360.0); // Calculate the hue for the current position
+      QColor color = QColor::fromHslF(hue / 360.0, 1.0, 0.5, 1.0); // Create the color with full saturation and 50% lightness
+      bg.setColorAt(position, color); // Set the gradient stop
+    }
   }
 
   painter.setBrush(bg);
