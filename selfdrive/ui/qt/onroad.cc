@@ -1008,11 +1008,12 @@ void AnnotatedCameraWidget::drawLaneLines(QPainter &painter, const UIState *s) {
     }
   } else {
     // Test Rainbow Path
-    const float hue_shift_speed = 0.1; // Adjust this value to control the speed of the rainbow scroll
-    float hue_base = fmod(5 * hue_shift_speed, 360.0); // Calculate base hue based on v_ego
+    const float hue_shift_speed = 1.1; // Adjust this value to control the speed of the rainbow scroll
+    static float hue_base = 0.0; // Base hue that changes over time
+    hue_base = fmod(hue_base + hue_shift_speed, 360.0); // Update base hue to create scrolling effect
 
-    for (int i = 0; i <= 10; ++i) { // Create 10 gradient stops for a smooth rainbow
-      float position = static_cast<float>(i) / 10.0; // Position of the gradient stop
+    for (int i = 0; i <= 50; ++i) { // Create 50 gradient stops for a smooth rainbow
+      float position = static_cast<float>(i) / 50.0; // Position of the gradient stop
       float hue = fmod(hue_base + position * 360.0, 360.0); // Calculate the hue for the current position
       QColor color = QColor::fromHslF(hue / 360.0, 1.0, 0.5, 1.0); // Create the color with full saturation and 50% lightness
       bg.setColorAt(position, color); // Set the gradient stop
