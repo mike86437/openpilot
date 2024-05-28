@@ -55,6 +55,7 @@ def get_max_accel_sport(v_ego):
 
 class FrogPilotPlanner:
   def __init__(self):
+    self.params = Params()
     self.params_memory = Params("/dev/shm/params")
 
     self.cem = ConditionalExperimentalMode()
