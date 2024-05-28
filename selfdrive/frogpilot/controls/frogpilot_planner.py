@@ -261,7 +261,7 @@ class FrogPilotPlanner:
     filtered_targets = [target if target > CRUISING_SPEED else v_cruise for target in targets]
 
     # Check if all filtered targets are less than v_cruise
-    if all(target < v_cruise for target in filtered_targets):
+    if any(target < v_cruise for target in filtered_targets):
       return min(filtered_targets)
     # Check if v_ego is greater than v_cruise and limit it to max 5 over v_cruise
     elif v_ego > v_cruise:
