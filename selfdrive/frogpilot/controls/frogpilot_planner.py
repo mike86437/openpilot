@@ -74,6 +74,7 @@ class FrogPilotPlanner:
     self.speed_jerk = 0
     self.t_follow = 0
     self.vtsc_target = 0
+    self.target25 = 50
 
   def update(self, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, liveLocationKalman, modelData, radarState, frogpilot_toggles):
     if frogpilot_toggles.radarless_model:
@@ -207,6 +208,11 @@ class FrogPilotPlanner:
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
     v_ego_diff = v_ego_cluster - v_ego
 
+    if self.params.get_bool("Set25"):
+      self.target25 = 11.176
+    else:
+      self.target25 = v_cruise
+
     # Pfeiferj's Map Turn Speed Controller
     if frogpilot_toggles.map_turn_speed_controller and v_ego > CRUISING_SPEED and enabled and gps_check:
       mtsc_active = self.mtsc_target < v_cruise
@@ -257,7 +263,7 @@ class FrogPilotPlanner:
     else:
       self.vtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
 
-    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target]
+    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.target25]
     filtered_targets = [target if target > CRUISING_SPEED else v_cruise for target in targets]
 
     # Check if all filtered targets are less than v_cruise
@@ -277,7 +283,7 @@ class FrogPilotPlanner:
 
     frogpilotPlan.accelerationJerk = A_CHANGE_COST * float(self.acceleration_jerk)
     frogpilotPlan.accelerationJerkStock = A_CHANGE_COST * float(self.base_acceleration_jerk)
-    frogpilotPlan.adjustedCruise = float(min(self.mtsc_target, self.vtsc_target) * (CV.MS_TO_KPH if frogpilot_toggles.is_metric else CV.MS_TO_MPH))
+    frogpilotPlan.adjustedCruise = float(min(self.mtsc_target, self.vtsc_target, self.target25) * (CV.MS_TO_KPH if frogpilot_toggles.is_metric else CV.MS_TO_MPH))
     frogpilotPlan.conditionalExperimental = self.cem.experimental_mode
     frogpilotPlan.desiredFollowDistance = self.safe_obstacle_distance - self.stopped_equivalence_factor
     frogpilotPlan.laneWidthLeft = self.lane_width_left
