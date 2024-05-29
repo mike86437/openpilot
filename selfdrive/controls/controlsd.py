@@ -1121,7 +1121,7 @@ class Controls:
 
     if any(be.pressed and be.type == FrogPilotButtonType.lkas for be in CS.buttonEvents):
       self.target_25 = not self.target_25
-      self.params.put_bool("Set25", not self.target_25)
+      self.params.put_bool("Set25", self.target_25)
 
     self.previously_enabled |= (self.enabled or self.FPCC.alwaysOnLateral) and CS.vEgo > CRUISING_SPEED
     self.previously_enabled &= self.driving_gear
