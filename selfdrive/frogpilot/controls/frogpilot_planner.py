@@ -298,7 +298,7 @@ class FrogPilotPlanner:
     frogpilotPlan.speedJerkStock = J_EGO_COST * float(self.base_speed_jerk)
     frogpilotPlan.tFollow = float(self.t_follow)
 
-    frogpilotPlan.adjustedCruise = float(min(self.mtsc_target, self.vtsc_target, self.slowdown_target) * (CV.MS_TO_KPH if frogpilot_toggles.is_metric else CV.MS_TO_MPH))
+    frogpilotPlan.adjustedCruise = float(min(self.mtsc_target, self.vtsc_target, self.target25, self.slowdown_target) * (CV.MS_TO_KPH if frogpilot_toggles.is_metric else CV.MS_TO_MPH))
 
     frogpilotPlan.conditionalExperimental = self.cem.experimental_mode
     frogpilotPlan.redLight = self.cem.red_light_detected
