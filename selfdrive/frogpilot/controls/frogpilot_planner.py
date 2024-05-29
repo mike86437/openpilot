@@ -214,6 +214,17 @@ class FrogPilotPlanner:
     else:
       self.target25 = v_cruise
 
+    lead = self.lead_one
+    d_rel = lead.dRel
+    v_lead = lead.vLead
+    v_rel = v_ego - v_lead
+
+    if d_rel > 25 and v_rel > 11:
+      decelRate = (v_rel ** 2) / (2 * d_rel) * 2
+      slowdown_target = v_ego - decelRate
+    else:
+      slowdown_target = v_cruise
+
     # Pfeiferj's Map Turn Speed Controller
     if frogpilot_toggles.map_turn_speed_controller and v_ego > CRUISING_SPEED and enabled and gps_check:
       mtsc_active = self.mtsc_target < v_cruise
@@ -264,7 +275,7 @@ class FrogPilotPlanner:
     else:
       self.vtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
 
-    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.target25]
+    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.target25, slowdown_target]
     filtered_targets = [target if target > CRUISING_SPEED else v_cruise for target in targets]
 
     # Check if all filtered targets are less than v_cruise
