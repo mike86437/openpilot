@@ -53,6 +53,7 @@ def get_max_accel_sport(v_ego):
 class FrogPilotPlanner:
   def __init__(self):
     self.params_memory = Params("/dev/shm/params")
+    self.params = Params()
 
     self.cem = ConditionalExperimentalMode()
     self.lead_one = Lead()
@@ -72,6 +73,7 @@ class FrogPilotPlanner:
     self.speed_jerk = 0
     self.vtsc_target = 0
     self.slowdown_target = 50
+    self.target25 = 50
 
   def update(self, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, liveLocationKalman, modelData, radarState, frogpilot_toggles):
     if frogpilot_toggles.radarless_model:
@@ -215,6 +217,12 @@ class FrogPilotPlanner:
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
     v_ego_diff = v_ego_cluster - v_ego
 
+    # LKAS btn target 25 mph
+    if self.params.get_bool("Set25"):
+      self.target25 = 11.176
+    else:
+      self.target25 = v_cruise
+
     # Extended lead linear braking
     lead = self.lead_one
     d_rel = lead.dRel
@@ -274,7 +282,7 @@ class FrogPilotPlanner:
     else:
       self.vtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
 
-    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.slowdown_target]
+    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.target25, self.slowdown_target]
     filtered_targets = [target if target > CRUISING_SPEED else v_cruise for target in targets]
 
     return min(filtered_targets)
