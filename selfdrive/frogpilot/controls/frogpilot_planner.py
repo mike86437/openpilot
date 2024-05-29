@@ -220,7 +220,7 @@ class FrogPilotPlanner:
     v_lead = lead.vLead
     v_rel = v_ego - v_lead
 
-    if d_rel > 25 and v_rel > 11:
+    if d_rel > 20 and v_rel > 5:
       decelRate = (v_rel ** 2) / (2 * d_rel) * 2
       self.slowdown_target = v_ego - decelRate
     else:
