@@ -283,7 +283,7 @@ class FrogPilotPlanner:
     else:
       self.vtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
 
-    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.target25, self.slowdown_target]
+    targets = [self.target25, self.slowdown_target]
     filtered_targets = [target if target > CRUISING_SPEED else v_cruise for target in targets]
 
     # Check if any filtered targets are less than v_cruise
