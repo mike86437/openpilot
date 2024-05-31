@@ -289,13 +289,16 @@ class FrogPilotPlanner:
     # Check if any filtered targets are less than v_cruise
     if any(target < v_cruise for target in filtered_targets):
       self.float_target = v_cruise
+      print("target < vcruise")
       return min(filtered_targets)
     # Check if v_ego is greater than v_cruise and limit it to max 5 over v_cruise
     elif v_ego > v_cruise:
+      print("vego>vcruise")
       self.float_target = min(v_ego - 0.5, v_cruise + 2.2352)
       return self.float_target
     # Default case: return v_cruise
     else:
+      print("neither")
       self.float_target = v_cruise
       return v_cruise
 
