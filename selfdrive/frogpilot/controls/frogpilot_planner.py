@@ -75,6 +75,7 @@ class FrogPilotPlanner:
     self.slowdown_target = 50
     self.target25 = 50
     self.float_target = 50
+    self.v_cruised = 0
 
   def update(self, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, liveLocationKalman, modelData, radarState, frogpilot_toggles):
     if frogpilot_toggles.radarless_model:
@@ -90,6 +91,7 @@ class FrogPilotPlanner:
     v_cruise_kph = min(controlsState.vCruise, V_CRUISE_UNSET)
     v_cruise = v_cruise_kph * CV.KPH_TO_MS
     v_cruise_changed = (self.mtsc_target or self.vtsc_target) < v_cruise
+    self.v_cruised =  v_cruise
 
     v_ego = max(carState.vEgo, 0)
     v_lead = self.lead_one.vLead
@@ -283,13 +285,23 @@ class FrogPilotPlanner:
     else:
       self.vtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
 
-    targets = [self.target25, self.slowdown_target]
+    targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.target25, self.slowdown_target]
     filtered_targets = [target if target > CRUISING_SPEED else v_cruise for target in targets]
+    newtargets = [
+      ('self.mtsc_target', self.mtsc_target),
+      ('max(self.overridden_speed, self.slc_target) - v_ego_diff', max(self.overridden_speed, self.slc_target) - v_ego_diff),
+      ('self.vtsc_target', self.vtsc_target),
+      ('self.target25', self.target25),
+      ('self.slowdown_target', self.slowdown_target)
+    ]
+    filtered_newtargets = [(name, target if target > CRUISING_SPEED else v_cruise) for name, target in newtargets]
+    min_variable, min_value = min(filtered_newtargets, key=lambda x: x[1])
 
     # Check if any filtered targets are less than v_cruise
     if any(target < v_cruise for target in filtered_targets):
       self.float_target = v_cruise
       print("target < vcruise")
+      print(f"The variable with the minimum value is: {min_variable} with value {min_value}")
       return min(filtered_targets)
     # Check if v_ego is greater than v_cruise and limit it to max 5 over v_cruise
     elif v_ego > v_cruise:
@@ -313,7 +325,7 @@ class FrogPilotPlanner:
     frogpilotPlan.speedJerkStock = J_EGO_COST * float(self.base_speed_jerk)
     frogpilotPlan.tFollow = float(self.t_follow)
 
-    frogpilotPlan.adjustedCruise = float(self.float_target if self.float_target > self.slowdown_target else min(self.mtsc_target, self.vtsc_target, self.target25, self.slowdown_target)) * (CV.MS_TO_KPH if frogpilot_toggles.is_metric else CV.MS_TO_MPH)
+    frogpilotPlan.adjustedCruise = float(self.float_target if self.float_target > self.v_cruised else min(self.mtsc_target, self.vtsc_target, self.target25, self.slowdown_target)) * (CV.MS_TO_KPH if frogpilot_toggles.is_metric else CV.MS_TO_MPH)
 
     frogpilotPlan.conditionalExperimental = self.cem.experimental_mode
     frogpilotPlan.redLight = self.cem.red_light_detected
