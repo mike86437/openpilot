@@ -218,7 +218,10 @@ class FrogPilotPlanner:
     v_cruise_diff = v_cruise_cluster - v_cruise
 
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
-    v_ego_diff = v_ego_cluster - v_ego
+    if frogpilot_toggles.speed_limit_controller:
+      v_ego_diff = v_ego_cluster - v_ego
+    else:
+      v_ego_diff = 0
 
     # LKAS btn target 25 mph
     if self.params.get_bool("Set25"):
