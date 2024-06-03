@@ -303,8 +303,7 @@ class FrogPilotPlanner:
     # Check if any filtered targets are less than v_cruise
     if any(target < v_cruise for target in filtered_targets):
       self.float_target = v_cruise
-      print("target < vcruise")
-      print(f"The variable with the minimum value is: {min_variable} with value {min_value}")
+      print(f"The variable: {min_variable} with value {min_value} at current speed {v_ego}")
       return min(filtered_targets)
     # Check if v_ego is greater than v_cruise and limit it to max 5 over v_cruise
     elif v_ego > v_cruise:
@@ -313,7 +312,6 @@ class FrogPilotPlanner:
       return self.float_target
     # Default case: return v_cruise
     else:
-      print("neither")
       self.float_target = v_cruise
       return v_cruise
 
