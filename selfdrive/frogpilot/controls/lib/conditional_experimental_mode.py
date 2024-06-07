@@ -11,6 +11,7 @@ class ConditionalExperimentalMode:
     self.experimental_mode = False
 
     self.curvature_mac = MovingAverageCalculator()
+    self.slow_lead_mac = MovingAverageCalculator()
 
   def update(self, carState, enabled, frogpilotNavigation, lead, modelData, road_curvature, slower_lead, v_ego, v_lead, frogpilot_toggles):
     self.update_conditions(lead.dRel, lead.status, modelData, road_curvature, slower_lead, v_ego, v_lead, frogpilot_toggles)
@@ -34,10 +35,15 @@ class ConditionalExperimentalMode:
       self.status_value = 13
       return True
 
+    if frogpilot_toggles.conditional_lead and self.slow_lead_detected:
+      self.status_value = 14 if v_lead < 1 else 15
+      return True
+
     return False
 
   def update_conditions(self, lead_distance, lead_status, modelData, road_curvature, slower_lead, v_ego, v_lead, frogpilot_toggles):
     self.road_curvature(lead_status, road_curvature, v_ego, frogpilot_toggles)
+    self.slow_lead(lead_status, slower_lead, v_lead, frogpilot_toggles)
 
   def road_curvature(self, lead_status, road_curvature, v_ego, frogpilot_toggles):
     curve_detected = (1 / road_curvature)**0.5 < v_ego and (frogpilot_toggles.conditional_curves_lead or not lead_status)
@@ -45,3 +51,14 @@ class ConditionalExperimentalMode:
 
     self.curvature_mac.add_data(curve_detected or curve_active)
     self.curve_detected = self.curvature_mac.get_moving_average() >= PROBABILITY
+
+  def slow_lead(self, lead_status, slower_lead, v_lead, frogpilot_toggles):
+    if lead_status:
+      slower_lead &= frogpilot_toggles.conditional_slower_lead
+      stopped_lead = frogpilot_toggles.conditional_stopped_lead and v_lead < 1
+
+      self.slow_lead_mac.add_data(slower_lead or stopped_lead)
+      self.slow_lead_detected = self.slow_lead_mac.get_moving_average() >= PROBABILITY
+    else:
+      self.slow_lead_mac.reset_data()
+      self.slow_lead_detected = False
