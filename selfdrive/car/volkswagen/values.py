@@ -281,7 +281,7 @@ class CAR(Platforms):
   )
   VOLKSWAGEN_PASSAT_MK8 = VolkswagenMQBPlatformConfig(
     [
-      VWCarDocs("Volkswagen Passat 2015-22", footnotes=[Footnote.PASSAT]),
+      VWCarDocs("Volkswagen Passat 2015-22"),
       VWCarDocs("Volkswagen Passat Alltrack 2015-22"),
       VWCarDocs("Volkswagen Passat GTE 2015-22"),
     ],
@@ -297,8 +297,8 @@ class CAR(Platforms):
   )
   VOLKSWAGEN_POLO_MK6 = VolkswagenMQBPlatformConfig(
     [
-      VWCarDocs("Volkswagen Polo 2018-23", footnotes=[Footnote.VW_MQB_A0]),
-      VWCarDocs("Volkswagen Polo GTI 2018-23", footnotes=[Footnote.VW_MQB_A0]),
+      VWCarDocs("Volkswagen Polo 2018-23"),
+      VWCarDocs("Volkswagen Polo GTI 2018-23"),
     ],
     VolkswagenCarSpecs(mass=1230, wheelbase=2.55),
     chassis_codes={"AW"},
@@ -320,7 +320,7 @@ class CAR(Platforms):
     wmis={WMI.VOLKSWAGEN_MEXICO_SUV, WMI.VOLKSWAGEN_ARGENTINA},
   )
   VOLKSWAGEN_TCROSS_MK1 = VolkswagenMQBPlatformConfig(
-    [VWCarDocs("Volkswagen T-Cross 2021", footnotes=[Footnote.VW_MQB_A0])],
+    [VWCarDocs("Volkswagen T-Cross 2021")],
     VolkswagenCarSpecs(mass=1150, wheelbase=2.60),
     chassis_codes={"C1"},
     wmis={WMI.VOLKSWAGEN_EUROPE_SUV},
@@ -389,15 +389,15 @@ class CAR(Platforms):
     wmis={WMI.SEAT},
   )
   SKODA_FABIA_MK4 = VolkswagenMQBPlatformConfig(
-    [VWCarDocs("Škoda Fabia 2022-23", footnotes=[Footnote.VW_MQB_A0])],
+    [VWCarDocs("Škoda Fabia 2022-23")],
     VolkswagenCarSpecs(mass=1266, wheelbase=2.56),
     chassis_codes={"PJ"},
     wmis={WMI.SKODA},
   )
   SKODA_KAMIQ_MK1 = VolkswagenMQBPlatformConfig(
     [
-      VWCarDocs("Škoda Kamiq 2021-23", footnotes=[Footnote.VW_MQB_A0, Footnote.KAMIQ]),
-      VWCarDocs("Škoda Scala 2020-23", footnotes=[Footnote.VW_MQB_A0]),
+      VWCarDocs("Škoda Kamiq 2021-23"),
+      VWCarDocs("Škoda Scala 2020-23"),
     ],
     VolkswagenCarSpecs(mass=1230, wheelbase=2.66),
     chassis_codes={"NW"},
