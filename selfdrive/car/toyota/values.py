@@ -120,7 +120,7 @@ class CAR(Platforms):
   )
   TOYOTA_CAMRY = PlatformConfig(
     [
-      ToyotaCarDocs("Toyota Camry 2018-20", video_link="https://www.youtube.com/watch?v=fkcjviZY9CM", footnotes=[Footnote.CAMRY]),
+      ToyotaCarDocs("Toyota Camry 2018-20", video_link="https://www.youtube.com/watch?v=fkcjviZY9CM"),
       ToyotaCarDocs("Toyota Camry Hybrid 2018-20", video_link="https://www.youtube.com/watch?v=Q2DYY0AWKgk"),
     ],
     CarSpecs(mass=3400. * CV.LB_TO_KG, wheelbase=2.82448, steerRatio=13.7, tireStiffnessFactor=0.7933),
@@ -129,7 +129,7 @@ class CAR(Platforms):
   )
   TOYOTA_CAMRY_TSS2 = ToyotaTSS2PlatformConfig( # TSS 2.5
     [
-      ToyotaCarDocs("Toyota Camry 2021-24", footnotes=[Footnote.CAMRY]),
+      ToyotaCarDocs("Toyota Camry 2021-24"),
       ToyotaCarDocs("Toyota Camry Hybrid 2021-24"),
     ],
     TOYOTA_CAMRY.specs,
