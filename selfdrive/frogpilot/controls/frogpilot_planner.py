@@ -74,6 +74,7 @@ class FrogPilotPlanner:
     self.vtsc_target = 0
     self.slowdown_target = 50
     self.target25 = 50
+    self.float_target = 50
 
   def update(self, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, liveLocationKalman, modelData, radarState, frogpilot_toggles):
     if frogpilot_toggles.radarless_model:
@@ -215,7 +216,6 @@ class FrogPilotPlanner:
     v_cruise_diff = v_cruise_cluster - v_cruise
 
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
-    v_ego_diff = v_ego_cluster - v_ego
 
     # LKAS btn target 25 mph
     if self.params.get_bool("Set25"):
@@ -248,6 +248,7 @@ class FrogPilotPlanner:
 
     # Pfeiferj's Speed Limit Controller
     if frogpilot_toggles.speed_limit_controller:
+      v_ego_diff = v_ego_cluster - v_ego
       SpeedLimitController.update(frogpilotCarState.dashboardSpeedLimit, frogpilotNavigation.navigationSpeedLimit, v_ego, frogpilot_toggles)
       unconfirmed_slc_target = SpeedLimitController.desired_speed_limit
 
@@ -273,6 +274,7 @@ class FrogPilotPlanner:
         self.overridden_speed = 0
     else:
       self.slc_target = v_cruise + v_ego_diff if v_cruise != V_CRUISE_UNSET else 0
+      v_ego_diff = 0
 
     # Pfeiferj's Vision Turn Controller
     if frogpilot_toggles.vision_turn_controller and v_ego > CRUISING_SPEED and controlsState.enabled:
@@ -287,7 +289,18 @@ class FrogPilotPlanner:
     targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.target25, self.slowdown_target]
     filtered_targets = [target if target > CRUISING_SPEED else v_cruise for target in targets]
 
-    return min(filtered_targets)
+    # Check if any filtered targets are less than v_cruise
+    if any(target < v_cruise for target in filtered_targets):
+      self.float_target = v_cruise
+      return min(filtered_targets)
+    # Check if v_ego is greater than v_cruise and limit it to max 5 over v_cruise
+    elif v_ego > v_cruise:
+      self.float_target = min(v_ego - 0.5, v_cruise + 2.2352)
+      return self.float_target
+    # Default case: return v_cruise
+    else:
+      self.float_target = v_cruise
+      return v_cruise
 
   def publish(self, sm, pm, frogpilot_toggles):
     frogpilot_plan_send = messaging.new_message('frogpilotPlan')
