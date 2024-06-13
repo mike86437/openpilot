@@ -273,7 +273,7 @@ class FrogPilotPlanner:
       else:
         self.overridden_speed = 0
     else:
-      self.slc_target = v_cruise + v_ego_diff if v_cruise != V_CRUISE_UNSET else 0
+      self.slc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
       v_ego_diff = 0
 
     # Pfeiferj's Vision Turn Controller
