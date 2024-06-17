@@ -174,7 +174,8 @@ class LongitudinalPlanner:
 
     accel_limits = [sm['frogpilotPlan'].minAcceleration, sm['frogpilotPlan'].maxAcceleration]
     if self.mpc.mode == 'acc':
-      accel_limits_turns = limit_accel_in_turns(v_ego, sm['carState'].steeringAngleDeg, accel_limits, self.CP)
+      # accel_limits_turns = limit_accel_in_turns(v_ego, sm['carState'].steeringAngleDeg, accel_limits, self.CP)
+      accel_limits_turns = [ACCEL_MIN, ACCEL_MAX]
     else:
       accel_limits_turns = [ACCEL_MIN, ACCEL_MAX]
 
