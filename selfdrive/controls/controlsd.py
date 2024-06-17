@@ -624,6 +624,11 @@ class Controls:
                    (not standstill or self.joystick_mode)
     CC.longActive = self.enabled and not self.events.contains(ET.OVERRIDE_LONGITUDINAL) and self.CP.openpilotLongitudinalControl
 
+    if CC.latActive:
+      self.lat_distance += CS.vEgo * DT_CTRL
+    if CC.longActive:
+      self.long_distance += CS.vEgo * DT_CTRL
+
     actuators = CC.actuators
     actuators.longControlState = self.LoC.long_control_state
 
@@ -1097,10 +1102,6 @@ class Controls:
     self.drive_distance += CS.vEgo * DT_CTRL
     self.drive_time += DT_CTRL
 
-    if CC.latActive:
-      self.lat_distance += CS.vEgo * DT_CTRL
-    if CC.longActive:
-      self.long_distance += CS.vEgo * DT_CTRL
 
     if self.drive_time > 60 and CS.standstill:
       current_total_distance = self.params_tracking.get_float("FrogPilotKilometers")
