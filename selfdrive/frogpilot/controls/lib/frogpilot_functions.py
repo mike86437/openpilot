@@ -147,14 +147,22 @@ class FrogPilotFunctions:
     param_mappings = {
       "FrogPilotDrives": (params.get_int, params_tracking.put_int),
       "FrogPilotKilometers": (params.get_float, params_tracking.put_float),
-      "FrogPilotMinutes": (params.get_float, params_tracking.put_float)
+      "FrogPilotMinutes": (params.get_float, params_tracking.put_float),
+      "FrogPilotLatKilometers": (params.get_float, params_tracking.put_float),
+      "FrogPilotLatPercent": (params.get_float, params_tracking.put_float),
+      "FrogPilotLongKilometers": (params.get_float, params_tracking.put_float),
+      "FrogPilotLongPercent": (params.get_float, params_tracking.put_float)
     }
     convert_param_mappings(param_mappings, params, 0)
 
     param_storage_mappings = {
       "FrogPilotDrives": (params_storage.get_int, params_tracking.put_int),
       "FrogPilotKilometers": (params_storage.get_float, params_tracking.put_float),
-      "FrogPilotMinutes": (params_storage.get_float, params_tracking.put_float)
+      "FrogPilotMinutes": (params_storage.get_float, params_tracking.put_float),
+      "FrogPilotLatKilometers": (params.get_float, params_tracking.put_float),
+      "FrogPilotLatPercent": (params.get_float, params_tracking.put_float),
+      "FrogPilotLongKilometers": (params.get_float, params_tracking.put_float),
+      "FrogPilotLongPercent": (params.get_float, params_tracking.put_float)
     }
     convert_param_mappings(param_storage_mappings, params_storage, 0)
 

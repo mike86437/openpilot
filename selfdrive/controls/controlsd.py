@@ -84,6 +84,8 @@ class Controls:
 
     self.display_timer = 0
     self.drive_distance = 0
+    self.lat_distance = 0
+    self.long_distance = 0
     self.drive_time = 0
     self.max_acceleration = 0
     self.previous_speed_limit = 0
@@ -1095,12 +1097,33 @@ class Controls:
     self.drive_distance += CS.vEgo * DT_CTRL
     self.drive_time += DT_CTRL
 
+    if CC.latActive:
+      self.lat_distance += CS.vEgo * DT_CTRL
+    if CC.longActive:
+      self.long_distance += CS.vEgo * DT_CTRL
+
     if self.drive_time > 60 and CS.standstill:
       current_total_distance = self.params_tracking.get_float("FrogPilotKilometers")
       distance_to_add = self.drive_distance / 1000
       new_total_distance = current_total_distance + distance_to_add
       self.params_tracking.put_float_nonblocking("FrogPilotKilometers", new_total_distance)
       self.drive_distance = 0
+
+      current_lat_distance = self.params_tracking.get_float("FrogPilotLatKilometers")
+      lat_distance_to_add = self.lat_distance / 1000
+      new_lat_distance = current_lat_distance + lat_distance_to_add
+      self.params_tracking.put_float_nonblocking("FrogPilotLatKilometers", new_lat_distance)
+      cur_lat_percent = lat_distance_to_add / distance_to_add * 100
+      self.params_tracking.put_float_nonblocking("FrogPilotLatPercent", cur_lat_percent)
+      self.lat_distance = 0
+
+      current_long_distance = self.params_tracking.get_float("FrogPilotLongKilometers")
+      long_distance_to_add = self.long_distance / 1000
+      new_long_distance = current_long_distance + long_distance_to_add
+      self.params_tracking.put_float_nonblocking("FrogPilotLongKilometers", new_long_distance)
+      cur_long_percent = long_distance_to_add / distance_to_add * 100
+      self.params_tracking.put_float_nonblocking("FrogPilotLongPercent", cur_long_percent)
+      self.long_distance = 0
 
       current_total_time = self.params_tracking.get_float("FrogPilotMinutes")
       time_to_add = self.drive_time / 60
