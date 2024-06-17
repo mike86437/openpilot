@@ -33,9 +33,9 @@ DriveStats::DriveStats(QWidget* parent) : QFrame(parent) {
     grid_layout->addWidget(labels.distance = newLabel("0", "number"), row, 1, Qt::AlignLeft);
     grid_layout->addWidget(labels.hours = newLabel("0", "number"), row, 2, Qt::AlignLeft);
 
-    grid_layout->addWidget(newLabel((tr("Drives")), "unit"), row + 1, 0, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel((tr("Lateral %")), "unit"), row + 1, 0, Qt::AlignLeft);
     grid_layout->addWidget(labels.distance_unit = newLabel(getDistanceUnit(), "unit"), row + 1, 1, Qt::AlignLeft);
-    grid_layout->addWidget(newLabel(tr("Hours"), "unit"), row + 1, 2, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel(tr("Long %"), "unit"), row + 1, 2, Qt::AlignLeft);
 
     main_layout->addLayout(grid_layout);
     main_layout->addStretch(1);
@@ -68,10 +68,10 @@ void DriveStats::updateStats() {
   QJsonObject json = stats_.object();
 
   auto updateFrogPilot = [this](const QJsonObject& obj, StatsLabels& labels) {
-    labels.routes->setText(QString::number(paramsTracking.getInt("FrogPilotLongPercent")));
-    labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") * (metric_ ? 1 : KM_TO_MILE))));
+    labels.routes->setText(QString::number(paramsTracking.getInt("FrogPilotLatPercent")));
+    labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotKilometers") * (metric_ ? 1 : KM_TO_MILE))));
     labels.distance_unit->setText(getDistanceUnit());
-    labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotMinutes") / 60)));
+    labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongPercent"))));
   };
 
   updateFrogPilot(json["frogpilot"].toObject(), frogPilot_);
@@ -80,7 +80,7 @@ void DriveStats::updateStats() {
     labels.routes->setText(QString::number((int)obj["routes"].toDouble()));
     labels.distance->setText(QString::number(int(obj["distance"].toDouble() * (metric_ ? MILE_TO_KM : 1))));
     labels.distance_unit->setText(getDistanceUnit());
-    labels.hours->setText(QString::number((int)(obj["minutes"].toDouble() / 60)));
+    labels.hours->setText(QString::number((int)(obj["minutes"].toDouble())));
   };
 
   update(json["all"].toObject(), all_);
