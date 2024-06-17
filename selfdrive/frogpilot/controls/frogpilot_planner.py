@@ -220,6 +220,8 @@ class FrogPilotPlanner:
     # LKAS btn target 25 mph
     if self.params.get_bool("Set25"):
       self.target25 = 11.176
+      if v_ego < 2.2352:
+        self.target25 = 0
     else:
       self.target25 = v_cruise
 
