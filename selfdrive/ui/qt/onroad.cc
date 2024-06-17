@@ -1202,7 +1202,7 @@ void AnnotatedCameraWidget::drawLead(QPainter &painter, const cereal::ModelDataV
     QString text = QString("%1 %2 | %3 %4")
                       .arg(qRound(d_rel * distanceConversion))
                       .arg(leadDistanceUnit)
-                      .arg(qRound(lead_speed * speedConversion))
+                      .arg(qRound(lead_speed * MS_TO_MPH))
                       .arg(leadSpeedUnit);
 
     QFontMetrics metrics(painter.font());
