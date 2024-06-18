@@ -30,12 +30,12 @@ DriveStats::DriveStats(QWidget* parent) : QFrame(parent) {
     grid_layout->addItem(new QSpacerItem(0, 10), row++, 0, 1, 1);
 
     grid_layout->addWidget(labels.routes = newLabel("0", "number"), row, 0, Qt::AlignLeft);
-    grid_layout->addWidget(labels.distance = newLabel("0", "number"), row, 1, Qt::AlignLeft);
     grid_layout->addWidget(labels.hours = newLabel("0", "number"), row, 2, Qt::AlignLeft);
+    grid_layout->addWidget(labels.distance = newLabel("0", "number"), row, 1, Qt::AlignLeft);
 
     grid_layout->addWidget(newLabel((tr("Lateral %")), "unit"), row + 1, 0, Qt::AlignLeft);
-    grid_layout->addWidget(labels.distance_unit = newLabel(getDistanceUnit(), "unit"), row + 1, 1, Qt::AlignLeft);
     grid_layout->addWidget(newLabel(tr("Long %"), "unit"), row + 1, 2, Qt::AlignLeft);
+    grid_layout->addWidget(labels.distance_unit = newLabel(getDistanceUnit(), "unit"), row + 1, 1, Qt::AlignLeft);
 
     main_layout->addLayout(grid_layout);
     main_layout->addStretch(1);
