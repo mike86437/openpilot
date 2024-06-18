@@ -21,8 +21,8 @@ private:
   Params paramsTracking{"/persist/tracking"};
   QJsonDocument stats_;
   struct StatsLabels {
-    QLabel *routes, *distance, *distance_unit, *hours, *latdistance;
-  } all_, week_, frogPilot_;
+    QLabel *routes, *distance, *distance_unit, *hours;
+  } frogPilot_, frogLat_, frogLong_;
 
 private slots:
   void parseResponse(const QString &response, bool success);
