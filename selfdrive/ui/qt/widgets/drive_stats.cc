@@ -83,13 +83,6 @@ void DriveStats::updateStats() {
   };
 
   updateFrogPilot(json["frogpilot"].toObject(), frogPilot_);
-
-  auto update = [=](const QJsonObject& obj, StatsLabels& labels) {
-    labels.routes->setText(QString::number((int)obj["routes"].toDouble()));
-    labels.distance->setText(QString::number(int(obj["distance"].toDouble() * (metric_ ? MILE_TO_KM : 1))));
-    labels.distance_unit->setText(getDistanceUnit());
-    labels.hours->setText(QString::number((int)(obj["minutes"].toDouble() / 60)));
-  };
 }
 
 void DriveStats::parseResponse(const QString& response, bool success) {
