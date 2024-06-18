@@ -28,7 +28,7 @@ DriveStats::DriveStats(QWidget* parent) : QFrame(parent) {
     int row = 0;
 
     // Section: All Time
-    grid_layout->addWidget(newLabel("FrogPilot All Time", FrogPilot ? "frogpilot_title" : "title"), row++, 0, 1, 3);
+    grid_layout->addWidget(newLabel(title, FrogPilot ? "frogpilot_title" : "title"), row++, 0, 1, 3);
     grid_layout->addItem(new QSpacerItem(0, 10), row++, 0, 1, 1);
 
     grid_layout->addWidget(labels.routes = newLabel("0", "number"), row, 0, Qt::AlignLeft);
