@@ -76,14 +76,14 @@ void DriveStats::updateStats() {
   };
 
   auto updateLat = [this](const QJsonObject& obj, StatsLabels& labels) {
-    labels.routes->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") / qMax(paramsTracking.getFloat("FrogPilotBaseKilometers"), 1.0f) * 100)));
+    labels.routes->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") / qMax(int(paramsTracking.getFloat("FrogPilotKilometers")) - int(paramsTracking.getFloat("FrogPilotBaseKilometers")), 1) * 100)));
     labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") * (metric_ ? 1 : KM_TO_MILE))));
     labels.distance_unit->setText(getDistanceUnit());
     labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatPercent"))));
   };
 
   auto updateLong = [this](const QJsonObject& obj, StatsLabels& labels) {
-    labels.routes->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") / qMax(paramsTracking.getFloat("FrogPilotBaseKilometers"), 1.0f) * 100)));
+    labels.routes->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") / qMax(int(paramsTracking.getFloat("FrogPilotKilometers")) - int(paramsTracking.getFloat("FrogPilotBaseKilometers")), 1) * 100)));
     labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") * (metric_ ? 1 : KM_TO_MILE))));
     labels.distance_unit->setText(getDistanceUnit());
     labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongPercent"))));
