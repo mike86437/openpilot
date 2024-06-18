@@ -26,23 +26,55 @@ DriveStats::DriveStats(QWidget* parent) : QFrame(parent) {
     grid_layout->setContentsMargins(0, 10, 0, 10);
 
     int row = 0;
-    grid_layout->addWidget(newLabel(title, FrogPilot ? "frogpilot_title" : "title"), row++, 0, 1, 3);
+
+    // Section: All Time
+    grid_layout->addWidget(newLabel("FrogPilot All Time", FrogPilot ? "frogpilot_title" : "title"), row++, 0, 1, 3);
     grid_layout->addItem(new QSpacerItem(0, 10), row++, 0, 1, 1);
 
     grid_layout->addWidget(labels.routes = newLabel("0", "number"), row, 0, Qt::AlignLeft);
-    grid_layout->addWidget(labels.hours = newLabel("0", "number"), row, 2, Qt::AlignLeft);
     grid_layout->addWidget(labels.distance = newLabel("0", "number"), row, 1, Qt::AlignLeft);
+    grid_layout->addWidget(labels.hours = newLabel("0", "number"), row, 2, Qt::AlignLeft);
 
-    grid_layout->addWidget(newLabel((tr("Lateral %")), "unit"), row + 1, 0, Qt::AlignLeft);
-    grid_layout->addWidget(newLabel(tr("Long %"), "unit"), row + 1, 2, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel(tr("Drives"), "unit"), row + 1, 0, Qt::AlignLeft);
     grid_layout->addWidget(labels.distance_unit = newLabel(getDistanceUnit(), "unit"), row + 1, 1, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel(tr("Hours"), "unit"), row + 1, 2, Qt::AlignLeft);
+
+    row += 2;
+    main_layout->addLayout(grid_layout);
+    main_layout->addStretch(1);
+
+    // Section: Lateral
+    grid_layout->addWidget(newLabel("Lateral", "title"), row++, 0, 1, 3);
+    grid_layout->addItem(new QSpacerItem(0, 10), row++, 0, 1, 1);
+
+    grid_layout->addWidget(labels.latall = newLabel("0", "number"), row, 0, Qt::AlignLeft);
+    grid_layout->addWidget(labels.latdistance = newLabel("0", "number"), row, 1, Qt::AlignLeft);
+    grid_layout->addWidget(labels.latpercent = newLabel("0", "number"), row, 2, Qt::AlignLeft);
+
+    grid_layout->addWidget(newLabel(tr("All Time %"), "unit"), row + 1, 0, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel(tr("Distance"), "unit"), row + 1, 1, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel(tr("Last Drive %"), "unit"), row + 1, 2, Qt::AlignLeft);
+
+    row += 2;
+    main_layout->addLayout(grid_layout);
+    main_layout->addStretch(1);
+
+    // Section: Longitudinal
+    grid_layout->addWidget(newLabel("Longitudinal", "title"), row++, 0, 1, 3);
+    grid_layout->addItem(new QSpacerItem(0, 10), row++, 0, 1, 1);
+
+    grid_layout->addWidget(labels.longall = newLabel("0", "number"), row, 0, Qt::AlignLeft);
+    grid_layout->addWidget(labels.longdistance = newLabel("0", "number"), row, 1, Qt::AlignLeft);
+    grid_layout->addWidget(labels.longpercent = newLabel("0", "number"), row, 2, Qt::AlignLeft);
+
+    grid_layout->addWidget(newLabel(tr("All Time %"), "unit"), row + 1, 0, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel(tr("Distance"), "unit"), row + 1, 1, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel(tr("Last Drive %"), "unit"), row + 1, 2, Qt::AlignLeft);
 
     main_layout->addLayout(grid_layout);
     main_layout->addStretch(1);
   };
 
-  add_stats_layouts(tr("ALL TIME"), all_);
-  add_stats_layouts(tr("PAST WEEK"), week_);
   add_stats_layouts(tr("FROGPILOT"), frogPilot_, true);
 
   if (auto dongleId = getDongleId()) {
@@ -68,10 +100,16 @@ void DriveStats::updateStats() {
   QJsonObject json = stats_.object();
 
   auto updateFrogPilot = [this](const QJsonObject& obj, StatsLabels& labels) {
-    labels.routes->setText(QString::number(paramsTracking.getInt("FrogPilotLatPercent")));
+    labels.routes->setText(QString::number(paramsTracking.getInt("FrogPilotDrives")));
     labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotKilometers") * (metric_ ? 1 : KM_TO_MILE))));
     labels.distance_unit->setText(getDistanceUnit());
-    labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongPercent"))));
+    labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotMinutes") / 60)));
+    labels.latall->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") / int(paramsTracking.getFloat("FrogPilotKilometers")) * 100)));
+    labels.latdistance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") * (metric_ ? 1 : KM_TO_MILE))));
+    labels.latpercent->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatPercent"))));
+    labels.longall->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") / int(paramsTracking.getFloat("FrogPilotKilometers")) * 100)));
+    labels.longdistance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") * (metric_ ? 1 : KM_TO_MILE))));
+    labels.longpercent->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongPercent"))));
   };
 
   updateFrogPilot(json["frogpilot"].toObject(), frogPilot_);
@@ -80,7 +118,13 @@ void DriveStats::updateStats() {
     labels.routes->setText(QString::number((int)obj["routes"].toDouble()));
     labels.distance->setText(QString::number(int(obj["distance"].toDouble() * (metric_ ? MILE_TO_KM : 1))));
     labels.distance_unit->setText(getDistanceUnit());
-    labels.hours->setText(QString::number((int)(obj["minutes"].toDouble())));
+    labels.hours->setText(QString::number((int)(obj["minutes"].toDouble() / 60)));
+    labels.latdistance->setText(QString::number(int(obj["latdistance"].toDouble() * (metric_ ? MILE_TO_KM : 1))));
+    labels.longdistance->setText(QString::number(int(obj["longdistance"].toDouble() * (metric_ ? MILE_TO_KM : 1))));
+    labels.latpercent->setText(QString::number((int)obj["latpercent"].toDouble()));
+    labels.latall->setText(QString::number((int)obj["latall"].toDouble()));
+    labels.longpercent->setText(QString::number((int)obj["longpercent"].toDouble()));
+    labels.longall->setText(QString::number((int)obj["longall"].toDouble()));
   };
 
   update(json["all"].toObject(), all_);
