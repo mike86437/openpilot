@@ -89,12 +89,6 @@ void DriveStats::updateStats() {
     labels.distance->setText(QString::number(int(obj["distance"].toDouble() * (metric_ ? MILE_TO_KM : 1))));
     labels.distance_unit->setText(getDistanceUnit());
     labels.hours->setText(QString::number((int)(obj["minutes"].toDouble() / 60)));
-    labels.latdistance->setText(QString::number(int(obj["latdistance"].toDouble() * (metric_ ? MILE_TO_KM : 1))));
-    labels.longdistance->setText(QString::number(int(obj["longdistance"].toDouble() * (metric_ ? MILE_TO_KM : 1))));
-    labels.latpercent->setText(QString::number((int)obj["latpercent"].toDouble()));
-    labels.latall->setText(QString::number((int)obj["latall"].toDouble()));
-    labels.longpercent->setText(QString::number((int)obj["longpercent"].toDouble()));
-    labels.longall->setText(QString::number((int)obj["longall"].toDouble()));
   };
 
   update(json["all"].toObject(), all_);
