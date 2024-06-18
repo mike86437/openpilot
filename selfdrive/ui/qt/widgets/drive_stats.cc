@@ -26,8 +26,6 @@ DriveStats::DriveStats(QWidget* parent) : QFrame(parent) {
     grid_layout->setContentsMargins(0, 10, 0, 10);
 
     int row = 0;
-
-    // Section: All Time
     grid_layout->addWidget(newLabel(title, FrogPilot ? "frogpilot_title" : "title"), row++, 0, 1, 3);
     grid_layout->addItem(new QSpacerItem(0, 10), row++, 0, 1, 1);
 
@@ -35,14 +33,12 @@ DriveStats::DriveStats(QWidget* parent) : QFrame(parent) {
     grid_layout->addWidget(labels.distance = newLabel("0", "number"), row, 1, Qt::AlignLeft);
     grid_layout->addWidget(labels.hours = newLabel("0", "number"), row, 2, Qt::AlignLeft);
 
-    grid_layout->addWidget(newLabel(tr("Drives"), "unit"), row + 1, 0, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel((tr("Drives")), "unit"), row + 1, 0, Qt::AlignLeft);
     grid_layout->addWidget(labels.distance_unit = newLabel(getDistanceUnit(), "unit"), row + 1, 1, Qt::AlignLeft);
     grid_layout->addWidget(newLabel(tr("Hours"), "unit"), row + 1, 2, Qt::AlignLeft);
 
-    row += 2;
     main_layout->addLayout(grid_layout);
     main_layout->addStretch(1);
-
   };
 
   add_stats_layouts(tr("FROGPILOT"), frogPilot_, true);
