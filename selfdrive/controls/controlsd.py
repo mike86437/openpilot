@@ -1116,7 +1116,7 @@ class Controls:
       lat_distance_to_add = self.lat_distance / 1000
       new_lat_distance = current_lat_distance + lat_distance_to_add
       self.params_tracking.put_float_nonblocking("FrogPilotLatKilometers", new_lat_distance)
-      cur_lat_percent = lat_distance_to_add / distance_to_add * 100
+      cur_lat_percent = lat_distance_to_add / max(distance_to_add, 1) * 100
       self.params_tracking.put_float_nonblocking("FrogPilotLatPercent", cur_lat_percent)
       self.lat_distance = 0
 
@@ -1124,7 +1124,7 @@ class Controls:
       long_distance_to_add = self.long_distance / 1000
       new_long_distance = current_long_distance + long_distance_to_add
       self.params_tracking.put_float_nonblocking("FrogPilotLongKilometers", new_long_distance)
-      cur_long_percent = long_distance_to_add / distance_to_add * 100
+      cur_long_percent = long_distance_to_add / max(distance_to_add, 1) * 100
       self.params_tracking.put_float_nonblocking("FrogPilotLongPercent", cur_long_percent)
       self.long_distance = 0
 
