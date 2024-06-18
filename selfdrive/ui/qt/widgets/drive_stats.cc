@@ -43,36 +43,6 @@ DriveStats::DriveStats(QWidget* parent) : QFrame(parent) {
     main_layout->addLayout(grid_layout);
     main_layout->addStretch(1);
 
-    // Section: Lateral
-    grid_layout->addWidget(newLabel("Lateral", "title"), row++, 0, 1, 3);
-    grid_layout->addItem(new QSpacerItem(0, 10), row++, 0, 1, 1);
-
-    grid_layout->addWidget(labels.latall = newLabel("0", "number"), row, 0, Qt::AlignLeft);
-    grid_layout->addWidget(labels.latdistance = newLabel("0", "number"), row, 1, Qt::AlignLeft);
-    grid_layout->addWidget(labels.latpercent = newLabel("0", "number"), row, 2, Qt::AlignLeft);
-
-    grid_layout->addWidget(newLabel(tr("All Time %"), "unit"), row + 1, 0, Qt::AlignLeft);
-    grid_layout->addWidget(newLabel(tr("Distance"), "unit"), row + 1, 1, Qt::AlignLeft);
-    grid_layout->addWidget(newLabel(tr("Last Drive %"), "unit"), row + 1, 2, Qt::AlignLeft);
-
-    row += 2;
-    main_layout->addLayout(grid_layout);
-    main_layout->addStretch(1);
-
-    // Section: Longitudinal
-    grid_layout->addWidget(newLabel("Longitudinal", "title"), row++, 0, 1, 3);
-    grid_layout->addItem(new QSpacerItem(0, 10), row++, 0, 1, 1);
-
-    grid_layout->addWidget(labels.longall = newLabel("0", "number"), row, 0, Qt::AlignLeft);
-    grid_layout->addWidget(labels.longdistance = newLabel("0", "number"), row, 1, Qt::AlignLeft);
-    grid_layout->addWidget(labels.longpercent = newLabel("0", "number"), row, 2, Qt::AlignLeft);
-
-    grid_layout->addWidget(newLabel(tr("All Time %"), "unit"), row + 1, 0, Qt::AlignLeft);
-    grid_layout->addWidget(newLabel(tr("Distance"), "unit"), row + 1, 1, Qt::AlignLeft);
-    grid_layout->addWidget(newLabel(tr("Last Drive %"), "unit"), row + 1, 2, Qt::AlignLeft);
-
-    main_layout->addLayout(grid_layout);
-    main_layout->addStretch(1);
   };
 
   add_stats_layouts(tr("FROGPILOT"), frogPilot_, true);
