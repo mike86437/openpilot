@@ -1111,6 +1111,8 @@ class Controls:
       self.drive_distance = 0
 
       current_lat_distance = self.params_tracking.get_float("FrogPilotLatKilometers")
+      if current_lat_distance == 0:
+        self.params_tracking.put_float_nonblocking("FrogPilotBaseKilometers", current_total_distance)
       lat_distance_to_add = self.lat_distance / 1000
       new_lat_distance = current_lat_distance + lat_distance_to_add
       self.params_tracking.put_float_nonblocking("FrogPilotLatKilometers", new_lat_distance)
