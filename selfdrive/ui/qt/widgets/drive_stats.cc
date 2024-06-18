@@ -86,6 +86,7 @@ void DriveStats::updateStats() {
     labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") * (metric_ ? 1 : KM_TO_MILE))));
     labels.distance_unit->setText(getDistanceUnit());
     labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongPercent"))));
+  };
 
   updateFrogPilot(json["frogpilot"].toObject(), frogPilot_);
   updateLat(json["froglat"].toObject(), frogLat_);
