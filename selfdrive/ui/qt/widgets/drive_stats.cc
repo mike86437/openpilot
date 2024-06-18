@@ -90,9 +90,6 @@ void DriveStats::updateStats() {
     labels.distance_unit->setText(getDistanceUnit());
     labels.hours->setText(QString::number((int)(obj["minutes"].toDouble() / 60)));
   };
-
-  update(json["all"].toObject(), all_);
-  update(json["week"].toObject(), week_);
 }
 
 void DriveStats::parseResponse(const QString& response, bool success) {
