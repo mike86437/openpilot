@@ -21,7 +21,7 @@ private:
   Params paramsTracking{"/persist/tracking"};
   QJsonDocument stats_;
   struct StatsLabels {
-    QLabel *routes, *distance, *distance_unit, *hours;
+    QLabel *routes, *distance, *distance_unit, *hours, *latdistance, *longdistance, *latall, *longall, *latpercent, *longpercent;
   } all_, week_, frogPilot_;
 
 private slots:
