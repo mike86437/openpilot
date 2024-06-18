@@ -136,7 +136,7 @@ class ConditionalExperimentalMode:
   # Stop sign/stop light detection - Credit goes to the DragonPilot team!
   def stop_sign_and_light(self, lead_distance, modelData, standstill, v_ego, v_lead, frogpilot_toggles):
     lead_check = frogpilot_toggles.conditional_stop_lights_lead or not self.lead_slowing_down(lead_distance, v_ego, v_lead) or standstill
-    model_stopping = modelData.position.x[ModelConstants.IDX_N - 1] < v_ego * ModelConstants.T_IDXS[ModelConstants.IDX_N - 2]
+    model_stopping = modelData.position.x[ModelConstants.IDX_N - 1] < v_ego * ModelConstants.T_IDXS[ModelConstants.IDX_N - ModelConstants.CONFIDENCE_BUFFER_LEN]
     model_filtered = not (self.curve_detected or self.slower_lead_detected)
 
     self.stop_light_mac.add_data(lead_check and model_stopping and model_filtered)
