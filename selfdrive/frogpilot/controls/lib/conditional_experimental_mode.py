@@ -1,4 +1,5 @@
 from openpilot.common.params import Params
+from openpilot.selfdrive.modeld.constants import ModelConstants
 
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_functions import MovingAverageCalculator
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_variables import CITY_SPEED_LIMIT, PROBABILITY
@@ -12,6 +13,7 @@ class ConditionalExperimentalMode:
 
     self.curvature_mac = MovingAverageCalculator()
     self.slow_lead_mac = MovingAverageCalculator()
+    self.stop_light_mac = MovingAverageCalculator()
 
   def update(self, carState, enabled, frogpilotNavigation, lead, modelData, road_curvature, slower_lead, v_ego, v_lead, frogpilot_toggles):
     self.update_conditions(lead.dRel, lead.status, modelData, road_curvature, slower_lead, v_ego, v_lead, frogpilot_toggles)
@@ -39,11 +41,16 @@ class ConditionalExperimentalMode:
       self.status_value = 14 if v_lead < 1 else 15
       return True
 
+    if frogpilot_toggles.conditional_stop_lights and self.stop_light_detected:
+      self.status_value = 16
+      return True
+
     return False
 
   def update_conditions(self, lead_distance, lead_status, modelData, road_curvature, slower_lead, v_ego, v_lead, frogpilot_toggles):
     self.road_curvature(lead_status, road_curvature, v_ego, frogpilot_toggles)
     self.slow_lead(lead_status, slower_lead, v_lead, frogpilot_toggles)
+    self.stop_sign_and_light(lead_distance, lead_status, modelData, v_ego, v_lead)
 
   def road_curvature(self, lead_status, road_curvature, v_ego, frogpilot_toggles):
     curve_detected = (1 / road_curvature)**0.5 < v_ego and (frogpilot_toggles.conditional_curves_lead or not lead_status)
@@ -62,3 +69,15 @@ class ConditionalExperimentalMode:
     else:
       self.slow_lead_mac.reset_data()
       self.slow_lead_detected = False
+
+  def stop_sign_and_light(self, lead_distance, lead_status, modelData, v_ego, v_lead):
+    model_length = modelData.position.x[ModelConstants.IDX_N - 1]
+
+    lead_stopping = lead_status and v_lead < 1
+    lead_stopping |= lead_status and lead_distance < (model_length or CITY_SPEED_LIMIT)
+
+    model_stopped = model_length < ModelConstants.IDX_N
+    model_stopping = model_length < v_ego * ModelConstants.T_IDXS[ModelConstants.IDX_N - 3]
+
+    self.stop_light_mac.add_data(not lead_stopping and (model_stopped or model_stopping))
+    self.stop_light_detected = self.stop_light_mac.get_moving_average() >= PROBABILITY
