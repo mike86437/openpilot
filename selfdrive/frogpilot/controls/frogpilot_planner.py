@@ -47,6 +47,7 @@ class FrogPilotPlanner:
     self.lead_one = Lead()
     self.mtsc = MapTurnSpeedController()
 
+    self.lead_departing = False
     self.override_slc = False
     self.slower_lead = False
     self.tracking_lead = False
@@ -57,6 +58,7 @@ class FrogPilotPlanner:
     self.road_curvature = 0
     self.slc_target = 0
     self.speed_jerk = 0
+    self.tracking_lead_distance = 0
     self.vtsc_target = 0
 
   def update(self, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, modelData, radarState, frogpilot_toggles):
@@ -147,6 +149,13 @@ class FrogPilotPlanner:
       self.lane_width_left = 0
       self.lane_width_right = 0
 
+    if frogpilot_toggles.lead_departing_alert and self.tracking_lead:
+      self.lead_departing = self.lead_one.dRel - self.tracking_lead_distance > 1
+      self.lead_departing &= not carState.gasPressed
+      self.lead_departing &= v_lead > 1
+      self.lead_departing &= driving_gear
+      self.lead_departing &= carState.standstill
+
     self.road_curvature = calculate_road_curvature(modelData, v_ego)
     self.v_cruise = self.update_v_cruise(carState, controlsState, frogpilotCarState, frogpilotNavigation, modelData, v_cruise, v_ego, frogpilot_toggles)
 
@@ -155,6 +164,8 @@ class FrogPilotPlanner:
 
     if v_ego > CRUISING_SPEED:
       self.tracking_lead = self.lead_one.status
+    elif not carState.standstill and self.tracking_lead:
+      self.tracking_lead_distance = self.lead_one.dRel
 
   def update_follow_values(self, lead_distance, stopping_distance, v_ego, v_lead, frogpilot_toggles):
     # Offset by FrogAi for FrogPilot for a more natural approach to a faster lead
@@ -257,6 +268,8 @@ class FrogPilotPlanner:
 
     frogpilotPlan.laneWidthLeft = self.lane_width_left
     frogpilotPlan.laneWidthRight = self.lane_width_right
+
+    frogpilotPlan.leadDeparting = self.lead_departing
 
     frogpilotPlan.maxAcceleration = self.max_accel
     frogpilotPlan.minAcceleration = self.min_accel
