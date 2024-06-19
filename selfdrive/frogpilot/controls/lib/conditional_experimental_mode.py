@@ -3,6 +3,7 @@ from openpilot.selfdrive.modeld.constants import ModelConstants
 
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_functions import MovingAverageCalculator
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_variables import CITY_SPEED_LIMIT, PROBABILITY
+from openpilot.selfdrive.frogpilot.controls.lib.speed_limit_controller import SpeedLimitController
 
 class ConditionalExperimentalMode:
   def __init__(self):
@@ -38,6 +39,10 @@ class ConditionalExperimentalMode:
 
     if frogpilot_toggles.conditional_signal and v_ego <= CITY_SPEED_LIMIT and (carState.leftBlinker or carState.rightBlinker):
       self.status_value = 9
+      return True
+
+    if SpeedLimitController.experimental_mode:
+      self.status_value = 10
       return True
 
     approaching_maneuver = modelData.navEnabled and (frogpilotNavigation.approachingIntersection or frogpilotNavigation.approachingTurn)
