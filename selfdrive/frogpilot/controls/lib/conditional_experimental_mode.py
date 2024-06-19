@@ -28,6 +28,10 @@ class ConditionalExperimentalMode:
       self.status_value = 7 if lead_status else 8
       return True
 
+    if frogpilot_toggles.conditional_signal and v_ego <= CITY_SPEED_LIMIT and (carState.leftBlinker or carState.rightBlinker):
+      self.status_value = 9
+      return True
+
     approaching_maneuver = modelData.navEnabled and (frogpilotNavigation.approachingIntersection or frogpilotNavigation.approachingTurn)
     if frogpilot_toggles.conditional_navigation and approaching_maneuver and (frogpilot_toggles.conditional_navigation_lead or not lead_status):
       self.status_value = 11 if frogpilotNavigation.approachingIntersection else 12
