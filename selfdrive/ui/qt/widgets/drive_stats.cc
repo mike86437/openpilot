@@ -36,7 +36,7 @@ DriveStats::DriveStats(QWidget* parent) : QFrame(parent) {
 
     grid_layout->addWidget(newLabel((FrogPilot ? tr("Drives") : tr("All-Time %")), "unit"), row + 1, 0, Qt::AlignLeft);
     grid_layout->addWidget(labels.distance_unit = newLabel(getDistanceUnit(), "unit"), row + 1, 1, Qt::AlignLeft);
-    grid_layout->addWidget(newLabel((FrogPilot ? tr("Hours") : tr("Last Drive %")), "unit"), row + 1, 2, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel(FrogPilot ? tr("Hours") : tr("/100 ") + getDistanceUnit(), "unit"), row + 1, 2, Qt::AlignLeft);
 
     main_layout->addLayout(grid_layout);
     main_layout->addStretch(1);
@@ -79,14 +79,14 @@ void DriveStats::updateStats() {
     labels.routes->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") / qMax(int(paramsTracking.getFloat("FrogPilotKilometers")) - int(paramsTracking.getFloat("FrogPilotBaseKilometers")), 1) * 100)));
     labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") * (metric_ ? 1 : KM_TO_MILE))));
     labels.distance_unit->setText(getDistanceUnit());
-    labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatPercent"))));
+    labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatDisengage")) * 100 / qMax(int(paramsTracking.getFloat("FrogPilotLatKilometers")* (metric_ ? 1 : KM_TO_MILE)), 1)));
   };
 
   auto updateLong = [this](const QJsonObject& obj, StatsLabels& labels) {
     labels.routes->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") / qMax(int(paramsTracking.getFloat("FrogPilotKilometers")) - int(paramsTracking.getFloat("FrogPilotBaseKilometers")), 1) * 100)));
     labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") * (metric_ ? 1 : KM_TO_MILE))));
     labels.distance_unit->setText(getDistanceUnit());
-    labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongPercent"))));
+    labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongDisengage")) * 100 / qMax(int(paramsTracking.getFloat("FrogPilotLongKilometers")* (metric_ ? 1 : KM_TO_MILE)), 1)));
   };
 
   updateFrogPilot(json["frogpilot"].toObject(), frogPilot_);

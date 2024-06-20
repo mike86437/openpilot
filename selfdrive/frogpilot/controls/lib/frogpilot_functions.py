@@ -152,7 +152,9 @@ class FrogPilotFunctions:
       "FrogPilotLatPercent": (params.get_float, params_tracking.put_float),
       "FrogPilotLongKilometers": (params.get_float, params_tracking.put_float),
       "FrogPilotLongPercent": (params.get_float, params_tracking.put_float),
-      "FrogPilotBaseKilometers": (params.get_float, params_tracking.put_float)
+      "FrogPilotBaseKilometers": (params.get_float, params_tracking.put_float),
+      "FrogPilotLatDisengage": (params.get_float, params_tracking.put_float),
+      "FrogPilotLongDisengage": (params.get_float, params_tracking.put_float)
     }
     convert_param_mappings(param_mappings, params, 0)
 
@@ -164,7 +166,9 @@ class FrogPilotFunctions:
       "FrogPilotLatPercent": (params.get_float, params_tracking.put_float),
       "FrogPilotLongKilometers": (params.get_float, params_tracking.put_float),
       "FrogPilotLongPercent": (params.get_float, params_tracking.put_float),
-      "FrogPilotBaseKilometers": (params.get_float, params_tracking.put_float)
+      "FrogPilotBaseKilometers": (params.get_float, params_tracking.put_float),
+      "FrogPilotLatDisengage": (params.get_float, params_tracking.put_float),
+      "FrogPilotLongDisengage": (params.get_float, params_tracking.put_float)
     }
     convert_param_mappings(param_storage_mappings, params_storage, 0)
 
