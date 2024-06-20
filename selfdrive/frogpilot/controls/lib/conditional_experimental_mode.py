@@ -16,9 +16,17 @@ class ConditionalExperimentalMode:
     self.stop_light_mac = MovingAverageCalculator()
 
   def update(self, carState, enabled, frogpilotNavigation, lead, modelData, road_curvature, slower_lead, v_ego, v_lead, frogpilot_toggles):
-    self.update_conditions(lead.dRel, lead.status, modelData, road_curvature, slower_lead, v_ego, v_lead, frogpilot_toggles)
-    self.experimental_mode = self.check_conditions(carState, frogpilotNavigation, lead.status, modelData, v_ego, v_lead, frogpilot_toggles)
-    self.params_memory.put_int("CEStatus", self.status_value if self.experimental_mode else 0)
+    if frogpilot_toggles.experimental_mode_via_press and enabled:
+      self.status_value = self.params_memory.get_int("CEStatus")
+    else:
+      self.status_value = 0
+
+    if self.status_value not in {1, 2, 3, 4, 5, 6} and enabled:
+      self.update_conditions(lead.dRel, lead.status, modelData, road_curvature, slower_lead, v_ego, v_lead, frogpilot_toggles)
+      self.experimental_mode = self.check_conditions(carState, frogpilotNavigation, lead.status, modelData, v_ego, v_lead, frogpilot_toggles)
+      self.params_memory.put_int("CEStatus", self.status_value if self.experimental_mode else 0)
+    else:
+      self.experimental_mode = self.status_value in {2, 4, 6}
 
   def check_conditions(self, carState, frogpilotNavigation, lead_status, modelData, v_ego, v_lead, frogpilot_toggles):
     if carState.standstill:
