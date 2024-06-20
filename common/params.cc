@@ -296,8 +296,8 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"FPSCounter", PERSISTENT | FROGPILOT_STORAGE | FROGPILOT_VISUALS},
     {"FrogPilotBaseKilometers", PERSISTENT | FROGPILOT_TRACKING},
     {"FrogPilotDrives", PERSISTENT | FROGPILOT_TRACKING},
-    {"FrogPilotLatDisengage", PERSISTENT | FROGPILOT_TRACKING}
-    {"FrogPilotLongDisengage", PERSISTENT | FROGPILOT_TRACKING}
+    {"FrogPilotLatDisengage", PERSISTENT | FROGPILOT_TRACKING},
+    {"FrogPilotLongDisengage", PERSISTENT | FROGPILOT_TRACKING},
     {"FrogPilotLatKilometers", PERSISTENT | FROGPILOT_TRACKING},
     {"FrogPilotLatPercent", PERSISTENT | FROGPILOT_TRACKING},
     {"FrogPilotLongKilometers", PERSISTENT | FROGPILOT_TRACKING},
