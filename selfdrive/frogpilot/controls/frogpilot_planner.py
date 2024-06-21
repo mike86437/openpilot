@@ -249,7 +249,7 @@ class FrogPilotPlanner:
       self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
 
     # Pfeiferj's Speed Limit Controller
-    if frogpilot_toggles.speed_limit_controller:
+    if frogpilot_toggles.speed_limit_controller and self.lead_one.status:
       v_ego_diff = v_ego_cluster - v_ego
       SpeedLimitController.update(frogpilotCarState.dashboardSpeedLimit, frogpilotNavigation.navigationSpeedLimit, v_ego, frogpilot_toggles)
       unconfirmed_slc_target = SpeedLimitController.desired_speed_limit
