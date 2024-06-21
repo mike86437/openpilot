@@ -79,7 +79,7 @@ void DriveStats::updateStats() {
     labels.routes->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") / qMax(int(paramsTracking.getFloat("FrogPilotKilometers")) - int(paramsTracking.getFloat("FrogPilotBaseKilometers")), 1) * 100)));
     labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") * (metric_ ? 1 : KM_TO_MILE))));
     labels.distance_unit->setText(getDistanceUnit());
-    labels.hours->setText(QString::number(paramsTracking.getFloat("FrogPilotLongDisengage") / qMax(paramsTracking.getFloat("FrogPilotLongKilometers"), 1.0f), 'f', 3));
+    labels.hours->setText(QString::number(paramsTracking.getFloat("FrogPilotLatDisengage") / qMax(paramsTracking.getFloat("FrogPilotLatKilometers"), 1.0f), 'f', 3));
   };
 
   auto updateLong = [this](const QJsonObject& obj, StatsLabels& labels) {
