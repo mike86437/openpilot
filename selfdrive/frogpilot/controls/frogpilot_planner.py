@@ -75,6 +75,7 @@ class FrogPilotPlanner:
     self.slowdown_target = 50
     self.target25 = 50
     self.float_target = 50
+    self.slc_transition = False
 
   def update(self, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, liveLocationKalman, modelData, radarState, frogpilot_toggles):
     if frogpilot_toggles.radarless_model:
@@ -249,7 +250,7 @@ class FrogPilotPlanner:
       self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
 
     # Pfeiferj's Speed Limit Controller
-    if frogpilot_toggles.speed_limit_controller and self.lead_one.status:
+    if frogpilot_toggles.speed_limit_controller and not self.lead_one.status:
       v_ego_diff = v_ego_cluster - v_ego
       SpeedLimitController.update(frogpilotCarState.dashboardSpeedLimit, frogpilotNavigation.navigationSpeedLimit, v_ego, frogpilot_toggles)
       unconfirmed_slc_target = SpeedLimitController.desired_speed_limit
