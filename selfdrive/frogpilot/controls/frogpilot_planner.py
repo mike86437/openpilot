@@ -14,6 +14,7 @@ from openpilot.selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import A_CHA
                                                                            get_safe_obstacle_distance, get_stopped_equivalence_factor, get_T_FOLLOW
 from openpilot.selfdrive.controls.lib.longitudinal_planner import A_CRUISE_MIN, get_max_accel
 
+from openpilot.selfdrive.frogpilot.controls.lib.conditional_experimental_mode import ConditionalExperimentalMode
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_functions import calculate_lane_width, calculate_road_curvature
 from openpilot.selfdrive.frogpilot.controls.lib.frogpilot_variables import CITY_SPEED_LIMIT, CRUISING_SPEED
 
@@ -22,6 +23,8 @@ GearShifter = car.CarState.GearShifter
 class FrogPilotPlanner:
   def __init__(self):
     self.params_memory = Params("/dev/shm/params")
+
+    self.cem = ConditionalExperimentalMode()
 
     self.tracking_lead = False
 
@@ -72,6 +75,9 @@ class FrogPilotPlanner:
     self.road_curvature = calculate_road_curvature(modelData, v_ego)
     self.v_cruise = self.update_v_cruise(carState, controlsState, frogpilotCarState, frogpilotNavigation, modelData, v_cruise, v_ego, frogpilot_toggles)
 
+    if frogpilot_toggles.conditional_experimental_mode:
+      self.cem.update(carState, controlsState.enabled, frogpilotNavigation, self.lead_one, modelData, self.road_curvature, self.slower_lead, v_ego, v_lead, frogpilot_toggles)
+
     if v_ego > CRUISING_SPEED:
       self.tracking_lead = self.lead_one.status
 
@@ -99,6 +105,8 @@ class FrogPilotPlanner:
     frogpilotPlan.speedJerk = J_EGO_COST * float(self.speed_jerk)
     frogpilotPlan.speedJerkStock = J_EGO_COST * float(self.base_speed_jerk)
     frogpilotPlan.tFollow = float(self.t_follow)
+
+    frogpilotPlan.conditionalExperimentalActive = self.cem.experimental_mode
 
     frogpilotPlan.laneWidthLeft = self.lane_width_left
     frogpilotPlan.laneWidthRight = self.lane_width_right
