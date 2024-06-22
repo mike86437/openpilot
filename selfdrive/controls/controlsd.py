@@ -76,6 +76,10 @@ class Controls:
     self.current_total_distance = self.params_tracking.get_float("FrogPilotKilometers")
     self.current_total_drives = self.params_tracking.get_int("FrogPilotDrives")
     self.current_total_time = self.params_tracking.get_float("FrogPilotMinutes")
+    self.current_long_distance = self.params_tracking.get_float("FrogPilotLongKilometers")
+    self.current_lat_distance = self.params_tracking.get_float("FrogPilotLatKilometers")
+    self.current_lat_disengage = self.params_tracking.get_float("FrogPilotLatDisengage")
+    self.current_long_disengage = self.params_tracking.get_float("FrogPilotLongDisengage")
 
     self.always_on_lateral_active = False
     self.drive_added = False
@@ -92,6 +96,12 @@ class Controls:
 
     self.display_timer = 0
     self.drive_distance = 0
+    self.lat_distance = 0
+    self.long_distance = 0
+    self.lat_disengage = 0
+    self.long_disengage = 0
+    self.latEngaged = False
+    self.longEngaged = False
     self.drive_time = 0
     self.max_acceleration = 0
     self.previous_speed_limit = 0
@@ -610,6 +620,21 @@ class Controls:
                    (not standstill or self.joystick_mode)
     CC.longActive = self.enabled and not self.events.contains(ET.OVERRIDE_LONGITUDINAL) and self.CP.openpilotLongitudinalControl
 
+    if CC.latActive:
+      self.lat_distance += CS.vEgo * DT_CTRL
+      self.latEngaged = True
+    if CC.longActive:
+      self.long_distance += CS.vEgo * DT_CTRL
+      self.longEngaged = True
+    if self.latEngaged and not CC.latActive:
+      if not CS.standstill:
+        self.lat_disengage += 1
+      self.latEngaged = False
+    if self.longEngaged and not CC.longActive and not CS.standstill:
+      if not CS.standstill:
+        self.long_disengage += 1
+      self.longEngaged = False
+
     actuators = CC.actuators
     actuators.longControlState = self.LoC.long_control_state
 
@@ -1034,6 +1059,32 @@ class Controls:
       self.current_total_distance += distance_to_add
       self.params_tracking.put_float_nonblocking("FrogPilotKilometers", self.current_total_distance)
       self.drive_distance = 0
+
+      if self.current_lat_distance and self.current_long_distance == 0:
+        self.params_tracking.put_float_nonblocking("FrogPilotBaseKilometers", self.current_total_distance)
+        self.params_tracking.put_float_nonblocking("FrogPilotLatDisengage", 0)
+        self.params_tracking.put_float_nonblocking("FrogPilotLongDisengage", 0)
+      lat_distance_to_add = self.lat_distance / 1000
+      self.current_lat_distance += lat_distance_to_add
+      self.params_tracking.put_float_nonblocking("FrogPilotLatKilometers", self.current_lat_distance)
+      cur_lat_percent = lat_distance_to_add / max(distance_to_add, 1) * 100
+      self.params_tracking.put_float_nonblocking("FrogPilotLatPercent", cur_lat_percent)
+      self.lat_distance = 0
+
+      long_distance_to_add = self.long_distance / 1000
+      self.current_long_distance += long_distance_to_add
+      self.params_tracking.put_float_nonblocking("FrogPilotLongKilometers", self.current_long_distance)
+      cur_long_percent = long_distance_to_add / max(distance_to_add, 1) * 100
+      self.params_tracking.put_float_nonblocking("FrogPilotLongPercent", cur_long_percent)
+      self.long_distance = 0
+
+      self.current_lat_disengage += self.lat_disengage
+      self.params_tracking.put_float_nonblocking("FrogPilotLatDisengage", self.current_lat_disengage)
+      self.lat_disengage = 0
+
+      self.current_long_disengage += self.long_disengage
+      self.params_tracking.put_float_nonblocking("FrogPilotLongDisengage", self.current_long_disengage)
+      self.long_disengage = 0
 
       time_to_add = self.drive_time / 60
       self.current_total_time += time_to_add

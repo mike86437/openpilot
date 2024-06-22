@@ -26,6 +26,7 @@ DriveStats::DriveStats(QWidget* parent) : QFrame(parent) {
     grid_layout->setContentsMargins(0, 10, 0, 10);
 
     int row = 0;
+
     grid_layout->addWidget(newLabel(title, FrogPilot ? "frogpilot_title" : "title"), row++, 0, 1, 3);
     grid_layout->addItem(new QSpacerItem(0, 10), row++, 0, 1, 1);
 
@@ -33,17 +34,17 @@ DriveStats::DriveStats(QWidget* parent) : QFrame(parent) {
     grid_layout->addWidget(labels.distance = newLabel("0", "number"), row, 1, Qt::AlignLeft);
     grid_layout->addWidget(labels.hours = newLabel("0", "number"), row, 2, Qt::AlignLeft);
 
-    grid_layout->addWidget(newLabel((tr("Drives")), "unit"), row + 1, 0, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel((FrogPilot ? tr("Drives") : tr("All-Time %")), "unit"), row + 1, 0, Qt::AlignLeft);
     grid_layout->addWidget(labels.distance_unit = newLabel(getDistanceUnit(), "unit"), row + 1, 1, Qt::AlignLeft);
-    grid_layout->addWidget(newLabel(tr("Hours"), "unit"), row + 1, 2, Qt::AlignLeft);
+    grid_layout->addWidget(newLabel(FrogPilot ? tr("Hours") : tr("Override/KM"), "unit"), row + 1, 2, Qt::AlignLeft);
 
     main_layout->addLayout(grid_layout);
     main_layout->addStretch(1);
   };
 
-  add_stats_layouts(tr("ALL TIME"), all_);
-  add_stats_layouts(tr("PAST WEEK"), week_);
   add_stats_layouts(tr("FROGPILOT"), frogPilot_, true);
+  add_stats_layouts(tr("LATERAL"), frogLat_);
+  add_stats_layouts(tr("LONGITUDINAL"), frogLong_);
 
   if (auto dongleId = getDongleId()) {
     QString url = CommaApi::BASE_URL + "/v1.1/devices/" + *dongleId + "/stats";
@@ -74,17 +75,23 @@ void DriveStats::updateStats() {
     labels.hours->setText(QString::number(int(paramsTracking.getFloat("FrogPilotMinutes") / 60)));
   };
 
-  updateFrogPilot(json["frogpilot"].toObject(), frogPilot_);
-
-  auto update = [=](const QJsonObject& obj, StatsLabels& labels) {
-    labels.routes->setText(QString::number((int)obj["routes"].toDouble()));
-    labels.distance->setText(QString::number(int(obj["distance"].toDouble() * (metric_ ? MILE_TO_KM : 1))));
+  auto updateLat = [this](const QJsonObject& obj, StatsLabels& labels) {
+    labels.routes->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") / qMax(int(paramsTracking.getFloat("FrogPilotKilometers")) - int(paramsTracking.getFloat("FrogPilotBaseKilometers")), 1) * 100)));
+    labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLatKilometers") * (metric_ ? 1 : KM_TO_MILE))));
     labels.distance_unit->setText(getDistanceUnit());
-    labels.hours->setText(QString::number((int)(obj["minutes"].toDouble() / 60)));
+    labels.hours->setText(QString::number(paramsTracking.getFloat("FrogPilotLatDisengage") / qMax(paramsTracking.getFloat("FrogPilotLatKilometers"), 1.0f), 'f', 3));
   };
 
-  update(json["all"].toObject(), all_);
-  update(json["week"].toObject(), week_);
+  auto updateLong = [this](const QJsonObject& obj, StatsLabels& labels) {
+    labels.routes->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") / qMax(int(paramsTracking.getFloat("FrogPilotKilometers")) - int(paramsTracking.getFloat("FrogPilotBaseKilometers")), 1) * 100)));
+    labels.distance->setText(QString::number(int(paramsTracking.getFloat("FrogPilotLongKilometers") * (metric_ ? 1 : KM_TO_MILE))));
+    labels.distance_unit->setText(getDistanceUnit());
+    labels.hours->setText(QString::number(paramsTracking.getFloat("FrogPilotLongDisengage") / qMax(paramsTracking.getFloat("FrogPilotLongKilometers"), 1.0f), 'f', 3));
+  };
+
+  updateFrogPilot(json["frogpilot"].toObject(), frogPilot_);
+  updateLat(json["froglat"].toObject(), frogLat_);
+  updateLong(json["froglong"].toObject(), frogLong_);
 }
 
 void DriveStats::parseResponse(const QString& response, bool success) {
