@@ -22,7 +22,7 @@ private:
   QJsonDocument stats_;
   struct StatsLabels {
     QLabel *routes, *distance, *distance_unit, *hours;
-  } all_, week_, frogPilot_;
+  } frogPilot_, frogLat_, frogLong_;
 
 private slots:
   void parseResponse(const QString &response, bool success);
