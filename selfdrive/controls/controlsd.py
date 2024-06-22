@@ -199,6 +199,7 @@ class Controls:
     self.recalibrating_seen = False
 
     self.can_log_mono_time = 0
+    self.target_25 = False
 
     self.startup_event = get_startup_event(car_recognized, not self.CP.passive, len(self.CP.carFw) > 0, self.block_user)
 
@@ -1047,13 +1048,9 @@ class Controls:
     if self.frogpilot_toggles.conditional_experimental_mode:
       self.experimental_mode = self.sm['frogpilotPlan'].conditionalExperimentalActive
 
-    if any(be.pressed and be.type == FrogPilotButtonType.lkas for be in CS.buttonEvents) and self.frogpilot_toggles.experimental_mode_via_lkas:
-      if self.frogpilot_toggles.conditional_experimental_mode:
-        conditional_status = self.params_memory.get_int("CEStatus")
-        override_value = 0 if conditional_status in {1, 2, 3, 4, 5, 6} else 3 if conditional_status >= 7 else 4
-        self.params_memory.put_int("CEStatus", override_value)
-      else:
-        self.params.put_bool_nonblocking("ExperimentalMode", not self.experimental_mode)
+    if any(be.pressed and be.type == FrogPilotButtonType.lkas for be in CS.buttonEvents):
+      self.target_25 = not self.target_25
+      self.params.put_bool("Set25", self.target_25)
 
     self.previously_enabled |= (self.enabled or self.always_on_lateral_active) and CS.vEgo > CRUISING_SPEED
     self.previously_enabled &= driving_gear

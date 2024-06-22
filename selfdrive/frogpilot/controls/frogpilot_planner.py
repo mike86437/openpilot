@@ -42,6 +42,7 @@ def get_max_accel_sport(v_ego):
 class FrogPilotPlanner:
   def __init__(self):
     self.params_memory = Params("/dev/shm/params")
+    self.params = Params()
 
     self.cem = ConditionalExperimentalMode()
     self.lead_one = Lead()
@@ -61,6 +62,7 @@ class FrogPilotPlanner:
     self.speed_jerk = 0
     self.tracking_lead_distance = 0
     self.vtsc_target = 0
+    self.target25 = 50
     self.float_target = 50
     self.slowdown_target = 50
 
@@ -203,6 +205,14 @@ class FrogPilotPlanner:
 
     v_ego_cluster = max(carState.vEgoCluster, v_ego)
 
+    # LKAS btn target 25 mph
+    if self.params.get_bool("Set25"):
+      self.target25 = 11.176
+      if v_ego < 2.2352:
+        self.target25 = 0
+    else:
+      self.target25 = v_cruise
+
     # Extended lead linear braking
     lead = self.lead_one
     d_rel = lead.dRel
@@ -278,6 +288,8 @@ class FrogPilotPlanner:
       self.float_target = min(v_ego - 0.5, v_cruise + 2.2352)
       return self.float_target
     # Default case: return v_cruise
+    elif self.target25 < v_cruise:
+      return self.target25
     else:
       self.float_target = v_cruise
       return v_cruise
@@ -292,7 +304,7 @@ class FrogPilotPlanner:
     frogpilotPlan.speedJerk = J_EGO_COST * float(self.speed_jerk)
     frogpilotPlan.speedJerkStock = J_EGO_COST * float(self.base_speed_jerk)
 
-    frogpilotPlan.adjustedCruise = float(min(self.mtsc_target, self.vtsc_target, self.slowdown_target) * (CV.MS_TO_KPH if frogpilot_toggles.is_metric else CV.MS_TO_MPH))
+    frogpilotPlan.adjustedCruise = float(min(self.mtsc_target, self.vtsc_target, self.slowdown_target, self.target25) * (CV.MS_TO_KPH if frogpilot_toggles.is_metric else CV.MS_TO_MPH))
 
     frogpilotPlan.conditionalExperimentalActive = self.cem.experimental_mode
 
