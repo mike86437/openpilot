@@ -364,11 +364,13 @@ void ui_update_frogpilot_params(UIState *s) {
   scene.show_fps = developer_ui && params.getBool("FPSCounter");
   scene.show_signal = border_metrics && params.getBool("SignalMetrics");
   scene.show_steering = border_metrics && params.getBool("ShowSteering");
-  scene.lead_info = scene.longitudinal_control && developer_ui && params.getBool("LongitudinalMetrics");
+  bool show_lateral = developer_ui && params.getBool("LateralMetrics");
+  scene.show_tuning = show_lateral && scene.has_auto_tune && params.getBool("TuningInfo");
+  bool show_longitudinal = scene.longitudinal_control && developer_ui && params.getBool("LongitudinalMetrics");
+  scene.lead_info = show_longitudinal && params.getBool("LeadInfo");
+  scene.show_jerk = show_longitudinal && params.getBool("JerkInfo");
   scene.numerical_temp = developer_ui && params.getBool("NumericalTemp");
   scene.fahrenheit = scene.numerical_temp && params.getBool("Fahrenheit");
-  scene.show_jerk = scene.longitudinal_control && developer_ui && params.getBool("LongitudinalMetrics");
-  scene.show_tuning = developer_ui && scene.has_auto_tune && params.getBool("LateralMetrics");
   scene.sidebar_metrics = developer_ui && params.getBool("SidebarMetrics");
   scene.is_CPU = scene.sidebar_metrics && params.getBool("ShowCPU");
   scene.is_GPU = scene.sidebar_metrics && params.getBool("ShowGPU");
