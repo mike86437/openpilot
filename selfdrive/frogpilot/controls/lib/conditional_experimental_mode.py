@@ -15,7 +15,7 @@ class ConditionalExperimentalMode:
     self.slow_lead_mac = MovingAverageCalculator()
     self.stop_light_mac = MovingAverageCalculator()
 
-  def update(self, carState, frogpilotNavigation, lead, modelData, model_length, road_curvature, slower_lead, tracking_lead, v_ego, v_lead, frogpilot_toggles):
+  def update(self, carState, frogpilotNavigation, lead, modelData, model_length, road_curvature, slower_lead, tracking_lead, v_cruise, v_ego, v_lead, frogpilot_toggles):
     if frogpilot_toggles.experimental_mode_via_press:
       self.status_value = self.params_memory.get_int("CEStatus")
     else:
@@ -23,12 +23,12 @@ class ConditionalExperimentalMode:
 
     if self.status_value not in {1, 2, 3, 4, 5, 6} and not carState.standstill:
       self.update_conditions(lead.dRel, model_length, road_curvature, slower_lead, tracking_lead, v_ego, v_lead, frogpilot_toggles)
-      self.experimental_mode = self.check_conditions(carState, frogpilotNavigation, modelData, tracking_lead, v_ego, v_lead, frogpilot_toggles)
+      self.experimental_mode = self.check_conditions(carState, frogpilotNavigation, modelData, tracking_lead, v_cruise, v_ego, v_lead, frogpilot_toggles)
       self.params_memory.put_int("CEStatus", self.status_value if self.experimental_mode else 0)
     else:
       self.experimental_mode = self.status_value in {2, 4, 6} or carState.standstill and self.experimental_mode
 
-  def check_conditions(self, carState, frogpilotNavigation, modelData, tracking_lead, v_ego, v_lead, frogpilot_toggles):
+  def check_conditions(self, carState, frogpilotNavigation, modelData, tracking_lead, v_cruise, v_ego, v_lead, frogpilot_toggles):
     if (tracking_lead and v_ego <= frogpilot_toggles.conditional_limit_lead) or (not tracking_lead and v_ego <= frogpilot_toggles.conditional_limit):
       self.status_value = 7 if tracking_lead else 8
       return True
@@ -50,7 +50,7 @@ class ConditionalExperimentalMode:
       self.status_value = 13 if v_lead < 1 else 14
       return True
 
-    if frogpilot_toggles.conditional_stop_lights and self.stop_light_detected:
+    if frogpilot_toggles.conditional_stop_lights and self.stop_light_detected or v_cruise < CRUISING_SPEED:
       self.status_value = 15
       return True
 
