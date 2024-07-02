@@ -222,7 +222,7 @@ class FrogPilotPlanner:
     v_lead = lead.vLead
     v_rel = v_ego - v_lead
     if d_rel > 20 and v_rel > 5:
-      decelRate = (v_rel ** 2) / (2 * d_rel) * 2
+      decelRate = (v_rel ** 2) / (2 * d_rel) * 3
       self.slowdown_target = v_ego - decelRate
     else:
       self.slowdown_target = v_cruise
@@ -288,7 +288,7 @@ class FrogPilotPlanner:
       return min(filtered_targets)
     # Check if v_ego is greater than v_cruise and limit it to max 5 over v_cruise
     elif v_ego > v_cruise:
-      self.float_target = min(v_ego - 0.5, v_cruise + 2.2352)
+      self.float_target = min(v_ego - 0.25, v_cruise + 2.2352)
       return self.float_target
     # Default case: return v_cruise
     elif self.target25 < v_cruise:
