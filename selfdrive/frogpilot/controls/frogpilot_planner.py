@@ -69,6 +69,7 @@ class FrogPilotPlanner:
     self.tracking_lead_distance = 0
     self.v_cruise = 0
     self.vtsc_target = 0
+    self.float_target = 50
 
     self.tracking_lead_mac = MovingAverageCalculator()
 
@@ -277,6 +278,7 @@ class FrogPilotPlanner:
         self.overridden_speed = 0
     else:
       self.slc_target = 0
+      v_ego_diff = 0
 
     # Pfeiferj's Vision Turn Controller
     if frogpilot_toggles.vision_turn_controller and v_ego > CRUISING_SPEED and controlsState.enabled:
@@ -308,7 +310,14 @@ class FrogPilotPlanner:
       self.tracked_model_length = 0
 
       targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target]
-      self.v_cruise = float(min([target if target > CRUISING_SPEED else v_cruise for target in targets]))
+      if any(target < v_cruise for target in filtered_targets):
+        self.v_cruise = float(min([target if target > CRUISING_SPEED else v_cruise for target in targets]))
+      elif v_ego > v_cruise:
+        self.float_target = min(v_ego - 0.25, v_cruise + 2.2352)
+        self.v_cruise = self.float_target
+      else:
+        self.float_target = v_cruise
+        self.v_cruise = v_cruise
 
   def publish(self, sm, pm, frogpilot_toggles):
     frogpilot_plan_send = messaging.new_message('frogpilotPlan')
