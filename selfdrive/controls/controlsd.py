@@ -1044,7 +1044,7 @@ class Controls:
     self.always_on_lateral_active &= self.speed_check
     self.always_on_lateral_active &= not (self.frogpilot_toggles.always_on_lateral_lkas and self.sm['frogpilotCarState'].alwaysOnLateralDisabled)
     self.always_on_lateral_active &= not (CS.brakePressed and CS.vEgo < self.frogpilot_toggles.always_on_lateral_pause_speed) or CS.standstill
-
+    print(self.sm['frogpilotCarState'].alwaysOnLateralDisabled)
     self.drive_distance += CS.vEgo * DT_CTRL
     self.drive_time += DT_CTRL
 
