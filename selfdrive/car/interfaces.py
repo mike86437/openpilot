@@ -481,7 +481,7 @@ class CarInterfaceBase(ABC):
         events.add(EventName.buttonCancel)
 
       # FrogPilot button presses
-      if b.type == FrogPilotButtonType.lkas:
+      if b.type == FrogPilotButtonType.lkas and b.pressed:
         self.always_on_lateral_disabled = not self.always_on_lateral_disabled
 
     # Handle permanent and temporary steering faults
