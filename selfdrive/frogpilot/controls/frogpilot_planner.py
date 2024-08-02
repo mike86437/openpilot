@@ -71,6 +71,7 @@ class FrogPilotPlanner:
     self.tracking_lead_distance = 0
     self.v_cruise = 0
     self.vtsc_target = 0
+    self.float_target = 50
 
     self.tracking_lead_mac = MovingAverageCalculator()
 
@@ -259,7 +260,7 @@ class FrogPilotPlanner:
       if self.mtsc_target == CRUISING_SPEED:
         self.mtsc_target = v_cruise
     else:
-      self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
+      self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else v_cruise
 
     # Pfeiferj's Speed Limit Controller
     if frogpilot_toggles.speed_limit_controller:
@@ -287,7 +288,8 @@ class FrogPilotPlanner:
       else:
         self.overridden_speed = 0
     else:
-      self.slc_target = 0
+      self.slc_target = v_cruise
+      v_ego_diff = 0
 
     # Pfeiferj's Vision Turn Controller
     if frogpilot_toggles.vision_turn_controller and v_ego > CRUISING_SPEED and controlsState.enabled:
@@ -297,7 +299,7 @@ class FrogPilotPlanner:
       self.vtsc_target = (adjusted_target_lat_a / adjusted_road_curvature)**0.5
       self.vtsc_target = clip(self.vtsc_target, CRUISING_SPEED, v_cruise)
     else:
-      self.vtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
+      self.vtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else v_cruise
 
     if frogpilot_toggles.force_standstill and carState.standstill and not self.override_force_stop and controlsState.enabled:
       self.forcing_stop = True
@@ -319,7 +321,14 @@ class FrogPilotPlanner:
       self.tracked_model_length = 0
 
       targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target]
-      self.v_cruise = float(min([target if target > CRUISING_SPEED else v_cruise for target in targets]))
+      if any(target < v_cruise for target in targets):
+        self.v_cruise = float(min([target if target > CRUISING_SPEED else v_cruise for target in targets]))
+      elif v_ego > v_cruise:
+        self.float_target = min(v_ego - 0.25, v_cruise + 2.2352)
+        self.v_cruise = self.float_target
+      else:
+        self.float_target = v_cruise
+        self.v_cruise = v_cruise
 
   def publish(self, sm, pm, frogpilot_toggles):
     frogpilot_plan_send = messaging.new_message('frogpilotPlan')
