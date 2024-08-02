@@ -113,6 +113,10 @@ class Controls:
                                   frequency=int(1/DT_CTRL))
 
     self.joystick_mode = self.params.get_bool("JoystickDebugMode")
+    mute_dm = True
+    if mute_dm:
+      ignore += ['driverMonitoringState']
+      self.params.put_bool("DmModelInitialized", True)
 
     # read params
     self.is_metric = self.params.get_bool("IsMetric")
