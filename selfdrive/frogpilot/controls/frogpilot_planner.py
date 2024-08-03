@@ -326,7 +326,7 @@ class FrogPilotPlanner:
       self.forcing_stop = False
       self.tracked_model_length = 0
 
-      targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.slowdown_targe]
+      targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target) - v_ego_diff, self.vtsc_target, self.slowdown_target]
       if any(target < v_cruise for target in targets):
         self.v_cruise = float(min([target if target > CRUISING_SPEED else v_cruise for target in targets]))
       elif v_ego > v_cruise:
@@ -348,7 +348,7 @@ class FrogPilotPlanner:
     frogpilotPlan.speedJerkStock = float(J_EGO_COST * self.base_speed_jerk)
     frogpilotPlan.tFollow = float(self.t_follow)
 
-    frogpilotPlan.adjustedCruise = float(min(self.mtsc_target, self.vtsc_target, self.slowdown_targe) * (CV.MS_TO_KPH if frogpilot_toggles.is_metric else CV.MS_TO_MPH))
+    frogpilotPlan.adjustedCruise = float(min(self.mtsc_target, self.vtsc_target, self.slowdown_target) * (CV.MS_TO_KPH if frogpilot_toggles.is_metric else CV.MS_TO_MPH))
     frogpilotPlan.vtscControllingCurve = bool(self.mtsc_target > self.vtsc_target)
 
     frogpilotPlan.conditionalExperimentalActive = self.cem.experimental_mode
