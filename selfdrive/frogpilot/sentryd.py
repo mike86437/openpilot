@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
-from cereal import car, messaging
+import cereal.messaging as messaging
 import time
 from openpilot.selfdrive.controls.lib.events import Events
 import requests
