@@ -6,7 +6,7 @@ from openpilot.selfdrive.controls.lib.events import Events
 import requests
 from common.params import Params
 params = Params()
-SENSITIVITY_THRESHOLD = 0.05
+SENSITIVITY_THRESHOLD = 0.1
 TRIGGERED_TIME = 2
 
 
