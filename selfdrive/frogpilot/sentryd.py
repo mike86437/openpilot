@@ -13,7 +13,7 @@ TRIGGERED_TIME = 2
 class SentryMode:
 
   def __init__(self):
-    self.sm = messaging.SubMaster(['accelerometer'], poll=['accelerometer'])
+    self.sm = messaging.SubMaster(['accelerometer'])
     self.curr_accel = 0
     self.prev_accel = None
     self.sentry_status = False
