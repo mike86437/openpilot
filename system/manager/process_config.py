@@ -74,7 +74,7 @@ procs = [
   NativeProcess("modeld", "selfdrive/modeld", ["./modeld"], run_new_modeld),
   NativeProcess("mapsd", "selfdrive/navd", ["./mapsd"], run_classic_modeld),
   PythonProcess("navmodeld", "selfdrive.classic_modeld.navmodeld", run_classic_modeld),
-  NativeProcess("sensord", "system/sensord", ["./sensord"], only_onroad, enabled=not PC),
+  NativeProcess("sensord", "system/sensord", ["./sensord"], always_run, enabled=not PC),
   NativeProcess("ui", "selfdrive/ui", ["./ui"], always_run, watchdog_max_dt=(5 if not PC else None)),
   PythonProcess("soundd", "selfdrive.ui.soundd", only_onroad),
   NativeProcess("locationd", "selfdrive/locationd", ["./locationd"], only_onroad),
@@ -110,6 +110,7 @@ procs = [
   PythonProcess("fleet_manager", "selfdrive.frogpilot.fleetmanager.fleet_manager", always_run),
   PythonProcess("frogpilot_process", "selfdrive.frogpilot.frogpilot_process", always_run),
   PythonProcess("mapd", "selfdrive.frogpilot.navigation.mapd", always_run),
+  PythonProcess("sentryd", "selfdrive.frogpilot.sentryd", only_offroad),
   NativeProcess("tinygrad_modeld", "selfdrive/tinygrad_modeld", ["./tinygrad_modeld"], run_tinygrad_modeld),
 ]
 
