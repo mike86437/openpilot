@@ -32,6 +32,7 @@ class SentryMode:
     self.back_image_url = ""
     self.front_image_url = ""
     self.timedelay = 0
+    self.frontAllowed = params.get("RecordFront")
 
   def takeSnapshot(self) -> Optional[Dict[str, str]]:
     from openpilot.system.camerad.snapshot.snapshot import snapshot, jpeg_write
@@ -49,16 +50,17 @@ class SentryMode:
     else:
       raise Exception("not available while camerad is started")
 
-  def base64_to_image(self, base64_data, output_file):
-    binary_data = base64.b64decode(base64_data)
-    with open(output_file, 'wb') as file:
-      file.write(binary_data)
-
-  def send_discord_webhook(self, webhook_url, message):
+  def send_discord_webhook(self, webhook_url, message, image_path=None):
     data = {"content": message}
-    headers = {"Content-Type": "application/json"}
-    response = requests.post(webhook_url, json=data, headers=headers)
-    if response.status_code == 200:
+    if image_path:
+        with open(image_path, "rb") as file:
+            files = {"file": file}
+            response = requests.post(webhook_url, data=data, files=files)
+    else:
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(webhook_url, json=data, headers=headers)
+
+    if response.status_code == 200 or response.status_code == 204:
       print("Message sent successfully")
     else:
       print(f"Failed to send message. Status code: {response.status_code}")
@@ -105,7 +107,11 @@ class SentryMode:
     if "front_image.jpg" is not None:
       shutil.copy("front_image.jpg", f"{target_directory}front_image_{timestamp}.jpg")
     if "ba360_imageck_image.jpg" is not None:
-      shutil.copy("360_image.jpg", f"{target_directory}360_image_{timestamp}.jpg")
+      image_path = f"{target_directory}360_image_{timestamp}.jpg"
+      shutil.copy("360_image.jpg", image_path)
+
+    message = 'ALERT! Sentry Detected Movement!'
+    self.send_discord_webhook(self.webhook_url, message, image_path)
 
   def update(self):
 
@@ -130,8 +136,6 @@ class SentryMode:
           print("Triggered")
           self.secDelay = 0
           self.takeSnapshot()
-          message = 'ALERT! Sentry Detected Movement!'
-          self.send_discord_webhook(self.webhook_url, message)
 
       # Trigger Reset
       elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
