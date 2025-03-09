@@ -36,7 +36,7 @@ class SentryMode:
       front_path = f"{target_directory}front_image_{timestamp}.jpg"
       stitch_path = f"{target_directory}360_image_{timestamp}.jpg"
 
-      if pic and fpic:
+      if pic is not None and fpic is not None:
         pic.save(back_path)
         fpic.save(front_path)
         front_image = Image.open(front_path)
@@ -50,10 +50,10 @@ class SentryMode:
         else:
           print("⚠️ Error: Images must have the same height.")
       else:
-        if pic:
+        if pic is not None:
           pic.save(back_path)
           self.send_discord_webhook(ALERT_MESSAGE, back_path)
-        elif fpic:
+        elif fpic is not None:
           fpic.save(front_path)
           self.send_discord_webhook(ALERT_MESSAGE, front_path)
 
