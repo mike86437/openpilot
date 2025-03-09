@@ -8,6 +8,7 @@ import os
 import requests
 from datetime import datetime
 from common.params import Params
+from openpilot.system.camerad.snapshot.snapshot import snapshot, jpeg_write
 
 SENSITIVITY_THRESHOLD = 0.08
 TRIGGERED_TIME = 2
@@ -32,16 +33,13 @@ class SentryMode:
       timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
       target_directory = "/data/media/0/sentryd/"
       os.makedirs(target_directory, exist_ok=True)
-
       back_path = f"{target_directory}back_image_{timestamp}.jpg"
       front_path = f"{target_directory}front_image_{timestamp}.jpg"
       stitch_path = f"{target_directory}360_image_{timestamp}.jpg"
-
       if pic is not None:
-        jpeg_write(back_path, pic)  # Save image directly to the target path
+        jpeg_write(back_path, pic)
       if fpic is not None:
-        jpeg_write(front_path, fpic)  # Save image directly to the target path
-
+        jpeg_write(front_path, fpic)
       # If both images are available, create a stitched image
       if pic is not None and fpic is not None:
         front_image = Image.open(front_path)
@@ -55,7 +53,6 @@ class SentryMode:
         else:
           print("⚠️ Error: Images must have the same height.")
       else:
-        # Send webhook with the available image
         if pic is not None:
           self.send_discord_webhook(ALERT_MESSAGE, back_path)
         elif fpic is not None:
