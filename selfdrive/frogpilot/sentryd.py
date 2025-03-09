@@ -108,6 +108,7 @@ class SentryMode:
 
     t = time.monotonic()
     if (t - self.transition_to_offroad_last) > self.offroad_delay:
+      print("SentryD Active")
       # Extract acceleration data
       self.curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
 
