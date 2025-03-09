@@ -1,131 +1,130 @@
 #!/usr/bin/env python3
+import shutil
+from PIL import Image
 import numpy as np
 import cereal.messaging as messaging
-from typing import Optional, Union, Dict
-from datetime import datetime
 import time
-import json
-import io
 import os
 import requests
-import shutil
+from datetime import datetime
 from common.params import Params
-from PIL import Image
+from openpilot.system.camerad.snapshot.snapshot import snapshot, jpeg_write
 
-params = Params()
 SENSITIVITY_THRESHOLD = 0.08
 TRIGGERED_TIME = 2
-
+OFFROAD_DELAY = 90
+ALERT_MESSAGE = "🚨 ALERT! Sentry Detected Movement!"
 
 class SentryMode:
-
   def __init__(self):
     self.sm = messaging.SubMaster(['accelerometer'])
-    self.curr_accel = 0
-    self.prev_accel = None
+    self.transition_to_offroad_last = time.monotonic()
     self.sentry_status = False
     self.secDelay = 0
+    self.last_trigger_time = 0
+    self.prev_accel = None
+    params = Params()
     self.webhook_url = params.get("SentryDhook", encoding='utf8')
-    self.transition_to_offroad_last = time.monotonic()
-    self.offroad_delay = 90
-    self.frontAllowed = params.get("RecordFront")
+    self.frontAllowed = bool(int(params.get("RecordFront", "0")))
 
-  def takeSnapshot(self) -> Optional[Dict[str, str]]:
-    from openpilot.system.camerad.snapshot.snapshot import snapshot, jpeg_write
-    pic, fpic = snapshot()
-    if pic is not None:
-      print(pic.shape)
-      jpeg_write("back_image.jpg", pic)
-    if fpic is not None:
-      jpeg_write("front_image.jpg", fpic)
-    if pic is not None and fpic is not None:
-      self.stitch_images('front_image.jpg', 'back_image.jpg', '360_image.jpg')
-    self.save_images()
-    if pic is not None:
+  def takeSnapshot(self):
+    try:
+      pic, fpic = snapshot()
+      timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+      target_directory = "/data/media/0/sentryd/"
+      os.makedirs(target_directory, exist_ok=True)
+      back_path = f"{target_directory}back_image_{timestamp}.jpg"
+      front_path = f"{target_directory}front_image_{timestamp}.jpg"
+      stitch_path = f"{target_directory}360_image_{timestamp}.jpg"
+      if pic is not None:
+        jpeg_write(back_path, pic)
+      if fpic is not None:
+        jpeg_write(front_path, fpic)
+      # If both images are available, create a stitched image
+      if pic is not None and fpic is not None:
+        front_image = Image.open(front_path)
+        back_image = Image.open(back_path)
+        if front_image.height == back_image.height:
+          result_image = Image.new("RGB", (front_image.width + back_image.width, front_image.height))
+          result_image.paste(front_image, (0, 0))
+          result_image.paste(back_image, (front_image.width, 0))
+          result_image.save(stitch_path)
+          self.send_discord_webhook(ALERT_MESSAGE, stitch_path)
+        else:
+          print("⚠️ Error: Images must have the same height.")
+      else:
+        if pic is not None:
+          self.send_discord_webhook(ALERT_MESSAGE, back_path)
+        elif fpic is not None:
+          self.send_discord_webhook(ALERT_MESSAGE, front_path)
+        else:
+          print("⚠️ No images available.")
+
+    except Exception as e:
+      print(f"❌ Error in takeSnapshot: {e}")
+
+  def send_discord_webhook(self, message, image_path=None):
+    if not self.webhook_url:
+      print("⚠️ Warning: Webhook URL is not set.")
       return
-    else:
-      raise Exception("not available while camerad is started")
 
-  def send_discord_webhook(self, webhook_url, message, image_path=None):
-    data = {"content": message}
-    if image_path:
+    try:
+      if image_path:
         with open(image_path, "rb") as file:
-            files = {"file": file}
-            response = requests.post(webhook_url, data=data, files=files)
-    else:
+          response = requests.post(self.webhook_url, data={"content": message}, files={"file": file})
+        print(f"✅ Webhook sent, status: {response.status_code}")
+      else:
+        data = {"content": message}
         headers = {"Content-Type": "application/json"}
-        response = requests.post(webhook_url, json=data, headers=headers)
-    if response.status_code == 200 or response.status_code == 204:
-      print("Message sent successfully")
-    else:
-      print(f"Failed to send message. Status code: {response.status_code}")
-
-  def stitch_images(self, front_image_path, back_image_path, output_path):
-    front_image = Image.open(front_image_path)
-    back_image = Image.open(back_image_path)
-    front_width, front_height = front_image.size
-    back_width, back_height = back_image.size
-    if front_height != back_height:
-        print("Error: Images must have the same height.")
-        return
-    result_image = Image.new("RGB", (front_width + back_width, front_height))
-    result_image.paste(front_image, (0, 0))
-    result_image.paste(back_image, (front_width, 0))
-    result_image.save(output_path)
-
-  def save_images(self):
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-    target_directory = f"/data/media/0/sentryd/"
-    os.makedirs(target_directory, exist_ok=True)
-    # Copy images to the new directory with new filenames
-    if "back_image.jpg" is not None:
-      shutil.copy("back_image.jpg", f"{target_directory}back_image_{timestamp}.jpg")
-    if "front_image.jpg" is not None:
-      shutil.copy("front_image.jpg", f"{target_directory}front_image_{timestamp}.jpg")
-    if "ba360_imageck_image.jpg" is not None:
-      image_path = f"{target_directory}360_image_{timestamp}.jpg"
-      shutil.copy("360_image.jpg", image_path)
-    message = 'ALERT! Sentry Detected Movement!'
-    self.send_discord_webhook(self.webhook_url, message, image_path)
+        response = requests.post(self.webhook_url, json=data, headers=headers)
+        print(f"✅ Webhook sent without image, status: {response.status_code}")
+    except Exception as e:
+      print(f"❌ Error sending webhook: {e}")
 
   def update(self):
     t = time.monotonic()
-    if (t - self.transition_to_offroad_last) > self.offroad_delay:
-      # Extract acceleration data
-      self.curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
-      # Initialize
-      if self.prev_accel is None:
-        print("SentryD Active")
-        self.prev_accel = self.curr_accel
-      # Calculate magnitude change
-      delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
-      # Trigger Check
-      if delta > SENSITIVITY_THRESHOLD:
-        self.last_timestamp = t
-        self.secDelay += 1
-        if self.secDelay % 150 == 0 and self.webhook_url is not None:
-          self.sentry_status = True
-          print("Triggered")
-          self.secDelay = 0
-          if self.frontAllowed:
-            self.takeSnapshot()
-          else:
-            message = 'ALERT! Sentry Detected Movement!'
-            self.send_discord_webhook(self.webhook_url, message)
-      # Trigger Reset
-      elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
-        self.sentry_status = False
-        print("Movement Ended")
-      self.prev_accel = self.curr_accel
+    if (t - self.transition_to_offroad_last) <= OFFROAD_DELAY:
+      return
+
+    if self.sm['accelerometer'] is None or self.sm['accelerometer'].acceleration is None:
+      print("⚠️ Warning: No accelerometer data available.")
+      return
+
+    curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
+
+    if self.prev_accel is None:
+      print("🔒 SentryD Active")
+      self.prev_accel = curr_accel
+
+    delta = abs(np.linalg.norm(curr_accel) - np.linalg.norm(self.prev_accel))
+
+    if delta > SENSITIVITY_THRESHOLD:
+      self.last_trigger_time = t
+      self.secDelay += 1
+      if self.secDelay >= 150:
+        self.sentry_status = True
+        print("🚨 Movement Detected! Taking snapshot...")
+        self.secDelay = 0
+        if self.frontAllowed:
+          self.takeSnapshot()
+        else:
+          self.send_discord_webhook(ALERT_MESSAGE)
+
+    elif self.sentry_status and (t - self.last_trigger_time) > TRIGGERED_TIME:
+      self.sentry_status = False
+      print("✅ Movement Ended")
+
+    self.prev_accel = curr_accel
 
   def start(self):
     while True:
       self.sm.update()
       self.update()
 
+
 def main():
-  sentry_mode = SentryMode()
-  sentry_mode.start()
+  SentryMode().start()
+
 
 if __name__ == "__main__":
   main()
