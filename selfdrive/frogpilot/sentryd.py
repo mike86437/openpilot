@@ -7,7 +7,6 @@ import time
 import json
 import io
 import os
-import base64
 import requests
 import shutil
 from common.params import Params
@@ -29,9 +28,6 @@ class SentryMode:
     self.webhook_url = params.get("SentryDhook", encoding='utf8')
     self.transition_to_offroad_last = time.monotonic()
     self.offroad_delay = 90
-    self.back_image_url = ""
-    self.front_image_url = ""
-    self.timedelay = 0
     self.frontAllowed = params.get("RecordFront")
 
   def takeSnapshot(self) -> Optional[Dict[str, str]]:
@@ -64,11 +60,6 @@ class SentryMode:
       print("Message sent successfully")
     else:
       print(f"Failed to send message. Status code: {response.status_code}")
-
-  def get_movement_type(self, current, previous):
-    ax_mapping = {0: "X", 1: "Y", 2: "Z"}
-    dominant_axis = np.argmax(np.abs(current - previous))
-    return ax_mapping[dominant_axis]
 
   def stitch_images(self, front_image_path, back_image_path, output_path):
     # Open images using PIL
@@ -135,7 +126,11 @@ class SentryMode:
           self.sentry_status = True
           print("Triggered")
           self.secDelay = 0
-          self.takeSnapshot()
+          if self.RecordFront:
+            self.takeSnapshot()
+          else:
+            message = 'ALERT! Sentry Detected Movement!'
+            self.send_discord_webhook(self.webhook_url, message)
 
       # Trigger Reset
       elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
