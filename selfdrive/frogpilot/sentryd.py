@@ -55,43 +55,28 @@ class SentryMode:
     else:
         headers = {"Content-Type": "application/json"}
         response = requests.post(webhook_url, json=data, headers=headers)
-
     if response.status_code == 200 or response.status_code == 204:
       print("Message sent successfully")
     else:
       print(f"Failed to send message. Status code: {response.status_code}")
 
   def stitch_images(self, front_image_path, back_image_path, output_path):
-    # Open images using PIL
     front_image = Image.open(front_image_path)
     back_image = Image.open(back_image_path)
-
-    # Get image sizes
     front_width, front_height = front_image.size
     back_width, back_height = back_image.size
-
-    # Check if images have the same height
     if front_height != back_height:
         print("Error: Images must have the same height.")
         return
-
-    # Create a new image with double width
     result_image = Image.new("RGB", (front_width + back_width, front_height))
-
-    # Paste front and back images side by side
     result_image.paste(front_image, (0, 0))
     result_image.paste(back_image, (front_width, 0))
-
-    # Save the stitched image
     result_image.save(output_path)
 
   def save_images(self):
-    # Generate timestamps
     timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-    # Create the target directory if it doesn't exist
     target_directory = f"/data/media/0/sentryd/"
     os.makedirs(target_directory, exist_ok=True)
-
     # Copy images to the new directory with new filenames
     if "back_image.jpg" is not None:
       shutil.copy("back_image.jpg", f"{target_directory}back_image_{timestamp}.jpg")
@@ -100,25 +85,20 @@ class SentryMode:
     if "ba360_imageck_image.jpg" is not None:
       image_path = f"{target_directory}360_image_{timestamp}.jpg"
       shutil.copy("360_image.jpg", image_path)
-
     message = 'ALERT! Sentry Detected Movement!'
     self.send_discord_webhook(self.webhook_url, message, image_path)
 
   def update(self):
-
     t = time.monotonic()
     if (t - self.transition_to_offroad_last) > self.offroad_delay:
-      print("SentryD Active")
       # Extract acceleration data
       self.curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
-
       # Initialize
       if self.prev_accel is None:
+        print("SentryD Active")
         self.prev_accel = self.curr_accel
-
       # Calculate magnitude change
       delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
-
       # Trigger Check
       if delta > SENSITIVITY_THRESHOLD:
         self.last_timestamp = t
@@ -132,12 +112,10 @@ class SentryMode:
           else:
             message = 'ALERT! Sentry Detected Movement!'
             self.send_discord_webhook(self.webhook_url, message)
-
       # Trigger Reset
       elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
         self.sentry_status = False
         print("Movement Ended")
-
       self.prev_accel = self.curr_accel
 
   def start(self):
@@ -148,7 +126,6 @@ class SentryMode:
 def main():
   sentry_mode = SentryMode()
   sentry_mode.start()
-
 
 if __name__ == "__main__":
   main()
