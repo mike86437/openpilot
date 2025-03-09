@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 import numpy as np
 import cereal.messaging as messaging
+from typing import Optional, Union, Dict
+from datetime import datetime
 import time
-from openpilot.selfdrive.controls.lib.events import Events
+import json
+import io
+import os
+import base64
 import requests
+import shutil
 from common.params import Params
+from PIL import Image
+
 params = Params()
-SENSITIVITY_THRESHOLD = 0.1
+SENSITIVITY_THRESHOLD = 0.08
 TRIGGERED_TIME = 2
 
 
@@ -17,9 +25,34 @@ class SentryMode:
     self.curr_accel = 0
     self.prev_accel = None
     self.sentry_status = False
-    self.events = Events()
     self.secDelay = 0
     self.webhook_url = params.get("SentryDhook", encoding='utf8')
+    self.transition_to_offroad_last = time.monotonic()
+    self.offroad_delay = 90
+    self.back_image_url = ""
+    self.front_image_url = ""
+    self.timedelay = 0
+
+  def takeSnapshot(self) -> Optional[Dict[str, str]]:
+    from openpilot.system.camerad.snapshot.snapshot import snapshot, jpeg_write
+    pic, fpic = snapshot()
+    if pic is not None:
+      print(pic.shape)
+      jpeg_write("back_image.jpg", pic)
+    if fpic is not None:
+      jpeg_write("front_image.jpg", fpic)
+    if pic is not None and fpic is not None:
+      self.stitch_images('front_image.jpg', 'back_image.jpg', '360_image.jpg')
+    self.save_images()
+    if pic is not None:
+      return
+    else:
+      raise Exception("not available while camerad is started")
+
+  def base64_to_image(self, base64_data, output_file):
+    binary_data = base64.b64decode(base64_data)
+    with open(output_file, 'wb') as file:
+      file.write(binary_data)
 
   def send_discord_webhook(self, webhook_url, message):
     data = {"content": message}
@@ -35,33 +68,77 @@ class SentryMode:
     dominant_axis = np.argmax(np.abs(current - previous))
     return ax_mapping[dominant_axis]
 
+  def stitch_images(self, front_image_path, back_image_path, output_path):
+    # Open images using PIL
+    front_image = Image.open(front_image_path)
+    back_image = Image.open(back_image_path)
+
+    # Get image sizes
+    front_width, front_height = front_image.size
+    back_width, back_height = back_image.size
+
+    # Check if images have the same height
+    if front_height != back_height:
+        print("Error: Images must have the same height.")
+        return
+
+    # Create a new image with double width
+    result_image = Image.new("RGB", (front_width + back_width, front_height))
+
+    # Paste front and back images side by side
+    result_image.paste(front_image, (0, 0))
+    result_image.paste(back_image, (front_width, 0))
+
+    # Save the stitched image
+    result_image.save(output_path)
+
+  def save_images(self):
+    # Generate timestamps
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    # Create the target directory if it doesn't exist
+    target_directory = f"/data/media/0/sentryd/"
+    os.makedirs(target_directory, exist_ok=True)
+
+    # Copy images to the new directory with new filenames
+    if "back_image.jpg" is not None:
+      shutil.copy("back_image.jpg", f"{target_directory}back_image_{timestamp}.jpg")
+    if "front_image.jpg" is not None:
+      shutil.copy("front_image.jpg", f"{target_directory}front_image_{timestamp}.jpg")
+    if "ba360_imageck_image.jpg" is not None:
+      shutil.copy("360_image.jpg", f"{target_directory}360_image_{timestamp}.jpg")
+
   def update(self):
-    events = Events()
-    # Extract acceleration data
-    self.curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
 
-    # Initialize
-    if self.prev_accel is None:
+    t = time.monotonic()
+    if (t - self.transition_to_offroad_last) > self.offroad_delay:
+      # Extract acceleration data
+      self.curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
+
+      # Initialize
+      if self.prev_accel is None:
+        self.prev_accel = self.curr_accel
+
+      # Calculate magnitude change
+      delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
+
+      # Trigger Check
+      if delta > SENSITIVITY_THRESHOLD:
+        self.last_timestamp = t
+        self.sentry_status = True
+        self.secDelay += 1
+
+        if self.secDelay % 150 == 0 and self.webhook_url is not None:
+          self.secDelay = 0
+          self.takeSnapshot()
+          message = 'ALERT! Sentry Detected Movement!'
+          self.send_discord_webhook(self.webhook_url, message)
+
+      # Trigger Reset
+      elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
+        self.sentry_status = False
+        print("Movement Ended")
+
       self.prev_accel = self.curr_accel
-
-    # Calculate magnitude change
-    delta = abs(np.linalg.norm(self.curr_accel) - np.linalg.norm(self.prev_accel))
-
-    # Trigger Check
-    if delta > SENSITIVITY_THRESHOLD:
-      self.last_timestamp = time.monotonic()
-      self.sentry_status = True
-      self.secDelay += 1
-      if self.secDelay % 100 == 0 and self.webhook_url is not None:
-        message = 'ALERT! Sentry Detected Movement!'
-        self.send_discord_webhook(self.webhook_url, message)
-
-    # Trigger Reset
-    elif self.sentry_status and time.monotonic() - self.last_timestamp > TRIGGERED_TIME:
-      self.sentry_status = False
-      print("Movement Ended")
-
-    self.prev_accel = self.curr_accel
 
   def start(self):
     while True:
