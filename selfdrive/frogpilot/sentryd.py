@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from openpilot.system.camerad.snapshot.snapshot import snapshot
 from PIL import Image
 import numpy as np
@@ -47,18 +48,17 @@ class SentryMode:
         else:
           print("Error: Images must have the same height.")
       else:
-        if pic:
-          self.send_discord_webhook(ALERT_MESSAGE, f"{target_directory}back_image_{timestamp}.jpg")
-        elif fpic:
-          self.send_discord_webhook(ALERT_MESSAGE, f"{target_directory}front_image_{timestamp}.jpg")
+          pic and self.send_discord_webhook(ALERT_MESSAGE, f"{target_directory}back_image_{timestamp}.jpg")
+          fpic and self.send_discord_webhook(ALERT_MESSAGE, f"{target_directory}front_image_{timestamp}.jpg")
+
 
     except Exception as e:
       print(f"Error in takeSnapshot: {e}")
 
   def send_discord_webhook(self, message, image_path=None):
     if self.webhook_url:
-      files = {"file": open(image_path, "rb")} if image_path else None
-      response = requests.post(self.webhook_url, data={"content": message}, files=files)
+      with open(image_path, "rb") as file:
+        response = requests.post(self.webhook_url, data={"content": message}, files={"file": file})
       print(f"Webhook sent: {response.status_code}")
 
   def update(self):
@@ -67,7 +67,10 @@ class SentryMode:
       return
 
     curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
-    self.prev_accel = self.prev_accel if self.prev_accel is not None else curr_accel
+
+    if self.prev_accel is None:
+      print("🔒 SentryD Active")
+      self.prev_accel = curr_accel
     delta = abs(np.linalg.norm(curr_accel) - np.linalg.norm(self.prev_accel))
 
     if delta > SENSITIVITY_THRESHOLD:
