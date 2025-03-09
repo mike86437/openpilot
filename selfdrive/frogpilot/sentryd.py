@@ -1,4 +1,5 @@
-from openpilot.system.camerad.snapshot.snapshot import snapshot
+#!/usr/bin/env python3
+import shutil
 from PIL import Image
 import numpy as np
 import cereal.messaging as messaging
@@ -36,9 +37,13 @@ class SentryMode:
       front_path = f"{target_directory}front_image_{timestamp}.jpg"
       stitch_path = f"{target_directory}360_image_{timestamp}.jpg"
 
+      if pic is not None:
+        jpeg_write(back_path, pic)  # Save image directly to the target path
+      if fpic is not None:
+        jpeg_write(front_path, fpic)  # Save image directly to the target path
+
+      # If both images are available, create a stitched image
       if pic is not None and fpic is not None:
-        pic.save(back_path)
-        fpic.save(front_path)
         front_image = Image.open(front_path)
         back_image = Image.open(back_path)
         if front_image.height == back_image.height:
@@ -50,12 +55,13 @@ class SentryMode:
         else:
           print("⚠️ Error: Images must have the same height.")
       else:
+        # Send webhook with the available image
         if pic is not None:
-          pic.save(back_path)
           self.send_discord_webhook(ALERT_MESSAGE, back_path)
         elif fpic is not None:
-          fpic.save(front_path)
           self.send_discord_webhook(ALERT_MESSAGE, front_path)
+        else:
+          print("⚠️ No images available.")
 
     except Exception as e:
       print(f"❌ Error in takeSnapshot: {e}")
