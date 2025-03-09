@@ -107,7 +107,7 @@ class SentryMode:
           self.sentry_status = True
           print("Triggered")
           self.secDelay = 0
-          if self.RecordFront:
+          if self.frontAllowed:
             self.takeSnapshot()
           else:
             message = 'ALERT! Sentry Detected Movement!'
