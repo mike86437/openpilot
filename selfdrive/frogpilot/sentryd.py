@@ -124,10 +124,10 @@ class SentryMode:
       # Trigger Check
       if delta > SENSITIVITY_THRESHOLD:
         self.last_timestamp = t
-        self.sentry_status = True
         self.secDelay += 1
-
         if self.secDelay % 150 == 0 and self.webhook_url is not None:
+          self.sentry_status = True
+          print("Triggered")
           self.secDelay = 0
           self.takeSnapshot()
           message = 'ALERT! Sentry Detected Movement!'
