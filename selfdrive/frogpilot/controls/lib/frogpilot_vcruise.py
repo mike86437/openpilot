@@ -33,6 +33,7 @@ class FrogPilotVCruise:
     self.speed_limit_timer = 0
     self.tracked_model_length = 0
     self.vtsc_target = 0
+    self.slowdown_target = 50
 
   def update(self, carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles):
     force_stop = frogpilot_toggles.force_stops and self.frogpilot_planner.cem.stop_light_detected and controlsState.enabled
@@ -60,17 +61,20 @@ class FrogPilotVCruise:
     v_ego_diff = v_ego_cluster - v_ego
 
     # Pfeiferj's Map Turn Speed Controller
-    if frogpilot_toggles.map_turn_speed_controller and v_ego > CRUISING_SPEED and carControl.longActive:
-      mtsc_active = self.mtsc_target < v_cruise
-      mtsc_speed = ((TARGET_LAT_A * frogpilot_toggles.turn_aggressiveness) / (self.mtsc.get_map_curvature(gps_position, v_ego) * frogpilot_toggles.curve_sensitivity))**0.5
-      self.mtsc_target = np.clip(mtsc_speed, CRUISING_SPEED, v_cruise)
+    if frogpilot_toggles.map_turn_speed_controller:
+      # Extended lead linear braking
+      lead = self.lead_one
+      d_rel = lead.dRel
+      v_lead = lead.vLead
+      v_rel = v_ego - v_lead
+      if d_rel > 20 and v_rel > 5:
+        decelRate = (v_rel ** 2) / (2 * d_rel) * 3
+        self.slowdown_target = v_ego - decelRate
+      else:
+        self.slowdown_target = v_cruise
+      mtsc_active = False
+      self.mtsc_target = v_cruise
 
-      if self.frogpilot_planner.road_curvature_detected and mtsc_active:
-        self.mtsc_target = self.frogpilot_planner.v_cruise
-      elif not self.frogpilot_planner.road_curvature_detected and frogpilot_toggles.mtsc_curvature_check:
-        self.mtsc_target = v_cruise
-    else:
-      self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
 
     # Pfeiferj's Speed Limit Controller
     if frogpilot_toggles.show_speed_limits or frogpilot_toggles.speed_limit_controller:
@@ -147,7 +151,7 @@ class FrogPilotVCruise:
       if frogpilot_toggles.speed_limit_controller:
         targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target + self.slc_offset) - v_ego_diff, self.vtsc_target]
       else:
-        targets = [self.mtsc_target, self.vtsc_target]
+        targets = [self.mtsc_target, self.vtsc_target, self.slowdown_target]
       v_cruise = float(min([target if target > CRUISING_SPEED else v_cruise for target in targets]))
 
     self.mtsc_target += v_cruise_diff
