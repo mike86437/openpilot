@@ -99,20 +99,19 @@ class SentryMode:
     delta = abs(np.linalg.norm(curr_accel) - np.linalg.norm(self.prev_accel))
 
     if delta > SENSITIVITY_THRESHOLD:
-      self.last_trigger_time = t
-      self.secDelay += 1
-      if self.secDelay >= 150:
+      if self.last_trigger_time == 0:
+        self.last_trigger_time = t
+      if (t - self.last_trigger_time) >= 15 and not self.sentry_status:
         self.sentry_status = True
         print("🚨 Movement Detected! Taking snapshot...")
-        self.secDelay = 0
         if self.frontAllowed:
           self.takeSnapshot()
         else:
           self.send_discord_webhook(ALERT_MESSAGE)
-
     elif self.sentry_status and (t - self.last_trigger_time) > TRIGGERED_TIME:
       self.sentry_status = False
       print("✅ Movement Ended")
+      self.last_trigger_time = 0
 
     self.prev_accel = curr_accel
 
