@@ -216,7 +216,7 @@ def hardware_thread(end_event, hw_queue) -> None:
     peripheralState = sm['peripheralState']
     peripheral_panda_present = peripheralState.pandaType != log.PandaState.PandaType.unknown
 
-    if sm.updated['pandaStates'] and len(pandaStates) > 0:
+    if sm.updated['pandaStates'] and len(pandaStates) > 0 and not params.get_bool("IsTakingSnapshot"):
 
       # Set ignition based on any panda connected
       onroad_conditions["ignition"] = any(ps.ignitionLine or ps.ignitionCan for ps in pandaStates if ps.pandaType != log.PandaState.PandaType.unknown)
@@ -310,8 +310,6 @@ def hardware_thread(end_event, hw_queue) -> None:
     startup_conditions["completed_training"] = params.get("CompletedTrainingVersion") == training_version
     startup_conditions["not_driver_view"] = not params.get_bool("IsDriverViewEnabled")
 
-    while params.get_bool("IsTakingSnapshot"):
-      time.sleep(0.5)
     startup_conditions["not_taking_snapshot"] = not params.get_bool("IsTakingSnapshot")
 
     # must be at an engageable thermal band to go onroad
