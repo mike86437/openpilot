@@ -216,8 +216,10 @@ def hardware_thread(end_event, hw_queue) -> None:
     peripheralState = sm['peripheralState']
     peripheral_panda_present = peripheralState.pandaType != log.PandaState.PandaType.unknown
 
-    if sm.updated['pandaStates'] and len(pandaStates) > 0 and not params.get_bool("IsTakingSnapshot"):
+    if sm.updated['pandaStates'] and len(pandaStates) > 0:
 
+      while params.get_bool("IsTakingSnapshot"):
+        time.sleep(0.5)
       # Set ignition based on any panda connected
       onroad_conditions["ignition"] = any(ps.ignitionLine or ps.ignitionCan for ps in pandaStates if ps.pandaType != log.PandaState.PandaType.unknown)
 
