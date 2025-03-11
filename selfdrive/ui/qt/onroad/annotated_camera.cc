@@ -213,7 +213,7 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
     };
 
     QRect curveSpeedRect(QPoint(set_speed_rect.right() + 25, set_speed_rect.top()), QSize(default_size.width() * 1.25, default_size.width() * 1.25));
-    QPixmap scaledCurveSpeedIcon = isMtsc ? mtscIcon.scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation) : (leftCurve ? curveSpeedLeftIcon : curveSpeedRightIcon).scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap scaledCurveSpeedIcon = !vtscControllingCurve ? mtscIcon.scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation) : (leftCurve ? curveSpeedLeftIcon : curveSpeedRightIcon).scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     p.setOpacity(1.0);
     p.drawPixmap(curveSpeedRect, scaledCurveSpeedIcon);
