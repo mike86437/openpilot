@@ -33,7 +33,6 @@ class FrogPilotVCruise:
     self.speed_limit_timer = 0
     self.tracked_model_length = 0
     self.vtsc_target = 0
-    self.slowdown_target = 50
 
   def update(self, carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles, radarState):
     force_stop = frogpilot_toggles.force_stops and self.frogpilot_planner.cem.stop_light_detected and controlsState.enabled
@@ -68,12 +67,12 @@ class FrogPilotVCruise:
       v_lead = lead.vLead
       v_rel = v_ego - v_lead
       if d_rel > 20 and v_rel > 5:
+        mtsc_active = True
         decelRate = (v_rel ** 2) / (2 * d_rel) * 3
-        self.slowdown_target = v_ego - decelRate
+        self.mtsc_target = v_ego - decelRate
       else:
-        self.slowdown_target = v_cruise
-      mtsc_active = False
-      self.mtsc_target = v_cruise
+        self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
+        mtsc_active = False
 
 
     # Pfeiferj's Speed Limit Controller
@@ -151,7 +150,7 @@ class FrogPilotVCruise:
       if frogpilot_toggles.speed_limit_controller:
         targets = [self.mtsc_target, max(self.overridden_speed, self.slc_target + self.slc_offset) - v_ego_diff, self.vtsc_target]
       else:
-        targets = [self.mtsc_target, self.vtsc_target, self.slowdown_target]
+        targets = [self.mtsc_target, self.vtsc_target]
       v_cruise = float(min([target if target > CRUISING_SPEED else v_cruise for target in targets]))
 
     self.mtsc_target += v_cruise_diff
