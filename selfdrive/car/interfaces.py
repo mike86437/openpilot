@@ -247,6 +247,7 @@ class CarInterfaceBase(ABC):
     self.traffic_mode_changed = False
 
     self.gap_counter = 0
+    self.params = Params()
     self.targetCoast = False
 
     self.is_gm = self.CP.carName == "gm"
