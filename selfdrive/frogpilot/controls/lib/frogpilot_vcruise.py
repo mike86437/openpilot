@@ -72,7 +72,7 @@ class FrogPilotVCruise:
         decelRate = (v_rel ** 2) / (2 * d_rel) * 3
         self.mtsc_target = v_ego - decelRate
       elif self.params.get_bool("SetCoast"):
-        self.mtsc_target = max(v_ego - 1, CRUISING_SPEED)
+        self.mtsc_target = max(v_ego - 2, CRUISING_SPEED)
       else:
         self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
         mtsc_active = False
