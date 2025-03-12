@@ -247,6 +247,7 @@ class CarInterfaceBase(ABC):
     self.traffic_mode_changed = False
 
     self.gap_counter = 0
+    self.targetCoast = False
 
     self.is_gm = self.CP.carName == "gm"
 
@@ -479,7 +480,13 @@ class CarInterfaceBase(ABC):
 
       # FrogPilot button presses
       if b.type == FrogPilotButtonType.lkas and b.pressed:
-        self.always_on_lateral_disabled = not self.always_on_lateral_disabled
+        # self.always_on_lateral_disabled = not self.always_on_lateral_disabled
+        self.targetCoast = not self.targetCoast
+        self.params.put_bool("SetCoast", self.targetCoast)
+
+    if self.targetCoast and cs_out.gasPressed:
+      self.targetCoast = not self.targetCoast
+      self.params.put_bool("SetCoast", self.targetCoast)
 
     # Handle permanent and temporary steering faults
     self.steering_unpressed = 0 if cs_out.steeringPressed else self.steering_unpressed + 1

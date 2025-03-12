@@ -167,7 +167,6 @@ class Controls:
     self.recalibrating_seen = False
 
     self.can_log_mono_time = 0
-    self.targetCoast = False
 
     if car_recognized and not self.CP.passive and self.CP.secOcRequired and not self.CP.secOcKeyAvailable:
       self.startup_event = EventName.startupNoSecOcKey
@@ -747,15 +746,7 @@ class Controls:
       self.experimental_mode = self.sm['frogpilotPlan'].experimentalMode
 
     if any(be.pressed and be.type == FrogPilotButtonType.lkas for be in CS.buttonEvents):
-      if self.frogpilot_toggles.experimental_mode_via_lkas and self.enabled:
-        self.targetCoast = not self.targetCoast
-        self.params.put_bool("SetCoast", self.targetCoast)
-      elif self.frogpilot_toggles.experimental_mode_via_lkas and not self.enabled and self.targetCoast:
-        self.targetCoast = not self.targetCoast
-        self.params.put_bool("SetCoast", self.targetCoast)
-    if self.targetCoast and CS.gasPressed:
-      self.targetCoast = not self.targetCoast
-      self.params.put_bool("SetCoast", self.targetCoast)
+
 
     if self.sm.updated['frogpilotPlan'] or any(be.type in (ButtonType.accelCruise, ButtonType.resumeCruise) for be in CS.buttonEvents):
       self.accel_pressed = any(be.type in (ButtonType.accelCruise, ButtonType.resumeCruise) for be in CS.buttonEvents)
