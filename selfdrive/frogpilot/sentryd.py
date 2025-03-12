@@ -104,7 +104,7 @@ class SentryMode:
       if (t - self.last_trigger_time) >= 15 and not self.sentry_status:
         self.sentry_status = True
         print("🚨 Movement Detected! Taking snapshot...")
-        if self.frontAllowed:
+        if self.frontAllowed and False:
           self.takeSnapshot()
         else:
           self.send_discord_webhook(ALERT_MESSAGE)
