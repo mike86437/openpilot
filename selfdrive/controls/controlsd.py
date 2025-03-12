@@ -745,7 +745,7 @@ class Controls:
     if self.frogpilot_toggles.conditional_experimental_mode or self.frogpilot_toggles.slc_fallback_experimental_mode:
       self.experimental_mode = self.sm['frogpilotPlan'].experimentalMode
 
-    if any(be.pressed and be.type == FrogPilotButtonType.lkas for be in CS.buttonEvents):
+    # if any(be.pressed and be.type == FrogPilotButtonType.lkas for be in CS.buttonEvents):
 
 
     if self.sm.updated['frogpilotPlan'] or any(be.type in (ButtonType.accelCruise, ButtonType.resumeCruise) for be in CS.buttonEvents):
