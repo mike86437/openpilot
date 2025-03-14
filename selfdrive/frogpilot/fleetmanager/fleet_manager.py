@@ -283,13 +283,13 @@ def amap_addr_input():
 
 @app.route("/CurrentStep.json", methods=['GET'])
 def find_CurrentStep():
-  directory = "/data/openpilot/selfdrive/manager/"
+  directory = "/data/openpilot/system/manager/"
   filename = "CurrentStep.json"
   return send_from_directory(directory, filename, as_attachment=True)
 
 @app.route("/navdirections.json", methods=['GET'])
 def find_nav_directions():
-  directory = "/data/openpilot/selfdrive/manager/"
+  directory = "/data/openpilot/system/manager/"
   filename = "navdirections.json"
   return send_from_directory(directory, filename, as_attachment=True)
 
