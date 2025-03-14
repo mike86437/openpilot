@@ -7,19 +7,19 @@ from . import utils
 from . import fleet_manager_helpers
 
 RUNNING_ON_COMMA = utils.is_running_on_comma()
-  
+
 # Import comma code if running on comma device
 if RUNNING_ON_COMMA:
   from openpilot.common.realtime import set_core_affinity
   from openpilot.common.swaglog import cloudlog
-  
+
 app = Flask(__name__)
 
 def setup(app):
   app = app
 
-  @app.errorhandler(404) 
-  def not_found(e): 
+  @app.errorhandler(404)
+  def not_found(e):
     return render_template("index.html")
 
   @app.route("/")
@@ -40,7 +40,7 @@ def setup(app):
   @app.route("/api/settings")
   def get_settings():
     return utils.load_settings()
-  
+
   @app.route("/api/settings/<key>", methods=["POST"])
   def save_settings(key):
     body = request.json
@@ -48,15 +48,15 @@ def setup(app):
     param = utils.find_setting(key, params)
     if param == None:
       return {"message": "Invalid key"}, 400
-    
+
     newValue = body.get("value")
     if isinstance(param.get("value"), int) and not isinstance(newValue, int):
       return {"message": "Invalid value, a number is required"}, 400
-        
+
     utils.save_setting(key, newValue)
     return {"message": "Settings saved"}
-    
-  
+
+
   @app.route("/api/stats")
   def get_stats():
     drives, drive_errors = utils.get_drive_stats()
@@ -70,8 +70,8 @@ def setup(app):
     if disk_error is not None:
       result["diskError"] = disk_error
     return result
-    
-    
+
+
   # Error logs start here
   @app.route("/api/error-logs")
   def get_error_logs():
@@ -88,7 +88,7 @@ def setup(app):
       content = f.read()
     return content, 200
   # Error logs end here
-  
+
   @app.route("/api/navigation", methods=["GET"])
   def navigation():
     params = utils.load_settings()
@@ -109,21 +109,21 @@ def setup(app):
   def clear_nav_destination():
     utils.save_setting("NavDestination", 0) # undefined/None is not valid json
     return {"message": "Destination cleared"}
-  
+
   ## Routes/Dashcam endpoints start here
   @app.route("/api/routes")
   def v2_routes():
     route_names = fleet_manager_helpers.get_routes_names(utils.FOOTAGE_PATH)
     routes = []
-    # Route names are strings in the format of "YYYY-MM-DD--HH-MM-SS"
+    # Route names are now in the format of "counter--random_hex"
     for route_name in route_names:
-      route_date = datetime.strptime(route_name, '%Y-%m-%d--%H-%M-%S')
-      
+      counter_str, random_hex = route_name.split("--", 1)
+      counter = int(counter_str, 16)
       first_segment_path = f"{utils.FOOTAGE_PATH}{route_name}--0"
       qcamera_path = f"{first_segment_path}/qcamera.ts"
       gif_path = f"{first_segment_path}/preview.gif"
       png_path = f"{first_segment_path}/preview.png"
-      
+
       # Ensure thumbnails are created if they don't exist
       try:
         utils.video_to_png(qcamera_path, png_path)
@@ -131,19 +131,20 @@ def setup(app):
       except Exception as e:
         print(f"Failed to generate thumbnails for {route_name}")
         print(e)
-      
+
       routes.append({
-        "date": route_date.isoformat(),
+        "date": counter,
         "name": route_name,
         "gif": f"/thumbnails/{route_name}--0/preview.gif",
         "png": f"/thumbnails/{route_name}--0/preview.png"
       })
-      
+
     return routes, 200
 
   @app.route("/api/routes/<name>")
   def v2_route(name):
-    route_date = datetime.strptime(name, '%Y-%m-%d--%H-%M-%S')
+    counter_str, random_hex = route_name.split("--", 1)
+    counter = int(counter_str, 16)
     segment_urls = []
     for segment in fleet_manager_helpers.get_segments_in_route(name, utils.FOOTAGE_PATH):
       segment_urls.append(f"/video/{segment}")
@@ -154,7 +155,7 @@ def setup(app):
       "name": name,
       "segment_urls": segment_urls,
       "total_duration": total_duration,
-      "date": route_date,
+      "date": counter,
       "available_cameras": available_cameras
     }
     return route_data, 200
@@ -163,7 +164,7 @@ def setup(app):
   def find_previewgif(file_path):
     directory = utils.FOOTAGE_PATH
     return send_from_directory(directory, file_path, as_attachment=True)
-  
+
   @app.route("/video/<path>")
   def v2_video_file(path):
     video_file = "qcamera.ts" # default to qcamera (same as fcamera, just lower quality)
@@ -173,7 +174,7 @@ def setup(app):
       video_file = "ecamera.hevc"
     filepath = f"{utils.FOOTAGE_PATH}{path}/{video_file}"
     return Response(fleet_manager_helpers.ffmpeg_mp4_wrap_process_builder(filepath).stdout.read(), status=200, mimetype='video/mp4')
-  
+
   return
 
   ## Settings endpoints start here
@@ -188,11 +189,11 @@ def setup(app):
       brand = selected_model.split(" ")[0]
       params["CarModel"]["options"] = brands_and_models[brand]
       params["CarModel"]["value"] = " ".join(selected_model.split(" ")[1:])
-    
+
     # Convert the params dict to a list of dicts and filter out the ones that don't belong to the current section
     relevant_params = [param for param in params.values() if param.get("section", None) == section]
     return render_template("v2/settings.jinja", active=f"settings_{section}", settings=relevant_params, section=section, brands_and_models=brands_and_models)
-  
+
 
 
 
@@ -201,8 +202,8 @@ def setup(app):
 
 
 
-  
-setup(app)    
+
+setup(app)
 
 def main():
   if RUNNING_ON_COMMA:
@@ -210,13 +211,13 @@ def main():
       set_core_affinity([0, 1, 2, 3])
     except Exception:
       cloudlog.exception("the_pond: failed to set core affinity")
-  
+
   debug = False
   port = 8083
   if not RUNNING_ON_COMMA or __package__ == "thepond":
     debug = True
     port = 8084
-  
+
   print(f"The Pond is{' not' if not RUNNING_ON_COMMA else ''} running on comma device, in debug mode {debug}")
   app.secret_key = secrets.token_hex(32)
   app.run(host="0.0.0.0", port=port, debug=debug)
