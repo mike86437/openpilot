@@ -143,7 +143,7 @@ def setup(app):
 
   @app.route("/api/routes/<name>")
   def v2_route(name):
-    counter_str, random_hex = route_name.split("--", 1)
+    counter_str, random_hex = name.split("--", 1)
     counter = int(counter_str, 16)
     segment_urls = []
     for segment in fleet_manager_helpers.get_segments_in_route(name, utils.FOOTAGE_PATH):
