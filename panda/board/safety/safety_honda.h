@@ -29,7 +29,7 @@ const LongitudinalLimits HONDA_BOSCH_LONG_LIMITS_SPORT = {
 
 const LongitudinalLimits HONDA_NIDEC_LONG_LIMITS = {
   .max_gas = 198,  // 0xc6
-  .max_brake = 255,
+  .max_brake = 512,
 
   .inactive_speed = 0,
 };
