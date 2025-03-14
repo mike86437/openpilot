@@ -39,25 +39,25 @@ ERROR_LOGS_PATH = f"{DATA_PATH}/data/community/crashes/"
 FOOTAGE_PATH = f"{DATA_PATH}/data/media/0/realdata/"
 
 def video_to_gif(input_path, output_path) -> None:
-  """ 
+  """
   Creates a looping gif from the input_path sped
   up by a factor of 35.
   """
   if os.path.exists(output_path):
     return
-  
+
   print(f"Create gif from video: {input_path}")
   # First create a sped up mp4
   sped_up_path = output_path.replace(".gif", ".mp4")
   print(f"Create temporary sped up mp4: {sped_up_path}")
   run_ffmpeg(['-i', input_path, '-an', '-vf', 'setpts=PTS/35', sped_up_path])
-  
+
   # Next create a gif from the sped up mp4
   print(f"Create gif from sped up mp4: {output_path}")
   run_ffmpeg(["-i", sped_up_path, "-loop", "0", output_path])
   # Finally remove the sped up mp4
   os.remove(sped_up_path)
-  
+
 def video_to_png(input_path, output_path) -> None:
   """
   Creates a single frame png from the input_path
@@ -81,7 +81,7 @@ def run_ffmpeg(args) -> None:
   overwrite the output file if it already exists.
   """
   subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y'] + args)
-  
+
 def get_available_cameras(segment_path) -> list:
   """
   Checks the segment_path for camera files and returns a list with
@@ -91,10 +91,13 @@ def get_available_cameras(segment_path) -> list:
   available_cameras = []
   if os.path.exists(os.path.join(segment_path, "qcamera.ts")):
     available_cameras.append("forward")
+    print("Forward Found")
   if os.path.exists(os.path.join(segment_path, "ecamera.hevc")):
     available_cameras.append("wide")
+    print("Wide Found")
   if os.path.exists(os.path.join(segment_path, "dcamera.hevc")):
     available_cameras.append("driver")
+    print("Driver Found")
   return available_cameras
 
 def get_all_car_models() -> dict:
@@ -115,10 +118,10 @@ def get_all_car_models() -> dict:
         model = " ".join(model.split(" ")[1:])
         if brand not in models:
           models[brand] = []
-        models[brand].append(model)    
+        models[brand].append(model)
   return models
-      
-      
+
+
 def convert_param_type(value: bytes | None):
   """
   Small util to convert the value of a param
@@ -147,11 +150,11 @@ def convert_settings_dict_to_array(settings: dict) -> list:
     if len(setting.get("toggles", [])) > 0:
       setting["toggles"] = convert_settings_dict_to_array(setting["toggles"])
   return list(settings.values())
-  
-  
+
+
 def get_settings_value(setting: dict) -> None:
   """
-  Reads the value for the setting, and loads all 
+  Reads the value for the setting, and loads all
   values for subsettings and toggles as well recursivly
   """
   value = params.get(setting["key"])
@@ -185,14 +188,14 @@ def find_setting(key, params):
 
 def load_settings():
   """
-  Load the params.json file, then load the actual values 
+  Load the params.json file, then load the actual values
   from the filesystem
   """
   with open(f"{DIR_OF_THIS_FILE}/params.json") as f:
     usedParams = json.load(f)
-  
+
   usedParams = convert_settings_dict_to_array(usedParams)
-  
+
   # Read the values from the module
   for param in usedParams:
     get_settings_value(param)
@@ -209,7 +212,7 @@ def save_setting(key, value) -> None:
   value = str(value)
   params.put(key, value)
   print(f"Saved param: {key} with value: {value}")
-  
+
   params_memory.put_bool("FrogPilotTogglesUpdated", True)
   time.sleep(1)
   params_memory.put_bool("FrogPilotTogglesUpdated", False)
@@ -239,10 +242,10 @@ def get_disk_usage():
       error = f"Failed getting disk usage for {path}"
       print(error)
       errors.append(error)
-  
+
   if len(errors) > 0:
     return results, errors
-  
+
   return results, None
 
 def get_drive_stats():
@@ -252,7 +255,7 @@ def get_drive_stats():
   errors = []
   statsValue = None
   parsedStats = None
-  
+
   try:
     statsValue = params.get("ApiCache_DriveStats").decode()
     print("ApiCache_DriveStats: " + statsValue)
@@ -262,7 +265,7 @@ def get_drive_stats():
     print(error)
     errors.append(error)
     return None, errors
-  
+
   try:
     stats = json.loads(statsValue)
   except Exception as e:
@@ -271,7 +274,7 @@ def get_drive_stats():
     print(error)
     errors.append(error)
     return None, errors
-  
+
   try:
     stats["all"]["distance"] *= 1.60934
     stats["week"]["distance"] *= 1.60934
@@ -280,7 +283,7 @@ def get_drive_stats():
       "minutes": params.get("FrogPilotMinutes").decode(),
       "routes": params.get("FrogPilotDrives").decode()
     }
-    
+
     print(stats)
     return stats, None
   except Exception as e:
