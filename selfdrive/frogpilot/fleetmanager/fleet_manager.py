@@ -215,6 +215,7 @@ def addr_input():
     return render_template("addr.html", gmap_key=gmap_key, lon=lon, lat=lat, home=preload[0], work=preload[1], fav1=preload[2], fav2=preload[3], fav3=preload[4])
 
   if fleet.get_nav_active():
+    print("Debug directions")
     return render_template("nonprime.html", gmap_key=None, lon=None, lat=None, home=preload[0], work=preload[1], fav1=preload[2], fav2=preload[3], fav3=preload[4])
 
   return render_template("addr.html", gmap_key=None, lon=None, lat=None, home=preload[0], work=preload[1], fav1=preload[2], fav2=preload[3], fav3=preload[4])
