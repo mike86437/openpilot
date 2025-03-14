@@ -111,6 +111,7 @@ procs = [
   PythonProcess("frogpilot_process", "selfdrive.frogpilot.frogpilot_process", always_run),
   PythonProcess("mapd", "selfdrive.frogpilot.navigation.mapd", always_run),
   PythonProcess("sentryd", "selfdrive.frogpilot.sentryd", only_offroad),
+  PythonProcess("thepond", "selfdrive.frogpilot.thepond.thepond", always_run),
   NativeProcess("tinygrad_modeld", "selfdrive/tinygrad_modeld", ["./tinygrad_modeld"], run_tinygrad_modeld),
 ]
 
