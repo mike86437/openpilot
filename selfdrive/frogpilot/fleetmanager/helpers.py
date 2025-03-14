@@ -225,7 +225,6 @@ def ffplay_mp4_wrap_process_builder(file_name):
 
 def get_nav_active():
   if params.get("NavDestination", encoding='utf8') is not None:
-    print("Debug Directions")
     return True
   else:
     return False
