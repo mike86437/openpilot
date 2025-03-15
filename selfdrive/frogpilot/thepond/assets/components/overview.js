@@ -132,7 +132,7 @@ export function Overview() {
  * @returns
  */
 function DriveStat(title, stats) {
-  const distance = stats.ismetric ? Math.round(stats.distance) : Math.round(stats.distance * 0.621371);
+  const distance = stats.ismetric === 1 ? Math.round(stats.distance) : Math.round(stats.distance * 0.621371);
     return html`
     <div class="drivingStat">
       <h2>${title}</h2>
@@ -146,7 +146,7 @@ function DriveStat(title, stats) {
       </div>
       <div>
         <p>${distance}</p>
-        <p>${stats.ismetric ? "km" : "miles"}</p>
+        <p>${stats.ismetric === 1 ? "km" : "miles"}</p>
       </div>
     </div>
   `
