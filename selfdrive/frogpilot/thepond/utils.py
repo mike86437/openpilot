@@ -280,6 +280,8 @@ def get_drive_stats():
     stats["week"]["distance"] = int(stats["week"]["distance"] * (1.60934 if is_metric == "1" else 1))
     stats["all"]["minutes"] = int(stats["all"]["minutes"] / 60)
     stats["week"]["minutes"] = int(stats["week"]["minutes"] / 60)
+    stats["all"]["ismetric"] = is_metric
+    stats["week"]["ismetric"] = is_metric
     stats["frogpilot"] = {
       "distance": int(float(params_tracking.get("FrogPilotKilometers").decode()) * (0.621371 if is_metric == "0" else 1)),
       "minutes": int(float(params_tracking.get("FrogPilotMinutes").decode()) / 60),
