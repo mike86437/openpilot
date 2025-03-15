@@ -278,8 +278,8 @@ def get_drive_stats():
     return None, errors
 
   try:
-    stats["all"]["distance"] *= 1.60934
-    stats["week"]["distance"] *= 1.60934
+    stats["all"]["minutes"] = int(stats["all"]["minutes"] / 60)
+    stats["week"]["minutes"] = int(stats["week"]["minutes"] / 60)
     stats["frogpilot"] = {
       "distance": int(float(params_tracking.get("FrogPilotKilometers").decode()) * 0.621371),
       "minutes": int(float(params_tracking.get("FrogPilotMinutes").decode()) / 60),
