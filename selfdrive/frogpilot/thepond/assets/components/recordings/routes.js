@@ -32,7 +32,7 @@ export function RecordedRoutes() {
                 <img src="${route.gif}" />
                 <img class="image_preview" src="${route.png}" />
               </div>
-              <p class="route_name">${formattedDate}</p>
+              <p class="route_name">${route.date}</p>
             `,
             undefined,
             "route_card"
