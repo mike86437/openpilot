@@ -143,8 +143,8 @@ def setup(app):
             content = file.read().decode(errors="ignore")
           timestamp_pattern = re.compile(r"\d{10}\s(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4})")
           match = timestamp_pattern.search(content)
-            if match:
-                date_str = match.group(1)
+          if match:
+            date_str = match.group(1)
         except Exception as e:
           print(f"Error reading qlog for {route_name}: {e}")
 
