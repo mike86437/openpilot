@@ -53,6 +53,16 @@ export function RecordedRoute({ params }) {
     }
   }
 
+  function setCamera(cameraType) {
+    state.selectedCamera = cameraType;
+    console.log("Switched camera to:", cameraType);
+    const videoElement = document.getElementById("video");
+    videoElement.src = getUrlForIndex(state.route, state.selectedCamera, state.currentIndex);
+    videoElement.load();
+    videoElement.play();
+  }
+
+
   function videoEndedHandler(e) {
     const videoElement = e.target
     state.currentIndex++
@@ -113,15 +123,16 @@ export function RecordedRoute({ params }) {
     return html`
       <h1 id="route_name">${formattedDate}</h1>
       <div class="camera_selector">
-        <div class="selected_camera" id="forward">
-          <p>Forward Camera</p>
+        <div class="selected_camera" id="forward" @click="${() => setCamera('forward')}">
+         <p>Forward Camera</p>
         </div>
-        <div class="${isWideAvailable ? "" : "unavailable"}" id="wide">
+        <div class="${isWideAvailable ? '' : 'unavailable'}" id="wide" @click="${() => isWideAvailable && setCamera('wide')}">
           <p>Wide Camera</p>
         </div>
-        <div class="${isDriverAvailable ? "" : "unavailable"}" id="driver">
+        <div class="${isDriverAvailable ? '' : 'unavailable'}" id="driver" @click="${() => isDriverAvailable && setCamera('driver')}">
           <p>Driver Camera</p>
         </div>
+      </div>
       </div>
       <div class="video_wrapper">
         <video
