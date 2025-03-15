@@ -149,7 +149,7 @@ def setup(app):
                 print(f"Error reading qlog for {route_name}: {e}")
 
       routes.append({
-        "date": date_str,
+        "date": date_str if date_str else counter,
         "name": route_name,
         "gif": f"/thumbnails/{route_name}--0/preview.gif",
         "png": f"/thumbnails/{route_name}--0/preview.png"
