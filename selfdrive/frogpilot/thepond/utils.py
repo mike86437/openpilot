@@ -37,7 +37,7 @@ else:
 
 
 SCREENRECORD_PATH = f"{DATA_PATH}/data/media/0/videos/"
-ERROR_LOGS_PATH = f"{DATA_PATH}/data/community/crashes/"
+ERROR_LOGS_PATH = f"{DATA_PATH}/data/crashes/"
 FOOTAGE_PATH = f"{DATA_PATH}/data/media/0/realdata/"
 
 def video_to_gif(input_path, output_path) -> None:
