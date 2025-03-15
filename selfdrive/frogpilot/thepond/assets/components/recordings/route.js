@@ -123,13 +123,13 @@ export function RecordedRoute({ params }) {
     return html`
       <h1 id="route_name">${route.date}</h1>
       <div class="camera_selector">
-        <div class="selected_camera" id="forward" @click="${() => setCamera('forward')}">
-         <p>Forward Camera</p>
+        <div class="${() => state.selectedCamera === 'forward' ? 'selected_camera' : ''}" id="forward" @click="${() => setCamera('forward')}">
+          <p>Forward Camera</p>
         </div>
-        <div class="${isWideAvailable ? '' : 'unavailable'}" id="wide" @click="${() => isWideAvailable && setCamera('wide')}">
+        <div class="${() => state.selectedCamera === 'wide' ? 'selected_camera' : (isWideAvailable ? '' : 'unavailable')}" id="wide" @click="${() => setCamera('wide')}">
           <p>Wide Camera</p>
         </div>
-        <div class="${isDriverAvailable ? '' : 'unavailable'}" id="driver" @click="${() => isDriverAvailable && setCamera('driver')}">
+        <div class="${() => state.selectedCamera === 'driver' ? 'selected_camera' : (isDriverAvailable ? '' : 'unavailable')}" id="driver" @click="${() => setCamera('driver')}">
           <p>Driver Camera</p>
         </div>
       </div>
@@ -202,7 +202,9 @@ export function RecordedRoute({ params }) {
 function getUrlForIndex(route, selectedCamera, segmentIndex) {
   let url = route.segment_urls[segmentIndex]
 
-  if (selectedCamera === "driver") {
+  if (selectedCamera === "forward") {
+    url += "?camera=forward"
+  } else if (selectedCamera === "driver") {
     url += "?camera=driver"
   } else if (selectedCamera === "wide") {
     url += "?camera=wide"
