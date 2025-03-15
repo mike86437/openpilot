@@ -31,6 +31,11 @@ export function formatSecondsToHuman(seconds, precision = "minutes") {
  * @returns {Date} - The parsed date
  */
 export function parseErrorLogToDate(filename) {
+  // Ensure the filename follows the expected format
+  if (!filename.includes("--")) {
+    console.error(`Invalid filename format: ${filename}`);
+    return null;
+  }
   // Dateformat is YYYY-MM-DD--HH-MM-SS
   const date = filename.split("--")[0]
   const time = filename.split("--")[1]
