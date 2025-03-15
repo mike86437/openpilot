@@ -167,11 +167,25 @@ def setup(app):
     lastSegmentDuration = utils.get_video_duration(f"{utils.FOOTAGE_PATH}{name}--{len(segment_urls)-1}/qcamera.ts")
     total_duration = round(lastSegmentDuration + ((len(segment_urls) - 1) * 60))
     available_cameras = utils.get_available_cameras(f"{utils.FOOTAGE_PATH}{name}--0")
+    first_segment_path = f"{utils.FOOTAGE_PATH}{name}--0"
+    qlog_path = f"{first_segment_path}/qlog"
+    # Extract timestamp from qlog
+    date_str = None
+    if os.path.exists(qlog_path):
+      try:
+        with open(qlog_path, "rb") as file:
+          content = file.read().decode(errors="ignore")
+        timestamp_pattern = re.compile(r"\d{10}\s(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4})")
+        match = timestamp_pattern.search(content)
+        if match:
+          date_str = match.group(1)
+      except Exception as e:
+        print(f"Error reading qlog for {route_name}: {e}")
     route_data = {
       "name": name,
       "segment_urls": segment_urls,
       "total_duration": total_duration,
-      "date": counter,
+      "date": date_str if date_str else counter,
       "available_cameras": available_cameras
     }
     return route_data, 200
