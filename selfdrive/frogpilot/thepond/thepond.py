@@ -2,6 +2,8 @@ from flask import Flask, render_template, Response, request, send_from_directory
 from datetime import datetime
 import json
 import secrets
+import re
+import os
 
 from . import utils
 from . import fleet_manager_helpers
@@ -123,6 +125,7 @@ def setup(app):
       qcamera_path = f"{first_segment_path}/qcamera.ts"
       gif_path = f"{first_segment_path}/preview.gif"
       png_path = f"{first_segment_path}/preview.png"
+      qlog_path = f"{first_segment_path}/qlog"
 
       # Ensure thumbnails are created if they don't exist
       try:
@@ -132,8 +135,21 @@ def setup(app):
         print(f"Failed to generate thumbnails for {route_name}")
         print(e)
 
+        # Extract timestamp from qlog
+        date_str = None
+        if os.path.exists(qlog_path):
+            try:
+                with open(qlog_path, "rb") as file:
+                    content = file.read().decode(errors="ignore")
+                timestamp_pattern = re.compile(r"\d{10}\s(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4})")
+                match = timestamp_pattern.search(content)
+                if match:
+                    date_str = match.group(1)
+            except Exception as e:
+                print(f"Error reading qlog for {route_name}: {e}")
+
       routes.append({
-        "date": counter,
+        "date": date_str,
         "name": route_name,
         "gif": f"/thumbnails/{route_name}--0/preview.gif",
         "png": f"/thumbnails/{route_name}--0/preview.png"
