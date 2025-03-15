@@ -125,7 +125,6 @@ def setup(app):
       qcamera_path = f"{first_segment_path}/qcamera.ts"
       gif_path = f"{first_segment_path}/preview.gif"
       png_path = f"{first_segment_path}/preview.png"
-      qlog_path = f"{first_segment_path}/qlog"
 
       # Ensure thumbnails are created if they don't exist
       try:
@@ -135,18 +134,14 @@ def setup(app):
         print(f"Failed to generate thumbnails for {route_name}")
         print(e)
 
-      # Extract timestamp from qlog
+      # Extract timestamp from qcamera.ts creation time
       date_str = None
-      if os.path.exists(qlog_path):
+      if os.path.exists(qcamera_path):
         try:
-          with open(qlog_path, "rb") as file:
-            content = file.read().decode(errors="ignore")
-          timestamp_pattern = re.compile(r"\d{10}\s(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4})")
-          match = timestamp_pattern.search(content)
-          if match:
-            date_str = match.group(1)
+          creation_time = os.path.getctime(qcamera_path)
+          date_str = time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(creation_time))
         except Exception as e:
-          print(f"Error reading qlog for {route_name}: {e}")
+          print(f"Error getting creation time for {qcamera_path}: {e}")
 
       routes.append({
         "date": date_str if date_str else counter,
@@ -168,19 +163,14 @@ def setup(app):
     total_duration = round(lastSegmentDuration + ((len(segment_urls) - 1) * 60))
     available_cameras = utils.get_available_cameras(f"{utils.FOOTAGE_PATH}{name}--0")
     first_segment_path = f"{utils.FOOTAGE_PATH}{name}--0"
-    qlog_path = f"{first_segment_path}/qlog"
-    # Extract timestamp from qlog
+    # Extract timestamp from qcamera.ts creation time
     date_str = None
-    if os.path.exists(qlog_path):
+    if os.path.exists(qcamera_path):
       try:
-        with open(qlog_path, "rb") as file:
-          content = file.read().decode(errors="ignore")
-        timestamp_pattern = re.compile(r"\d{10}\s(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4})")
-        match = timestamp_pattern.search(content)
-        if match:
-          date_str = match.group(1)
+        creation_time = os.path.getctime(qcamera_path)
+        date_str = time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(creation_time))
       except Exception as e:
-        print(f"Error reading qlog for {route_name}: {e}")
+        print(f"Error getting creation time for {qcamera_path}: {e}")
     route_data = {
       "name": name,
       "segment_urls": segment_urls,
