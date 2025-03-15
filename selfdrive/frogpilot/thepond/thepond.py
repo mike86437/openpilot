@@ -135,18 +135,18 @@ def setup(app):
         print(f"Failed to generate thumbnails for {route_name}")
         print(e)
 
-        # Extract timestamp from qlog
-        date_str = None
-        if os.path.exists(qlog_path):
-            try:
-                with open(qlog_path, "rb") as file:
-                    content = file.read().decode(errors="ignore")
-                timestamp_pattern = re.compile(r"\d{10}\s(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4})")
-                match = timestamp_pattern.search(content)
-                if match:
-                    date_str = match.group(1)
-            except Exception as e:
-                print(f"Error reading qlog for {route_name}: {e}")
+      # Extract timestamp from qlog
+      date_str = None
+      if os.path.exists(qlog_path):
+        try:
+          with open(qlog_path, "rb") as file:
+            content = file.read().decode(errors="ignore")
+          timestamp_pattern = re.compile(r"\d{10}\s(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [+-]\d{4})")
+          match = timestamp_pattern.search(content)
+            if match:
+                date_str = match.group(1)
+        except Exception as e:
+          print(f"Error reading qlog for {route_name}: {e}")
 
       routes.append({
         "date": date_str if date_str else counter,
