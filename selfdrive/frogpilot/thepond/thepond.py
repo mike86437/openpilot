@@ -162,12 +162,11 @@ def setup(app):
     lastSegmentDuration = utils.get_video_duration(f"{utils.FOOTAGE_PATH}{name}--{len(segment_urls)-1}/qcamera.ts")
     total_duration = round(lastSegmentDuration + ((len(segment_urls) - 1) * 60))
     available_cameras = utils.get_available_cameras(f"{utils.FOOTAGE_PATH}{name}--0")
-    first_segment_path = f"{utils.FOOTAGE_PATH}{name}--0"
     # Extract timestamp from qcamera.ts creation time
     date_str = None
     if os.path.exists(qcamera_path):
       try:
-        creation_time = os.path.getctime(qcamera_path)
+        creation_time = os.path.getctime(f"{utils.FOOTAGE_PATH}{name}--{len(segment_urls)-1}/qcamera.ts")
         date_str = time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(creation_time))
       except Exception as e:
         print(f"Error getting creation time for {qcamera_path}: {e}")
