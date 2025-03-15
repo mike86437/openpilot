@@ -18,7 +18,7 @@ export function ErrorLogs() {
       const date = parseErrorLogToDate(file)
       // Format it into a string
       const formattedDate = date ? date.toLocaleString() : "Invalid Date";
-      const timeSince = Math.round(Date.now() - date.getTime()) / 1000
+      const timeSince = Math.round(Date.now() - (date ? date.getTime() : "Invalid Date")) / 1000
 
       return {
         filename: file,
