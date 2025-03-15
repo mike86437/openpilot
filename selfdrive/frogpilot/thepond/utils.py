@@ -93,13 +93,10 @@ def get_available_cameras(segment_path) -> list:
   available_cameras = []
   if os.path.exists(os.path.join(segment_path, "qcamera.ts")):
     available_cameras.append("forward")
-    print("Forward Found")
   if os.path.exists(os.path.join(segment_path, "ecamera.hevc")):
     available_cameras.append("wide")
-    print("Wide Found")
   if os.path.exists(os.path.join(segment_path, "dcamera.hevc")):
     available_cameras.append("driver")
-    print("Driver Found")
   return available_cameras
 
 def get_all_car_models() -> dict:
@@ -257,7 +254,7 @@ def get_drive_stats():
   errors = []
   statsValue = None
   parsedStats = None
-  is_metric = params.get("IsMetric")
+  is_metric = params.get("IsMetric").decode()
 
   try:
     statsValue = params.get("ApiCache_DriveStats").decode()
@@ -279,12 +276,12 @@ def get_drive_stats():
     return None, errors
 
   try:
-    stats["all"]["distance"] = int(stats["all"]["distance"] * (1.60934 if is_metric else 1))
-    stats["week"]["distance"] = int(stats["week"]["distance"] * (1.60934 if is_metric else 1))
+    stats["all"]["distance"] = int(stats["all"]["distance"] * (1.60934 if is_metric == 1 else 1))
+    stats["week"]["distance"] = int(stats["week"]["distance"] * (1.60934 if is_metric == 1 else 1))
     stats["all"]["minutes"] = int(stats["all"]["minutes"] / 60)
     stats["week"]["minutes"] = int(stats["week"]["minutes"] / 60)
     stats["frogpilot"] = {
-      "distance": int(float(params_tracking.get("FrogPilotKilometers").decode()) * (0.621371 if not is_metric else 1)),
+      "distance": int(float(params_tracking.get("FrogPilotKilometers").decode()) * (0.621371 if is_metric == 0 else 1)),
       "minutes": int(float(params_tracking.get("FrogPilotMinutes").decode()) / 60),
       "routes": params_tracking.get("FrogPilotDrives").decode(),
       "ismetric": is_metric
