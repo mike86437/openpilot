@@ -164,7 +164,7 @@ def setup(app):
     available_cameras = utils.get_available_cameras(f"{utils.FOOTAGE_PATH}{name}--0")
     # Extract timestamp from qcamera.ts creation time
     date_str = None
-    if os.path.exists(qcamera_path):
+    if os.path.exists(f"{utils.FOOTAGE_PATH}{name}--{len(segment_urls)-1}/qcamera.ts"):
       try:
         creation_time = os.path.getctime(f"{utils.FOOTAGE_PATH}{name}--{len(segment_urls)-1}/qcamera.ts")
         date_str = time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(creation_time))
