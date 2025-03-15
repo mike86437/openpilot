@@ -281,8 +281,8 @@ def get_drive_stats():
     stats["all"]["distance"] *= 1.60934
     stats["week"]["distance"] *= 1.60934
     stats["frogpilot"] = {
-      "distance": params_tracking.get("FrogPilotKilometers").decode(),
-      "minutes": params_tracking.get("FrogPilotMinutes").decode(),
+      "distance": int(float(params_tracking.get("FrogPilotKilometers").decode()) * 0.621371),
+      "minutes": int(float(params_tracking.get("FrogPilotMinutes").decode()) / 60),
       "routes": params_tracking.get("FrogPilotDrives").decode()
     }
 
