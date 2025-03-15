@@ -279,6 +279,18 @@ void MapWindow::updateState(const UIState &s) {
     }
   }
 
+  // Credit to jakethesnake420
+  if (loaded_once && (sm.rcv_frame("uiPlan") != model_rcv_frame)) {
+    auto locationd_location = sm["liveLocationKalman"].getLiveLocationKalman();
+    auto model_path = model_to_collection(locationd_location.getCalibratedOrientationECEF(), locationd_location.getPositionECEF(), sm["uiPlan"].getUiPlan().getPosition());
+    QMapLibre::Feature model_path_feature(QMapLibre::Feature::LineStringType, model_path, {}, {});
+    QVariantMap modelV2Path;
+    modelV2Path["type"] =  "geojson";
+    modelV2Path["data"] = QVariant::fromValue<QMapLibre::Feature>(model_path_feature);
+    m_map->updateSource("modelPathSource", modelV2Path);
+    model_rcv_frame = sm.rcv_frame("uiPlan");
+  }
+
   if (sm.rcv_frame("navRoute") != route_rcv_frame) {
     qWarning() << "Updating navLayer with new route";
     auto route = sm["navRoute"].getNavRoute();
@@ -292,18 +304,6 @@ void MapWindow::updateState(const UIState &s) {
 
     route_rcv_frame = sm.rcv_frame("navRoute");
     updateDestinationMarker();
-  }
-
-  // Credit to jakethesnake420
-  if (loaded_once && (sm.rcv_frame("uiPlan") != model_rcv_frame)) {
-    auto locationd_location = sm["liveLocationKalman"].getLiveLocationKalman();
-    auto model_path = model_to_collection(locationd_location.getCalibratedOrientationECEF(), locationd_location.getPositionECEF(), sm["uiPlan"].getUiPlan().getPosition());
-    QMapLibre::Feature model_path_feature(QMapLibre::Feature::LineStringType, model_path, {}, {});
-    QVariantMap modelV2Path;
-    modelV2Path["type"] =  "geojson";
-    modelV2Path["data"] = QVariant::fromValue<QMapLibre::Feature>(model_path_feature);
-    m_map->updateSource("modelPathSource", modelV2Path);
-    model_rcv_frame = sm.rcv_frame("uiPlan");
   }
 
   // Map Styling - Credit goes to OPKR!
