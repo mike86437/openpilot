@@ -24,6 +24,7 @@ if RUNNING_ON_COMMA:
   from common.params import Params
   params = Params()
   params_memory = Params("/dev/shm/params")
+  params_tracking = Params("/cache/tracking")
 else:
   # If running this on a computer, there is a bunch of fake stuff inside fixtures that
   # will substitute openpilot stuff
@@ -32,7 +33,7 @@ else:
   from .fixtures.fake_modules.params import Params
   params = Params()
   params_memory = params
-  params_tracking = Params("/cache/tracking")
+
 
 
 SCREENRECORD_PATH = f"{DATA_PATH}/data/media/0/videos/"
