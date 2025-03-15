@@ -32,6 +32,7 @@ else:
   from .fixtures.fake_modules.params import Params
   params = Params()
   params_memory = params
+  params_tracking = Params("/cache/tracking")
 
 
 SCREENRECORD_PATH = f"{DATA_PATH}/data/media/0/videos/"
@@ -279,9 +280,9 @@ def get_drive_stats():
     stats["all"]["distance"] *= 1.60934
     stats["week"]["distance"] *= 1.60934
     stats["frogpilot"] = {
-      "distance": params.get("FrogPilotKilometers").decode(),
-      "minutes": params.get("FrogPilotMinutes").decode(),
-      "routes": params.get("FrogPilotDrives").decode()
+      "distance": params_tracking.get_float("FrogPilotKilometers").decode(),
+      "minutes": params_tracking.get_float("FrogPilotMinutes").decode(),
+      "routes": params_tracking.get_int("FrogPilotDrives").decode()
     }
 
     print(stats)
