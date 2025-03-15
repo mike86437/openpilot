@@ -168,7 +168,9 @@ def setup(app):
   @app.route("/video/<path>")
   def v2_video_file(path):
     video_file = "qcamera.ts" # default to qcamera (same as fcamera, just lower quality)
-    if request.args.get("camera") == "driver":
+    if request.args.get("camera") == "forward":
+      video_file = "fcamera.hevc"
+    elif request.args.get("camera") == "driver":
       video_file = "dcamera.hevc"
     elif request.args.get("camera") == "wide":
       video_file = "ecamera.hevc"

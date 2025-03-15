@@ -121,7 +121,7 @@ export function RecordedRoute({ params }) {
     const formattedDuration = formatSeconds(route.total_duration)
 
     return html`
-      <h1 id="route_name">${formattedDate}</h1>
+      <h1 id="route_name">${route.date}</h1>
       <div class="camera_selector">
         <div class="selected_camera" id="forward" @click="${() => setCamera('forward')}">
          <p>Forward Camera</p>
