@@ -140,11 +140,11 @@ function DriveStat(title, stats) {
       </div>
       <div>
         <p>${Math.round(stats.minutes ?? "-")}</p>
-        <p>minutes</p>
+        <p>hours</p>
       </div>
       <div>
         <p>${Math.round(stats.distance ?? "-")}</p>
-        <p>km</p>
+        <p>miles</p>
       </div>
     </div>
   `
