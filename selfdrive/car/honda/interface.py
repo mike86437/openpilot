@@ -198,6 +198,10 @@ class CarInterface(CarInterfaceBase):
 
     elif candidate == CAR.HONDA_CLARITY:
       ret.safetyConfigs[0].safetyParam |= Panda.FLAG_HONDA_CLARITY
+      ret.stoppingControl = True
+      ret.startingState = True
+      ret.vEgoStarting = 0.1
+      ret.startAccel = 1.0
       if eps_modified:
         for fw in car_fw:
           if fw.ecu == "eps" and b"-" not in fw.fwVersion and b"," in fw.fwVersion:
