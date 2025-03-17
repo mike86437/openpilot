@@ -5,25 +5,28 @@ export function ErrorLogs() {
   const state = reactive({
     files: "[]",
     selectedLog: undefined,
-    loading: true,
+    loading: true
   })
 
   async function getErrorLogs() {
     const response = await fetch("/api/error-logs", {
-      headers: { Accept: "application/json" },
+      headers: { Accept: "application/json" }
     })
     const data = await response.json()
     state.files = JSON.stringify(data.map((file) => {
       // Dateformat is YYYY-MM-DD--HH-MM-SS
       const date = parseErrorLogToDate(file)
-      // Format it into a string
-      const formattedDate = date ? date.toLocaleString() : "Invalid Date";
-      const timeSince = Math.round(Date.now() - (date ? date.getTime() : "Invalid Date")) / 1000
-
+      if (!date) {
+        return {
+          filename: file,
+          date: file,
+          timeSince: null
+        }
+      }
       return {
         filename: file,
-        date: formattedDate,
-        timeSince: timeSince,
+        date: date.toLocaleString(),
+        timeSince: Math.round((Date.now() - date.getTime()) / 1000)
       }
     }))
     state.loading = false
@@ -31,34 +34,34 @@ export function ErrorLogs() {
 
   getErrorLogs()
 
-  return html`<h1>Error Logs</h1>
+  return html`
+    <h1>Error Logs</h1>
     <div id="errorLogs">
       <div id="fileList">
         ${() => {
-      if (state.loading) {
-        return html`<div class="fileEntry">
-              <p>Loading...</p>
-            </div>`
-      } else {
-        return JSON.parse(state.files).map(
-          (file) =>
-            html`<div
-                  class="fileEntry"
-                  @click="${() => (state.selectedLog = file.filename)}"
-                >
-                  <p>${file.date}</p>
-                  <p>${formatSecondsToHuman(file.timeSince, "days")} ago</p>
+          if (state.loading) {
+            return html`<div class="fileEntry">
+                <p>Loading...</p>
                 </div>`
-        )
-      }
-    }}
+          } else {
+            return JSON.parse(state.files).map(
+              (file) =>
+                html`<div class="fileEntry" @click="${() => (state.selectedLog = file.filename)}">
+                  <p>${file.date}</p>
+                  <p>${file.timeSince !== null ? formatSecondsToHuman(file.timeSince, "days") + " ago" : "Invalid Date"}</p>
+                </div>`
+            )
+          }
+        }}
       </div>
       ${() =>
-      state.selectedLog
-        ? Logviewer(state.selectedLog, () => (state.selectedLog = undefined))
-        : ""}
-    </div> `
+        state.selectedLog
+          ? Logviewer(state.selectedLog, () => (state.selectedLog = undefined))
+          : ""}
+    </div>
+  `
 }
+
 
 function Logviewer(filename, closeFn) {
   const logfile = reactive({
@@ -86,3 +89,4 @@ function Logviewer(filename, closeFn) {
     <pre>${() => (logfile.loading ? "Loading..." : logfile.content)}</pre>
   </div>`
 }
+
