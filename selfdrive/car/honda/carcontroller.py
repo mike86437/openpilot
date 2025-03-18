@@ -127,6 +127,8 @@ class CarController(CarControllerBase):
     self.gas = 0.0
     self.brake = 0.0
     self.last_steer = 0.0
+    self.pedal_init = 0
+    self.lead_visible_intercept = False
 
   def update(self, CC, CS, now_nanos, frogpilot_toggles):
     actuators = CC.actuators
@@ -173,6 +175,15 @@ class CarController(CarControllerBase):
     # Send steering command.
     can_sends.append(hondacan.create_steering_control(self.packer, self.CAN, apply_steer, CC.latActive, self.CP.carFingerprint,
                                                       CS.CP.openpilotLongitudinalControl))
+
+    # Debug Honda pedal gas interceptor
+    if self.CP.enableGasInterceptor:
+      self.lead_visible_intercept and not self.lead_visible_intercept = hud_control.leadVisible
+      if self.pedal_init < 10:
+        self.pedal_init += 1
+        self.lead_visible_intercept = True
+      else:
+        self.lead_visible_intercept = False
 
     # wind brake from air resistance decel at high speed
     wind_brake = interp(CS.out.vEgo, [0.0, 2.3, 35.0], [0.001, 0.002, 0.15])
