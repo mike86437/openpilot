@@ -184,6 +184,7 @@ class CarController(CarControllerBase):
       if self.pedal_count < 10:
         self.pedal_count += 1
         self.pedal_init = True
+        print("Honda Pedal Detected")
         self.lead_visible_intercept = True
       else:
         self.pedial_init = False
