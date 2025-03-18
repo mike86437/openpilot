@@ -127,7 +127,8 @@ class CarController(CarControllerBase):
     self.gas = 0.0
     self.brake = 0.0
     self.last_steer = 0.0
-    self.pedal_init = 0
+    self.pedal_init = False
+    self.pedal_count = 0
     self.lead_visible_intercept = False
 
   def update(self, CC, CS, now_nanos, frogpilot_toggles):
@@ -178,11 +179,14 @@ class CarController(CarControllerBase):
 
     # Debug Honda pedal gas interceptor
     if self.CP.enableGasInterceptor:
-      self.lead_visible_intercept and not self.lead_visible_intercept = hud_control.leadVisible
-      if self.pedal_init < 10:
-        self.pedal_init += 1
+      if not self.pedal_init:
+        self.lead_visible_intercept = hud_control.leadVisible
+      if self.pedal_count < 10:
+        self.pedal_count += 1
+        self.pedal_init = True
         self.lead_visible_intercept = True
       else:
+        self.pedial_init = False
         self.lead_visible_intercept = False
 
     # wind brake from air resistance decel at high speed
@@ -266,7 +270,7 @@ class CarController(CarControllerBase):
 
     # Send dashboard UI commands.
     if self.frame % 10 == 0:
-      hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), hud_control.leadVisible,
+      hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), self.lead_visible_intercept,
                     hud_control.lanesVisible, fcw_display, acc_alert, steer_required, hud_control.leadDistanceBars)
       can_sends.extend(hondacan.create_ui_commands(self.packer, self.CAN, self.CP, CC.enabled, pcm_speed, hud, CS.is_metric, CS.acc_hud, CS.lkas_hud, CC.latActive))
 
