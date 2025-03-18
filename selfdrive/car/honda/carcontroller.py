@@ -127,7 +127,6 @@ class CarController(CarControllerBase):
     self.gas = 0.0
     self.brake = 0.0
     self.last_steer = 0.0
-    self.pedal_init = False
     self.pedal_count = 0
     self.lead_visible_intercept = False
 
@@ -179,16 +178,13 @@ class CarController(CarControllerBase):
 
     # Debug Honda pedal gas interceptor
     if self.CP.enableGasInterceptor:
-      if not self.pedal_init:
-        self.lead_visible_intercept = hud_control.leadVisible
-      if self.pedal_count < 10:
+      if self.pedal_count < 100:
         self.pedal_count += 1
-        self.pedal_init = True
-        print("Honda Pedal Detected")
+        if self.pedal_count == 1:
+          print("Honda Pedal Detected")
         self.lead_visible_intercept = True
       else:
-        self.pedial_init = False
-        self.lead_visible_intercept = False
+        self.lead_visible_intercept = hud_control.leadVisible
 
     # wind brake from air resistance decel at high speed
     wind_brake = interp(CS.out.vEgo, [0.0, 2.3, 35.0], [0.001, 0.002, 0.15])
