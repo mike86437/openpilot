@@ -105,6 +105,55 @@ def capture_report(discord_user, report, frogpilot_toggles):
     sentry_sdk.capture_message(f"{discord_user} submitted report: {report}", level="fatal")
     sentry_sdk.flush()
 
+def capture_soundd_error(stream, frogpilot_toggles):
+  error_report = (
+    "AssertionError: Audio stream failed to start!\n"
+    "Debugging Information:\n"
+    f"  - Stream Object: {stream}\n"
+    f"  - Device: {stream.device}\n"
+    f"  - Sample Rate: {stream.samplerate} Hz\n"
+    f"  - Channels: {stream.channels}\n"
+    f"  - Block Size: {stream.blocksize}\n"
+    f"  - Data Type: {stream.dtype}\n\n"
+    "Possible Causes and Fixes:\n"
+    "  1. Audio device is unavailable or busy:\n"
+    "     - Run `lsof | grep /dev/snd/` to check if another process is using the audio device.\n"
+    "     - Restart the process or select a different audio device.\n\n"
+    "  2. Unsupported audio settings (e.g., sample rate, channels):\n"
+    "     - Verify that your hardware supports the specified sample rate and channel count.\n"
+    "     - Try changing `samplerate=44100` instead of the current setting.\n\n"
+    "  3. Permissions issue:\n"
+    "     - Run `sudo usermod -aG audio $(whoami)`, then restart your session.\n"
+    "     - Ensure PulseAudio or ALSA is properly configured.\n\n"
+    "  4. Missing or misconfigured audio drivers:\n"
+    "     - Run `aplay -l` or `arecord -l` to list available audio devices.\n"
+    "     - Ensure `sounddevice` is installed (`pip install sounddevice`).\n"
+    "     - Try setting `device=None` to allow auto-selection of an available device.\n\n"
+    "Next Steps:\n"
+    "  - Run the suggested debugging commands.\n"
+    "  - If the issue persists, test audio with a minimal script:\n"
+    "      import sounddevice as sd\n"
+    "      stream = sd.OutputStream(samplerate=48000, channels=1)\n"
+    "      stream.start()\n"
+    "      print('Stream active:', stream.active)\n"
+    "  - If this test fails, it is likely a system-level issue rather than a script error."
+  )
+
+  with sentry_sdk.push_scope() as scope:
+    scope.set_context("Sound Error Log", {"content": error_report})
+    scope.set_context("Toggle Values", frogpilot_toggles)
+    sentry_sdk.capture_message("Soundd Error", level="fatal")
+    sentry_sdk.flush()
+
+def send_tmux(log_path):
+  with open(log_path, "r", encoding="utf-8") as log_file:
+    log_content = log_file.read()
+
+  with sentry_sdk.push_scope() as scope:
+    scope.set_context("Tmux Log", log_content)
+    sentry_sdk.capture_message("Lock/Unlock operation completed. Log attached.")
+    sentry_sdk.flush()
+
 
 def set_tag(key: str, value: str) -> None:
   sentry_sdk.set_tag(key, value)
