@@ -67,7 +67,7 @@ class FrogPilotVCruise:
       d_rel = lead.dRel
       v_lead = lead.vLead
       v_rel = v_ego - v_lead
-      if d_rel > 20 and v_rel > 5:
+      if d_rel > 5 and v_rel > 2:
         mtsc_active = True
         decelRate = (v_rel ** 2) / (2 * d_rel) * 3
         self.mtsc_target = v_ego - decelRate
