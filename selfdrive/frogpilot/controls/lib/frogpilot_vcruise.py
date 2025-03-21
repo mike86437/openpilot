@@ -68,7 +68,7 @@ class FrogPilotVCruise:
       v_rel = v_ego - v_lead
       if d_rel > 5 and v_rel > 2:
         mtsc_active = True
-        decelRate = (v_rel ** 2) / (2 * d_rel) * 3
+        decelRate = (v_rel ** 2) / (2 * d_rel) * 4  # 4x for more aggressive braking
         self.mtsc_target = v_ego - decelRate
       else:
         self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
