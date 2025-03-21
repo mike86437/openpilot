@@ -102,7 +102,7 @@ class FrogPilotPlanner:
     self.road_curvature_detected = (1 / abs(self.road_curvature))**0.5 < v_ego > CRUISING_SPEED
 
     self.tracking_lead = self.set_lead_status(v_lead)
-    self.v_cruise = self.frogpilot_vcruise.update(carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles)
+    self.v_cruise = self.frogpilot_vcruise.update(carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles, radarState)
 
   def set_lead_status(self, v_lead):
     following_lead = self.lead_one.status

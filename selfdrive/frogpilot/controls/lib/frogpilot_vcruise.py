@@ -34,7 +34,7 @@ class FrogPilotVCruise:
     self.tracked_model_length = 0
     self.vtsc_target = 0
 
-  def update(self, carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles):
+  def update(self, carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles, radarState):
     force_stop = frogpilot_toggles.force_stops and self.frogpilot_planner.cem.stop_light_detected and controlsState.enabled
     force_stop &= self.frogpilot_planner.model_length < 100
     force_stop &= self.override_force_stop_timer <= 0
@@ -61,16 +61,18 @@ class FrogPilotVCruise:
 
     # Pfeiferj's Map Turn Speed Controller
     if frogpilot_toggles.map_turn_speed_controller and v_ego > CRUISING_SPEED and carControl.longActive:
-      mtsc_active = self.mtsc_target < v_cruise
-      mtsc_speed = ((TARGET_LAT_A * frogpilot_toggles.turn_aggressiveness) / (self.mtsc.get_map_curvature(gps_position, v_ego) * frogpilot_toggles.curve_sensitivity))**0.5
-      self.mtsc_target = np.clip(mtsc_speed, CRUISING_SPEED, v_cruise)
-
-      if self.frogpilot_planner.road_curvature_detected and mtsc_active:
-        self.mtsc_target = self.frogpilot_planner.v_cruise
-      elif not self.frogpilot_planner.road_curvature_detected and frogpilot_toggles.mtsc_curvature_check:
-        self.mtsc_target = v_cruise
-    else:
-      self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
+      # Extended lead linear braking
+      lead = radarState.leadOne
+      d_rel = lead.dRel
+      v_lead = lead.vLead
+      v_rel = v_ego - v_lead
+      if d_rel > 5 and v_rel > 2:
+        mtsc_active = True
+        decelRate = (v_rel ** 2) / (2 * d_rel) * 3
+        self.mtsc_target = v_ego - decelRate
+      else:
+        self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
+        mtsc_active = False
 
     # Pfeiferj's Speed Limit Controller
     if frogpilot_toggles.show_speed_limits or frogpilot_toggles.speed_limit_controller:
