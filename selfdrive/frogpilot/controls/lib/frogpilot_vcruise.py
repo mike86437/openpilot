@@ -35,7 +35,7 @@ class FrogPilotVCruise:
     self.tracked_model_length = 0
     self.vtsc_target = 0
 
-  def update(self, carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles, radarState):
+  def update(self, carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles):
     force_stop = frogpilot_toggles.force_stops and self.frogpilot_planner.cem.stop_light_detected and controlsState.enabled
     force_stop &= self.frogpilot_planner.model_length < 100
     force_stop &= self.override_force_stop_timer <= 0
@@ -44,7 +44,7 @@ class FrogPilotVCruise:
 
     force_stop_enabled = self.force_stop_timer >= 1
 
-    self.override_force_stop |= not frogpilot_toggles.force_standstill and carState.standstill and self.frogpilot_planner.tracking_lead
+    self.override_force_stop |= not frogpilot_toggles.force_standstill and carState.standstill and self.frogpilot_planner.lead_one.dRel < 10
     self.override_force_stop |= carState.gasPressed
     self.override_force_stop |= frogpilotCarControl.accelPressed
     self.override_force_stop &= force_stop_enabled
@@ -63,7 +63,7 @@ class FrogPilotVCruise:
     # Pfeiferj's Map Turn Speed Controller
     if frogpilot_toggles.map_turn_speed_controller:
       # Extended lead linear braking
-      lead = radarState.leadOne
+      lead = self.frogpilot_planner.lead_one
       d_rel = lead.dRel
       v_lead = lead.vLead
       v_rel = v_ego - v_lead
