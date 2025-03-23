@@ -206,15 +206,19 @@ class CarInterface(CarInterfaceBase):
       ret.vEgoStarting = 0.1
       ret.startAccel = 1.0
       if eps_modified:
+        CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)
+        ret.lateralParams.torqueV = [0, 2560, 3840]
         for fw in car_fw:
           if fw.ecu == "eps" and b"-" not in fw.fwVersion and b"," in fw.fwVersion:
-            ret.lateralTuning.pid.kf = 0.00004
-            ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 0xA00, 0x3C00], [0, 2560, 3840]]
-            ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.1575], [0.05175]]
+            # ret.lateralTuning.pid.kf = 0.00004
+            # ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 0xA00, 0x3C00], [0, 2560, 3840]]
+            # ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.1575], [0.05175]]
+            ret.lateralParams.torqueBP = [0, 0xA00, 0x3C00]
           elif fw.ecu == "eps" and b"-" in fw.fwVersion and b"," in fw.fwVersion:
-            ret.lateralTuning.pid.kf = 0.00004
-            ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 0xA00, 0x2800], [0, 2560, 3840]]
-            ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.3], [0.1]]
+            # ret.lateralTuning.pid.kf = 0.00004
+            # ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 0xA00, 0x2800], [0, 2560, 3840]]
+            # ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.3], [0.1]]
+            ret.lateralParams.torqueBP = [0, 0xA00, 0x2800]
       else:
         ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 2560], [0, 2560]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.8], [0.24]]
