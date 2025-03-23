@@ -43,8 +43,8 @@ class FrogPilotVCruise:
     self.force_stop_timer = self.force_stop_timer + DT_MDL if force_stop else 0
 
     force_stop_enabled = self.force_stop_timer >= 1
-
-    self.override_force_stop |= not frogpilot_toggles.force_standstill and carState.standstill and self.frogpilot_planner.lead_one.dRel < 10
+    lead = self.frogpilot_planner.lead_one
+    self.override_force_stop |= not frogpilot_toggles.force_standstill and carState.standstill and not lead.dRel < 15
     self.override_force_stop |= carState.gasPressed
     self.override_force_stop |= frogpilotCarControl.accelPressed
     self.override_force_stop &= force_stop_enabled
@@ -63,7 +63,7 @@ class FrogPilotVCruise:
     # Pfeiferj's Map Turn Speed Controller
     if frogpilot_toggles.map_turn_speed_controller:
       # Extended lead linear braking
-      lead = self.frogpilot_planner.lead_one
+
       d_rel = lead.dRel
       v_lead = lead.vLead
       v_rel = v_ego - v_lead
