@@ -400,8 +400,8 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
       p.setFont(InterFont(66));
       drawText(p, rect().center().x(), 290, QString("%1 seconds").arg(seconds));
     } else {
-      int shiftX = (QDateTime::currentSecsSinceEpoch() / 60) % 5 - 2;  // Shifts between -2, -1, 0, +1, +2 pixels
-      int shiftY = (QDateTime::currentSecsSinceEpoch() / 120) % 5 - 2; // Shifts every 2 minutes
+      int shiftX = (QDateTime::currentSecsSinceEpoch() / 500) % 11 - 5;  // Shifts between -2, -1, 0, +1, +2 pixels
+      int shiftY = (QDateTime::currentSecsSinceEpoch() / 750) % 11 - 5; // Shifts every 2 minutes
       p.setFont(InterFont(176, QFont::Bold));
       drawText(p, rect().center().x() + shiftX, 210 + shiftY, speedStr);
       p.setFont(InterFont(66));
