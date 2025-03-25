@@ -132,9 +132,9 @@ void ScreenRecorder::paintEvent(QPaintEvent *event) {
   static qint64 lastShiftTime = QDateTime::currentMSecsSinceEpoch();
 
   // Shift pixels every 2 minutes within a small range (-2 to 2 pixels)
-  if (QDateTime::currentMSecsSinceEpoch() - lastShiftTime > 1000) {
-    pixelShiftX = (qrand() % 21) - 10; // Random shift between -2 and +2 pixels
-    pixelShiftY = (qrand() % 21) - 10;
+  if (QDateTime::currentMSecsSinceEpoch() - lastShiftTime > 120000) {
+    pixelShiftX = (qrand() % 5) - 2; // Random shift between -2 and +2 pixels
+    pixelShiftY = (qrand() % 5) - 2;
     lastShiftTime = QDateTime::currentMSecsSinceEpoch();
   }
 
