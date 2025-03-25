@@ -127,6 +127,17 @@ void ScreenRecorder::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
 
+  static int pixelShiftX = 0;
+  static int pixelShiftY = 0;
+  static qint64 lastShiftTime = QDateTime::currentMSecsSinceEpoch();
+
+  // Shift pixels every 2 minutes within a small range (-2 to 2 pixels)
+  if (QDateTime::currentMSecsSinceEpoch() - lastShiftTime > 120000) {
+    pixelShiftX = (qrand() % 5) - 2; // Random shift between -2 and +2 pixels
+    pixelShiftY = (qrand() % 5) - 2;
+    lastShiftTime = QDateTime::currentMSecsSinceEpoch();
+  }
+
   if (recording) {
     painter.setPen(QPen(redColor(), 6));
     painter.setBrush(redColor(166));
@@ -138,7 +149,10 @@ void ScreenRecorder::paintEvent(QPaintEvent *event) {
   }
 
   int centeringOffset = 10;
-  QRect buttonRect(centeringOffset, btn_size / 3, btn_size - centeringOffset * 2, btn_size / 3);
+  QRect buttonRect(centeringOffset + pixelShiftX,
+                   btn_size / 3 + pixelShiftY,
+                   btn_size - centeringOffset * 2,
+                   btn_size / 3);
   painter.drawRoundedRect(buttonRect, 24, 24);
 
   QRect textRect = buttonRect.adjusted(centeringOffset, 0, -centeringOffset, 0);
@@ -147,6 +161,9 @@ void ScreenRecorder::paintEvent(QPaintEvent *event) {
 
   if (recording && ((QDateTime::currentMSecsSinceEpoch() - startedTime) / 1000) % 2 == 0) {
     painter.setPen(Qt::NoPen);
-    painter.drawEllipse(QPoint(buttonRect.right() - btn_size / 10 - centeringOffset, buttonRect.center().y()), btn_size / 10, btn_size / 10);
+    painter.drawEllipse(QPoint(buttonRect.right() - btn_size / 10 - centeringOffset,
+                               buttonRect.center().y()),
+                        btn_size / 10,
+                        btn_size / 10);
   }
 }
