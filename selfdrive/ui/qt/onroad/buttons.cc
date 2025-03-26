@@ -186,7 +186,9 @@ MapSettingsButton::MapSettingsButton(QWidget *parent) : QPushButton(parent) {
 
 void MapSettingsButton::paintEvent(QPaintEvent *event) {
   QPainter p(this);
-  drawIcon(p, QPoint(btn_size / 2, btn_size / 2), settings_img, QColor(0, 0, 0, 166), isDown() ? 0.6 : 1.0);
+  int shiftX = (QDateTime::currentMSecsSinceEpoch() / 1000) % 21 - 10;  // Shifts every 1 second
+  int shiftY = (QDateTime::currentMSecsSinceEpoch() / 1500) % 21 - 10;  // Shifts every 1.5 seconds
+  drawIcon(p, QPoint(btn_size / 2 + shiftX, btn_size / 2 + shiftY), settings_img, QColor(0, 0, 0, 166), isDown() ? 0.6 : 1.0);
 }
 
 // FrogPilot buttons
