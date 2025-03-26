@@ -67,6 +67,7 @@ void AnnotatedCameraWidget::updateState(int alert_height, const UIState &s) {
   v_ego_cluster_seen = v_ego_cluster_seen || car_state.getVEgoCluster() != 0.0;
   float v_ego = v_ego_cluster_seen && !s.scene.use_wheel_speed ? car_state.getVEgoCluster() : car_state.getVEgo();
   speed = cs_alive ? std::max<float>(0.0, v_ego) : 0.0;
+  speedms = speed;
   speed *= s.scene.is_metric ? MS_TO_KPH : MS_TO_MPH;
 
   auto speed_limit_sign = nav_instruction.getSpeedLimitSign();
@@ -133,6 +134,7 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   QString speedLimitStr = (speedLimit > 1) ? QString::number(std::nearbyint(speedLimit)) : "–";
   QString speedLimitOffsetStr = (slcSpeedLimitOffset == 0) ? "–" : QString::number(slcSpeedLimitOffset, 'f', 0).prepend((slcSpeedLimitOffset > 0) ? "+" : "");
   QString speedStr = QString::number(std::nearbyint(speed));
+  QString speedStrms = QString::number(speedms, 'f', 1);
   QString setSpeedStr = is_cruise_set ? QString::number(std::nearbyint(setSpeed)) : "–";
   QString vtscSpeedStr = (vtscSpeed > 1) ? QString::number(std::nearbyint(fmin(speed, vtscSpeed))) + speedUnit : "–";
 
@@ -403,9 +405,9 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
       int shiftX = (QDateTime::currentSecsSinceEpoch() / 60) % 5 - 2;  // Shifts between -2, -1, 0, +1, +2 pixels
       int shiftY = (QDateTime::currentSecsSinceEpoch() / 120) % 5 - 2; // Shifts every 2 minutes
       p.setFont(InterFont(176, QFont::Bold));
-      drawText(p, rect().center().x() + shiftX, 210 + shiftY, speedStr);
+      drawText(p, rect().center().x() + shiftX, 210 + shiftY, speedStrms);
       p.setFont(InterFont(66));
-      drawText(p, rect().center().x() + shiftX, 290 + shiftY, speedUnit, 200);
+      drawText(p, rect().center().x() + shiftX, 290 + shiftY, "m/s", 200);
     }
   }
 
