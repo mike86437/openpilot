@@ -186,8 +186,8 @@ MapSettingsButton::MapSettingsButton(QWidget *parent) : QPushButton(parent) {
 
 void MapSettingsButton::paintEvent(QPaintEvent *event) {
   QPainter p(this);
-  int shiftX = (QDateTime::currentMSecsSinceEpoch() / 1000) % 21 - 10;  // Shifts every 1 second
-  int shiftY = (QDateTime::currentMSecsSinceEpoch() / 1500) % 21 - 10;  // Shifts every 1.5 seconds
+  int shiftX = (QDateTime::currentSecsSinceEpoch() / 60) % 5 - 2;  // Shifts between -2, -1, 0, +1, +2 pixels
+  int shiftY = (QDateTime::currentSecsSinceEpoch() / 120) % 5 - 2;  // Shifts every 2 minutes
   drawIcon(p, QPoint(btn_size / 2 + shiftX, btn_size / 2 + shiftY), settings_img, QColor(0, 0, 0, 166), isDown() ? 0.6 : 1.0);
 }
 
