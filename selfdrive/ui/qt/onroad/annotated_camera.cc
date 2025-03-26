@@ -365,7 +365,7 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
 
   // current speed
   if (!(bigMapOpen || hideSpeed)) {
-    if (standstillDuration > 1) {
+    if (standstillDuration > 100) {
       float transition = qBound(0.0f, standstillDuration / 120.0f, 1.0f);
       QColor start, end;
 
