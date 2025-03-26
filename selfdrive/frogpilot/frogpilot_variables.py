@@ -409,7 +409,6 @@ class FrogPilotVariables:
         has_pedal = CP.enableGasInterceptor
         has_radar = not CP.radarUnavailable
         is_torque_car = CP.lateralTuning.which() == "torque"
-        if is_torque_car: print(f"Torque car: {toggle.car_make} {toggle.car_model}")
         max_acceleration_enabled = bool(CP.alternativeExperience & ALTERNATIVE_EXPERIENCE.RAISE_LONGITUDINAL_LIMITS_TO_ISO_MAX)
         openpilot_longitudinal = CP.openpilotLongitudinalControl
         pcm_cruise = CP.pcmCruise
