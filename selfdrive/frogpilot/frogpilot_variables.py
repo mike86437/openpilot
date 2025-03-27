@@ -403,7 +403,7 @@ class FrogPilotVariables:
         always_on_lateral_set = bool(CP.alternativeExperience & ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL)
         toggle.car_make = CP.carName
         toggle.car_model = CP.carFingerprint
-        has_auto_tune = toggle.car_make in {"hyundai", "toyota", "honda"} and CP.lateralTuning.which() == "torque"
+        has_auto_tune = toggle.car_make in {"hyundai", "toyota"} and CP.lateralTuning.which() == "torque"
         has_bsm = CP.enableBsm
         has_cc_long = bool(CP.flags & GMFlags.CC_LONG.value)
         has_pedal = CP.enableGasInterceptor
