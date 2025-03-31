@@ -484,7 +484,7 @@ class CarInterfaceBase(ABC):
         # Use LKAS button to force coasting
         self.targetCoast = not self.targetCoast
         self.params.put_bool("SetCoast", self.targetCoast)
-    if self.targetCoast and cs_out.gasPressed:
+    if self.targetCoast and (cs_out.gasPressed or cs_out.brakePressed or cs_out.vEgo < 2):
       self.targetCoast = not self.targetCoast
       self.params.put_bool("SetCoast", self.targetCoast)
 
