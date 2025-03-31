@@ -98,6 +98,7 @@ private:
   QPixmap leadIcon;
   QPixmap lightIcon;
   QPixmap mapDataIcon;
+  QPixmap mtscIcon;
   QPixmap navigationIcon;
   QPixmap speedIcon;
   QPixmap stopSignImg;

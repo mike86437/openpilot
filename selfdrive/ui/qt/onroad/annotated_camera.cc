@@ -214,7 +214,7 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
     };
 
     QRect curveSpeedRect(QPoint(set_speed_rect.right() + 25, set_speed_rect.top()), QSize(default_size.width() * 1.25, default_size.width() * 1.25));
-    QPixmap scaledCurveSpeedIcon = (leftCurve ? curveSpeedLeftIcon : curveSpeedRightIcon).scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPixmap scaledCurveSpeedIcon = !vtscControllingCurve ? mtscIcon.scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation) : (leftCurve ? curveSpeedLeftIcon : curveSpeedRightIcon).scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     p.setOpacity(1.0);
     p.drawPixmap(curveSpeedRect, scaledCurveSpeedIcon);
@@ -983,6 +983,7 @@ void AnnotatedCameraWidget::initializeFrogPilotWidgets() {
   leadIcon = loadPixmap("../frogpilot/assets/other_images/lead_icon.png", {img_size / 2, img_size / 2});
   lightIcon = loadPixmap("../frogpilot/assets/other_images/light_icon.png", {img_size / 2, img_size / 2});
   mapDataIcon = loadPixmap("../frogpilot/assets/other_images/offline_maps_icon.png", {img_size / 2, img_size / 2});
+  mtscIcon = loadPixmap("../frogpilot/assets/other_images/brake_pedal.png", {img_size, img_size});
   navigationIcon = loadPixmap("../frogpilot/assets/other_images/navigation_icon.png", {img_size / 2, img_size / 2});
   speedIcon = loadPixmap("../frogpilot/assets/other_images/speed_icon.png", {img_size / 2, img_size / 2});
   stopSignImg = loadPixmap("../frogpilot/assets/other_images/stop_sign.png", {img_size, img_size});
