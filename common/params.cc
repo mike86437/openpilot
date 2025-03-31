@@ -439,6 +439,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"RoadName", CLEAR_ON_MANAGER_START},
     {"RoadNameUI", PERSISTENT},
     {"RotatingWheel", PERSISTENT},
+    {"SetCoast", PERSISTENT},
     {"ScreenBrightness", PERSISTENT},
     {"ScreenBrightnessOnroad", PERSISTENT},
     {"ScreenManagement", PERSISTENT},

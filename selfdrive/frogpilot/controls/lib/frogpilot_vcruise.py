@@ -10,13 +10,14 @@ from openpilot.selfdrive.controls.lib.drive_helpers import V_CRUISE_UNSET
 from openpilot.selfdrive.frogpilot.controls.lib.map_turn_speed_controller import MapTurnSpeedController
 from openpilot.selfdrive.frogpilot.controls.lib.speed_limit_controller import SpeedLimitController
 from openpilot.selfdrive.frogpilot.frogpilot_variables import CRUISING_SPEED, PLANNER_TIME, params_memory
+from openpilot.common.params import Params
 
 TARGET_LAT_A = 2.0
 
 class FrogPilotVCruise:
   def __init__(self, FrogPilotPlanner):
     self.frogpilot_planner = FrogPilotPlanner
-
+    self.params = Params()
     self.mtsc = MapTurnSpeedController()
     self.slc = SpeedLimitController()
 
@@ -70,6 +71,8 @@ class FrogPilotVCruise:
         mtsc_active = True
         decelRate = (v_rel ** 2) / (2 * (d_rel-5)) * 4
         self.mtsc_target = v_ego - decelRate
+      elif self.params.get_bool("SetCoast"):
+        self.mtsc_target = max(v_ego - 2, CRUISING_SPEED)
       else:
         self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
         mtsc_active = False
