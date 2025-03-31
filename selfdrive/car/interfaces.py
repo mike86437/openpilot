@@ -20,7 +20,7 @@ from openpilot.selfdrive.car.values import PLATFORMS
 from openpilot.selfdrive.controls.lib.drive_helpers import CRUISE_LONG_PRESS, V_CRUISE_MAX, get_friction
 from openpilot.selfdrive.controls.lib.events import Events
 from openpilot.selfdrive.controls.lib.vehicle_model import VehicleModel
-
+from openpilot.common.params import Params
 from openpilot.selfdrive.frogpilot.frogpilot_variables import get_frogpilot_toggles, params, params_memory
 
 ButtonType = car.CarState.ButtonEvent.Type
@@ -247,6 +247,7 @@ class CarInterfaceBase(ABC):
     self.traffic_mode_changed = False
 
     self.gap_counter = 0
+    self.params = Params()
     self.targetCoast = False
 
     self.is_gm = self.CP.carName == "gm"
