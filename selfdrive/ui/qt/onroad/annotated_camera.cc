@@ -1140,7 +1140,7 @@ void AnnotatedCameraWidget::paintFrogPilotWidgets(QPainter &painter) {
 }
 
 void AnnotatedCameraWidget::drawCEMStatus(QPainter &p) {
-  if (dmIconPosition == QPoint(0, 0)) {
+  if (dmIconPosition == QPoint(0, 0) && false) {
     return;
   }
 
