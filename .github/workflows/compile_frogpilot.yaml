@@ -172,9 +172,7 @@ jobs:
           rm -f Jenkinsfile
 
           rm -f panda/board/obj/.placeholder
-          rm -f panda/board/obj/bootstub.panda.bin
           rm -f panda/board/obj/bootstub.panda.elf
-          rm -f panda/board/obj/bootstub.panda_h7.bin
           rm -f panda/board/obj/bootstub.panda_h7.elf
           rm -f panda/board/obj/panda.bin
           rm -f panda/board/obj/panda.elf

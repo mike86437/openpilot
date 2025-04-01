@@ -17,7 +17,7 @@ from openpilot.common.numpy_fast import clip
 from openpilot.common.realtime import DT_CTRL
 from openpilot.selfdrive.car import apply_hysteresis, gen_empty_fingerprint, scale_rot_inertia, scale_tire_stiffness, STD_CARGO_KG
 from openpilot.selfdrive.car.values import PLATFORMS
-from openpilot.selfdrive.controls.lib.drive_helpers import CRUISE_LONG_PRESS, V_CRUISE_MAX, get_friction
+from openpilot.selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX, get_friction
 from openpilot.selfdrive.controls.lib.events import Events
 from openpilot.selfdrive.controls.lib.vehicle_model import VehicleModel
 
@@ -241,14 +241,7 @@ class CarInterfaceBase(ABC):
     self.belowSteerSpeed_shown = False
     self.disable_belowSteerSpeed = False
     self.disable_resumeRequired = False
-    self.prev_distance_button = False
     self.resumeRequired_shown = False
-    self.traffic_mode_active = False
-    self.traffic_mode_changed = False
-
-    self.gap_counter = 0
-
-    self.is_gm = self.CP.carName == "gm"
 
   def get_ff_nn(self, x):
     return self.lat_torque_nn_model.evaluate(x)
@@ -418,10 +411,9 @@ class CarInterfaceBase(ABC):
 
     # Add any additional frogpilotCarStates
     fp_ret.alwaysOnLateralDisabled = self.always_on_lateral_disabled
-    fp_ret.distanceLongPressed = self.frogpilot_distance_functions(frogpilot_toggles)
+    fp_ret.distancePressed = bool(self.CS.distance_button or params_memory.get_bool("OnroadDistanceButtonPressed"))
     fp_ret.ecoGear |= ret.gearShifter == GearShifter.eco
     fp_ret.sportGear |= ret.gearShifter == GearShifter.sport
-    fp_ret.trafficModeActive = self.traffic_mode_active
 
     # copy back for next iteration
     if self.CS is not None:
@@ -510,31 +502,6 @@ class CarInterfaceBase(ABC):
         events.add(EventName.pcmDisable)
 
     return events
-
-  def frogpilot_distance_functions(self, frogpilot_toggles):
-    distance_button = self.CS.distance_button or params_memory.get_bool("OnroadDistanceButtonPressed")
-
-    if distance_button:
-      self.gap_counter += 1
-    elif not self.prev_distance_button:
-      self.gap_counter = 0
-
-    if self.gap_counter == CRUISE_LONG_PRESS * (1.5 if self.is_gm else 1) and frogpilot_toggles.experimental_mode_via_distance or self.traffic_mode_changed:
-      if frogpilot_toggles.conditional_experimental_mode:
-        conditional_status = params_memory.get_int("CEStatus")
-        override_value = 0 if conditional_status in {1, 2, 3, 4, 5, 6} else 1 if conditional_status >= 7 else 2
-        params_memory.put_int("CEStatus", override_value)
-      else:
-        experimental_mode = params.get_bool("ExperimentalMode")
-        params.put_bool("ExperimentalMode", not experimental_mode)
-      self.traffic_mode_changed = False
-
-    if self.gap_counter == CRUISE_LONG_PRESS * 5:
-      self.traffic_mode_active = not self.traffic_mode_active
-      self.traffic_mode_changed = frogpilot_toggles.experimental_mode_via_distance
-
-    self.prev_distance_button = distance_button
-    return self.gap_counter >= CRUISE_LONG_PRESS
 
 class RadarInterfaceBase(ABC):
   def __init__(self, CP):

@@ -433,10 +433,6 @@
         <translation type="gpt-4o-generated">SİL</translation>
     </message>
     <message>
-        <source>Are you sure you want to permanently delete all of your driving footage and data?</source>
-        <translation type="gpt-4o-generated">Tüm sürüş görüntülerinizi ve verilerinizi kalıcı olarak silmek istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
         <source>Delete</source>
         <translation type="gpt-4o-generated">Sil</translation>
     </message>
@@ -561,10 +557,6 @@
         <translation type="gpt-4o-generated">Bu anahtar yedeklemesini geri yüklemek istediğinizden emin misiniz?</translation>
     </message>
     <message>
-        <source>Permanently deletes all stored driving footage and data from your device. Ideal for maintaining privacy or freeing up space.</source>
-        <translation type="gpt-4o-generated">Tüm kaydedilmiş sürüş görüntülerini ve verilerini cihazınızdan kalıcı olarak siler. Gizliliği korumak veya alan açmak için idealdir.</translation>
-    </message>
-    <message>
         <source>DELETE ALL</source>
         <translation type="gpt-4o-generated">HEPSİNİ SİL</translation>
     </message>
@@ -601,20 +593,48 @@
         <translation type="gpt-4o-generated">Tüm geçiş yedeklerini silmek istediğinizden emin misiniz?</translation>
     </message>
     <message>
-        <source>Do you want to compress this backup? This will take an extra few minutes, but the final result will be significantly smaller and will run in the background.</source>
-        <translation type="gpt-4o-generated">Bu yedeklemeyi sıkıştırmak istiyor musunuz? Bu işlem birkaç dakika daha sürecek, ancak nihai sonuç önemli ölçüde daha küçük olacak ve arka planda çalışacaktır.</translation>
-    </message>
-    <message>
         <source>Delete Error Logs</source>
         <translation type="gpt-4o-generated">Hata Kayıtlarını Sil</translation>
     </message>
     <message>
-        <source>Permanently deletes all stored error logs from your device. Ideal for freeing up space.</source>
-        <translation type="gpt-4o-generated">Cihazınızdaki tüm kayıtlı hata günlüklerini kalıcı olarak siler. Alan açmak için idealdir.</translation>
+        <source>Deletes all stored driving footage and data from your device. Ideal for maintaining privacy or for simply freeing up space.</source>
+        <translation type="gpt-4o-generated">Cihazınızdaki tüm kayıtlı sürüş görüntülerini ve verileri siler. Gizliliği korumak veya sadece yer açmak için idealdir.</translation>
     </message>
     <message>
-        <source>Are you sure you want to permanently delete all of the error logs?</source>
-        <translation type="gpt-4o-generated">Tüm hata günlüklerini kalıcı olarak silmek istediğinizden emin misiniz?</translation>
+        <source>Are you sure you want to delete all of your driving footage and data?</source>
+        <translation type="gpt-4o-generated">Tüm sürüş görüntülerinizi ve verilerinizi silmek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Deletes all stored error logs from your device. Ideal for freeing up space.</source>
+        <translation type="gpt-4o-generated">Cihazınızdaki tüm kayıtlı hata günlüklerini siler. Alan boşaltmak için idealdir.</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete all of the error logs?</source>
+        <translation type="gpt-4o-generated">Tüm hata kayıtlarını silmek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Do you want to compress this backup? This will take a few minutes, but the final result will be smaller and run in the background.</source>
+        <translation type="gpt-4o-generated">Bu yedeği sıkıştırmak istiyor musunuz? Bu işlem birkaç dakika sürecek, ancak sonuç daha küçük olacak ve arka planda çalışacaktır.</translation>
+    </message>
+    <message>
+        <source>Name your toggle backup</source>
+        <translation type="gpt-4o-generated">Yedekleme geçişinizi adlandırın</translation>
+    </message>
+    <message>
+        <source>A toggle backup with this name already exists. Please choose a different name.</source>
+        <translation type="gpt-4o-generated">Bu adla zaten bir yedekleme mevcut. Lütfen farklı bir ad seçin.</translation>
+    </message>
+    <message>
+        <source>Select a toggle backup to delete</source>
+        <translation type="gpt-4o-generated">Silinecek yedeklemeyi seçin</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete this toggle backup?</source>
+        <translation type="gpt-4o-generated">Bu geçiş yedeklemesini silmek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Select a toggle restore point</source>
+        <translation type="gpt-4o-generated">Bir geri yükleme noktası seçin</translation>
     </message>
 </context>
 <context>
@@ -622,10 +642,6 @@
     <message>
         <source>Device Settings</source>
         <translation type="gpt-4o-generated">Cihaz Ayarları</translation>
-    </message>
-    <message>
-        <source>Device behavior settings.</source>
-        <translation type="gpt-4o-generated">Cihaz davranış ayarları.</translation>
     </message>
     <message>
         <source>Device Shutdown Timer</source>
@@ -640,16 +656,8 @@
         <translation type="gpt-4o-generated">Sıcaklık Güvenlik Limitini Artır</translation>
     </message>
     <message>
-        <source>Turn Off Data Uploads</source>
-        <translation type="gpt-4o-generated">Veri Yüklemelerini Kapat</translation>
-    </message>
-    <message>
         <source>Screen Settings</source>
         <translation type="gpt-4o-generated">Ekran Ayarları</translation>
-    </message>
-    <message>
-        <source>Screen behavior settings.</source>
-        <translation type="gpt-4o-generated">Ekran davranışı ayarları.</translation>
     </message>
     <message>
         <source>Screen Brightness (Offroad)</source>
@@ -700,14 +708,6 @@
         <translation type="gpt-4o-generated">saniye</translation>
     </message>
     <message>
-        <source>WARNING: This can cause premature wear or damage by running the device over comma's recommended temperature limits!</source>
-        <translation type="gpt-4o-generated">UYARI: Bu, cihazı comma'nın önerilen sıcaklık limitlerinin üzerinde çalıştırarak erken aşınmaya veya hasara neden olabilir!</translation>
-    </message>
-    <message>
-        <source>WARNING: This will prevent your drives from appearing on comma connect which may impact debugging and support!</source>
-        <translation type="gpt-4o-generated">UYARI: Bu, sürüşlerinizin comma connect'te görünmesini engelleyebilir ve hata ayıklama ve destek işlemlerini etkileyebilir!</translation>
-    </message>
-    <message>
         <source>Screen Off</source>
         <translation type="gpt-4o-generated">Ekran Kapalı</translation>
     </message>
@@ -716,36 +716,12 @@
         <translation type="gpt-4o-generated">Batarya Kapatma Eşiği</translation>
     </message>
     <message>
-        <source>The battery level threshold used for automatically shutting down the device to protect the car's battery from excessive drain and potential damage.</source>
-        <translation type="gpt-4o-generated">Cihazı otomatik olarak kapatmak ve aracın aküsünü aşırı boşalmadan ve olası hasardan korumak için kullanılan pil seviyesi eşiği.</translation>
-    </message>
-    <message>
         <source>How long the device stays on after you go offroad.</source>
         <translation type="gpt-4o-generated">Cihazın yoldan çıktıktan sonra ne kadar süre açık kalacağını belirtir.</translation>
     </message>
     <message>
-        <source>Turn Off Data Logging</source>
-        <translation type="gpt-4o-generated">Veri Kaydını Kapat</translation>
-    </message>
-    <message>
         <source>WARNING: This will prevent your drives from being recorded and all data will be unobtainable!</source>
         <translation type="gpt-4o-generated">UYARI: Bu, sürüşlerinizin kaydedilmesini engelleyecek ve tüm veriler elde edilemez olacaktır!</translation>
-    </message>
-    <message>
-        <source>The screen brightness while you're not driving.</source>
-        <translation type="gpt-4o-generated">Araba kullanmıyorken ekran parlaklığı.</translation>
-    </message>
-    <message>
-        <source>The screen brightness while you're driving.</source>
-        <translation type="gpt-4o-generated">Sürüş sırasında ekran parlaklığı.</translation>
-    </message>
-    <message>
-        <source>How long it takes for the screen to turn off when you're not driving.</source>
-        <translation type="gpt-4o-generated">Ekranın sürüş yapmadığınızda kapanması ne kadar sürer.</translation>
-    </message>
-    <message>
-        <source>How long it takes for the screen to turn off while you're driving.</source>
-        <translation type="gpt-4o-generated">Ekranın sürüş sırasında kapanması ne kadar sürer.</translation>
     </message>
     <message>
         <source>Only Disable While Onroad</source>
@@ -756,20 +732,8 @@
         <translation type="gpt-4o-generated">Cihazın internet bağlantısı olmadan süresiz çalışmasına izin ver.</translation>
     </message>
     <message>
-        <source>Allow the device to run at higher temperatures than comma recommends.</source>
-        <translation type="gpt-4o-generated">Cihazın, comma'nın önerdiği sıcaklıklardan daha yüksek sıcaklıklarda çalışmasına izin verin.</translation>
-    </message>
-    <message>
         <source>Disable all data logging to improve privacy.</source>
         <translation type="gpt-4o-generated">Gizliliği artırmak için tüm veri kaydını devre dışı bırakın.</translation>
-    </message>
-    <message>
-        <source>Prevent the device from sending any data to comma's servers.</source>
-        <translation type="gpt-4o-generated">Cihazın comma sunucularına veri göndermesini engelle.</translation>
-    </message>
-    <message>
-        <source>Enable a button in the onroad UI to record the screen.</source>
-        <translation type="gpt-4o-generated">Yolda UI'de ekran kaydetme düğmesini etkinleştir.</translation>
     </message>
     <message>
         <source>Start Recording</source>
@@ -778,6 +742,62 @@
     <message>
         <source>Stop Recording</source>
         <translation type="gpt-4o-generated">Kaydı Durdur</translation>
+    </message>
+    <message>
+        <source>Settings that control device behavior.</source>
+        <translation type="gpt-4o-generated">Cihaz davranışını kontrol eden ayarlar.</translation>
+    </message>
+    <message>
+        <source>Automatically shut down the device when the vehicle's battery voltage reaches the set threshold, preventing excessive drain and protecting the battery.</source>
+        <translation type="gpt-4o-generated">Araç akü voltajı belirlenen eşiğe ulaştığında cihazı otomatik olarak kapat, aşırı deşarjı önle ve aküyü koru.</translation>
+    </message>
+    <message>
+        <source>Disable Data Logging</source>
+        <translation type="gpt-4o-generated">Veri Kaydını Devre Dışı Bırak</translation>
+    </message>
+    <message>
+        <source>Disable Data Uploads</source>
+        <translation type="gpt-4o-generated">Veri Yüklemelerini Devre Dışı Bırak</translation>
+    </message>
+    <message>
+        <source>WARNING: This will prevent your drives from appearing on &lt;b&gt;comma connect&lt;/b&gt;, which may impact debugging and support!</source>
+        <translation type="gpt-4o-generated">UYARI: Bu, sürüşlerinizin &lt;b&gt;comma connect&lt;/b&gt; üzerinde görünmesini engelleyecek ve bu durum hata ayıklama ve destek üzerinde etkili olabilir!</translation>
+    </message>
+    <message>
+        <source>Prevent the device from sending any data to &lt;b&gt;comma&lt;/b&gt;'s servers.</source>
+        <translation type="gpt-4o-generated">Cihazın &lt;b&gt;comma&lt;/b&gt;'nın sunucularına herhangi bir veri göndermesini engelle.</translation>
+    </message>
+    <message>
+        <source>WARNING: This can damage your device by exceeding safe temperature limits!</source>
+        <translation type="gpt-4o-generated">UYARI: Bu, güvenli sıcaklık sınırlarını aşarak cihazınıza zarar verebilir!</translation>
+    </message>
+    <message>
+        <source>Allow the device to run hotter than &lt;b&gt;comma&lt;/b&gt;'s recommended limit.</source>
+        <translation type="gpt-4o-generated">Cihazın &lt;b&gt;comma&lt;/b&gt;'nın önerilen sınırından daha sıcak çalışmasına izin ver.</translation>
+    </message>
+    <message>
+        <source>Settings that control screen behavior.</source>
+        <translation type="gpt-4o-generated">Ekran davranışını kontrol eden ayarlar.</translation>
+    </message>
+    <message>
+        <source>The screen brightness when not driving.</source>
+        <translation type="gpt-4o-generated">Ekran parlaklığı sürüş yapılmadığında.</translation>
+    </message>
+    <message>
+        <source>The screen brightness while driving.</source>
+        <translation type="gpt-4o-generated">Sürüş sırasında ekran parlaklığı.</translation>
+    </message>
+    <message>
+        <source>Enable a button in the driving screen to record the screen.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranında ekranı kaydetmek için bir düğme etkinleştir.</translation>
+    </message>
+    <message>
+        <source>How long it takes for the screen to turn off when not driving.</source>
+        <translation type="gpt-4o-generated">Araba kullanmadığınızda ekranın kapanması ne kadar sürer.</translation>
+    </message>
+    <message>
+        <source>How long it takes for the screen to turn off while driving.</source>
+        <translation type="gpt-4o-generated">Ekranın sürüş sırasında kapanması için geçen süre.</translation>
     </message>
 </context>
 <context>
@@ -805,10 +825,6 @@
     <message>
         <source>Smooth Curve Handling</source>
         <translation type="gpt-4o-generated">Pürüzsüz Viraj Kontrolü</translation>
-    </message>
-    <message>
-        <source>Quality of Life Improvements</source>
-        <translation type="gpt-4o-generated">Yaşam Kalitesi İyileştirmeleri</translation>
     </message>
     <message>
         <source>Pause Steering Below</source>
@@ -875,10 +891,6 @@
         <translation type="gpt-4o-generated">Otomatik Şerit Değişiklikleri</translation>
     </message>
     <message>
-        <source>Only One Lane Change Per Signal</source>
-        <translation type="gpt-4o-generated">Her Sinyalde Sadece Bir Şerit Değişikliği</translation>
-    </message>
-    <message>
         <source>Force Turn Desires Below Lane Change Speed</source>
         <translation type="gpt-4o-generated">Şerit Değiştirme Hızının Altına Zorla Dönüş İstekleri</translation>
     </message>
@@ -899,32 +911,8 @@
         <translation type="gpt-4o-generated">Desteklenen araçlar için comma'nın otomatik yanal ayarını zorla devre dışı bırak.</translation>
     </message>
     <message>
-        <source>openpilot's steering control stays active even when the brake or gas pedals are pressed.
-
-Deactivation only occurs with the "Cruise Control" button.</source>
-        <translation type="gpt-4o-generated">openpilot'un direksiyon kontrolü, fren veya gaz pedalına basıldığında bile aktif kalır.
-
-Sadece "Hız Sabitleyici" düğmesiyle devre dışı bırakılır.</translation>
-    </message>
-    <message>
-        <source>Control With LKAS Button</source>
-        <translation type="gpt-4o-generated">LKAS Düğmesi ile Kontrol Et</translation>
-    </message>
-    <message>
-        <source>Control the current state of "Always on Lateral" with the "LKAS" button.</source>
-        <translation type="gpt-4o-generated">"LKAS" düğmesi ile "Her Zaman Yan"ın mevcut durumunu kontrol edin.</translation>
-    </message>
-    <message>
         <source>Enable With Cruise Control</source>
         <translation type="gpt-4o-generated">Hız Sabitleyici ile Etkinleştir</translation>
-    </message>
-    <message>
-        <source>Customize how openpilot handles lane changes.</source>
-        <translation type="gpt-4o-generated">openpilot'ın şerit değişikliklerini nasıl yöneteceğini özelleştirin.</translation>
-    </message>
-    <message>
-        <source>openpilot won't initiate a lane change into detected lanes narrower than this width.</source>
-        <translation type="gpt-4o-generated">openpilot, algılanan şeritlerin bu genişlikten daha dar olması durumunda şerit değişimini başlatmayacaktır.</translation>
     </message>
     <message>
         <source>Minimum Lane Change Speed</source>
@@ -943,30 +931,6 @@ Sadece "Hız Sabitleyici" düğmesiyle devre dışı bırakılır.</translation>
         <translation type="gpt-4o-generated">Minimum şerit değiştirme hızının altındaki dönüş isteklerini zorlayarak dönüş doğruluğunu artırın.</translation>
     </message>
     <message>
-        <source>Miscellaneous lateral control features to improve your overall openpilot experience.</source>
-        <translation type="gpt-4o-generated">Genel openpilot deneyiminizi geliştirmek için çeşitli lateral kontrol özellikleri.</translation>
-    </message>
-    <message>
-        <source>Pause steering control when driving below the configured speed.</source>
-        <translation type="gpt-4o-generated">Belirlenen hızın altında sürüş yaparken direksiyon kontrolünü duraklat.</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset your "Friction" values?</source>
-        <translation type="gpt-4o-generated">"Friction" değerlerinizi tamamen sıfırlamak istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset your "Kp Factor" values?</source>
-        <translation type="gpt-4o-generated">"Kp Faktörü" değerlerinizi tamamen sıfırlamak istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset your "Lateral Accel" values?</source>
-        <translation type="gpt-4o-generated">"Lateral Accel" değerlerinizi tamamen sıfırlamak istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset your "Steer Ratio" values?</source>
-        <translation type="gpt-4o-generated">"Direksiyon Oranı" değerlerinizi tamamen sıfırlamak istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
         <source>Off</source>
         <translation type="gpt-4o-generated">Kapalı</translation>
     </message>
@@ -979,52 +943,120 @@ Sadece "Hız Sabitleyici" düğmesiyle devre dışı bırakılır.</translation>
         <translation type="gpt-4o-generated">Şerit Değişiklikleri</translation>
     </message>
     <message>
-        <source>Lane Detection Width</source>
-        <translation type="gpt-4o-generated">Şerit Algılama Genişliği</translation>
-    </message>
-    <message>
         <source>Adjust steering resistance. Higher values feel more stable but heavier; lower values feel lighter but more sensitive.</source>
         <translation type="gpt-4o-generated">Direksiyon direncini ayarla. Daha yüksek değerler daha stabil ama daha ağır hissedilir; daha düşük değerler ise daha hafif ama daha duyarlı hissedilir.</translation>
-    </message>
-    <message>
-        <source>Adjust how aggressively openpilot corrects steering. Higher values respond faster but may feel jerky; lower values respond more smoothly but slower.</source>
-        <translation type="gpt-4o-generated">openpilot'ın direksiyon düzeltme agresifliğini ayarlayın. Daha yüksek değerler daha hızlı tepki verir ancak sarsıntılı hissedilebilir; daha düşük değerler daha yumuşak ancak daha yavaş tepki verir.</translation>
-    </message>
-    <message>
-        <source>Control how quickly openpilot can steer laterally. Higher values allow faster maneuvers but may feel unstable; lower values provide smoother, slower steering.</source>
-        <translation type="gpt-4o-generated">openpilot'un yanlamasına ne kadar hızlı direksiyon kontrolü yapabileceğini ayarlayın. Daha yüksek değerler daha hızlı manevralara izin verir ancak kararsız hissettirebilir; daha düşük değerler daha yumuşak ve daha yavaş direksiyon sağlar.</translation>
-    </message>
-    <message>
-        <source>Adjust how much the wheel turns to steer. Higher values feel like a truck—stable at speed but sluggish in corners; lower values feel like a go-kart—quick but twitchy.</source>
-        <translation type="gpt-4o-generated">Direksiyonun ne kadar döneceğini ayarlayın. Yüksek değerler, hızda stabil ama virajlarda yavaş bir kamyon gibi hissettirir; düşük değerler ise hızlı ama hassas bir go-kart gibi hissettirir.</translation>
-    </message>
-    <message>
-        <source>Allow "Always on Lateral" to be active whenever "Cruise Control" is active, bypassing the need to enable openpilot first.</source>
-        <translation type="gpt-4o-generated">"Her Zaman Etkin Yanlamayı", "Hız Sabitleyici" etkin olduğunda açık olmasına izin ver, önce openpilot'u etkinleştirme gereğini atla.</translation>
-    </message>
-    <message>
-        <source>Temporarily disable "Always on Lateral" below the configured speed when the brake is pressed.</source>
-        <translation type="gpt-4o-generated">Fren basıldığında yapılandırılmış hızın altında "Her Zaman Yanlamasına" özelliğini geçici olarak devre dışı bırak.</translation>
-    </message>
-    <message>
-        <source>Automatically initiate lane changes when the turn signal is active — no steering input required!</source>
-        <translation type="gpt-4o-generated">Dönüş sinyali etkin olduğunda şerit değişikliklerini otomatik olarak başlatın — direksiyon girişi gerekmez!</translation>
-    </message>
-    <message>
-        <source>Delay automatic lane changes by the configured time.</source>
-        <translation type="gpt-4o-generated">Otomatik şerit değişikliklerini yapılandırılmış süre kadar geciktirin.</translation>
     </message>
     <message>
         <source>Limit lane changes to one per turn signal activation.</source>
         <translation type="gpt-4o-generated">Sinyal aktivasyonu başına bir şerit değişikliği ile sınırlayın.</translation>
     </message>
     <message>
-        <source>Use Twilsonco's "Neural Network FeedForward" for smoother steering, trained on past driving data from your car model.</source>
-        <translation type="gpt-4o-generated">Twilsonco'nun "Nöral Ağ FeedForward"ını kullanarak direksiyonu daha yumuşak hale getirin, araç modelinizin geçmiş sürüş verileriyle eğitildi.</translation>
+        <source>How aggressively openpilot corrects steering. Higher values respond faster but may feel jerky; lower values are smoother but slower.</source>
+        <translation type="gpt-4o-generated">openpilot'ın direksiyonu ne kadar agresif düzelttiği. Daha yüksek değerler daha hızlı tepki verir ancak sarsıntılı olabilir; daha düşük değerler daha yumuşak ama daha yavaştır.</translation>
     </message>
     <message>
-        <source>Smoothen steering control during curves using Twilsonco's torque adjustments.</source>
-        <translation type="gpt-4o-generated">Twilsonco'nun tork ayarlamalarını kullanarak virajlar sırasında direksiyon kontrolünü yumuşatın.</translation>
+        <source>How quickly openpilot makes lateral adjustments. Higher values allow sharper turns; lower values provide smoother steering.</source>
+        <translation type="gpt-4o-generated">openpilot'un yanal ayarlamaları ne kadar hızlı yaptığı. Daha yüksek değerler daha keskin dönüşlere izin verir; daha düşük değerler daha yumuşak direksiyon sağlar.</translation>
+    </message>
+    <message>
+        <source>How much the steering wheel turns in response to commands. Higher values feel more stable; lower values feel quicker.</source>
+        <translation type="gpt-4o-generated">Direksiyonun komutlara yanıt olarak ne kadar döndüğünü gösterir. Daha yüksek değerler daha stabil hissettirir; daha düşük değerler daha hızlı hissettirir.</translation>
+    </message>
+    <message>
+        <source>openpilot's steering control stays active even when the brake or gas pedals are pressed.&lt;br&gt;&lt;br&gt;Deactivation only occurs with the &lt;b&gt;Cruise Control&lt;/b&gt; button.</source>
+        <translation type="gpt-4o-generated">openpilot'un direksiyon kontrolü, fren veya gaz pedalları basılıyken bile aktif kalır.&lt;br&gt;&lt;br&gt;Devre dışı bırakma yalnızca &lt;b&gt;Cruise Control&lt;/b&gt; düğmesi ile gerçekleşir.</translation>
+    </message>
+    <message>
+        <source>Allow &lt;b&gt;Always on Lateral&lt;/b&gt; to be active whenever &lt;b&gt;Cruise Control&lt;/b&gt; is active, bypassing the need to enable openpilot first.</source>
+        <translation type="gpt-4o-generated">openpilot'i önce etkinleştirmeye gerek kalmadan &lt;b&gt;Hız Sabitleyici&lt;/b&gt; etkin olduğunda &lt;b&gt;Her Zaman Yanal&lt;/b&gt;'ın aktif olmasına izin ver.</translation>
+    </message>
+    <message>
+        <source>Enable With LKAS Button</source>
+        <translation type="gpt-4o-generated">LKAS Butonuyla Etkinleştir</translation>
+    </message>
+    <message>
+        <source>Allow &lt;b&gt;Always on Lateral&lt;/b&gt; to be active whenever &lt;b&gt;LKAS&lt;/b&gt; is active, bypassing the need to enable openpilot first.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Her Zaman Açık Yan Kontrol&lt;/b&gt;'ün &lt;b&gt;LKAS&lt;/b&gt; aktif olduğunda etkin olmasını, openpilot'u önce etkinleştirme gereğini atlayarak sağla.</translation>
+    </message>
+    <message>
+        <source>Temporarily pause &lt;b&gt;Always on Lateral&lt;/b&gt; below the set speed when braking.</source>
+        <translation type="gpt-4o-generated">Fren yapıldığında ayarlanan hızın altında &lt;b&gt;Her Zaman Yanal Kontrol&lt;/b&gt; geçici olarak durdurulsun.</translation>
+    </message>
+    <message>
+        <source>Customize how openpilot performs lane changes.</source>
+        <translation type="gpt-4o-generated">openpilot'ın şerit değiştirme performansını özelleştirin.</translation>
+    </message>
+    <message>
+        <source>Change lanes automatically when the turn signal is on. No steering input needed!</source>
+        <translation type="gpt-4o-generated">Dönüş sinyali açıkken otomatik olarak şerit değiştirin. Direksiyon girdisi gerekmez!</translation>
+    </message>
+    <message>
+        <source>Delay automatic lane changes by the set amount of time.</source>
+        <translation type="gpt-4o-generated">Otomatik şerit değişikliklerini ayarlanan süre kadar geciktirin.</translation>
+    </message>
+    <message>
+        <source>Minimum Lane Width</source>
+        <translation type="gpt-4o-generated">Minimum Şerit Genişliği</translation>
+    </message>
+    <message>
+        <source>openpilot won't initiate a lane change into a lane narrower than this width.</source>
+        <translation type="gpt-4o-generated">openpilot, bu genişlikten daha dar bir şeride şerit değişikliği başlatmaz.</translation>
+    </message>
+    <message>
+        <source>One Lane Change Per Signal</source>
+        <translation type="gpt-4o-generated">Her Sinyalde Bir Şerit Değişimi</translation>
+    </message>
+    <message>
+        <source>Use &lt;b&gt;Twilsonco’s&lt;/b&gt; &lt;b&gt;Neural Network FeedForward&lt;/b&gt; model for smoother, model-based steering trained on your vehicle's data.</source>
+        <translation type="gpt-4o-generated">Aracınızın verileriyle eğitilmiş, daha yumuşak ve modele dayalı direksiyon için &lt;b&gt;Twilsonco'nun&lt;/b&gt; &lt;b&gt;Neural Network FeedForward&lt;/b&gt; modelini kullanın.</translation>
+    </message>
+    <message>
+        <source>Use &lt;b&gt;Twilsonco’s&lt;/b&gt; torque-based adjustments to smooth out steering during curves.</source>
+        <translation type="gpt-4o-generated">Virajlarda direksiyonu yumuşatmak için &lt;b&gt;Twilsonco'nun&lt;/b&gt; torka dayalı ayarlarını kullanın.</translation>
+    </message>
+    <message>
+        <source>Quality of Life</source>
+        <translation type="gpt-4o-generated">Yaşam Kalitesi</translation>
+    </message>
+    <message>
+        <source>Miscellaneous features to improve the steering experience.</source>
+        <translation type="gpt-4o-generated">Direksiyon deneyimini iyileştirmek için çeşitli özellikler.</translation>
+    </message>
+    <message>
+        <source>Temporarily pause steering control below the set speed.</source>
+        <translation type="gpt-4o-generated">Ayarlanan hızın altında direksiyon kontrolünü geçici olarak duraklat.</translation>
+    </message>
+    <message>
+        <source> second</source>
+        <translation type="gpt-4o-generated">saniye</translation>
+    </message>
+    <message>
+        <source> seconds</source>
+        <translation type="gpt-4o-generated">saniye</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your &lt;b&gt;Friction&lt;/b&gt; values?</source>
+        <translation type="gpt-4o-generated">Friction değerlerinizi tamamen sıfırlamak istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your &lt;b&gt;Kp Factor&lt;/b&gt; values?</source>
+        <translation type="gpt-4o-generated">&lt;Kp Faktörü&gt; değerlerinizi tamamen sıfırlamak istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your &lt;b&gt;Lateral Accel&lt;/b&gt; values?</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Yanal İvme&lt;/b&gt; değerlerinizi tamamen sıfırlamak istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your &lt;b&gt;Steer Ratio&lt;/b&gt; values?</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Direksiyon Oranı&lt;/b&gt; değerlerinizi tamamen sıfırlamak istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source> foot</source>
+        <translation type="gpt-4o-generated">ayak</translation>
+    </message>
+    <message>
+        <source> meter</source>
+        <translation type="gpt-4o-generated">metre</translation>
     </message>
 </context>
 <context>
@@ -1062,32 +1094,12 @@ Sadece "Hız Sabitleyici" düğmesiyle devre dışı bırakılır.</translation>
         <translation type="gpt-4o-generated">Viraj Hız Kontrolü</translation>
     </message>
     <message>
-        <source>Automatically slow down for curves detected ahead or through the downloaded maps.</source>
-        <translation type="gpt-4o-generated">Virajlar için otomatik olarak yavaşlayın, ileride algılanan veya indirilen haritalar aracılığıyla.</translation>
-    </message>
-    <message>
         <source>Curve Detection Method</source>
         <translation type="gpt-4o-generated">Eğri Algılama Yöntemi</translation>
     </message>
     <message>
         <source>Curve Detection Failsafe</source>
         <translation type="gpt-4o-generated">Kavis Algılama Emniyeti</translation>
-    </message>
-    <message>
-        <source>Experimental Mode Activation</source>
-        <translation type="gpt-4o-generated">Deneysel Mod Aktivasyonu</translation>
-    </message>
-    <message>
-        <source>Click the LKAS Button</source>
-        <translation type="gpt-4o-generated">LKAS Düğmesine Tıklayın</translation>
-    </message>
-    <message>
-        <source>Double-Tap the Screen</source>
-        <translation type="gpt-4o-generated">Ekrana Çift Dokun</translation>
-    </message>
-    <message>
-        <source>Long Press the Distance Button</source>
-        <translation type="gpt-4o-generated">Mesafe Düğmesine Uzun Basın</translation>
     </message>
     <message>
         <source>Longitudinal Tuning</source>
@@ -1114,16 +1126,8 @@ Sadece "Hız Sabitleyici" düğmesiyle devre dışı bırakılır.</translation>
         <translation type="gpt-4o-generated">Durmuş Mesafeyi Artır</translation>
     </message>
     <message>
-        <source>Increases the distance to stop behind vehicles.</source>
-        <translation type="gpt-4o-generated">Araçların arkasında durmak için mesafeyi artırır.</translation>
-    </message>
-    <message>
         <source>Quality of Life Improvements</source>
         <translation type="gpt-4o-generated">Yaşam Kalitesi İyileştirmeleri</translation>
-    </message>
-    <message>
-        <source>Miscellaneous longitudinal focused features to improve your overall openpilot experience.</source>
-        <translation type="gpt-4o-generated">Genel openpilot deneyiminizi geliştirmek için çeşitli boylamasına odaklanmış özellikler.</translation>
     </message>
     <message>
         <source>Map Accel/Decel to Gears</source>
@@ -1142,52 +1146,8 @@ Sadece "Hız Sabitleyici" düğmesiyle devre dışı bırakılır.</translation>
         <translation type="gpt-4o-generated">Yeni Hız Sınırlarını Onayla</translation>
     </message>
     <message>
-        <source>Fallback Method</source>
-        <translation type="gpt-4o-generated">Yedek Yöntem</translation>
-    </message>
-    <message>
-        <source>Override Method</source>
-        <translation type="gpt-4o-generated">Aşma Yöntemi</translation>
-    </message>
-    <message>
         <source>Speed Limit Offsets</source>
         <translation type="gpt-4o-generated">Hız Limiti Ofsetleri</translation>
-    </message>
-    <message>
-        <source>Speed Limit Offset (0-34 mph)</source>
-        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (0-34 mph)</translation>
-    </message>
-    <message>
-        <source>Speed Limit Offset (35-54 mph)</source>
-        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (35-54 mph)</translation>
-    </message>
-    <message>
-        <source>Speed Limit Offset (55-64 mph)</source>
-        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (88-103 km/sa)</translation>
-    </message>
-    <message>
-        <source>Speed Limit Offset (65-99 mph)</source>
-        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (65-99 mil/saat)</translation>
-    </message>
-    <message>
-        <source>Miscellaneous 'Speed Limit Controller' focused features to improve your overall openpilot experience.</source>
-        <translation type="gpt-4o-generated">Çeşitli 'Hız Sınırı Denetleyici' odaklı özellikler, genel openpilot deneyiminizi iyileştirmek için.</translation>
-    </message>
-    <message>
-        <source>Force MPH Readings from Dashboard</source>
-        <translation type="gpt-4o-generated">Gösterge Tablosundan MPH Okumalarını Zorla</translation>
-    </message>
-    <message>
-        <source>Prepare for Higher Speed Limits</source>
-        <translation type="gpt-4o-generated">Daha Yüksek Hız Limitlerine Hazırlanın</translation>
-    </message>
-    <message>
-        <source>Prepare for Lower Speed Limits</source>
-        <translation type="gpt-4o-generated">Daha Düşük Hız Sınırlarına Hazırlanın</translation>
-    </message>
-    <message>
-        <source>Set Speed to Current Limit</source>
-        <translation type="gpt-4o-generated">Hızı Mevcut Sınıra Ayarla</translation>
     </message>
     <message>
         <source>Show Speed Limit Offset</source>
@@ -1196,14 +1156,6 @@ Sadece "Hız Sabitleyici" düğmesiyle devre dışı bırakılır.</translation>
     <message>
         <source>mph</source>
         <translation type="gpt-4o-generated">mph</translation>
-    </message>
-    <message>
-        <source> With Lead</source>
-        <translation type="gpt-4o-generated">Öndeki Araçla</translation>
-    </message>
-    <message>
-        <source>Switches to 'Experimental Mode' when driving below the set speed with a lead vehicle.</source>
-        <translation type="gpt-4o-generated">Öndeki araç ile belirlenen hızın altında sürüş yaparken 'Deneysel Mod'una geçer.</translation>
     </message>
     <message>
         <source>With Lead</source>
@@ -1330,518 +1282,76 @@ Sadece "Hız Sabitleyici" düğmesiyle devre dışı bırakılır.</translation>
         <translation type="gpt-4o-generated">metreler</translation>
     </message>
     <message>
-        <source>Automatically switch to 'Experimental Mode' when specific conditions are met.</source>
-        <translation type="gpt-4o-generated">Belirli koşullar karşılandığında otomatik olarak 'Deneysel Mod'a geç.</translation>
-    </message>
-    <message>
-        <source>Triggers 'Experimental Mode' when driving below the set speed without a lead vehicle.</source>
-        <translation type="gpt-4o-generated">'Hassas Mod'u, belirlenen hızın altında ve önünde araç yokken etkinleştirir.</translation>
-    </message>
-    <message>
-        <source>Triggers 'Experimental Mode' when a curve is detected in the road ahead.</source>
-        <translation type="gpt-4o-generated">Yolda ileride bir viraj algılandığında 'Deneysel Mod'u tetikler.</translation>
-    </message>
-    <message>
-        <source>Triggers 'Experimental Mode' when a slower or stopped vehicle is detected ahead.</source>
-        <translation type="gpt-4o-generated">Önde yavaşlayan veya duran bir araç tespit edildiğinde 'Deneysel Modu' tetikler.</translation>
-    </message>
-    <message>
-        <source>Triggers 'Experimental Mode' based on navigation data, such as upcoming intersections or turns.</source>
-        <translation type="gpt-4o-generated">Yaklaşan kavşaklar veya dönüşler gibi navigasyon verilerine dayanarak 'Deneysel Mod'u tetikler.</translation>
-    </message>
-    <message>
-        <source>Triggers 'Experimental Mode' when openpilot wants to stop such as for a stop sign or red light.</source>
-        <translation type="gpt-4o-generated">Openpilot bir dur işareti veya kırmızı ışık gibi durmak istediğinde 'Deneysel Mod'u tetikler.</translation>
-    </message>
-    <message>
-        <source>Triggers 'Experimental Mode' when using turn signals below the set speed.</source>
-        <translation type="gpt-4o-generated">Dönüş sinyalleri set hızın altında kullanıldığında 'Deneysel Mod'u tetikler.</translation>
-    </message>
-    <message>
-        <source>Uses data from either the downloaded maps or the model to determine where curves are.</source>
-        <translation type="gpt-4o-generated">Virajların nerede olduğunu belirlemek için ya indirilen haritalardan ya da modelden alınan verileri kullanır.</translation>
-    </message>
-    <message>
-        <source>Triggers 'Curve Speed Control' only when a curve is detected with the model as well when using the 'Map Based' method.</source>
-        <translation type="gpt-4o-generated">'Harita Tabanlı' yöntemi kullanıldığında olduğu gibi model ile bir viraj tespit edildiğinde yalnızca 'Viraj Hız Kontrolü'nü tetikler.</translation>
-    </message>
-    <message>
         <source>Curve Detection Sensitivity</source>
         <translation type="gpt-4o-generated">Viraj Algılama Hassasiyeti</translation>
-    </message>
-    <message>
-        <source>Controls how sensitive openpilot is to detecting curves. Higher values trigger earlier responses at the risk of triggering too often, while lower values increase confidence at the risk of triggering too infrequently.</source>
-        <translation type="gpt-4o-generated">openpilot'ın eğrileri algılama hassasiyetini kontrol eder. Yüksek değerler, sık tetikleme riskiyle daha erken tepkiler verirken, düşük değerler, nadiren tetikleme riskiyle güveni artırır.</translation>
-    </message>
-    <message>
-        <source>Speed Aggressiveness</source>
-        <translation type="gpt-4o-generated">Hız Saldırganlığı</translation>
-    </message>
-    <message>
-        <source>Controls how aggressive openpilot takes turns. Higher values result in faster turns, while lower values result in slower turns.</source>
-        <translation type="gpt-4o-generated">openpilot'ın dönüşleri ne kadar agresif aldığına karar verir. Daha yüksek değerler daha hızlı dönüşlere, daha düşük değerler ise daha yavaş dönüşlere neden olur.</translation>
-    </message>
-    <message>
-        <source>Hide Desired Speed Widget From UI</source>
-        <translation type="gpt-4o-generated">UI'den İstenen Hız Widget'ını Gizle</translation>
-    </message>
-    <message>
-        <source>Hides the desired speed widget from the onroad UI.</source>
-        <translation type="gpt-4o-generated">Arayüzdeki istenen hız bileşenini gizler.</translation>
     </message>
     <message>
         <source>Customize Driving Personalities</source>
         <translation type="gpt-4o-generated">Sürüş Kişiliklerini Özelleştir</translation>
     </message>
     <message>
-        <source>Customize the personality profiles to suit your driving style.</source>
-        <translation type="gpt-4o-generated">Sürüş stilinize uygun kişilik profillerini özelleştirin.</translation>
-    </message>
-    <message>
         <source>Traffic Personality</source>
         <translation type="gpt-4o-generated">Trafik Kişiliği</translation>
-    </message>
-    <message>
-        <source>Customizes the 'Traffic' personality profile, tailored for navigating through traffic.</source>
-        <translation type="gpt-4o-generated">Trafik kişilik profilini özelleştirir, trafikte gezinmek için uyarlanmıştır.</translation>
     </message>
     <message>
         <source>Following Distance</source>
         <translation type="gpt-4o-generated">Takip Mesafesi</translation>
     </message>
     <message>
-        <source>Controls the minimum following distance in 'Traffic' mode. openpilot will automatically dynamically between this value and the 'Aggressive' profile distance based on your current speed.</source>
-        <translation type="gpt-4o-generated">'Trafik' modunda minimum takip mesafesini kontrol eder. openpilot, mevcut hızınıza bağlı olarak bu değer ile 'Agresif' profil mesafesi arasında otomatik olarak dinamik şekilde ayarlama yapacaktır.</translation>
-    </message>
-    <message>
         <source>Acceleration Sensitivity</source>
         <translation type="gpt-4o-generated">Hızlanma Hassasiyeti</translation>
-    </message>
-    <message>
-        <source>Controls how sensitive openpilot is to changes in acceleration in 'Traffic' mode. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">Openpilot'ın 'Trafik' modunda hızlanma değişikliklerine karşı ne kadar hassas olduğunu kontrol eder. Daha yüksek değerler, daha yumuşak ve kademeli hızlanma sağlar, daha düşük değerler ise daha hızlı, daha duyarlı değişikliklere olanak tanır, bu da ani hissedilebilir.</translation>
     </message>
     <message>
         <source>Deceleration Sensitivity</source>
         <translation type="gpt-4o-generated">Yavaşlama Hassasiyeti</translation>
     </message>
     <message>
-        <source>Controls how sensitive openpilot is to changes in deceleration in 'Traffic' mode. Higher values result in smoother, more gradual deceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">openpilot'un 'Trafik' modunda yavaşlama değişikliklerine ne kadar duyarlı olduğunu kontrol eder. Daha yüksek değerler, daha yumuşak ve kademeli yavaşlamalar ile sonuçlanırken, daha düşük değerler hızlı ve daha tepkisel değişikliklere izin verir, bu da ani hissedilebilir.</translation>
-    </message>
-    <message>
         <source>Safety Distance Sensitivity</source>
         <translation type="gpt-4o-generated">Güvenlik Mesafesi Hassasiyeti</translation>
-    </message>
-    <message>
-        <source>Adjusts how cautious openpilot is around other vehicles or obstacles in 'Traffic' mode. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.</source>
-        <translation type="gpt-4o-generated">'Trafik' modunda openpilot'ın diğer araçlar veya engeller etrafında ne kadar temkinli olacağını ayarlar. Daha yüksek değerler takip mesafelerini artırır ve güvenliği önceliklendirerek daha temkinli sürüşe yol açar, daha düşük değerler ise daha yakın takip imkanı sağlar ancak tepki süresini azaltabilir.</translation>
-    </message>
-    <message>
-        <source>Speed Increase Responsiveness</source>
-        <translation type="gpt-4o-generated">Hız Artırma Tepkisi</translation>
-    </message>
-    <message>
-        <source>Controls how quickly openpilot increases speed in 'Traffic' mode. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">openpilot'ın 'Trafik' modunda hızı ne kadar hızlı artıracağını kontrol eder. Daha yüksek değerler, hızlanma sırasında daha pürüzsüz ve kademeli hız değişiklikleri sağlar, daha düşük değerler ise daha hızlı, daha duyarlı değişikliklere izin verir, bu da ani gelebilir.</translation>
-    </message>
-    <message>
-        <source>Speed Decrease Responsiveness</source>
-        <translation type="gpt-4o-generated">Hız Azaltma Tepkisi</translation>
-    </message>
-    <message>
-        <source>Controls how quickly openpilot decreases speed in 'Traffic' mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
-        <translation type="gpt-4o-generated">openpilot'un 'Trafik' modunda hızı ne kadar hızlı düşürdüğünü kontrol eder. Yüksek değerler, yavaşlarken daha yumuşak ve kademeli hız değişiklikleri sağlar, düşük değerler ise daha hızlı ve duyarlı değişikliklere olanak tanır, bu da ani gelebilir.</translation>
     </message>
     <message>
         <source>Reset Settings</source>
         <translation type="gpt-4o-generated">Ayarları Sıfırla</translation>
     </message>
     <message>
-        <source>Restores the 'Traffic Mode' settings to their default values.</source>
-        <translation type="gpt-4o-generated">'Trafik Modu' ayarlarını varsayılan değerlerine geri yükler.</translation>
-    </message>
-    <message>
         <source>Aggressive Personality</source>
         <translation type="gpt-4o-generated">Agresif Kişilik</translation>
-    </message>
-    <message>
-        <source>Customize the 'Aggressive' personality profile, designed for a more assertive driving style.</source>
-        <translation type="gpt-4o-generated">'Aggressive' kişilik profilini özelleştirin, daha iddialı bir sürüş tarzı için tasarlanmıştır.</translation>
-    </message>
-    <message>
-        <source>Sets the following distance for 'Aggressive' mode. This determines roughly how many seconds you'll follow behind the car ahead.
-
-Default: 1.25 seconds.</source>
-        <translation type="gpt-4o-generated">'Aggressive' modu için aşağıdaki mesafeyi ayarlar. Bu, öndeki aracı yaklaşık kaç saniye geriden takip edeceğinizi belirler.
-
-Varsayılan: 1.25 saniye.</translation>
-    </message>
-    <message>
-        <source>Controls how sensitive openpilot is to changes in acceleration in 'Aggressive' mode. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.
-
-Default: 0.5.</source>
-        <translation type="gpt-4o-generated">"Aggressive" modunda openpilot'ın ivme değişimlerine ne kadar duyarlı olduğunu kontrol eder. Daha yüksek değerler, daha yumuşak ve kademeli bir ivme sağlar, daha düşük değerler ise daha hızlı, daha duyarlı değişikliklere izin verir ve bu değişiklikler ani hissedilebilir.
-
-Varsayılan: 0.5.</translation>
-    </message>
-    <message>
-        <source>Controls how sensitive openpilot is to changes in deceleration in 'Aggressive' mode. Higher values result in smoother, more gradual deceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.
-
-Default: 0.5.</source>
-        <translation type="gpt-4o-generated">openpilot'in 'Agresif' modunda yavaşlamadaki değişikliklere ne kadar duyarlı olduğunu kontrol eder. Daha yüksek değerler daha yumuşak, daha kademeli bir yavaşlama sağlarken, daha düşük değerler daha hızlı, daha duyarlı değişikliklere olanak tanır ve bu değişiklikler ani hissedilebilir.
-
-Varsayılan: 0.5.</translation>
-    </message>
-    <message>
-        <source>Adjusts how cautious openpilot is around other vehicles or obstacles in 'Aggressive' mode. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">openpilot'in diğer araçlar veya engeller etrafında 'Agresif' modda ne kadar temkinli olduğunu ayarlar. Daha yüksek değerler takip mesafelerini artırır ve güvenliği önceliklendirir, daha temkinli sürüşe yol açar, daha düşük değerler ise daha yakın takip etmeye izin verir ancak tepki süresini azaltabilir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Controls how quickly openpilot increases speed in 'Aggressive' mode. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.
-
-Default: 0.5.</source>
-        <translation type="gpt-4o-generated">'Aggressive' modunda openpilot'ın hızı ne kadar hızlı artırdığını kontrol eder. Daha yüksek değerler, hızlanırken daha yumuşak ve kademeli hız değişiklikleri sağlar, daha düşük değerler ise daha hızlı, daha duyarlı değişikliklere izin vererek ani hissedilebilir.
-
-Varsayılan: 0.5.</translation>
-    </message>
-    <message>
-        <source>Controls how quickly openpilot decreases speed in 'Aggressive' mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
-
-Default: 0.5.</source>
-        <translation type="gpt-4o-generated">'Aggressive' modunda openpilot'un hızını ne kadar hızlı düşürdüğünü kontrol eder. Daha yüksek değerler, yavaşlama sırasında daha yumuşak ve kademeli hız değişiklikleri sağlar; daha düşük değerler ise daha hızlı, daha duyarlı değişikliklere izin verir ve bu değişiklikler ani hissedilebilir.
-
-Varsayılan: 0.5.</translation>
-    </message>
-    <message>
-        <source>Restores the 'Aggressive' settings to their default values.</source>
-        <translation type="gpt-4o-generated">'Aggressive' ayarlarını varsayılan değerlerine geri yükler.</translation>
     </message>
     <message>
         <source>Standard Personality</source>
         <translation type="gpt-4o-generated">Standart Kişilik</translation>
     </message>
     <message>
-        <source>Customize the 'Standard' personality profile, optimized for balanced driving.</source>
-        <translation type="gpt-4o-generated">'Dengeli sürüş için optimize edilmiş 'Standart' kişilik profilini özelleştirin.</translation>
-    </message>
-    <message>
-        <source>Set the following distance for 'Standard' mode. This determines roughly how many seconds you'll follow behind the car ahead.
-
-Default: 1.45 seconds.</source>
-        <translation type="gpt-4o-generated">'Standart' modu için aşağıdaki mesafeyi ayarlayın. Bu, öndeki aracı kabaca kaç saniye geriden takip edeceğinizi belirler.
-
-Varsayılan: 1.45 saniye.</translation>
-    </message>
-    <message>
-        <source>Controls how sensitive openpilot is to changes in acceleration in 'Standard' mode. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">openpilot'un 'Standart' modunda hızlanma değişikliklerine ne kadar duyarlı olduğunu kontrol eder. Daha yüksek değerler, daha yumuşak ve kademeli hızlanma sağlar, daha düşük değerler ise daha hızlı, daha tepkisel değişimlere izin verir ve bu değişiklikler ani gelebilir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Controls how sensitive openpilot is to changes in deceleration in 'Standard' mode. Higher values result in smoother braking, while lower values allow for quicker, more immediate braking that may feel abrupt.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">openpilot'un 'Standart' modunda yavaşlama değişikliklerine karşı ne kadar hassas olacağını kontrol eder. Daha yüksek değerler daha yumuşak frenlemeyle sonuçlanır, daha düşük değerler ise daha hızlı, daha ani frenlemeye izin verir ve bu, ani bir his verebilir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Adjusts how cautious openpilot is around other vehicles or obstacles in 'Standard' mode. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">'Standart' modunda openpilot'ın diğer araçlar veya engeller etrafında ne kadar temkinli olduğunu ayarlar. Daha yüksek değerler, takip mesafelerini artırır ve güvenliği önceliklendirerek daha temkinli bir sürüşe yol açar, daha düşük değerler ise daha yakın takip etmeye izin verir ancak tepki süresini azaltabilir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Controls how quickly openpilot increases speed in 'Standard' mode. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">openpilot'ın 'Standart' modunda hızı ne kadar hızlı artıracağını kontrol eder. Yüksek değerler, hızlanırken daha yumuşak ve kademeli hız değişiklikleri sağlarken, düşük değerler daha hızlı ve daha duyarlı değişikliklere izin verir, bu da ani hissedilebilir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Controls how quickly openpilot decreases speed in 'Standard' mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">openpilot'ın 'Standart' modda hızı ne kadar hızlı azaltacağını kontrol eder. Daha yüksek değerler, yavaşlarken daha yumuşak ve kademeli hız değişiklikleri sağlar; daha düşük değerler ise daha hızlı ve daha duyarlı değişikliklere izin verir, ancak bu değişiklikler ani hissedilebilir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Restores the 'Standard' settings to their default values.</source>
-        <translation type="gpt-4o-generated">"Standart" ayarları varsayılan değerlerine geri yükler.</translation>
-    </message>
-    <message>
         <source>Relaxed Personality</source>
         <translation type="gpt-4o-generated">Rahat Kişilik</translation>
-    </message>
-    <message>
-        <source>Customize the 'Relaxed' personality profile, ideal for a more laid-back driving style.</source>
-        <translation type="gpt-4o-generated">'Rahat' kişilik profilini özelleştirin, daha rahat bir sürüş stili için idealdir.</translation>
-    </message>
-    <message>
-        <source>Set the following distance for 'Relaxed' mode. This determines roughly how many seconds you'll follow behind the car ahead.
-
-Default: 1.75 seconds.</source>
-        <translation type="gpt-4o-generated">'Rahat' modu için aşağıdaki mesafeyi ayarlayın. Bu, önünüzdeki aracı yaklaşık kaç saniye geriden takip edeceğinizi belirler.
-
-Varsayılan: 1.75 saniye.</translation>
-    </message>
-    <message>
-        <source>Controls how sensitive openpilot is to changes in acceleration in 'Relaxed' mode. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">Openpilot'ın 'Rahat' modunda hızlanma değişikliklerine karşı ne kadar hassas olduğunu kontrol eder. Daha yüksek değerler daha yumuşak, daha kademeli hızlanma sağlar, daha düşük değerler ise daha hızlı, daha duyarlı değişikliklere izin verir, bu da ani hissedilebilir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Controls how sensitive openpilot is to changes in deceleration in 'Relaxed' mode. Higher values result in smoother braking, while lower values allow for quicker, more immediate braking that may feel abrupt.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">openpilot'ın 'Rahat' modunda yavaşlama değişikliklerine ne kadar duyarlı olduğunu kontrol eder. Daha yüksek değerler daha yumuşak frenleme sağlar, daha düşük değerler ise daha hızlı ve ani frenleme imkanı tanır, bu da ani bir his verebilir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Adjusts how cautious openpilot is around other vehicles or obstacles in 'Relaxed' mode. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">'Rahat' modunda openpilot'un diğer araçlar veya engeller karşısında ne kadar temkinli olduğunu ayarlar. Daha yüksek değerler takip mesafelerini artırır ve güvenliği önceliklendirir, bu da daha temkinli bir sürüşe yol açar, daha düşük değerler ise daha yakın takip etmeye olanak sağlar ancak tepki süresini azaltabilir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Controls how quickly openpilot increases speed in 'Relaxed' mode. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">openpilot'ın 'Rahat' modunda hızı ne kadar hızlı artıracağını kontrol eder. Daha yüksek değerler hızlanırken daha yumuşak ve kademeli hız değişiklikleri sağlarken, daha düşük değerler daha hızlı ve daha duyarlı değişikliklere izin verir, bu da ani gelebilir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Controls how quickly openpilot decreases speed in 'Relaxed' mode. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.
-
-Default: 1.0.</source>
-        <translation type="gpt-4o-generated">openpilot'ın 'Rahat' modunda hızı ne kadar hızlı düşüreceğini kontrol eder. Daha yüksek değerler, yavaşlarken daha yumuşak ve kademeli hız değişiklikleri sağlar, daha düşük değerler ise daha hızlı, daha duyarlı ancak ani gelebilecek değişikliklere izin verir.
-
-Varsayılan: 1.0.</translation>
-    </message>
-    <message>
-        <source>Restores the 'Relaxed' settings to their default values.</source>
-        <translation type="gpt-4o-generated">'Rahat' ayarlarını varsayılan değerlerine geri yükler.</translation>
-    </message>
-    <message>
-        <source>Toggle 'Experimental Mode' on/off using either the steering wheel buttons or screen.
-
-This overrides 'Conditional Experimental Mode'.</source>
-        <translation type="gpt-4o-generated">Deneysel Modu'nu direksiyon simidi düğmeleri veya ekranı kullanarak aç/kapat.
-
-Bu, 'Koşullu Deneysel Modu'nu geçersiz kılar.</translation>
-    </message>
-    <message>
-        <source>Toggles 'Experimental Mode' by pressing the 'LKAS' button on the steering wheel.</source>
-        <translation type="gpt-4o-generated">Direksiyon simidindeki 'LKAS' düğmesine basarak 'Deneysel Mod'u değiştirir.</translation>
-    </message>
-    <message>
-        <source>Toggles 'Experimental Mode' by double-tapping the onroad UI within a 0.5 second period.</source>
-        <translation type="gpt-4o-generated">0.5 saniye içinde yolda kullanıcı arayüzüne çift dokunarak 'Deneysel Mod'u değiştirir.</translation>
-    </message>
-    <message>
-        <source>Toggles 'Experimental Mode' by holding down the 'distance' button on the steering wheel for 0.5 seconds.</source>
-        <translation type="gpt-4o-generated">Direksiyon simidindeki 'mesafe' düğmesine 0.5 saniye basılı tutarak 'Deneysel Mod'u etkinleştirir.</translation>
-    </message>
-    <message>
-        <source>Enables either a sporty or eco-friendly acceleration rate. 'Sport+' aims to make openpilot accelerate as fast as possible.</source>
-        <translation type="gpt-4o-generated">Ya sportif ya da çevre dostu bir hızlanma oranı sağlar. 'Sport+' openpilot'un mümkün olan en hızlı şekilde hızlanmasını amaçlar.</translation>
-    </message>
-    <message>
-        <source>Enables either a sporty or eco-friendly deceleration rate.</source>
-        <translation type="gpt-4o-generated">Spor ya da çevre dostu bir yavaşlama oranını etkinleştirir.</translation>
-    </message>
-    <message>
-        <source>Uses the lead's acceleration rate when at a takeoff and ramps off the acceleration rate when approaching the maximum set speed for a more 'human-like' driving experience.</source>
-        <translation type="gpt-4o-generated">Kalkış sırasında liderin ivme oranını kullanır ve maksimum ayarlanmış hıza yaklaşırken ivme oranını kademeli olarak azaltır, böylece daha 'insan benzeri' bir sürüş deneyimi sunar.</translation>
     </message>
     <message>
         <source>Human-Like Approach Behind Leads</source>
         <translation type="gpt-4o-generated">İzlemedeki Araçların Arkasından İnsan Benzeri Yaklaşım</translation>
     </message>
     <message>
-        <source>Dynamically adjusts the following distance when approaching slower or stopped vehicles for a more 'human-like' driving experience.</source>
-        <translation type="gpt-4o-generated">Daha 'insana benzer' bir sürüş deneyimi için daha yavaş veya duran araçlara yaklaşırken takip mesafesini dinamik olarak ayarlar.</translation>
-    </message>
-    <message>
         <source>Lead Detection Confidence</source>
         <translation type="gpt-4o-generated">Öncü Tespit Güvenilirliği</translation>
-    </message>
-    <message>
-        <source>Controls how sensitive openpilot is to detecting vehicles ahead. A lower value can help detect vehicles sooner and from farther away, but increases the chance openpilot mistakes other objects for vehicles.</source>
-        <translation type="gpt-4o-generated">openpilot'ın öndeki araçları algılamadaki hassasiyetini kontrol eder. Daha düşük bir değer, araçların daha erken ve daha uzaktan algılanmasına yardımcı olabilir, ancak openpilot'ın diğer nesneleri araç olarak yanlış algılama olasılığını artırır.</translation>
     </message>
     <message>
         <source>Maximum Acceleration Rate</source>
         <translation type="gpt-4o-generated">Maksimum İvme Oranı</translation>
     </message>
     <message>
-        <source>Sets a cap on how fast openpilot can accelerate.</source>
-        <translation type="gpt-4o-generated">openpilot'ın ne kadar hızlı hızlanabileceğine bir sınır koyar.</translation>
-    </message>
-    <message>
-        <source>'Taco Bell Run' Turn Speed Hack</source>
-        <translation type="gpt-4o-generated">'Taco Bell Run' Dönüş Hız Hilesi</translation>
-    </message>
-    <message>
-        <source>Enable comma's speed hack they used to help handle left and right turns more precisely during their 2022 'Taco Bell' drive by reducing the maximum allowed speed and acceleration while turning.</source>
-        <translation type="gpt-4o-generated">Comma'nın hız hilesini etkinleştir, 2022 'Taco Bell' sürüşleri sırasında sola ve sağa dönüşleri daha hassas bir şekilde yönetmeye yardımcı olmak için dönüş sırasında izin verilen maksimum hızı ve ivmeyi azaltarak kullandıkları.</translation>
-    </message>
-    <message>
-        <source>Cruise Increase</source>
-        <translation type="gpt-4o-generated">Kruvaziyer Artırma</translation>
-    </message>
-    <message>
-        <source>Controls the interval used when increasing the cruise control speed.</source>
-        <translation type="gpt-4o-generated">Hız sabitleyici hızının artırılması sırasında kullanılan aralığı kontrol eder.</translation>
-    </message>
-    <message>
-        <source>Cruise Increase (Long Press)</source>
-        <translation type="gpt-4o-generated">Kruvaziyer Artır (Uzun Bas)</translation>
-    </message>
-    <message>
-        <source>Controls the interval used when increasing the cruise control speed while holding down the button for 0.5+ seconds.</source>
-        <translation type="gpt-4o-generated">0,5+ saniye boyunca düğmeye basılı tutulduğunda hız sabitleyici hızını artırmak için kullanılan aralığı kontrol eder.</translation>
-    </message>
-    <message>
         <source>Force Keep openpilot in the Standstill State</source>
         <translation type="gpt-4o-generated">openpilot'i Durma Durumunda Zorla Tut</translation>
-    </message>
-    <message>
-        <source>Keeps openpilot in the 'standstill' state until the gas pedal or 'resume' button is pressed.</source>
-        <translation type="gpt-4o-generated">Gaz pedalı veya 'devam' düğmesine basılana kadar openpilot'u 'durağan' durumda tutar.</translation>
-    </message>
-    <message>
-        <source>Force Stop for 'Detected' Stop Lights/Signs</source>
-        <translation type="gpt-4o-generated">'Algılanan' Dur Işıkları/Levhaları için Zorla Durdur</translation>
-    </message>
-    <message>
-        <source>Forces a stop whenever openpilot 'detects' a potential red light/stop sign to prevent it from running the red light/stop sign.</source>
-        <translation type="gpt-4o-generated">openpilot, kırmızı ışık/dur işareti 'algıladığında', kırmızı ışık/dur işaretinden geçmesini önlemek için her zaman durmayı zorlar.</translation>
     </message>
     <message>
         <source>Set Speed Offset</source>
         <translation type="gpt-4o-generated">Hız Ofsetini Ayarla</translation>
     </message>
     <message>
-        <source>Controls how much higher or lower the set speed should be compared to your current set speed. For example, if you prefer to drive 5 mph above the speed limit, this setting will automatically add that difference when you adjust your set speed.</source>
-        <translation type="gpt-4o-generated">Ayarlanmış hızın mevcut ayarlanmış hıza göre ne kadar daha yüksek veya düşük olması gerektiğini kontrol eder. Örneğin, hız sınırının 5 mil/saat üzerinde sürmeyi tercih ediyorsanız, bu ayar ayarlanmış hızınızı ayarladığınızda bu farkı otomatik olarak ekleyecektir.</translation>
-    </message>
-    <message>
-        <source>Maps the acceleration and deceleration profiles to your car's 'Eco' or 'Sport' gear modes.</source>
-        <translation type="gpt-4o-generated">Aracınızın 'Eko' veya 'Spor' vites modlarına hızlanma ve yavaşlama profillerini eşler.</translation>
-    </message>
-    <message>
-        <source>Reverses the long press cruise increase feature to increase the max speed by 5 mph instead of 1 on short presses.</source>
-        <translation type="gpt-4o-generated">Uzun basma ile hız sabitleyici artırma özelliğini, kısa basmalarda maksimum hızı 1 yerine 5 mph artıracak şekilde tersine çevirir.</translation>
-    </message>
-    <message>
-        <source>Automatically adjust your max speed to match the speed limit using downloaded 'Open Street Maps' data, 'Navigate on openpilot', or your car's dashboard (Toyota/Lexus/HKG only).</source>
-        <translation type="gpt-4o-generated">Maksimum hızınızı, indirilen 'Open Street Maps' verilerini, 'openpilot ile Navigasyon'u veya aracınızın gösterge panelini (sadece Toyota/Lexus/HKG) kullanarak hız sınırına uyacak şekilde otomatik olarak ayarlayın.</translation>
-    </message>
-    <message>
-        <source>Controls what happens when no speed limit data is available.</source>
-        <translation type="gpt-4o-generated">Hız limiti verisi mevcut olmadığında ne olacağını kontrol eder.</translation>
-    </message>
-    <message>
-        <source>Controls how the current speed limit is overriden.
-
-</source>
-        <translation type="gpt-4o-generated">Geçerli hız sınırının nasıl geçersiz kılındığını kontrol eder.</translation>
-    </message>
-    <message>
-        <source>Enables manual confirmations before using a new speed limit.</source>
-        <translation type="gpt-4o-generated">Yeni hız sınırını kullanmadan önce manuel onayları etkinleştirir.</translation>
-    </message>
-    <message>
-        <source>Forces speed limit readings from the dashboard to MPH if it normally displays them in KPH.</source>
-        <translation type="gpt-4o-generated">Hız sınırı okumalarını normalde KPH olarak gösteriyorsa, gösterge tablosundan MPH olarak zorlar.</translation>
-    </message>
-    <message>
-        <source>Sets a lookahead value to prepare for upcoming higher speed limits when using downloaded map data.</source>
-        <translation type="gpt-4o-generated">İndirilen harita verilerini kullanırken yaklaşan daha yüksek hız limitlerine hazırlık için bir ileriye bakış değeri ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets a lookahead value to prepare for upcoming lower speed limits when using downloaded map data.</source>
-        <translation type="gpt-4o-generated">İndirilen harita verilerini kullanırken yaklaşan düşük hız limitlerine hazırlık için bir önceden bakış değeri ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets your max speed to match the current speed limit when enabling openpilot.</source>
-        <translation type="gpt-4o-generated">openpilot'ı etkinleştirirken maksimum hızınızı mevcut hız sınırına ayarlar.</translation>
-    </message>
-    <message>
-        <source>Speed Limit Source Priority Order</source>
-        <translation type="gpt-4o-generated">Hız Sınırı Kaynağı Öncelik Sırası</translation>
-    </message>
-    <message>
-        <source>Sets the order of priority for speed limit data sources.</source>
-        <translation type="gpt-4o-generated">Hız sınırı veri kaynakları için öncelik sırasını ayarlar.</translation>
-    </message>
-    <message>
-        <source>Set speed limit offsets to drive over the posted speed limit.</source>
-        <translation type="gpt-4o-generated">Yol tabelalarında belirtilen hız sınırının üzerine çıkmak için hız sınırı farklarını ayarlayın.</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 0 and 34 mph.</source>
-        <translation type="gpt-4o-generated">Hızlar 0 ile 34 mph arasında olduğunda hız limiti ofsetini ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 35 and 54 mph.</source>
-        <translation type="gpt-4o-generated">35 ve 54 mph arasındaki hızlar için hız sınırı kaymasını ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 55 and 64 mph.</source>
-        <translation type="gpt-4o-generated">55 ile 64 mil/saat hızları arasında hız sınırı sapmasını ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 65 and 99 mph.</source>
-        <translation type="gpt-4o-generated">65 ve 99 mph arasındaki hızlar için hız limiti ofsetini ayarlar.</translation>
-    </message>
-    <message>
-        <source>Visuals</source>
-        <translation type="gpt-4o-generated">Görseller</translation>
-    </message>
-    <message>
-        <source>Visual 'Speed Limit Controller' features to improve your overall openpilot experience.</source>
-        <translation type="gpt-4o-generated">Genel openpilot deneyiminizi geliştirmek için Görsel 'Hız Sınırı Denetleyicisi' özellikleri.</translation>
-    </message>
-    <message>
-        <source>Displays the speed limit offset separately in the onroad UI when using 'Speed Limit Controller'.</source>
-        <translation type="gpt-4o-generated">Hız Limiti Denetleyicisi kullanıldığında hız limiti ötelemesini yoldaki arayüzde ayrı olarak görüntüler.</translation>
-    </message>
-    <message>
         <source>Show Speed Limit Sources</source>
         <translation type="gpt-4o-generated">Hız Sınırı Kaynaklarını Göster</translation>
     </message>
     <message>
-        <source>Displays the speed limit sources in the onroad UI when using 'Speed Limit Controller'.</source>
-        <translation type="gpt-4o-generated">'Speed Limit Controller' kullanırken yoldaki kullanıcı arayüzünde hız limiti kaynaklarını gösterir.</translation>
-    </message>
-    <message>
         <source>RESET</source>
         <translation type="gpt-4o-generated">SIFIRLA</translation>
-    </message>
-    <message>
-        <source>The 'Map Based' option is only available when some 'Map Data' has been downloaded!</source>
-        <translation type="gpt-4o-generated">'Harita Tabanlı' seçeneği yalnızca bazı 'Harita Verileri' indirildiğinde kullanılabilir!</translation>
     </message>
     <message>
         <source>Set With Gas Pedal</source>
@@ -1856,38 +1366,6 @@ Bu, 'Koşullu Deneysel Modu'nu geçersiz kılar.</translation>
         <translation type="gpt-4o-generated">Harita Verileri</translation>
     </message>
     <message>
-        <source>Are you sure you want to completely reset your settings for 'Traffic Mode'?</source>
-        <translation type="gpt-4o-generated">'Trafik Modu' ayarlarını tamamen sıfırlamak istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset your settings for the 'Aggressive' personality?</source>
-        <translation type="gpt-4o-generated">'Aggressive' kişiliği için ayarlarınızı tamamen sıfırlamak istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset your settings for the 'Standard' personality?</source>
-        <translation type="gpt-4o-generated">'Standart' kişiliği için ayarlarınızı tamamen sıfırlamak istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset your settings for the 'Relaxed' personality?</source>
-        <translation type="gpt-4o-generated">'Rahat' kişiliğinizin ayarlarını tamamen sıfırlamak istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 0-34 mph.</source>
-        <translation type="gpt-4o-generated">0-34 mil/saat hızlar arasındaki hız limiti ofsetini ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 35-54 mph.</source>
-        <translation type="gpt-4o-generated">35-54 mph arasındaki hızlar için hız limiti sapmasını ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 55-64 mph.</source>
-        <translation type="gpt-4o-generated">55-64 mil arasında hızlar için hız limiti ofsetini ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 65-99 mph.</source>
-        <translation type="gpt-4o-generated">65-99 mil/sa arası hızlar için hız limiti sapmasını ayarlar.</translation>
-    </message>
-    <message>
         <source>Off</source>
         <translation type="gpt-4o-generated">Kapalı</translation>
     </message>
@@ -1900,44 +1378,524 @@ Bu, 'Koşullu Deneysel Modu'nu geçersiz kılar.</translation>
         <translation type="gpt-4o-generated">Durum Widget'ı</translation>
     </message>
     <message>
-        <source>Show the current status in the onroad UI.</source>
-        <translation type="gpt-4o-generated">Mevcut durumu yolda UI'da göster.</translation>
-    </message>
-    <message>
-        <source>Speed Limit Offset (0-34 km/h)</source>
-        <translation type="gpt-4o-generated">Hız Limiti Ofseti (0-34 km/s)</translation>
-    </message>
-    <message>
-        <source>Speed Limit Offset (35-54 km/h)</source>
-        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (35-54 km/s)</translation>
-    </message>
-    <message>
-        <source>Speed Limit Offset (55-64 km/h)</source>
-        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (55-64 km/sa)</translation>
-    </message>
-    <message>
-        <source>Speed Limit Offset (65-99 km/h)</source>
-        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (65-99 km/sa)</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 0-34 km/h.</source>
-        <translation type="gpt-4o-generated">0-34 km/h arasındaki hızlar için hız sınırı ofsetini ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 35-54 km/h.</source>
-        <translation type="gpt-4o-generated">35-54 km/h arasındaki hızlar için hız sınırı ofsetini ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 55-64 km/h.</source>
-        <translation type="gpt-4o-generated">55-64 km/sa hızlar arasındaki hız limiti ofsetini ayarlar.</translation>
-    </message>
-    <message>
-        <source>Sets the speed limit offset for speeds between 65-99 km/h.</source>
-        <translation type="gpt-4o-generated">65-99 km/sa hızlar için hız limiti ofsetini ayarlar.</translation>
-    </message>
-    <message>
         <source>km/h</source>
         <translation type="gpt-4o-generated">km/sa</translation>
+    </message>
+    <message>
+        <source>Automatically switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when set conditions are met.</source>
+        <translation type="gpt-4o-generated">Koşullar karşılandığında otomatik olarak &lt;b&gt;Deneysel Moda&lt;/b&gt; geç.</translation>
+    </message>
+    <message>
+        <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when driving below this speed.</source>
+        <translation type="gpt-4o-generated">Bu hızın altında sürüş yaparken &lt;b&gt;Deneysel Moda&lt;/b&gt; geç.</translation>
+    </message>
+    <message>
+        <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when a curve is detected ahead. Useful for letting the model choose the appropriate speed for the curve.</source>
+        <translation type="gpt-4o-generated">Önünüzde bir viraj algılandığında &lt;b&gt;Deneysel Mod&lt;/b&gt;'a geçin. Modelin viraj için uygun hızı seçmesini sağlamak için kullanışlıdır.</translation>
+    </message>
+    <message>
+        <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when a slower or stopped vehicle is detected ahead. Can improve braking smoothness and reliability on some vehicles.</source>
+        <translation type="gpt-4o-generated">Önde yavaşlayan veya duran bir araç tespit edildiğinde &lt;b&gt;Deneysel Mod&lt;/b&gt;una geçin. Bazı araçlarda frenleme yumuşaklığını ve güvenilirliğini artırabilir.</translation>
+    </message>
+    <message>
+        <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when approaching intersections or turns on the active route while using &lt;b&gt;Navigate on openpilot (NOO)&lt;/b&gt;. Useful for letting the model choose the appropriate speed for upcoming navigation maneuvers.</source>
+        <translation type="gpt-4o-generated">Kavşaklara veya aktif rotadaki dönüşlere yaklaşırken &lt;b&gt;Dene Moduna&lt;/b&gt; geçin ve &lt;b&gt;openpilot ile Gez (NOO)&lt;/b&gt; kullanın. Modelin yaklaşan navigasyon manevraları için uygun hızı seçmesine izin vermek için faydalıdır.</translation>
+    </message>
+    <message>
+        <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when openpilot wants to stop within the set amount of time. This is typically triggered by the driving model "detecting" a red light or stop sign.</source>
+        <translation type="gpt-4o-generated">openpilot belirli bir süre içinde durmak istediğinde &lt;b&gt;Deneysel Mod&lt;/b&gt;'a geçin. Bu genellikle sürüş modelinin bir kırmızı ışık veya dur levhası "tespit etmesiyle" tetiklenir.</translation>
+    </message>
+    <message>
+        <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when using a turn signal below the set speed. Useful for letting the model choose the appropriate speed for upcoming left or right turns.</source>
+        <translation type="gpt-4o-generated">Düşük hızda dönüş sinyali kullanırken &lt;b&gt;Dene Mode'una&lt;/b&gt; geçin. Yaklaşan sol veya sağ dönüşler için modelin uygun hızı seçmesine izin vermek için kullanışlıdır.</translation>
+    </message>
+    <message>
+        <source>Show the &lt;b&gt;Conditional Experimental Mode&lt;/b&gt; status on the driving screen.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranında &lt;b&gt;Koşullu Deneysel Mod&lt;/b&gt; durumunu göster.</translation>
+    </message>
+    <message>
+        <source>Automatically slow down for upcoming curves using downloaded maps or the driving model.</source>
+        <translation type="gpt-4o-generated">İndirilen haritaları veya sürüş modelini kullanarak yaklaşan virajlar için otomatik olarak yavaşlayın.</translation>
+    </message>
+    <message>
+        <source>How curves are detected. &lt;b&gt;Map-Based&lt;/b&gt; uses downloaded map data to identify curves and determine the appropriate speed in which to handle them at, while &lt;b&gt;Vision&lt;/b&gt; relies solely on the driving model.</source>
+        <translation type="gpt-4o-generated">Virajların nasıl tespit edildiği. &lt;b&gt;Harita Tabanlı&lt;/b&gt;, virajları belirlemek ve bunlarla başa çıkmak için uygun hızı belirlemek üzere indirilen harita verilerini kullanırken, &lt;b&gt;Görüş&lt;/b&gt; yalnızca sürüş modeline dayanır.</translation>
+    </message>
+    <message>
+        <source>Only trigger &lt;b&gt;Curve Speed Control&lt;/b&gt; if a curve is detected with the model while using the &lt;b&gt;Map-Based&lt;/b&gt; method. Useful to help prevent false positives.</source>
+        <translation type="gpt-4o-generated">Yalnızca &lt;b&gt;Harita Tabanlı&lt;/b&gt; yöntemi kullanılırken modelle bir viraj tespit edilirse &lt;b&gt;Viraj Hız Kontrolü&lt;/b&gt;'nü tetikleyin. Yanlış pozitifleri önlemeye yardımcı olmak için faydalıdır.</translation>
+    </message>
+    <message>
+        <source>How sensitive openpilot is when detecting curves. Higher values trigger earlier responses at the risk of triggering too often, while lower values increase confidence at the risk of triggering too infrequently.</source>
+        <translation type="gpt-4o-generated">openpilot'ın virajları algılama hassasiyeti. Daha yüksek değerler, daha sık tetiklenme riskine karşı daha erken tepkiler tetiklerken, daha düşük değerler daha az sıklıkta tetiklenme riskine karşı güveni artırır.</translation>
+    </message>
+    <message>
+        <source>Curve Speed Aggressiveness</source>
+        <translation type="gpt-4o-generated">Viraj Hızı Saldırganlığı</translation>
+    </message>
+    <message>
+        <source>How aggressive openpilot is when navigating through curves. Higher values result in faster turns but may reduce comfort or stability, while lower values result in slower, smoother turns at the risk of being overly cautious.</source>
+        <translation type="gpt-4o-generated">openpilot'ın virajlardan geçerken ne kadar agresif olduğu. Daha yüksek değerler, daha hızlı dönüşlere neden olabilir ancak konfor veya stabiliteyi azaltabilir, daha düşük değerler ise aşırı temkinli olma riskiyle daha yavaş, daha pürüzsüz dönüşler sağlar.</translation>
+    </message>
+    <message>
+        <source>Show &lt;b&gt;Curve Speed Control&lt;/b&gt;'s desired speed on the driving screen.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranında &lt;b&gt;Viraj Hız Kontrolü&lt;/b&gt;'nün istenen hızını göster.</translation>
+    </message>
+    <message>
+        <source>Customize the personality profiles to your driving style.</source>
+        <translation type="gpt-4o-generated">Sürüş tarzınıza göre kişilik profillerini özelleştirin.</translation>
+    </message>
+    <message>
+        <source>Customize the &lt;b&gt;Traffic&lt;/b&gt; personality profile. Tailored for navigating through traffic.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Trafik&lt;/b&gt; kişilik profilini özelleştirin. Trafikte gezinmek için özel olarak tasarlanmıştır.</translation>
+    </message>
+    <message>
+        <source>The minimum following distance while in &lt;b&gt;Traffic Mode&lt;/b&gt;. openpilot will dynamically adjust between this value and the value in the &lt;b&gt;Aggressive&lt;/b&gt; profile based on your current speed.</source>
+        <translation type="gpt-4o-generated">&lt;Traffic Mode&lt;/b&gt; içindeyken minimum takip mesafesi. openpilot, mevcut hızınıza göre bu değer ile &lt;b&gt;Aggressive&lt;/b&gt; profilindeki değer arasında dinamik olarak ayarlama yapacaktır.</translation>
+    </message>
+    <message>
+        <source>How sensitive openpilot is to changes in acceleration while in &lt;b&gt;Traffic Mode&lt;/b&gt;. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'ın &lt;b&gt;Trafik Modu&lt;/b&gt;ndayken hızlanma değişikliklerine ne kadar duyarlı olduğu. Daha yüksek değerler, daha yumuşak ve daha kademeli bir hızlanma sağlar, daha düşük değerler ise daha hızlı ve daha tepkisel değişikliklere izin verir, bu da ani gelebilir.</translation>
+    </message>
+    <message>
+        <source>How sensitive openpilot is to changes in deceleration while in &lt;b&gt;Traffic Mode&lt;/b&gt;. Higher values result in smoother, more gradual deceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'in &lt;b&gt;Trafik Modu&lt;/b&gt;'ndayken yavaşlamadaki değişikliklere ne kadar duyarlı olduğunu belirler. Daha yüksek değerler, daha yumuşak ve kademeli yavaşlamaya yol açarken, daha düşük değerler daha hızlı ve tepki veren değişikliklere izin verir, bu da ani hissedilebilir.</translation>
+    </message>
+    <message>
+        <source>How cautious openpilot is around other vehicles or obstacles while in &lt;b&gt;Traffic Mode&lt;/b&gt;. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.</source>
+        <translation type="gpt-4o-generated">openpilot'ın &lt;b&gt;Trafik Modu&lt;/b&gt; esnasında diğer araçlar veya engeller karşısında ne kadar tedbirli olduğudur. Daha yüksek değerler, takip mesafelerini artırır ve güvenliği önceliklendirerek daha temkinli bir sürüş sağlar; daha düşük değerler ise daha yakın takip imkanı tanır ancak tepki süresini azaltabilir.</translation>
+    </message>
+    <message>
+        <source>Speed Increase Response</source>
+        <translation type="gpt-4o-generated">Hız Artış Yanıtı</translation>
+    </message>
+    <message>
+        <source>How quickly openpilot increases speed while in &lt;b&gt;Traffic Mode&lt;/b&gt;. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'ın &lt;b&gt;Trafik Modu&lt;/b&gt;ndayken hızı ne kadar hızlı artırdığı. Daha yüksek değerler, hızlanırken daha yumuşak ve kademeli hız değişikliklerini sağlarken, daha düşük değerler daha hızlı ve daha duyarlı değişikliklere izin verir, ancak bu değişiklikler ani gelebilir.</translation>
+    </message>
+    <message>
+        <source>Speed Decrease Response</source>
+        <translation type="gpt-4o-generated">Hız Azaltma Tepkisi</translation>
+    </message>
+    <message>
+        <source>How quickly openpilot decreases speed while in &lt;b&gt;Traffic Mode&lt;/b&gt;. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'ın &lt;b&gt;Trafik Modu&lt;/b&gt;ndayken hızı ne kadar hızlı düşürdüğü. Yüksek değerler, yavaşlarken daha yumuşak ve daha kademeli hız değişiklikleri sağlar, düşük değerler ise daha hızlı ve daha duyarlı değişikliklere izin verir, bu da ani hissedilebilir.</translation>
+    </message>
+    <message>
+        <source>Reset &lt;b&gt;Traffic Mode&lt;/b&gt; settings to default values.</source>
+        <translation type="gpt-4o-generated">&lt;Traffic Mode&gt; ayarlarını varsayılan değerlere sıfırla.</translation>
+    </message>
+    <message>
+        <source>Customize the &lt;b&gt;Aggressive&lt;/b&gt; personality profile. Designed for a more assertive driving style.</source>
+        <translation type="gpt-4o-generated">&lt;Aggressive&lt;/b&gt; kişilik profilini özelleştirin. Daha iddialı bir sürüş tarzı için tasarlanmıştır.</translation>
+    </message>
+    <message>
+        <source>How many seconds openpilot will follow behind lead vehicles while using the &lt;b&gt;Aggressive&lt;/b&gt; personality profile.&lt;br&gt;&lt;br&gt;Default: 1.25 seconds.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Saldırgan&lt;/b&gt; kişilik profili kullanılırken openpilot'un önünüzdeki araçları takip süresini belirleyin.&lt;br&gt;&lt;br&gt;Varsayılan: 1.25 saniye.</translation>
+    </message>
+    <message>
+        <source>How sensitive openpilot is to changes in acceleration while using the &lt;b&gt;Aggressive&lt;/b&gt; personality profile. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'in &lt;b&gt;Agresif&lt;/b&gt; kişilik profili kullanılırken ivme değişikliklerine ne kadar duyarlı olduğu. Daha yüksek değerler, daha yumuşak ve kademeli bir ivme sağlar, daha düşük değerler ise daha hızlı ve tepkisel değişikliklere izin verir, bu da ani hissedilebilir.</translation>
+    </message>
+    <message>
+        <source>How sensitive openpilot is to changes in deceleration while using the &lt;b&gt;Aggressive&lt;/b&gt; personality profile. Higher values result in smoother, more gradual deceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'in &lt;b&gt;Aggressive&lt;/b&gt; kişilik profili kullanılırken yavaşlamadaki değişikliklere ne kadar duyarlı olduğudur. Daha yüksek değerler, daha yumuşak ve daha kademeli bir yavaşlama sağlar, daha düşük değerler ise daha hızlı, daha tepki veren değişikliklere olanak tanır ve bu da ani hissedilebilir.</translation>
+    </message>
+    <message>
+        <source>How cautious openpilot is around other vehicles or obstacles while using the &lt;b&gt;Aggressive&lt;/b&gt; personality profile. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.</source>
+        <translation type="gpt-4o-generated">openpilot'ın &lt;b&gt;Aggressive&lt;/b&gt; kişilik profili kullanılırken diğer araçlar veya engellere karşı ne kadar dikkatli olduğu. Daha yüksek değerler takip mesafelerini artırır ve güvenliği önceliklendirir, bu da daha dikkatli bir sürüşe yol açar, daha düşük değerler ise daha yakın takip edilmesine izin verir ancak tepki süresini azaltabilir.</translation>
+    </message>
+    <message>
+        <source>How quickly openpilot increases speed while using the &lt;b&gt;Aggressive&lt;/b&gt; personality profile. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'in &lt;b&gt;Agresif&lt;/b&gt; kişilik profilini kullanırken hızı ne kadar hızlı artırdığı. Daha yüksek değerler, hızlanırken daha yumuşak ve kademeli hız değişikliklerini garanti ederken, daha düşük değerler daha hızlı ve daha duyarlı değişikliklere izin vererek ani hissettirebilir.</translation>
+    </message>
+    <message>
+        <source>How quickly openpilot decreases speed while using the &lt;b&gt;Aggressive&lt;/b&gt; personality profile. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'ın &lt;b&gt;Saldırgan&lt;/b&gt; kişilik profili kullanılırken hızı ne kadar hızlı düşürdüğü. Daha yüksek değerler yavaşlama sırasında daha yumuşak, daha kademeli hız değişikliklerini sağlarken, daha düşük değerler daha hızlı, daha duyarlı değişikliklere izin vererek ani hissedilebilir.</translation>
+    </message>
+    <message>
+        <source>Reset the &lt;b&gt;Aggressive&lt;/b&gt; personality profile settings to default values.</source>
+        <translation type="gpt-4o-generated">&lt;Aggressive&gt; kişilik profili ayarlarını varsayılan değerlere sıfırla.</translation>
+    </message>
+    <message>
+        <source>Customize the &lt;b&gt;Standard&lt;/b&gt; personality profile. Designed for a balanced driving style.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Standart&lt;/b&gt; kişilik profilini özelleştirin. Dengeli bir sürüş tarzı için tasarlandı.</translation>
+    </message>
+    <message>
+        <source>How many seconds openpilot will follow behind lead vehicles while using the &lt;b&gt;Standard&lt;/b&gt; personality profile.&lt;br&gt;&lt;br&gt;Default: 1.45 seconds.</source>
+        <translation type="gpt-4o-generated">openpilot, &lt;b&gt;Standart&lt;/b&gt; kişilik profili kullanılırken öndeki araçları kaç saniye takip edecek.&lt;br&gt;&lt;br&gt;Varsayılan: 1.45 saniye.</translation>
+    </message>
+    <message>
+        <source>How sensitive openpilot is to changes in acceleration while using the &lt;b&gt;Standard&lt;/b&gt; personality profile. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">Openpilot'ın &lt;b&gt;Standart&lt;/b&gt; kişilik profili kullanılırken ivmedeki değişikliklere ne kadar duyarlı olduğudur. Daha yüksek değerler, daha yumuşak ve kademeli ivmelenme sağlar, daha düşük değerler ise daha hızlı ve daha duyarlı değişikliklere izin vererek ani hissettirebilir.</translation>
+    </message>
+    <message>
+        <source>How sensitive openpilot is to changes in deceleration while using the &lt;b&gt;Standard&lt;/b&gt; personality profile. Higher values result in smoother, more gradual deceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'ın &lt;b&gt;Standart&lt;/b&gt; kişilik profilini kullanırken yavaşlamadaki değişikliklere ne kadar duyarlı olduğunu belirtir. Daha yüksek değerler, daha yumuşak ve daha kademeli yavaşlama sağlarken, daha düşük değerler daha ani ve daha hızlı tepkilere izin verir, bu da keskin hissedilebilir.</translation>
+    </message>
+    <message>
+        <source>How cautious openpilot is around other vehicles or obstacles while using the &lt;b&gt;Standard&lt;/b&gt; personality profile. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.</source>
+        <translation type="gpt-4o-generated">openpilot'ın diğer araçlar veya engeller etrafında ne kadar dikkatli olduğu &lt;b&gt;Standart&lt;/b&gt; kişilik profili kullanıldığında. Daha yüksek değerler takip mesafelerini artırır ve güvenliği önceliklendirir, bu da daha dikkatli bir sürüşe yol açar, daha düşük değerler ise daha yakın takip edilmesine izin verir ancak tepki süresini azaltabilir.</translation>
+    </message>
+    <message>
+        <source>How quickly openpilot increases speed while using the &lt;b&gt;Standard&lt;/b&gt; personality profile. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot, &lt;b&gt;Standart&lt;/b&gt; kişilik profili kullanılırken hızı ne kadar hızlı artırır. Daha yüksek değerler, hızlanırken daha yumuşak ve kademeli hız değişikliklerini sağlarken, daha düşük değerler daha hızlı, daha duyarlı değişikliklere izin verir ve bu da ani hissedilebilir.</translation>
+    </message>
+    <message>
+        <source>How quickly openpilot decreases speed while using the &lt;b&gt;Standard&lt;/b&gt; personality profile. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot, &lt;b&gt;Standart&lt;/b&gt; kişilik profili kullanılırken hızı ne kadar hızlı düşürür. Yüksek değerler, yavaşlarken daha yumuşak ve kademeli hız değişiklikleri sağlarken, düşük değerler daha hızlı ve ani değişikliklere izin verir, bu da keskin gelebilir.</translation>
+    </message>
+    <message>
+        <source>Reset the &lt;b&gt;Standard&lt;/b&gt; personality profile settings to default values.</source>
+        <translation type="gpt-4o-generated">Standart kişilik profili ayarlarını varsayılan değerlere sıfırla.</translation>
+    </message>
+    <message>
+        <source>Customize the &lt;b&gt;Relaxed&lt;/b&gt; personality profile. Designed for a more laid-back driving style.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Rahat&lt;/b&gt; kişilik profilini özelleştirin. Daha rahat bir sürüş tarzı için tasarlandı.</translation>
+    </message>
+    <message>
+        <source>How many seconds openpilot will follow behind lead vehicles while using the &lt;b&gt;Relaxed&lt;/b&gt; personality profile.&lt;br&gt;&lt;br&gt;Default: 1.75 seconds.</source>
+        <translation type="gpt-4o-generated">Önde giden araçları &lt;b&gt;Rahat&lt;/b&gt; kişilik profili kullanırken openpilot'un kaç saniye takip edeceği.&lt;br&gt;&lt;br&gt;Varsayılan: 1.75 saniye.</translation>
+    </message>
+    <message>
+        <source>How sensitive openpilot is to changes in acceleration while using the &lt;b&gt;Relaxed&lt;/b&gt; personality profile. Higher values result in smoother, more gradual acceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot, &lt;b&gt;Rahat&lt;/b&gt; kişilik profili kullanılırken ivme değişikliklerine ne kadar duyarlı. Daha yüksek değerler daha yumuşak, daha kademeli bir ivme sağlar, daha düşük değerler ise daha hızlı, daha duyarlı değişikliklere izin verir ve bu da ani hissedilebilir.</translation>
+    </message>
+    <message>
+        <source>How sensitive openpilot is to changes in deceleration while using the &lt;b&gt;Relaxed&lt;/b&gt; personality profile. Higher values result in smoother, more gradual deceleration, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'ın &lt;b&gt;Rahat&lt;/b&gt; kişilik profilini kullanırken yavaşlama değişikliklerine ne kadar duyarlı olduğu. Daha yüksek değerler, daha yumuşak ve daha kademeli bir yavaşlama sağlar, daha düşük değerler ise daha hızlı, daha duyarlı değişikliklere izin verir ve bu da ani hissettirebilir.</translation>
+    </message>
+    <message>
+        <source>How cautious openpilot is around other vehicles or obstacles while using the &lt;b&gt;Relaxed&lt;/b&gt; personality profile. Higher values increase following distances and prioritize safety, leading to more cautious driving, while lower values allow for closer following but may reduce reaction time.</source>
+        <translation type="gpt-4o-generated">openpilot'in &lt;b&gt;Rahat&lt;/b&gt; kişilik profili kullanılırken diğer araçlar veya engeller etrafında ne kadar dikkatli olduğu. Daha yüksek değerler takip mesafelerini artırır ve güvenliği önceliklendirir, bu da daha dikkatli bir sürüşe yol açar; daha düşük değerler ise daha yakın takip mesafelerine izin verir ancak tepki süresini azaltabilir.</translation>
+    </message>
+    <message>
+        <source>How quickly openpilot increases speed while using the &lt;b&gt;Relaxed&lt;/b&gt; personality profile. Higher values ensure smoother, more gradual speed changes when accelerating, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'ın &lt;b&gt;Rahat&lt;/b&gt; kişilik profilini kullanırken hızı ne kadar hızlı artırdığını belirtir. Daha yüksek değerler, hızlanma sırasında daha yumuşak ve kademeli hız değişikliklerini sağlarken, daha düşük değerler daha hızlı, daha duyarlı değişikliklere izin verir ve bu değişiklikler ani hissedilebilir.</translation>
+    </message>
+    <message>
+        <source>How quickly openpilot decreases speed while using the &lt;b&gt;Relaxed&lt;/b&gt; personality profile. Higher values ensure smoother, more gradual speed changes when slowing down, while lower values allow for quicker, more responsive changes that may feel abrupt.</source>
+        <translation type="gpt-4o-generated">openpilot'ın &lt;b&gt;Rahat&lt;/b&gt; kişilik profilini kullanırken hızını ne kadar hızlı düşürdüğü. Daha yüksek değerler, yavaşlama sırasında daha yumuşak ve kademeli hız değişikliklerini sağlarken, daha düşük değerler daha hızlı ve daha duyarlı değişikliklere izin vererek ani hissettirebilir.</translation>
+    </message>
+    <message>
+        <source>Reset the &lt;b&gt;Relaxed&lt;/b&gt; personality profile settings to default values.</source>
+        <translation type="gpt-4o-generated">"&lt;b&gt;Rahat&lt;/b&gt; kişilik profili ayarlarını varsayılan değerlere sıfırla."</translation>
+    </message>
+    <message>
+        <source>Enable either a sporty or eco-friendly acceleration profile. &lt;b&gt;Sport+&lt;/b&gt; aims to make openpilot accelerate as fast as possible!</source>
+        <translation type="gpt-4o-generated">Spor veya çevre dostu bir ivmelenme profili etkinleştirin. &lt;b&gt;Sport+&lt;/b&gt;, openpilot'un mümkün olduğunca hızlı ivmelenmesini amaçlar!</translation>
+    </message>
+    <message>
+        <source>Enable either a sporty or eco-friendly deceleration profile.</source>
+        <translation type="gpt-4o-generated">Ya sportif ya da çevre dostu bir yavaşlama profili etkinleştirin.</translation>
+    </message>
+    <message>
+        <source>Use the lead vehicle's acceleration rate when at a takeoff and ramp off the acceleration rate when approaching the maximum set speed for a more "human-like" driving experience.</source>
+        <translation type="gpt-4o-generated">Kalkışta ve maksimum ayarlanmış hıza yaklaşırken hızlanma oranını kademeli olarak azaltarak öndeki aracın hızlanma oranını kullanın, böylece daha "insana benzer" bir sürüş deneyimi elde edin.</translation>
+    </message>
+    <message>
+        <source>Dynamically adjust the desired following distance when approaching slower or stopped vehicles for a more "human-like" driving experience.</source>
+        <translation type="gpt-4o-generated">Daha "insan gibi" bir sürüş deneyimi için daha yavaş veya duran araçlara yaklaşırken istenen takip mesafesini dinamik olarak ayarlayın.</translation>
+    </message>
+    <message>
+        <source>How sensitive openpilot is to detecting vehicles ahead. A lower value can help detect vehicles sooner and from farther away, but increases the chance openpilot mistakes other objects for vehicles.</source>
+        <translation type="gpt-4o-generated">openpilot'in öndeki araçları algılamaya ne kadar duyarlı olduğunu belirler. Daha düşük bir değer, araçları daha erken ve daha uzaktan algılamaya yardımcı olabilir, ancak openpilot'un diğer nesneleri araç olarak yanlış algılama olasılığını artırır.</translation>
+    </message>
+    <message>
+        <source>Set a cap on how fast openpilot can accelerate.</source>
+        <translation type="gpt-4o-generated">openpilot'un ne kadar hızlı hızlanabileceğine bir sınır koyun.</translation>
+    </message>
+    <message>
+        <source>"Taco Bell Run" Turn Speed Hack</source>
+        <translation type="gpt-4o-generated">"Taco Bell Koşusu" Dönüş Hızı Hilesi</translation>
+    </message>
+    <message>
+        <source>The turn speed hack from comma’s 2022 "Taco Bell Run" drive. Designed to slow down when taking left/right turns for smoother turns.</source>
+        <translation type="gpt-4o-generated">Comma'nın 2022 "Taco Bell Run" sürüşünden dönüş hız hilesi. Daha yumuşak dönüşler için sola/sağa dönerken yavaşlamak üzere tasarlanmıştır.</translation>
+    </message>
+    <message>
+        <source>Quality of Life</source>
+        <translation type="gpt-4o-generated">Yaşam Kalitesi</translation>
+    </message>
+    <message>
+        <source>Miscellaneous features to improve the acceleration and braking experience.</source>
+        <translation type="gpt-4o-generated">Hızlanma ve frenleme deneyimini geliştirmek için çeşitli özellikler.</translation>
+    </message>
+    <message>
+        <source>Cruise Interval</source>
+        <translation type="gpt-4o-generated">Kruvaziyer Aralığı</translation>
+    </message>
+    <message>
+        <source>The interval used when changing the cruise control speed.</source>
+        <translation type="gpt-4o-generated">Hız sabitleyici hızını değiştirirken kullanılan aralık.</translation>
+    </message>
+    <message>
+        <source>Cruise Interval (Long Press)</source>
+        <translation type="gpt-4o-generated">Seyir Aralığı (Uzun Bas)</translation>
+    </message>
+    <message>
+        <source>The interval used when changing the cruise control speed while holding down the button for 0.5+ seconds.</source>
+        <translation type="gpt-4o-generated">0.5+ saniye boyunca düğmeye basılı tutarken hız sabitleyici hızını değiştirmek için kullanılan aralık.</translation>
+    </message>
+    <message>
+        <source>Keep openpilot in the standstill state until either the gas pedal or &lt;b&gt;resume&lt;/b&gt; button is pressed.</source>
+        <translation type="gpt-4o-generated">Gaz pedalı veya &lt;b&gt;devam et&lt;/b&gt; düğmesine basılana kadar openpilot'u durma halinde tutun.</translation>
+    </message>
+    <message>
+        <source>Force Stop for "Detected" Stop Lights/Signs</source>
+        <translation type="gpt-4o-generated">Tespit Edilen Dur Işıkları/Levhaları için Zorla Durdurma</translation>
+    </message>
+    <message>
+        <source>Force a stop whenever openpilot &lt;b&gt;detects&lt;/b&gt; a potential red light/stop sign to prevent it from running the red light/stop sign.</source>
+        <translation type="gpt-4o-generated">openpilot olası bir kırmızı ışık/dur işareti algıladığında kırmızı ışığı/dur işaretini geçmesini önlemek için durmayı zorla.</translation>
+    </message>
+    <message>
+        <source>Increase the distance openpilot stops behind vehicles.</source>
+        <translation type="gpt-4o-generated">openpilot'ın araçların arkasında durduğu mesafeyi artır.</translation>
+    </message>
+    <message>
+        <source>How much higher or lower the set speed should be compared to your current set speed. For example, if you prefer to drive 5 mph above the speed limit, this setting will automatically add that difference when you adjust your set speed.</source>
+        <translation type="gpt-4o-generated">Ayarlanan hızın mevcut ayarlanan hızınıza göre ne kadar daha yüksek veya düşük olması gerektiğini belirtir. Örneğin, hız sınırının 5 mil/saat üzerinde sürmeyi tercih ediyorsanız, bu ayar hızınızı ayarladığınızda otomatik olarak bu farkı ekleyecektir.</translation>
+    </message>
+    <message>
+        <source>Map the acceleration and deceleration profiles to your car's &lt;b&gt;Eco&lt;/b&gt; or &lt;b&gt;Sport&lt;/b&gt; gear modes.</source>
+        <translation type="gpt-4o-generated">Hızlanma ve yavaşlama profillerini aracınızın &lt;b&gt;Eco&lt;/b&gt; veya &lt;b&gt;Spor&lt;/b&gt; vites modlarına eşleyin.</translation>
+    </message>
+    <message>
+        <source>Reverse the &lt;b&gt;long press&lt;/b&gt; cruise increase feature to increase the max speed by 5 instead of 1 on short presses.</source>
+        <translation type="gpt-4o-generated">Uzun basma hız artırma özelliğini ters çevirerek kısa basmalarda maksimum hızı 1 yerine 5 artırın.</translation>
+    </message>
+    <message>
+        <source>Limit openpilot's maximum driving speed based on data from downloaded maps, &lt;b&gt;Mapbox&lt;/b&gt;, &lt;b&gt;Navigate on openpilot&lt;/b&gt;, or the dashboard (supported vehicles: &lt;b&gt;Ford&lt;/b&gt;, &lt;b&gt;Genesis&lt;/b&gt;, &lt;b&gt;Hyundai&lt;/b&gt;, &lt;b&gt;Kia&lt;/b&gt;, &lt;b&gt;Lexus&lt;/b&gt;, &lt;b&gt;Toyota&lt;/b&gt;).</source>
+        <translation type="gpt-4o-generated">openpilot'ın maksimum sürüş hızını indirilen haritalardan, &lt;b&gt;Mapbox&lt;/b&gt;, &lt;b&gt;Navigate on openpilot&lt;/b&gt; veya gösterge panelinden alınan verilere göre sınırla (desteklenen araçlar: &lt;b&gt;Ford&lt;/b&gt;, &lt;b&gt;Genesis&lt;/b&gt;, &lt;b&gt;Hyundai&lt;/b&gt;, &lt;b&gt;Kia&lt;/b&gt;, &lt;b&gt;Lexus&lt;/b&gt;, &lt;b&gt;Toyota&lt;/b&gt;).</translation>
+    </message>
+    <message>
+        <source>Fallback Speed</source>
+        <translation type="gpt-4o-generated">Yedek Hız</translation>
+    </message>
+    <message>
+        <source>The speed limit source when no speed limit data is available.</source>
+        <translation type="gpt-4o-generated">Hız sınırı verisi mevcut olmadığında hız sınırı kaynağı.</translation>
+    </message>
+    <message>
+        <source>Override Speed</source>
+        <translation type="gpt-4o-generated">Hızı Geçersiz Kıl</translation>
+    </message>
+    <message>
+        <source>The speed openpilot uses after manually exceeding the posted speed limit.&lt;br&gt;&lt;br&gt;&lt;b&gt;- Set With Gas Pedal&lt;/b&gt;: Uses the speed obtained while pressing the gas&lt;br&gt;&lt;b&gt;- Max Set Speed&lt;/b&gt;: Uses the cruise control set speed&lt;br&gt;&lt;br&gt;Overrides clear upon disengagement.</source>
+        <translation type="gpt-4o-generated">openpilot'ın ilan edilen hız sınırını manuel olarak aştıktan sonra kullandığı hız.&lt;br&gt;&lt;br&gt;&lt;b&gt;- Gaz Pedalıyla Ayarla&lt;/b&gt;: Gaz pedalına basarken elde edilen hızı kullanır&lt;br&gt;&lt;b&gt;- Maksimum Ayarlanmış Hız&lt;/b&gt;: Hız sabitleyici ayarlanan hızı kullanır&lt;br&gt;&lt;br&gt;Devreden çıkma durumunda geçersiz kılmalar temizlenir.</translation>
+    </message>
+    <message>
+        <source>Miscellaneous features to improve the &lt;b&gt;Speed Limit Controller&lt;/b&gt; experience.</source>
+        <translation type="gpt-4o-generated">&lt;hız sınırı kontrolcüsü&lt;/b&gt; deneyimini geliştirmek için çeşitli özellikler.</translation>
+    </message>
+    <message>
+        <source>Require confirmation before applying new speed limits. To accept, use the flashing widget on the driving screen or press the &lt;b&gt;Cruise Increase&lt;/b&gt; button. To deny, press the &lt;b&gt;Cruise Decrease&lt;/b&gt; button or simply ignore the prompt for 30 seconds.</source>
+        <translation type="gpt-4o-generated">Yeni hız sınırlarını uygulamadan önce onay gerektir. Kabul etmek için sürüş ekranındaki yanıp sönen aracı kullan veya &lt;b&gt;Seyir Artırma&lt;/b&gt; düğmesine bas. Reddetmek için &lt;b&gt;Seyir Azaltma&lt;/b&gt; düğmesine bas veya uyarıyı 30 saniye boyunca görmezden gel.</translation>
+    </message>
+    <message>
+        <source>Force Dashboard MPH</source>
+        <translation type="gpt-4o-generated">Gösterge Tablosunu Zorla MPH</translation>
+    </message>
+    <message>
+        <source>Force dashboard speed limit readings to be in mph.</source>
+        <translation type="gpt-4o-generated">Gösterge paneli hız sınırı okumalarını zorla mph olarak ayarla.</translation>
+    </message>
+    <message>
+        <source>Higher Limit Lookahead Time</source>
+        <translation type="gpt-4o-generated">Daha Yüksek Sınır Öngörü Süresi</translation>
+    </message>
+    <message>
+        <source>How far ahead openpilot anticipates upcoming higher speed limits from the downloaded map data.</source>
+        <translation type="gpt-4o-generated">openpilot'ın indirilen harita verilerinden yaklaşan daha yüksek hız sınırlarını ne kadar ileriye dönük tahmin ettiği.</translation>
+    </message>
+    <message>
+        <source>Lower Limit Lookahead Time</source>
+        <translation type="gpt-4o-generated">Alt Sınır Bakış İlerleme Süresi</translation>
+    </message>
+    <message>
+        <source>How far ahead openpilot anticipates upcoming lower speed limits from the downloaded map data.</source>
+        <translation type="gpt-4o-generated">openpilot, indirilen harita verilerinden yaklaşan düşük hız limitlerini ne kadar önceden tahmin ettiğini gösterir.</translation>
+    </message>
+    <message>
+        <source>Match Speed Limit on Engage</source>
+        <translation type="gpt-4o-generated">Hız Sınırını Etkinleştirildiğinde Eşleştir</translation>
+    </message>
+    <message>
+        <source>Automatically set cruise control speed to match the current speed limit when first enabling openpilot.</source>
+        <translation type="gpt-4o-generated">openpilot ilk etkinleştirildiğinde hız sabitleyici hızını mevcut hız sınırına otomatik olarak ayarlayın.</translation>
+    </message>
+    <message>
+        <source>Speed Limit Source Priority</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Kaynağı Önceliği</translation>
+    </message>
+    <message>
+        <source>Define the priority order for speed limit sources (&lt;b&gt;Dashboard&lt;/b&gt;, &lt;b&gt;Map Data&lt;/b&gt;, &lt;b&gt;Navigation&lt;/b&gt;). Higher-priority sources override lower ones when multiple limits are detected.</source>
+        <translation type="gpt-4o-generated">Hız limiti kaynakları için öncelik sırasını tanımlayın (&lt;b&gt;Gösterge Paneli&lt;/b&gt;, &lt;b&gt;Harita Verileri&lt;/b&gt;, &lt;b&gt;Navigasyon&lt;/b&gt;). Birden fazla limit algılandığında, daha yüksek öncelikli kaynaklar daha düşük olanları geçersiz kılar.</translation>
+    </message>
+    <message>
+        <source>Offsets relative to the posted speed limit for a more "human-like" driving experience.</source>
+        <translation type="gpt-4o-generated">Daha "insan gibi" bir sürüş deneyimi için ilan edilen hız sınırına göre ayarlamalar.</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (0–24 mph)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (0–24 mph)</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 0 and 24 mph.</source>
+        <translation type="gpt-4o-generated">Hedef hız ofseti, 0 ile 24 mph arasındaki ilan edilen sınırlara uygulanır.</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (25–34 mph)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (40–54 km/sa)</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 25 and 34 mph.</source>
+        <translation type="gpt-4o-generated">Hedef hız ofseti, 25 ile 34 mph arasındaki ilan edilen hız sınırları için uygulanır.</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (35–44 mph)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (56–70 km/s)</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 35 and 44 mph.</source>
+        <translation type="gpt-4o-generated">Hedef hız sapması, 35 ile 44 mph arasındaki yayınlanmış sınırlamalar için uygulanır.</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (45–54 mph)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (45–54 mph)</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 45 and 54 mph.</source>
+        <translation type="gpt-4o-generated">Hedef hız farkı, 45 ile 54 mph arasındaki ilan edilen sınırlar için uygulandı.</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (55–64 mph)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (55–64 mph)</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 55 and 64 mph.</source>
+        <translation type="gpt-4o-generated">Hedef hız sapması, 55 ila 64 mph arasındaki belirtilen sınırlara uygulandı.</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (65–74 mph)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (105–118 km/s)</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 65 and 74 mph.</source>
+        <translation type="gpt-4o-generated">Hedef hız farkı, 65 ile 74 mil arasında ilan edilen hız sınırları için uygulanır.</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (75–99 mph)</source>
+        <translation type="gpt-4o-generated">Hız Limiti Ofseti (75–99 mph)</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 75 and 99 mph.</source>
+        <translation type="gpt-4o-generated">Hedef hız ofseti, 75 ile 99 mil/saat arasındaki ilan edilen limitler için uygulanır.</translation>
+    </message>
+    <message>
+        <source>Visual Settings</source>
+        <translation type="gpt-4o-generated">Görsel Ayarlar</translation>
+    </message>
+    <message>
+        <source>Visual features to improve the &lt;b&gt;Speed Limit Controller&lt;/b&gt; experience.</source>
+        <translation type="gpt-4o-generated">Görsel özellikler, &lt;b&gt;Hız Sınırı Kontrol Cihazı&lt;/b&gt; deneyimini geliştirmek için.</translation>
+    </message>
+    <message>
+        <source>Display the speed limit offset separately on the driving screen.</source>
+        <translation type="gpt-4o-generated">Hız sınırı ofsetini sürüş ekranında ayrı olarak göster.</translation>
+    </message>
+    <message>
+        <source>Display the speed limit sources on the driving screen.</source>
+        <translation type="gpt-4o-generated">Hız sınırı kaynaklarını sürüş ekranında göster.</translation>
+    </message>
+    <message>
+        <source>Switch to &lt;b&gt;Experimental Mode&lt;/b&gt; when driving below this speed with a lead.</source>
+        <translation type="gpt-4o-generated">Öndeki aracı takip ederken bu hızın altında giderken &lt;b&gt;Deneysel Moda&lt;/b&gt; geçiş yapın.</translation>
+    </message>
+    <message>
+        <source>The &lt;b&gt;Map Based&lt;/b&gt; option is only available when some &lt;b&gt;Map Data&lt;/b&gt; has been downloaded!</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Harita Tabanlı&lt;/b&gt; seçeneği yalnızca bazı &lt;b&gt;Harita Verileri&lt;/b&gt; indirildiğinde mevcuttur!</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your settings for &lt;b&gt;Traffic Mode&lt;/b&gt;?</source>
+        <translation type="gpt-4o-generated">Trafik Modu&lt;/b&gt; ayarlarınızı tamamen sıfırlamak istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your settings for the &lt;b&gt;Aggressive&lt;/b&gt; personality?</source>
+        <translation type="gpt-4o-generated">&lt;Aggressive&gt; kişiliği için ayarlarınızı tamamen sıfırlamak istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your settings for the &lt;b&gt;Standard&lt;/b&gt; personality?</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Standart&lt;/b&gt; kişiliği için ayarlarınızı tamamen sıfırlamak istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to completely reset your settings for the &lt;b&gt;Relaxed&lt;/b&gt; personality?</source>
+        <translation type="gpt-4o-generated">&lt;Rahat&gt; kişiliği için ayarlarınızı tamamen sıfırlamak istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source> foot</source>
+        <translation type="gpt-4o-generated">ayak</translation>
+    </message>
+    <message>
+        <source> meter</source>
+        <translation type="gpt-4o-generated">metre</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (0–29 km/h)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (0–29 km/s)</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (30–49 km/h)</source>
+        <translation type="gpt-4o-generated">Hız Limiti Ofseti (30–49 km/s)</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (50–59 km/h)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (50–59 km/s)</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (60–79 km/h)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Sapması (60–79 km/s)</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (80–99 km/h)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (80–99 km/s)</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (100–119 km/h)</source>
+        <translation type="gpt-4o-generated">Hız Limiti Ofseti (100–119 km/s)</translation>
+    </message>
+    <message>
+        <source>Speed Limit Offset (120–140 km/h)</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Ofseti (120–140 km/s)</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 0 and 29 km/h.</source>
+        <translation type="gpt-4o-generated">Hedef hız sapması, 0 ile 29 km/s arasında ilan edilen limitler için uygulanır.</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 30 and 49 km/h.</source>
+        <translation type="gpt-4o-generated">Hedef hız ofseti, 30 ile 49 km/s arasındaki ilan edilen hız sınırları için uygulanır.</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 50 and 59 km/h.</source>
+        <translation type="gpt-4o-generated">Hedef hız sapması, 50 ile 59 km/sa arasındaki ilan edilmiş sınırlar için uygulanır.</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 60 and 79 km/h.</source>
+        <translation type="gpt-4o-generated">60 ile 79 km/sa arasındaki belirtilen hız sınırları için hedef hız dengesi uygulandı.</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 80 and 99 km/h.</source>
+        <translation type="gpt-4o-generated">Hedef hız sapması, 80 ila 99 km/s arasındaki ilan edilmiş limitler için uygulanır.</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 100 and 119 km/h.</source>
+        <translation type="gpt-4o-generated">100 ile 119 km/sa arasındaki ilan edilen hız sınırları için hedef hız sapması uygulanır.</translation>
+    </message>
+    <message>
+        <source>Target speed offset applied for posted limits between 120 and 140 km/h.</source>
+        <translation type="gpt-4o-generated">120 ile 140 km/sa arasındaki ilan edilen hız sınırları için hedef hız ötelemesi uygulandı.</translation>
     </message>
 </context>
 <context>
@@ -1950,68 +1908,12 @@ Bu, 'Koşullu Deneysel Modu'nu geçersiz kılar.</translation>
 <context>
     <name>FrogPilotModelPanel</name>
     <message>
-        <source>Automatically Update and Download Models</source>
-        <translation type="gpt-4o-generated">Modelleri Otomatik Olarak Güncelle ve İndir</translation>
-    </message>
-    <message>
-        <source>Automatically downloads new models and updates existing ones if needed.</source>
-        <translation type="gpt-4o-generated">Gerekirse yeni modelleri otomatik olarak indirir ve mevcut olanları günceller.</translation>
-    </message>
-    <message>
         <source>Model Randomizer</source>
         <translation type="gpt-4o-generated">Model Rastgele Seçici</translation>
     </message>
     <message>
-        <source>Randomly selects a model each drive and brings up a model review prompt at the end to help find your preferred model.</source>
-        <translation type="gpt-4o-generated">Her sürüşte rastgele bir model seçer ve tercih ettiğiniz modeli bulmanıza yardımcı olmak için sonunda bir model inceleme istemi getirir.</translation>
-    </message>
-    <message>
         <source>Manage Model Blacklist</source>
         <translation type="gpt-4o-generated">Model Kara Listeyi Yönet</translation>
-    </message>
-    <message>
-        <source>Manage the blacklisted models that aren't being used with 'Model Randomizer'.</source>
-        <translation type="gpt-4o-generated">'Model Randomizer' ile kullanılmayan kara listeye alınmış modelleri yönetin.</translation>
-    </message>
-    <message>
-        <source>Reset Model Scores</source>
-        <translation type="gpt-4o-generated">Model Puanlarını Sıfırla</translation>
-    </message>
-    <message>
-        <source>Clear the ratings you've given to the driving models.</source>
-        <translation type="gpt-4o-generated">Sürüş modellerine verdiğiniz puanları silin.</translation>
-    </message>
-    <message>
-        <source>Review Model Scores</source>
-        <translation type="gpt-4o-generated">Model Puanlarını İncele</translation>
-    </message>
-    <message>
-        <source>View the ratings you've assigned to the driving models.</source>
-        <translation type="gpt-4o-generated">Sürüş modellerine atadığınız derecelendirmeleri görüntüleyin.</translation>
-    </message>
-    <message>
-        <source>Delete Model</source>
-        <translation type="gpt-4o-generated">Modeli Sil</translation>
-    </message>
-    <message>
-        <source>Delete driving models from your device.</source>
-        <translation type="gpt-4o-generated">Cihazınızdan sürüş modellerini silin.</translation>
-    </message>
-    <message>
-        <source>Download Model</source>
-        <translation type="gpt-4o-generated">Modeli İndir</translation>
-    </message>
-    <message>
-        <source>Download new driving models.</source>
-        <translation type="gpt-4o-generated">Yeni sürüş modellerini indir.</translation>
-    </message>
-    <message>
-        <source>Select Model</source>
-        <translation type="gpt-4o-generated">Model Seç</translation>
-    </message>
-    <message>
-        <source>Select your preferred driving model.</source>
-        <translation type="gpt-4o-generated">Tercih ettiğiniz sürüş modelini seçin.</translation>
     </message>
     <message>
         <source>ADD</source>
@@ -2034,20 +1936,12 @@ Bu, 'Koşullu Deneysel Modu'nu geçersiz kılar.</translation>
         <translation type="gpt-4o-generated">Kara listeye eklenecek bir model seçin</translation>
     </message>
     <message>
-        <source>Are you sure you want to add the '%1' model to the blacklist?</source>
-        <translation type="gpt-4o-generated">'%1' modelini kara listeye eklemek istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
         <source>Add</source>
         <translation type="gpt-4o-generated">Ekle</translation>
     </message>
     <message>
         <source>Select a model to remove from the blacklist</source>
         <translation type="gpt-4o-generated">Kara listeden kaldırılacak bir model seçin</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to remove the '%1' model from the blacklist?</source>
-        <translation type="gpt-4o-generated">'%1' modelini kara listeden kaldırmak istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <source>Remove</source>
@@ -2066,10 +1960,6 @@ Bu, 'Koşullu Deneysel Modu'nu geçersiz kılar.</translation>
         <translation type="gpt-4o-generated">Tüm model sürüşlerinizi ve puanlarınızı sıfırlamak istediğinizden emin misiniz?</translation>
     </message>
     <message>
-        <source>REVIEW</source>
-        <translation type="gpt-4o-generated">İNCELEME</translation>
-    </message>
-    <message>
         <source>DELETE</source>
         <translation type="gpt-4o-generated">SİL</translation>
     </message>
@@ -2080,10 +1970,6 @@ Bu, 'Koşullu Deneysel Modu'nu geçersiz kılar.</translation>
     <message>
         <source>Select a driving model to delete</source>
         <translation type="gpt-4o-generated">Silinecek sürüş modelini seçin</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the '%1' model?</source>
-        <translation type="gpt-4o-generated">'%1' modelini silmek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <source>Delete</source>
@@ -2114,12 +2000,76 @@ Bu, 'Koşullu Deneysel Modu'nu geçersiz kılar.</translation>
         <translation type="gpt-4o-generated">Bir model seçin - 🗺️ = Navigasyon | 📡 = Radar | 👀 = VOACC</translation>
     </message>
     <message>
-        <source>The 'Model Randomizer' only works with downloaded models. Do you want to download all the driving models?</source>
-        <translation type="gpt-4o-generated">'Model Randomizer' yalnızca indirilen modellerle çalışır. Tüm sürüş modellerini indirmek ister misiniz?</translation>
-    </message>
-    <message>
         <source>CANCEL</source>
         <translation type="gpt-4o-generated">İPTAL</translation>
+    </message>
+    <message>
+        <source>Automatically Download New Models</source>
+        <translation type="gpt-4o-generated">Yeni Modelleri Otomatik Olarak İndir</translation>
+    </message>
+    <message>
+        <source>Automatically downloads new driving models as they become available.</source>
+        <translation type="gpt-4o-generated">Yeni sürüş modelleri kullanıma sunulduğunda otomatik olarak indirir.</translation>
+    </message>
+    <message>
+        <source>Delete Driving Models</source>
+        <translation type="gpt-4o-generated">Sürüş Modellerini Sil</translation>
+    </message>
+    <message>
+        <source>Delete selected driving models from the device.</source>
+        <translation type="gpt-4o-generated">Cihazdan seçili sürüş modellerini sil.</translation>
+    </message>
+    <message>
+        <source>Download Driving Models</source>
+        <translation type="gpt-4o-generated">Sürüş Modellerini İndir</translation>
+    </message>
+    <message>
+        <source>Download additional driving models to the device.</source>
+        <translation type="gpt-4o-generated">Cihaza ek sürüş modelleri indir.</translation>
+    </message>
+    <message>
+        <source>A random driving model is chosen each drive and prompts for feedback after the drive to find the model that best suits your needs.</source>
+        <translation type="gpt-4o-generated">Her sürüşte rastgele bir sürüş modeli seçilir ve ihtiyaçlarınıza en uygun modeli bulmak için sürüşten sonra geri bildirim istenir.</translation>
+    </message>
+    <message>
+        <source>View or edit models excluded from selection with the &lt;b&gt;Model Randomizer&lt;/b&gt;.</source>
+        <translation type="gpt-4o-generated">Seçimden çıkarılan modelleri &lt;b&gt;Model Rastgele Seçici&lt;/b&gt; ile görüntüleyin veya düzenleyin.</translation>
+    </message>
+    <message>
+        <source>Manage Model Ratings</source>
+        <translation type="gpt-4o-generated">Model Puanlamalarını Yönet</translation>
+    </message>
+    <message>
+        <source>Clear or view all saved ratings for driving models.</source>
+        <translation type="gpt-4o-generated">Sürüş modelleri için kaydedilen tüm derecelendirmeleri temizle veya görüntüle.</translation>
+    </message>
+    <message>
+        <source>Select Driving Model</source>
+        <translation type="gpt-4o-generated">Sürüş Modelini Seç</translation>
+    </message>
+    <message>
+        <source>Select the active driving model.</source>
+        <translation type="gpt-4o-generated">Aktif sürüş modelini seçin.</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the "%1" model?</source>
+        <translation type="gpt-4o-generated">"%1" modelini silmek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to add the "%1" model to the blacklist?</source>
+        <translation type="gpt-4o-generated">"%1" modelini kara listeye eklemek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to remove the "%1" model from the blacklist?</source>
+        <translation type="gpt-4o-generated">"%1" modelini kara listeden çıkarmak istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>VIEW</source>
+        <translation type="gpt-4o-generated">GÖRÜNÜM</translation>
+    </message>
+    <message>
+        <source>The "Model Randomizer" only works with downloaded models. Do you want to download all the driving models?</source>
+        <translation type="gpt-4o-generated">"Model Randomizer" sadece indirilen modellerle çalışır. Tüm sürüş modellerini indirmek ister misiniz?</translation>
     </message>
 </context>
 <context>
@@ -2189,22 +2139,6 @@ Bu, 'Koşullu Deneysel Modu'nu geçersiz kılar.</translation>
         <translation type="gpt-4o-generated">CİHAZ KONTROLLERİ</translation>
     </message>
     <message>
-        <source>Manage FrogPilot's alerts and sounds.</source>
-        <translation type="gpt-4o-generated">FrogPilot'ın uyarılarını ve seslerini yönetin.</translation>
-    </message>
-    <message>
-        <source>Manage FrogPilot's features that affect acceleration, braking, and steering.</source>
-        <translation type="gpt-4o-generated">FrogPilot'ın hızlanma, frenleme ve direksiyon üzerindeki özelliklerini yönetin.</translation>
-    </message>
-    <message>
-        <source>Manage openpilot's theme and onroad widgets.</source>
-        <translation type="gpt-4o-generated">Openpilot'un temasını ve yolda kullanılan widget'larını yönetin.</translation>
-    </message>
-    <message>
-        <source>Manage vehicle-specific settings.</source>
-        <translation type="gpt-4o-generated">Araçlara özgü ayarları yönetin.</translation>
-    </message>
-    <message>
         <source>Minimal</source>
         <translation type="gpt-4o-generated">Minimal</translation>
     </message>
@@ -2225,20 +2159,6 @@ Bu, 'Koşullu Deneysel Modu'nu geçersiz kılar.</translation>
         <translation type="gpt-4o-generated">Ayarlama Düzeyi</translation>
     </message>
     <message>
-        <source>Select a tuning level that suits your preferences:
-
-Minimal - Ideal for those who prefer simplicity or ease of use
-Standard - Recommended for most users for a balanced experience
-Advanced - Unlocks fine-tuning controls for more experienced users
-Developer - Unlocks highly customizable settings for seasoned enthusiasts</source>
-        <translation type="gpt-4o-generated">Tercihlerinize uygun bir ayar seviyesi seçin:
-
-Minimal - Basitlik veya kullanım kolaylığını tercih edenler için ideal
-Standart - Dengeli bir deneyim için çoğu kullanıcıya önerilir
-Gelişmiş - Daha deneyimli kullanıcılar için ince ayar kontrollerini açar
-Geliştirici - Deneyimli meraklılar için yüksek derecede özelleştirilebilir ayarları açar</translation>
-    </message>
-    <message>
         <source>WARNING: This unlocks some potentially dangerous settings that can DRASTICALLY alter your driving experience!</source>
         <translation type="gpt-4o-generated">UYARI: Bu, sürüş deneyiminizi ÇOK ciddi şekilde değiştirebilecek bazı potansiyel olarak tehlikeli ayarları açar!</translation>
     </message>
@@ -2247,28 +2167,58 @@ Geliştirici - Deneyimli meraklılar için yüksek derecede özelleştirilebilir
         <translation type="gpt-4o-generated">NAVİGASYON</translation>
     </message>
     <message>
-        <source>Download map data that can be used with "Curve Speed Control" and "Speed Limit Controller" and set up "Navigate On openpilot (NOO)".</source>
-        <translation type="gpt-4o-generated">"Viraj Hızı Kontrolü" ve "Hız Limiti Kontrolörü" ile kullanılabilecek harita verilerini indir ve "openpilot ile Navigasyon (NOO)"'yu ayarla.</translation>
+        <source>VEHICLE SETTINGS</source>
+        <translation type="gpt-4o-generated">ARAÇ AYARLARI</translation>
     </message>
     <message>
-        <source>Manage the device's internal settings along with other tools and utilities used to maintain and troubleshoot FrogPilot.</source>
-        <translation type="gpt-4o-generated">FrogPilot'ı korumak ve sorun gidermek için kullanılan diğer araçlar ve yardımcı programlarla birlikte cihazın dahili ayarlarını yönetin.</translation>
+        <source>WHEEL CONTROLS</source>
+        <translation type="gpt-4o-generated">DİREKSİYON KONTROLLERİ</translation>
     </message>
     <message>
-        <source>The "Developer" preset is only available for users with either over 100 hours on FrogPilot, or 250 hours with openpilot.</source>
-        <translation type="gpt-4o-generated">"Developer" ön ayarı yalnızca ya FrogPilot'ta 100 saatten fazla, ya da openpilot ile 250 saatten fazla deneyimi olan kullanıcılar için mevcuttur.</translation>
+        <source>FrogPilot settings for alert volumes and custom notifications to stay informed about important driving events.</source>
+        <translation type="gpt-4o-generated">Önemli sürüş olayları hakkında bilgi sahibi olmak için FrogPilot ayarları, uyarı sesleri ve özel bildirimler.</translation>
+    </message>
+    <message>
+        <source>FrogPilot settings for acceleration, braking, and steering.</source>
+        <translation type="gpt-4o-generated">FrogPilot hızlanma, frenleme ve direksiyon ayarları.</translation>
+    </message>
+    <message>
+        <source>Download map data for &lt;b&gt;Curve Speed Control&lt;/b&gt;, &lt;b&gt;Speed Limit Controller&lt;/b&gt;, and set up &lt;b&gt;Navigate on openpilot (NOO)&lt;/b&gt;.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Viraj Hızı Kontrolü&lt;/b&gt;, &lt;b&gt;Hız Sınırı Denetleyici&lt;/b&gt; için harita verilerini indirin ve &lt;b&gt;openpilot ile Navigasyon (NOO)&lt;/b&gt;'yu kurun.</translation>
+    </message>
+    <message>
+        <source>Data storage management, debugging tools, device settings, screen behavior settings, system backups, and utilities to maintain, optimize, and troubleshoot FrogPilot.</source>
+        <translation type="gpt-4o-generated">Veri depolama yönetimi, hata ayıklama araçları, cihaz ayarları, ekran davranışı ayarları, sistem yedeklemeleri ve FrogPilot'ı korumak, optimize etmek ve sorun gidermek için yardımcı programlar.</translation>
+    </message>
+    <message>
+        <source>FrogPilot settings for the current theme, driving-screen, and the overall user interface.</source>
+        <translation type="gpt-4o-generated">FrogPilot ayarları mevcut tema, sürüş ekranı ve genel kullanıcı arayüzü için.</translation>
+    </message>
+    <message>
+        <source>Options unique to supported manufacturers and vehicle fingerprint management.</source>
+        <translation type="gpt-4o-generated">Desteklenen üreticilere ve araç parmak izi yönetimine özgü seçenekler.</translation>
+    </message>
+    <message>
+        <source>The visibility and complexity of tuning settings. Lower levels simplify the interface by hiding advanced options, while higher levels unlock detailed customization.
+
+Minimal - Ideal for those who prefer simplicity or ease of use
+Standard - Recommended for most users for a balanced experience
+Advanced - Unlocks fine-tuning controls for more experienced users
+Developer - Unlocks highly customizable settings for seasoned enthusiasts</source>
+        <translation type="gpt-4o-generated">Ayarların görünürlüğü ve karmaşıklığı. Daha düşük seviyeler gelişmiş seçenekleri gizleyerek arayüzü basitleştirirken, daha yüksek seviyeler ayrıntılı özelleştirmeleri açar.
+
+Minimal - Sadelik veya kullanım kolaylığını tercih edenler için ideal
+Standart - Dengeli bir deneyim için çoğu kullanıcıya önerilir
+Gelişmiş - Daha deneyimli kullanıcılar için ince ayar kontrollerini açar
+Geliştirici - Deneyimli meraklılar için son derece özelleştirilebilir ayarları açar</translation>
+    </message>
+    <message>
+        <source>The &lt;b&gt;Developer&lt;/b&gt; preset is only available for users with either over 100 hours on FrogPilot, or 250 hours with openpilot.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Geliştirici&lt;/b&gt; ön ayarı yalnızca FrogPilot'ta 100 saatten fazla veya openpilot ile 250 saatlik kullanım süresine sahip kullanıcılar için mevcuttur.</translation>
     </message>
 </context>
 <context>
     <name>FrogPilotSoundsPanel</name>
-    <message>
-        <source>Alert Volume Controller</source>
-        <translation type="gpt-4o-generated">Uyarı Ses Kontrolü</translation>
-    </message>
-    <message>
-        <source>Control the volume level for each individual sound in openpilot.</source>
-        <translation type="gpt-4o-generated">Openpilot'taki her bir sesin ses seviyesini ayrı ayrı kontrol edin.</translation>
-    </message>
     <message>
         <source>Disengage Volume</source>
         <translation type="gpt-4o-generated">Ses Seviyesini Devre Dışı Bırak</translation>
@@ -2276,16 +2226,6 @@ Geliştirici - Deneyimli meraklılar için yüksek derecede özelleştirilebilir
     <message>
         <source>Engage Volume</source>
         <translation type="gpt-4o-generated">Ses Seviyesini Aktifleştir</translation>
-    </message>
-    <message>
-        <source>Related alerts:
-
-NNFF Torque Controller loaded
-openpilot engaged</source>
-        <translation type="gpt-4o-generated">İlgili uyarılar:
-
-NNFF Tork Kontrol Cihazı yüklendi
-openpilot devrede</translation>
     </message>
     <message>
         <source>Prompt Volume</source>
@@ -2296,58 +2236,16 @@ openpilot devrede</translation>
         <translation type="gpt-4o-generated">Dikkat Dağıtıcı Ses Ayarı</translation>
     </message>
     <message>
-        <source>Related alerts:
-
-Pay Attention, Driver Distracted
-Touch Steering Wheel, Driver Unresponsive</source>
-        <translation type="gpt-4o-generated">İlgili uyarılar:
-
-Dikkat Et, Sürücü Dikkati Dağılmış
-Direksiyona Dokun, Sürücü Tepkisiz</translation>
-    </message>
-    <message>
         <source>Refuse Volume</source>
         <translation type="gpt-4o-generated">Reddet Ses Seviyesi</translation>
-    </message>
-    <message>
-        <source>Related alerts:
-
-openpilot Unavailable</source>
-        <translation type="gpt-4o-generated">İlgili uyarılar:
-
-openpilot Kullanılamaz</translation>
     </message>
     <message>
         <source>Warning Soft Volume</source>
         <translation type="gpt-4o-generated">Uyarı Yumuşak Ses</translation>
     </message>
     <message>
-        <source>Related alerts:
-
-BRAKE!, Risk of Collision
-TAKE CONTROL IMMEDIATELY</source>
-        <translation type="gpt-4o-generated">İlgili uyarılar:
-
-FRENLE!, Çarpışma Riski
-HEMEN KONTROLÜ ELE AL</translation>
-    </message>
-    <message>
         <source>Warning Immediate Volume</source>
         <translation type="gpt-4o-generated">Uyarı Anında Ses Seviyesi</translation>
-    </message>
-    <message>
-        <source>Related alerts:
-
-DISENGAGE IMMEDIATELY, Driver Distracted
-DISENGAGE IMMEDIATELY, Driver Unresponsive</source>
-        <translation type="gpt-4o-generated">İlgili uyarılar:
-
-HEMEN DEVRE DIŞI BIRAK, Sürücü Dikkatsiz
-HEMEN DEVRE DIŞI BIRAK, Sürücü Tepkisiz</translation>
-    </message>
-    <message>
-        <source>Custom Alerts</source>
-        <translation type="gpt-4o-generated">Özel Uyarılar</translation>
     </message>
     <message>
         <source>Goat Scream Steering Saturated Alert</source>
@@ -2362,10 +2260,6 @@ HEMEN DEVRE DIŞI BIRAK, Sürücü Tepkisiz</translation>
         <translation type="gpt-4o-generated">Önden Araç Uzaklaşma Uyarısı</translation>
     </message>
     <message>
-        <source>Speed Limit Changed Alert</source>
-        <translation type="gpt-4o-generated">Hız Sınırı Değişti Uyarısı</translation>
-    </message>
-    <message>
         <source>Auto</source>
         <translation type="gpt-4o-generated">Otomatik</translation>
     </message>
@@ -2374,60 +2268,76 @@ HEMEN DEVRE DIŞI BIRAK, Sürücü Tepkisiz</translation>
         <translation type="gpt-4o-generated">Sessiz</translation>
     </message>
     <message>
-        <source>Related alerts:
-
-Adaptive Cruise Disabled
-Brake Pedal Pressed
-Parking Brake Engaged
-Speed too Low</source>
-        <translation type="gpt-4o-generated">İlgili uyarılar:
-
-Uyarlanabilir Hız Sabitleyici Devre Dışı
-Fren Pedalı Basılı
-El Freni Devrede
-Hız Çok Düşük</translation>
+        <source>Alert Volume Control</source>
+        <translation type="gpt-4o-generated">Uyarı Ses Düzeyi Kontrolü</translation>
     </message>
     <message>
-        <source>Related alerts:
-
-Car Detected in Blindspot
-Steer Unavailable Below "X"
-Speed too Low
-Take Control, Turn Exceeds Steering Limit</source>
-        <translation type="gpt-4o-generated">İlgili uyarılar:
-
-Kör Noktada Araç Algılandı
-"X" Altında Direksiyon Kullanılamaz
-Hız Çok Düşük
-Kontrolü Alın, Dönüş Direksiyon Sınırını Aşıyor</translation>
+        <source>Adjust the volume for each alert in openpilot.</source>
+        <translation type="gpt-4o-generated">openpilot'teki her uyarı için sesi ayarlayın.</translation>
     </message>
     <message>
-        <source>Custom FrogPilot alerts for openpilot events.</source>
-        <translation type="gpt-4o-generated">openpilot olayları için özelleştirilmiş FrogPilot uyarıları.</translation>
+        <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;Adaptive Cruise Disabled&lt;/b&gt;&lt;br&gt;&lt;b&gt;Brake Pedal Pressed&lt;/b&gt;&lt;br&gt;&lt;b&gt;Parking Brake Engaged&lt;/b&gt;&lt;br&gt;&lt;b&gt;Speed too Low&lt;/b&gt;</source>
+        <translation type="gpt-4o-generated">Uyarılar için ses seviyesini ayarlayın, örneğin:&lt;br&gt;&lt;br&gt;&lt;b&gt;Uyarlanabilir Hız Sabitleyici Devre Dışı&lt;/b&gt;&lt;br&gt;&lt;b&gt;Fren Pedalı Basılı&lt;/b&gt;&lt;br&gt;&lt;b&gt;Park Freni Etkin&lt;/b&gt;&lt;br&gt;&lt;b&gt;Hız Çok Düşük&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>Enable the famed "Goat Scream" that has brought both joy and anger to FrogPilot users all around the world!</source>
-        <translation type="gpt-4o-generated">Dünyanın dört bir yanındaki FrogPilot kullanıcılarına hem neşe hem de öfke getiren ünlü "Keçi Çığlığı"nı etkinleştirin!</translation>
+        <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;NNFF Torque Controller loaded&lt;/b&gt;&lt;br&gt;&lt;b&gt;openpilot engaged&lt;/b&gt;</source>
+        <translation type="gpt-4o-generated">Uyarılar için ses düzeyini ayarlayın, örneğin:&lt;br&gt;&lt;br&gt;&lt;b&gt;NNFF Tork Kontrolcüsü yüklendi&lt;/b&gt;&lt;br&gt;&lt;b&gt;openpilot devrede&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>Play an alert when the traffic light changes from red to green.</source>
-        <translation type="gpt-4o-generated">Trafik ışığı kırmızıdan yeşile döndüğünde bir uyarı çal.</translation>
+        <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;Car Detected in Blindspot&lt;/b&gt;&lt;br&gt;&lt;b&gt;Steer Unavailable Below &lt;i&gt;X&lt;/i&gt;&lt;/b&gt;&lt;br&gt;&lt;b&gt;Speed too Low&lt;/b&gt;&lt;br&gt;&lt;b&gt;Take Control, Turn Exceeds Steering Limit&lt;/b&gt;</source>
+        <translation type="gpt-4o-generated">Aşağıdaki uyarılar için ses seviyesini ayarlayın:&lt;br&gt;&lt;br&gt;&lt;b&gt;Kör Noktada Araç Tespit Edildi&lt;/b&gt;&lt;br&gt;&lt;b&gt;&lt;i&gt;X&lt;/i&gt;'in Altında Direksiyon Kullanılamaz&lt;/b&gt;&lt;br&gt;&lt;b&gt;Hız Çok Düşük&lt;/b&gt;&lt;br&gt;&lt;b&gt;Kontrolü Alın, Dönüş Direksiyon Limitini Aşıyor&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>Play an alert when the lead vehicle starts starts to depart.</source>
-        <translation type="gpt-4o-generated">Öndeki araç hareket etmeye başladığında bir uyarı ver.</translation>
+        <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;Pay Attention, Driver Distracted&lt;/b&gt;&lt;br&gt;&lt;b&gt;Touch Steering Wheel, Driver Unresponsive&lt;/b&gt;</source>
+        <translation type="gpt-4o-generated">Aşağıdaki uyarıların ses düzeyini ayarlayın:&lt;br&gt;&lt;br&gt;&lt;b&gt;Dikkat Et, Sürücü Dikkati Dağılmış&lt;/b&gt;&lt;br&gt;&lt;b&gt;Direksiyona Dokun, Sürücü Tepkisiz&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>Loud Blindspot Vehicle Alert</source>
-        <translation type="gpt-4o-generated">Yüksek Sesli Kör Nokta Araç Uyarısı</translation>
+        <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;openpilot Unavailable&lt;/b&gt;</source>
+        <translation type="gpt-4o-generated">Aşağıdaki gibi uyarılar için ses seviyesini ayarlayın:&lt;br&gt;&lt;br&gt;&lt;b&gt;openpilot Kullanılamıyor&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>Play a loud alert for when a vehicle is detected in the blindspot when attempting to change lanes.</source>
-        <translation type="gpt-4o-generated">Şerit değiştirmeye çalışırken kör noktada bir araç tespit edildiğinde yüksek sesli bir uyarı çal.</translation>
+        <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;BRAKE!, Risk of Collision&lt;/b&gt;&lt;br&gt;&lt;b&gt;TAKE CONTROL IMMEDIATELY&lt;/b&gt;</source>
+        <translation type="gpt-4o-generated">Uyarılar için ses seviyesini ayarlayın, örneğin:&lt;br&gt;&lt;br&gt;&lt;b&gt;FREN!, Çarpışma Riski&lt;/b&gt;&lt;br&gt;&lt;b&gt;HEMEN KONTROLÜ ALIN&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>Play an alert when the speed limit changes.</source>
-        <translation type="gpt-4o-generated">Hız sınırı değiştiğinde bir uyarı çal.</translation>
+        <source>Adjust the volume for alerts like:&lt;br&gt;&lt;br&gt;&lt;b&gt;DISENGAGE IMMEDIATELY, Driver Distracted&lt;/b&gt;&lt;br&gt;&lt;b&gt;DISENGAGE IMMEDIATELY, Driver Unresponsive&lt;/b&gt;</source>
+        <translation type="gpt-4o-generated">Uyarılar için ses seviyesini ayarlayın, örneğin:&lt;br&gt;&lt;br&gt;&lt;b&gt;HEMEN AYIRIN, Sürücü Dikkati Dağılmış&lt;/b&gt;&lt;br&gt;&lt;b&gt;HEMEN AYIRIN, Sürücü Tepkisiz&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>FrogPilot Alerts</source>
+        <translation type="gpt-4o-generated">FrogPilot Uyarıları</translation>
+    </message>
+    <message>
+        <source>FrogPilot alerts for various events in openpilot.</source>
+        <translation type="gpt-4o-generated">FrogPilot, openpilot'taki çeşitli olaylar için uyarılar verir.</translation>
+    </message>
+    <message>
+        <source>The infamous &lt;b&gt;Goat Scream&lt;/b&gt; that has brought both joy and anger to FrogPilot users all around the world!</source>
+        <translation type="gpt-4o-generated">Dünya genelindeki FrogPilot kullanıcılarına hem sevinç hem de öfke getiren meşhur &lt;b&gt;Keçi Çığlığı&lt;/b&gt;!</translation>
+    </message>
+    <message>
+        <source>An alert for when the traffic light changes from red to green.</source>
+        <translation type="gpt-4o-generated">Trafik ışığı kırmızıdan yeşile döndüğünde bir uyarı.</translation>
+    </message>
+    <message>
+        <source>An alert for when the lead vehicle begins to move.</source>
+        <translation type="gpt-4o-generated">Öndeki araç hareket etmeye başladığında bir uyarı.</translation>
+    </message>
+    <message>
+        <source>Loud "Car Detected in Blindspot" Alert</source>
+        <translation type="gpt-4o-generated">Yüksek Sesli "Kör Noktada Araç Tespit Edildi" Uyarısı</translation>
+    </message>
+    <message>
+        <source>A louder alert for when a vehicle is detected in the blindspot when attempting to change lanes.</source>
+        <translation type="gpt-4o-generated">Şerit değiştirirken kör noktanızda bir araç tespit edildiğinde daha yüksek sesli bir uyarı.</translation>
+    </message>
+    <message>
+        <source>Speed Limit Change Alert</source>
+        <translation type="gpt-4o-generated">Hız Sınırı Değişikliği Uyarısı</translation>
+    </message>
+    <message>
+        <source>An alert for when the speed limit changes.</source>
+        <translation type="gpt-4o-generated">Hız sınırı değiştiğinde bir uyarı.</translation>
     </message>
 </context>
 <context>
@@ -2435,10 +2345,6 @@ Kontrolü Alın, Dönüş Direksiyon Sınırını Aşıyor</translation>
     <message>
         <source>Custom Theme</source>
         <translation type="gpt-4o-generated">Özel Tema</translation>
-    </message>
-    <message>
-        <source>Custom openpilot themes.</source>
-        <translation type="gpt-4o-generated">Özel openpilot temaları.</translation>
     </message>
     <message>
         <source>Color Scheme</source>
@@ -2493,10 +2399,6 @@ Kontrolü Alın, Dönüş Direksiyon Sınırını Aşıyor</translation>
         <translation type="gpt-4o-generated">Silinecek bir renk şeması seçin</translation>
     </message>
     <message>
-        <source>Are you sure you want to delete the '%1' color scheme?</source>
-        <translation type="gpt-4o-generated">'%1' renk şemasını silmek istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
         <source>Delete</source>
         <translation type="gpt-4o-generated">Sil</translation>
     </message>
@@ -2511,10 +2413,6 @@ Kontrolü Alın, Dönüş Direksiyon Sınırını Aşıyor</translation>
     <message>
         <source>Select an icon pack to delete</source>
         <translation type="gpt-4o-generated">Silinecek simge paketini seçin</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the '%1' icon pack?</source>
-        <translation type="gpt-4o-generated">'%1' simge paketini silmek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <source>Select an icon pack to download</source>
@@ -2569,68 +2467,12 @@ Kontrolü Alın, Dönüş Direksiyon Sınırını Aşıyor</translation>
         <translation type="gpt-4o-generated">İPTAL ET</translation>
     </message>
     <message>
-        <source>Changes out openpilot's color scheme.
-
-Want to submit your own color scheme? Share it in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="gpt-4o-generated">openpilot'un renk şemasını değiştirir.
-
-Kendi renk şemanızı göndermek mi istiyorsunuz? Bunu FrogPilot Discord'daki 'custom-themes' kanalında paylaşın!</translation>
-    </message>
-    <message>
-        <source>Changes out openpilot's icon pack.
-
-Want to submit your own icons? Share them in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="gpt-4o-generated">openpilot'un simge paketini değiştirir.
-
-Kendi simgelerinizi göndermek mi istiyorsunuz? Bunları FrogPilot Discord üzerindeki 'custom-themes' kanalında paylaşın!</translation>
-    </message>
-    <message>
-        <source>Changes out openpilot's sound effects.
-
-Want to submit your own sounds? Share them in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="gpt-4o-generated">openpilot'ın ses efektlerini değiştirir.
-
-Kendi seslerinizi göndermek mi istiyorsunuz? Onları FrogPilot Discord'daki 'custom-themes' kanalında paylaşın!</translation>
-    </message>
-    <message>
-        <source>Enables a custom steering wheel icon in the top right of the screen.</source>
-        <translation type="gpt-4o-generated">Ekranın sağ üst köşesinde özel bir direksiyon simgesi etkinleştirir.</translation>
-    </message>
-    <message>
-        <source>Enables themed turn signal animations.
-
-Want to submit your own animations? Share them in the 'custom-themes' channel on the FrogPilot Discord!</source>
-        <translation type="gpt-4o-generated">Temalı sinyal animasyonlarını etkinleştirir.
-
-Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord'daki 'custom-themes' kanalında paylaşın!</translation>
-    </message>
-    <message>
-        <source>Changes the openpilot theme based on the current holiday. Minor holidays last one day, while major holidays (Easter, Christmas, Halloween, etc.) last the entire week.</source>
-        <translation type="gpt-4o-generated">openpilot temasını mevcut tatil gününe göre değiştirir. Küçük tatiller bir gün sürerken, büyük tatiller (Paskalya, Noel, Cadılar Bayramı vb.) tüm hafta boyunca sürer.</translation>
-    </message>
-    <message>
         <source>Rainbow Path</source>
         <translation type="gpt-4o-generated">Gökkuşağı Yolu</translation>
     </message>
     <message>
-        <source>Swap out the path in the onroad UI for a Mario Kart inspired 'Rainbow Path'.</source>
-        <translation type="gpt-4o-generated">Yolda kullanıcı arayüzündeki yolu Mario Kart'tan ilham alınmış 'Gökkuşağı Yolu' ile değiştirin.</translation>
-    </message>
-    <message>
-        <source>Enables random cosmetic events that happen during certain driving conditions. These events are purely for fun and don't affect driving controls!</source>
-        <translation type="gpt-4o-generated">Belirli sürüş koşullarında gerçekleşen rastgele kozmetik olayları etkinleştirir. Bu olaylar tamamen eğlence amaçlıdır ve sürüş kontrollerini etkilemez!</translation>
-    </message>
-    <message>
-        <source>Controls the text of the 'Startup' alert message that appears when you start the drive.</source>
-        <translation type="gpt-4o-generated">Sürüşe başladığınızda görünen 'Başlangıç' uyarı mesajının metnini kontrol eder.</translation>
-    </message>
-    <message>
         <source>Select a distance icon pack to delete</source>
         <translation type="gpt-4o-generated">Silinecek bir mesafe simge paketi seçin</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the '%1' distance icon pack?</source>
-        <translation type="gpt-4o-generated">'%1' mesafe simge paketini silmek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <source>Select a distance icon pack to download</source>
@@ -2645,10 +2487,6 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
         <translation type="gpt-4o-generated">Silinecek sinyal animasyonunu seçin</translation>
     </message>
     <message>
-        <source>Are you sure you want to delete the '%1' signal animation?</source>
-        <translation type="gpt-4o-generated">'%1' sinyal animasyonunu silmek istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
         <source>Select a signal animation to download</source>
         <translation type="gpt-4o-generated">İndirmek için bir sinyal animasyonu seçin</translation>
     </message>
@@ -2657,16 +2495,8 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
         <translation type="gpt-4o-generated">Bir sinyal animasyonu seç</translation>
     </message>
     <message>
-        <source>Are you sure you want to delete the '%1' sound pack?</source>
-        <translation type="gpt-4o-generated">'%1' ses paketini silmek istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
         <source>Select a sound pack</source>
         <translation type="gpt-4o-generated">Bir ses paketi seçin</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to delete the '%1' steering wheel?</source>
-        <translation type="gpt-4o-generated">'%1' direksiyonunu silmek istediğinizden emin misiniz?</translation>
     </message>
     <message>
         <source>Enter the text for the top half</source>
@@ -2675,6 +2505,98 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
     <message>
         <source>Enter the text for the bottom half</source>
         <translation type="gpt-4o-generated">Alt yarının metnini girin</translation>
+    </message>
+    <message>
+        <source>The overall appearance of openpilot.</source>
+        <translation type="gpt-4o-generated">openpilot'un genel görünümü.</translation>
+    </message>
+    <message>
+        <source>openpilot's color scheme.
+
+Want to submit your own color scheme? Share it in the "custom-themes" channel on the FrogPilot Discord!</source>
+        <translation type="gpt-4o-generated">openpilot'in renk şeması.
+
+Kendi renk şemanızı göndermek mi istiyorsunuz? Bunu FrogPilot Discord'daki "custom-themes" kanalında paylaşın!</translation>
+    </message>
+    <message>
+        <source>openpilot's icon pack.
+
+Want to submit your own icons? Share them in the "custom-themes" channel on the FrogPilot Discord!</source>
+        <translation type="gpt-4o-generated">openpilot'un simge paketi.
+
+Kendi simgelerinizi göndermek mi istiyorsunuz? Onları FrogPilot Discord'daki "custom-themes" kanalında paylaşın!</translation>
+    </message>
+    <message>
+        <source>openpilot's sound effects.
+
+Want to submit your own sounds? Share them in the "custom-themes" channel on the FrogPilot Discord!</source>
+        <translation type="gpt-4o-generated">openpilot'ın ses efektleri.
+
+Kendi seslerinizi göndermek ister misiniz? Onları FrogPilot Discord'daki "custom-themes" kanalında paylaşın!</translation>
+    </message>
+    <message>
+        <source>The steering wheel icon in the top right of the driving screen.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranının sağ üst köşesindeki direksiyon simgesi.</translation>
+    </message>
+    <message>
+        <source>Themed turn signal animations.
+
+Want to submit your own animations? Share them in the "custom-themes" channel on the FrogPilot Discord!</source>
+        <translation type="gpt-4o-generated">Temalı sinyal animasyonları.
+
+Kendi animasyonlarınızı göndermek mi istiyorsunuz? FrogPilot Discord'daki "custom-themes" kanalında paylaşın!</translation>
+    </message>
+    <message>
+        <source>Holiday-based visual themes for openpilot. Minor holidays last one day; major holidays (Christmas, Easter, Halloween, etc.) continue all week.</source>
+        <translation type="gpt-4o-generated">openpilot için tatil bazlı görsel temalar. Küçük tatiller bir gün sürer; büyük tatiller (Noel, Paskalya, Cadılar Bayramı, vb.) tüm hafta devam eder.</translation>
+    </message>
+    <message>
+        <source>The path on the driving screen turns into a Mario Kart inspired "Rainbow Path".</source>
+        <translation type="gpt-4o-generated">Sürüş ekranındaki yol, Mario Kart'tan esinlenilen "Gökkuşağı Yolu"na dönüşüyor.</translation>
+    </message>
+    <message>
+        <source>Random cosmetic events that trigger after certain driving conditions. These events are purely for fun and don't affect driving controls!</source>
+        <translation type="gpt-4o-generated">Bazı sürüş koşullarından sonra tetiklenen rastgele kozmetik olaylar. Bu olaylar tamamen eğlence amaçlıdır ve sürüş kontrollerini etkilemez!</translation>
+    </message>
+    <message>
+        <source>Random Themes</source>
+        <translation type="gpt-4o-generated">Rastgele Temalar</translation>
+    </message>
+    <message>
+        <source>Cycles through your downloaded themes randomly on each boot, giving every theme in your collection a chance to shine!</source>
+        <translation type="gpt-4o-generated">Her açılışta indirilen temalarınızı rastgele döngüye sokarak koleksiyonunuzdaki her temaya parlamak için bir şans verir!</translation>
+    </message>
+    <message>
+        <source>The text of the "Startup Alert" message that appears at the beginning of a drive.</source>
+        <translation type="gpt-4o-generated">Sürüşün başında görünen "Başlangıç Uyarısı" mesajının metni.</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the "%1" color scheme?</source>
+        <translation type="gpt-4o-generated">"%1" renk şemasını silmek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the "%1" distance icon pack?</source>
+        <translation type="gpt-4o-generated">"%1" mesafe simgesi paketini silmek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the "%1" icon pack?</source>
+        <translation type="gpt-4o-generated">"%1" simge paketini silmek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the "%1" signal animation?</source>
+        <translation type="gpt-4o-generated">"%1" sinyal animasyonunu silmek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the "%1" sound pack?</source>
+        <translation type="gpt-4o-generated">"%1" ses paketini silmek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to delete the "%1" steering wheel?</source>
+        <translation type="gpt-4o-generated">"%1" direksiyon simidini silmek istediğinizden emin misiniz?</translation>
+    </message>
+    <message>
+        <source>"Random Themes" only works with downloaded themes, so make sure you download the themes you want it to use!</source>
+        <translation type="gpt-4o-generated">"Rastgele Temalar" sadece indirilen temalar ile çalışır, bu yüzden kullanmak istediğiniz temaları indirdiğinizden emin olun!</translation>
     </message>
 </context>
 <context>
@@ -2756,14 +2678,6 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
         <translation type="gpt-4o-generated">SIFIRLA</translation>
     </message>
     <message>
-        <source>Reset your toggle settings back to their default settings.</source>
-        <translation type="gpt-4o-generated">Anahtar ayarlarınızı varsayılan ayarlarına sıfırlayın.</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to completely reset all of your toggle settings?</source>
-        <translation type="gpt-4o-generated">Tüm anahtar ayarlarınızı tamamen sıfırlamak istediğinizden emin misiniz?</translation>
-    </message>
-    <message>
         <source>Reset</source>
         <translation type="gpt-4o-generated">Sıfırla</translation>
     </message>
@@ -2788,16 +2702,48 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
         <translation type="gpt-4o-generated">openpilot'ı ya yolda ya da yoldan çıkmış durumda zorla aç.</translation>
     </message>
     <message>
-        <source>Let "FrogsGoMoo" know about an issue you're facing.</source>
-        <translation type="gpt-4o-generated">Karşılaştığınız bir sorunu "FrogsGoMoo"ya bildirin.</translation>
-    </message>
-    <message>
         <source>Your report has been submitted. Thanks for letting us know!</source>
         <translation type="gpt-4o-generated">Raporunuz gönderildi. Bizi bilgilendirdiğiniz için teşekkürler!</translation>
     </message>
     <message>
         <source>Flash the Panda's firmware. Use if you're running into issues with the Panda.</source>
         <translation type="gpt-4o-generated">Panda'nın yazılımını güncelleyin. Panda ile ilgili sorun yaşıyorsanız kullanın.</translation>
+    </message>
+    <message>
+        <source>Let &lt;b&gt;FrogsGoMoo&lt;/b&gt; know about an issue you're facing.</source>
+        <translation type="gpt-4o-generated">Karşılaştığınız bir sorunu &lt;b&gt;FrogsGoMoo&lt;/b&gt;'ya bildirin.</translation>
+    </message>
+    <message>
+        <source>I saw an alert that said &lt;b&gt;openpilot crashed&lt;/b&gt;</source>
+        <translation type="gpt-4o-generated">"&lt;b&gt;openpilot çöktü&lt;/b&gt; diyen bir uyarı gördüm"</translation>
+    </message>
+    <message>
+        <source>I'm noticing harsh acceleration</source>
+        <translation type="gpt-4o-generated">Sert hızlanma fark ediyorum</translation>
+    </message>
+    <message>
+        <source>I'm noticing harsh braking</source>
+        <translation type="gpt-4o-generated">Sert frenleme fark ediyorum</translation>
+    </message>
+    <message>
+        <source>I'm noticing unusual steering</source>
+        <translation type="gpt-4o-generated">Olağandışı bir direksiyon fark ediyorum</translation>
+    </message>
+    <message>
+        <source>My car isn't staying in its lane</source>
+        <translation type="gpt-4o-generated">Arabam şeritte kalmıyor</translation>
+    </message>
+    <message>
+        <source>Something else</source>
+        <translation type="gpt-4o-generated">Başka bir şey</translation>
+    </message>
+    <message>
+        <source>Reset your toggles back to their default setting.</source>
+        <translation type="gpt-4o-generated">Geçişlerinizi varsayılan ayarlarına sıfırlayın.</translation>
+    </message>
+    <message>
+        <source>Are you sure you want to reset all of your toggles to their default setting?</source>
+        <translation type="gpt-4o-generated">Tüm anahtarlarınızı varsayılan ayarlarına sıfırlamak istediğinizden emin misiniz?</translation>
     </message>
 </context>
 <context>
@@ -2859,22 +2805,6 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
         <translation type="gpt-4o-generated">openpilot'ın uzunlamasına kontrolünü devre dışı bırakır ve aracın stok ACC'sini kullanır.</translation>
     </message>
     <message>
-        <source>General Motors Toggles</source>
-        <translation type="gpt-4o-generated">General Motors Anahtarları</translation>
-    </message>
-    <message>
-        <source>Smoothen Pedal Response While Going Downhill/Uphill</source>
-        <translation type="gpt-4o-generated">Yokuş Aşağı/Yokuş Yukarı Giderken Pedal Tepkisini Yumuşat</translation>
-    </message>
-    <message>
-        <source>Hyundai/Kia/Genesis Toggles</source>
-        <translation type="gpt-4o-generated">Hyundai/Kia/Genesis Anahtarları</translation>
-    </message>
-    <message>
-        <source>Toyota/Lexus Toggles</source>
-        <translation type="gpt-4o-generated">Toyota/Lexus Anahtarları</translation>
-    </message>
-    <message>
         <source>MANAGE</source>
         <translation type="gpt-4o-generated">YÖNET</translation>
     </message>
@@ -2887,76 +2817,92 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
         <translation type="gpt-4o-generated">Asla</translation>
     </message>
     <message>
-        <source>Toggles catered towards "General Motors" vehicles.</source>
-        <translation type="gpt-4o-generated">"General Motors" araçlarına yönelik anahtarlar.</translation>
-    </message>
-    <message>
-        <source>FrogsGoMoo's Experimental Longitudinal Tune</source>
-        <translation type="gpt-4o-generated">FrogsGoMoo'nun Deneysel Boylamsal Ayarı</translation>
-    </message>
-    <message>
-        <source>FrogsGoMoo's experimental GM longitudinal tune that aims to smoothen out stopping and takeoff control based on nothing but guesswork. Use at your own risk!</source>
-        <translation type="gpt-4o-generated">FrogsGoMoo'nun deneysel GM boylamasına ayarı, yalnızca tahminlere dayalı olarak durma ve kalkış kontrolünü yumuşatmayı amaçlıyor. Kendi riskinizle kullanın!</translation>
-    </message>
-    <message>
         <source>Stop and Go Hack</source>
         <translation type="gpt-4o-generated">Dur-Kalk Hack</translation>
-    </message>
-    <message>
-        <source>Toggles catered towards "Hyundai/Kia/Genesis" vehicles.</source>
-        <translation type="gpt-4o-generated">"Hyundai/Kia/Genesis" araçlarına yönelik anahtarlar.</translation>
     </message>
     <message>
         <source>comma's New Longitudinal API</source>
         <translation type="gpt-4o-generated">comma'nın Yeni Boylamasına API'si</translation>
     </message>
     <message>
-        <source>comma's new longitudinal control system that has shown great improvement with acceleration and braking, but has issues on some Hyundai/Kia/Genesis vehicles.</source>
-        <translation type="gpt-4o-generated">comma'nın hızlanma ve frenlemede büyük gelişme gösteren yeni boylamsal kontrol sistemi, ancak bazı Hyundai/Kia/Genesis araçlarında sorunlar yaşamaktadır.</translation>
-    </message>
-    <message>
-        <source>Toggles catered towards "Toyota/Lexus" vehicles.</source>
-        <translation type="gpt-4o-generated">"Toyota/Lexus" araçlarına yönelik anahtarlar.</translation>
-    </message>
-    <message>
-        <source>The cluster offset openpilot uses to try and match the speed displayed on the dash.</source>
-        <translation type="gpt-4o-generated">openpilot'un gösterge panelinde görüntülenen hızla eşleşmeye çalışmak için kullandığı küme ofseti.</translation>
-    </message>
-    <message>
         <source>FrogsGoMoo's Personal Tweaks</source>
         <translation type="gpt-4o-generated">FrogsGoMoo'nun Kişisel Ayarlamaları</translation>
-    </message>
-    <message>
-        <source>FrogsGoMoo's personal tweaks aimed to provide quicker acceleration and smoother braking.</source>
-        <translation type="gpt-4o-generated">FrogsGoMoo'nun kişisel düzenlemeleri daha hızlı hızlanma ve daha yumuşak frenleme sağlamayı hedefliyor.</translation>
-    </message>
-    <message>
-        <source>Smoothen the gas and brake response when driving downhill or uphill.</source>
-        <translation type="gpt-4o-generated">Yokuş aşağı veya yokuş yukarı sürerken gaz ve fren tepkisini yumuşatın.</translation>
-    </message>
-    <message>
-        <source>Force stop and go for the "2017 Chevy Volt".</source>
-        <translation type="gpt-4o-generated">"2017 Chevy Volt" için zorla durdur ve devam ettir.</translation>
-    </message>
-    <message>
-        <source>Automatically lock the doors when shifting into drive and unlocks them when shifting into park.</source>
-        <translation type="gpt-4o-generated">Araca "sürüş" moduna geçildiğinde kapıları otomatik olarak kilitler ve "park" moduna geçildiğinde kilitlerini açar.</translation>
     </message>
     <message>
         <source>Automatically lock the doors after the car's ignition has been turned off and no one is detected in either of the front seats.</source>
         <translation type="gpt-4o-generated">Aracın kontağı kapandıktan ve ön koltuklarda kimse tespit edilmedikten sonra kapıları otomatik olarak kilitle.</translation>
     </message>
     <message>
-        <source>Force stop and go for "Toyota/Lexus" vehicles without stock stop and go functionality.</source>
-        <translation type="gpt-4o-generated">Stop ve git fonksiyonu olmayan "Toyota/Lexus" araçlar için zorla durdur ve git.</translation>
+        <source>General Motors Settings</source>
+        <translation type="gpt-4o-generated">General Motors Ayarları</translation>
+    </message>
+    <message>
+        <source>Settings specific to &lt;b&gt;General Motors&lt;/b&gt; vehicles.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;General Motors&lt;/b&gt; araçlarına özgü ayarlar.</translation>
+    </message>
+    <message>
+        <source>FrogsGoMoo's Experimental Tune</source>
+        <translation type="gpt-4o-generated">FrogsGoMoo'un Deneysel Ayarı</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;FrogsGoMoo's&lt;/b&gt; experimental &lt;b&gt;General Motors&lt;/b&gt; tune that aims to smoothen out stopping and takeoff control based on nothing but guesswork. Use at your own risk!</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;FrogsGoMoo'nun&lt;/b&gt; deneysel &lt;b&gt;General Motors&lt;/b&gt; ayarı, yalnızca tahminlere dayanarak durma ve kalkış kontrolünü yumuşatmayı amaçlar. Kendi riskinize kullanın!</translation>
+    </message>
+    <message>
+        <source>Smooth Pedal Response on Hills</source>
+        <translation type="gpt-4o-generated">Yokuşlarda Yumuşak Pedal Tepkisi</translation>
+    </message>
+    <message>
+        <source>Smoothen the acceleration and braking when driving uphill or downhill.</source>
+        <translation type="gpt-4o-generated">Yokuş yukarı veya yokuş aşağı sürerken hızlanmayı ve frenlemeyi yumuşatın.</translation>
+    </message>
+    <message>
+        <source>Force stop and go on the &lt;b&gt;2017 Chevy Volt&lt;/b&gt;.</source>
+        <translation type="gpt-4o-generated">2017 Chevy Volt'ta zorla durdur ve devam et.</translation>
+    </message>
+    <message>
+        <source>Hyundai/Kia/Genesis Settings</source>
+        <translation type="gpt-4o-generated">Hyundai/Kia/Genesis Ayarları</translation>
+    </message>
+    <message>
+        <source>Settings specific to &lt;b&gt;Hyundai&lt;/b&gt;, &lt;b&gt;Kia&lt;/b&gt;, and &lt;b&gt;Genesis&lt;/b&gt; vehicles.</source>
+        <translation type="gpt-4o-generated">Hyundai, Kia ve Genesis araçlara özel ayarlar.</translation>
+    </message>
+    <message>
+        <source>comma's new longitudinal control system that has shown great improvement with acceleration and braking, but has issues on some &lt;b&gt;Hyundai&lt;/b&gt;/&lt;b&gt;Kia&lt;/b&gt;/&lt;b&gt;Genesis&lt;/b&gt; vehicles.</source>
+        <translation type="gpt-4o-generated">Comma'nın hızlanma ve frenlemede büyük iyileşme gösteren yeni boylamsal kontrol sistemi, ancak bazı &lt;b&gt;Hyundai&lt;/b&gt;/&lt;b&gt;Kia&lt;/b&gt;/&lt;b&gt;Genesis&lt;/b&gt; araçlarında sorunlar yaşanıyor.</translation>
+    </message>
+    <message>
+        <source>Toyota/Lexus Settings</source>
+        <translation type="gpt-4o-generated">Toyota/Lexus Ayarları</translation>
+    </message>
+    <message>
+        <source>Settings specific to &lt;b&gt;Toyota&lt;/b&gt; and &lt;b&gt;Lexus&lt;/b&gt; vehicles.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Toyota&lt;/b&gt; ve &lt;b&gt;Lexus&lt;/b&gt; araçlara özel ayarlar.</translation>
+    </message>
+    <message>
+        <source>Automatically lock the doors when shifting into drive and unlock them when shifting into park.</source>
+        <translation type="gpt-4o-generated">Araç hareket haline geçtiğinde kapıları otomatik olarak kilitle ve park konumuna alındığında kilidi aç.</translation>
+    </message>
+    <message>
+        <source>The cluster speed offset used by openpilot to match the speed displayed on the dash.</source>
+        <translation type="gpt-4o-generated">openpilot tarafından gösterge panelinde görüntülenen hızla eşleşmek için kullanılan gösterge hızı ofseti.</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;FrogsGoMoo's&lt;/b&gt; personal tweaks for quicker acceleration and smoother braking.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;FrogsGoMoo'nun&lt;/b&gt; daha hızlı hızlanma ve daha yumuşak frenleme için kişisel ayarlamaları.</translation>
+    </message>
+    <message>
+        <source>Force stop and go on &lt;b&gt;Toyota&lt;/b&gt;/&lt;b&gt;Lexus&lt;/b&gt; vehicles without stock stop and go functionality.</source>
+        <translation type="gpt-4o-generated">Stok dur ve kalk fonksiyonu olmayan &lt;b&gt;Toyota&lt;/b&gt;/&lt;b&gt;Lexus&lt;/b&gt; araçlarında dur ve kalkı zorla etkinleştir.</translation>
+    </message>
+    <message>
+        <source> seconds</source>
+        <translation type="gpt-4o-generated">saniye</translation>
     </message>
 </context>
 <context>
     <name>FrogPilotVisualsPanel</name>
-    <message>
-        <source>Custom FrogPilot widgets used in the onroad user interface.</source>
-        <translation type="gpt-4o-generated">Yolda kullanıcı arayüzünde kullanılan özel FrogPilot widget'ları.</translation>
-    </message>
     <message>
         <source>Compass</source>
         <translation type="gpt-4o-generated">Pusula</translation>
@@ -3054,10 +3000,6 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
         <translation type="gpt-4o-generated">Bir harita stili seçin</translation>
     </message>
     <message>
-        <source>Accessibility</source>
-        <translation type="gpt-4o-generated">Erişilebilirlik</translation>
-    </message>
-    <message>
         <source>Visual features to improve your overall openpilot experience.</source>
         <translation type="gpt-4o-generated">Genel openpilot deneyiminizi geliştirmek için görsel özellikler.</translation>
     </message>
@@ -3066,104 +3008,40 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
         <translation type="gpt-4o-generated">Kamera Görünümü</translation>
     </message>
     <message>
-        <source>Changes the camera view display. This is purely a visual change and doesn't impact how openpilot drives.</source>
-        <translation type="gpt-4o-generated">Kamera görüntüsü ekranını değiştirir. Bu, yalnızca görsel bir değişiklik olup, openpilot'un sürüşünü etkilemez.</translation>
-    </message>
-    <message>
-        <source>On Screen Personality Button</source>
-        <translation type="gpt-4o-generated">Ekran Kişilik Düğmesi</translation>
-    </message>
-    <message>
-        <source>Displays the current driving personality on the screen. Tap to switch personalities, or long press for 2.5 seconds to activate 'Traffic' mode.</source>
-        <translation type="gpt-4o-generated">Ekranda mevcut sürüş kişiliğini görüntüler. Kişilikleri değiştirmek için dokunun veya 'Trafik' modunu etkinleştirmek için 2.5 saniye boyunca uzun basın.</translation>
-    </message>
-    <message>
-        <source>Displays the driver camera feed when the vehicle is in reverse.</source>
-        <translation type="gpt-4o-generated">Araç geri viteste olduğunda sürücü kamerası görüntüsünü gösterir.</translation>
-    </message>
-    <message>
         <source>Standby Mode</source>
         <translation type="gpt-4o-generated">Bekleme Modu</translation>
-    </message>
-    <message>
-        <source>Turns the screen off when driving and automatically wakes it up if engagement state changes or important alerts occur.</source>
-        <translation type="gpt-4o-generated">Araba kullanırken ekranı kapatır ve etkileşim durumu değiştiğinde veya önemli uyarılar meydana geldiğinde otomatik olarak ekranı açar.</translation>
-    </message>
-    <message>
-        <source>Activates a timer when stopped to indicate how long the vehicle has been stopped for.</source>
-        <translation type="gpt-4o-generated">Aracın ne kadar süre durduğunu belirtmek için durduğunda bir zamanlayıcı başlatır.</translation>
     </message>
     <message>
         <source>Advanced UI Controls</source>
         <translation type="gpt-4o-generated">Gelişmiş UI Kontrolleri</translation>
     </message>
     <message>
-        <source>Advanced features to fine tune your personalized UI.</source>
-        <translation type="gpt-4o-generated">Kişiselleştirilmiş arayüzünüzü ince ayarlamak için gelişmiş özellikler.</translation>
-    </message>
-    <message>
         <source>Hide Current Speed</source>
         <translation type="gpt-4o-generated">Geçerli Hızı Gizle</translation>
-    </message>
-    <message>
-        <source>Hides the current speed.</source>
-        <translation type="gpt-4o-generated">Mevcut hızı gizler.</translation>
     </message>
     <message>
         <source>Hide Lead Marker</source>
         <translation type="gpt-4o-generated">Lider İşaretleyicisini Gizle</translation>
     </message>
     <message>
-        <source>Hides the marker for the vehicle ahead.</source>
-        <translation type="gpt-4o-generated">Öndeki aracın işaretleyicisini gizler.</translation>
-    </message>
-    <message>
-        <source>Hide Map Icon</source>
-        <translation type="gpt-4o-generated">Harita Simgesini Gizle</translation>
-    </message>
-    <message>
-        <source>Hides the map icon.</source>
-        <translation type="gpt-4o-generated">Harita simgesini gizler.</translation>
-    </message>
-    <message>
         <source>Hide Max Speed</source>
         <translation type="gpt-4o-generated">Maksimum Hızı Gizle</translation>
-    </message>
-    <message>
-        <source>Hides the max speed.</source>
-        <translation type="gpt-4o-generated">Maksimum hızı gizler.</translation>
     </message>
     <message>
         <source>Hide Non-Critical Alerts</source>
         <translation type="gpt-4o-generated">Kritik Olmayan Uyarıları Gizle</translation>
     </message>
     <message>
-        <source>Hides non-critical alerts.</source>
-        <translation type="gpt-4o-generated">Kritik olmayan uyarıları gizler.</translation>
-    </message>
-    <message>
         <source>Hide Speed Limits</source>
         <translation type="gpt-4o-generated">Hız Sınırlarını Gizle</translation>
-    </message>
-    <message>
-        <source>Hides the speed limits.</source>
-        <translation type="gpt-4o-generated">Hız limitlerini gizler.</translation>
     </message>
     <message>
         <source>Use Wheel Speed</source>
         <translation type="gpt-4o-generated">Tekerlek Hızını Kullan</translation>
     </message>
     <message>
-        <source>Uses the wheel speed instead of the cluster speed. This is purely a visual change and doesn't impact how openpilot drives.</source>
-        <translation type="gpt-4o-generated">Tekerlek hızını küme hızı yerine kullanır. Bu tamamen görsel bir değişiklik olup, openpilot'un sürüşünü etkilemez.</translation>
-    </message>
-    <message>
         <source>Developer UI</source>
         <translation type="gpt-4o-generated">Geliştirici Arayüzü</translation>
-    </message>
-    <message>
-        <source>Show detailed information about openpilot's internal operations.</source>
-        <translation type="gpt-4o-generated">Openpilot'ın dahili işlemleri hakkında ayrıntılı bilgi göster.</translation>
     </message>
     <message>
         <source>Developer Metrics</source>
@@ -3174,56 +3052,28 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
         <translation type="gpt-4o-generated">Sınır Metrikleri</translation>
     </message>
     <message>
-        <source>Displays performance metrics around the edge of the screen while driving.</source>
-        <translation type="gpt-4o-generated">Sürüş sırasında ekranın kenarında performans ölçümlerini gösterir.</translation>
-    </message>
-    <message>
         <source>FPS Display</source>
         <translation type="gpt-4o-generated">FPS Görüntüleme</translation>
-    </message>
-    <message>
-        <source>Displays the 'Frames Per Second' (FPS) at the bottom of the screen while driving.</source>
-        <translation type="gpt-4o-generated">Sürüş sırasında ekranın altında 'Saniye Başına Kare' (FPS) gösterir.</translation>
     </message>
     <message>
         <source>Lateral Metrics</source>
         <translation type="gpt-4o-generated">Yanal Metrikler</translation>
     </message>
     <message>
-        <source>Displays metrics related to steering control at the top of the screen while driving.</source>
-        <translation type="gpt-4o-generated">Sürüş sırasında ekranın üst kısmında direksiyon kontrolü ile ilgili ölçümleri görüntüler.</translation>
-    </message>
-    <message>
         <source>Longitudinal Metrics</source>
         <translation type="gpt-4o-generated">Boylamsal Metrikler</translation>
-    </message>
-    <message>
-        <source>Displays metrics related to acceleration, speed, and desired following distance at the top of the screen while driving.</source>
-        <translation type="gpt-4o-generated">Sürüş sırasında ekranın üst kısmında hızlanma, hız ve istenen takip mesafesi ile ilgili ölçümleri görüntüler.</translation>
     </message>
     <message>
         <source>Numerical Temperature Gauge</source>
         <translation type="gpt-4o-generated">Sayısal Sıcaklık Göstergesi</translation>
     </message>
     <message>
-        <source>Shows exact temperature readings instead of status labels like 'GOOD', 'OK', or 'HIGH' in the sidebar.</source>
-        <translation type="gpt-4o-generated">Kenar çubuğunda 'İYİ', 'TAMAM' veya 'YÜKSEK' gibi durum etiketleri yerine kesin sıcaklık okumalarını gösterir.</translation>
-    </message>
-    <message>
         <source>Sidebar</source>
         <translation type="gpt-4o-generated">Kenar Çubuğu</translation>
     </message>
     <message>
-        <source>Displays system information like CPU, GPU, RAM usage, IP address, and storage space in the sidebar.</source>
-        <translation type="gpt-4o-generated">Kenar çubuğunda CPU, GPU, RAM kullanımı, IP adresi ve depolama alanı gibi sistem bilgilerini gösterir.</translation>
-    </message>
-    <message>
         <source>Use International System of Units</source>
         <translation type="gpt-4o-generated">Uluslararası Birim Sistemi'ni Kullan</translation>
-    </message>
-    <message>
-        <source>Displays measurements using the 'International System of Units' (SI).</source>
-        <translation type="gpt-4o-generated">Ölçümleri 'Uluslararası Birimler Sistemi' (SI) kullanarak görüntüler.</translation>
     </message>
     <message>
         <source>Developer Widgets</source>
@@ -3234,182 +3084,52 @@ Kendi animasyonlarınızı göndermek mi istiyorsunuz? Onları FrogPilot Discord
         <translation type="gpt-4o-generated">Model Durdurma Noktası</translation>
     </message>
     <message>
-        <source>Displays an image on the screen where openpilot is wanting to stop.</source>
-        <translation type="gpt-4o-generated">openpilot durmak istediğinde ekranda bir görüntü gösterir.</translation>
-    </message>
-    <message>
         <source>Model UI</source>
         <translation type="gpt-4o-generated">Model Kullanıcı Arayüzü</translation>
-    </message>
-    <message>
-        <source>Customize the model visualizations on the screen.</source>
-        <translation type="gpt-4o-generated">Ekrandaki model görselleştirmelerini özelleştirin.</translation>
-    </message>
-    <message>
-        <source>Automatically adjusts the width of the driving path display based on the current engagement state:
-
-Fully engaged = 100%
-Always On Lateral Active = 75%
-Fully disengaged = 50%</source>
-        <translation type="gpt-4o-generated">Sürüş yolu ekranının genişliğini mevcut etkileşim durumuna göre otomatik olarak ayarlar:
-
-Tam etkileşimli = %100
-Her Zaman Açık Yanal Aktif = %75
-Tamamen devre dışı = %50</translation>
     </message>
     <message>
         <source>Lane Lines Width</source>
         <translation type="gpt-4o-generated">Şerit Çizgileri Genişliği</translation>
     </message>
     <message>
-        <source>Controls the thickness the lane lines appear on the display.
-
-Default matches the MUTCD standard of 4 inches.</source>
-        <translation type="gpt-4o-generated">Ekranda şerit çizgilerinin kalınlığını kontrol eder.
-
-Varsayılan, MUTCD standardı olan 4 inç ile eşleşir.</translation>
-    </message>
-    <message>
         <source>Path Edges Width</source>
         <translation type="gpt-4o-generated">Yol Kenarları Genişliği</translation>
-    </message>
-    <message>
-        <source>Controls the width of the edges of the driving path to represent different modes and statuses.
-
-Default is 20% of the total path width.
-
-Color Guide:
-
-- Blue: Navigation
-- Light Blue: 'Always On Lateral'
-- Green: Default
-- Orange: 'Experimental Mode'
-- Red: 'Traffic Mode'
-- Yellow: 'Conditional Experimental Mode' Overridden</source>
-        <translation type="gpt-4o-generated">Sürüş yolunun kenarlarının genişliğini farklı modları ve durumları temsil edecek şekilde kontrol eder.
-
-Varsayılan, toplam yol genişliğinin %20'sidir.
-
-Renk Rehberi:
-
-- Mavi: Navigasyon
-- Açık Mavi: 'Her Zaman Açık Yanal'
-- Yeşil: Varsayılan
-- Turuncu: 'Deneysel Mod'
-- Kırmızı: 'Trafik Modu'
-- Sarı: 'Koşullu Deneysel Mod' Geçersiz kılındı</translation>
     </message>
     <message>
         <source>Path Width</source>
         <translation type="gpt-4o-generated">Yol Genişliği</translation>
     </message>
     <message>
-        <source>Controls how wide the driving path appears on your screen.
-
-Default (6.1 feet / 1.9 meters) matches the width of a 2019 Lexus ES 350.</source>
-        <translation type="gpt-4o-generated">Ekranınızda sürüş yolunun ne kadar geniş göründüğünü kontrol eder.
-
-Varsayılan (6.1 feet / 1.9 metre), 2019 Lexus ES 350'nin genişliğiyle eşleşir.</translation>
-    </message>
-    <message>
         <source>Road Edges Width</source>
         <translation type="gpt-4o-generated">Yol Kenarları Genişliği</translation>
-    </message>
-    <message>
-        <source>Controls how thick the road edges appear on the display.
-
-Default matches half of the MUTCD standard lane line width of 4 inches.</source>
-        <translation type="gpt-4o-generated">Yol kenarlarının ekranda ne kadar kalın görüneceğini kontrol eder.
-
-Varsayılan, MUTCD standart şerit çizgi genişliğinin yarısı olan 4 inç'e eşittir.</translation>
-    </message>
-    <message>
-        <source>'Unlimited' Road UI</source>
-        <translation type="gpt-4o-generated">'Sınırsız' Yol UI</translation>
-    </message>
-    <message>
-        <source>Extends the display of the path, lane lines, and road edges as far as the model can see.</source>
-        <translation type="gpt-4o-generated">Modelin görebildiği kadar yolu, şerit çizgilerini ve yol kenarlarını ekranda genişletir.</translation>
     </message>
     <message>
         <source>Navigation Widgets</source>
         <translation type="gpt-4o-generated">Navigasyon Widget'ları</translation>
     </message>
     <message>
-        <source>Wwidgets focused around navigation.</source>
-        <translation type="gpt-4o-generated">Navigasyon etrafında odaklanan widget'lar.</translation>
-    </message>
-    <message>
-        <source>Increases the size of the map for easier navigation readings.</source>
-        <translation type="gpt-4o-generated">Harita boyutunu artırarak navigasyon okumalarını kolaylaştırır.</translation>
-    </message>
-    <message>
-        <source>Swaps out the stock map style for community created ones.</source>
-        <translation type="gpt-4o-generated">Toplu tarafından oluşturulan haritalar için varsayılan harita stilini değiştirir.</translation>
-    </message>
-    <message>
-        <source>Displays the current road name at the bottom of the screen using data from 'OpenStreetMap'.</source>
-        <translation type="gpt-4o-generated">Ekranın alt kısmında 'OpenStreetMap' verilerini kullanarak mevcut yol adını görüntüler.</translation>
-    </message>
-    <message>
         <source>Show Speed Limits</source>
         <translation type="gpt-4o-generated">Hız Sınırlarını Göster</translation>
-    </message>
-    <message>
-        <source>Displays the currently detected speed limit in the top left corner of the onroad UI. Uses data from your car's dashboard (if supported) and data from 'OpenStreetMaps'.</source>
-        <translation type="gpt-4o-generated">Yol üzeri kullanıcı arayüzünün sol üst köşesinde şu anda algılanan hız sınırını gösterir. Aracınızın gösterge panelinden (destekliyorsa) ve 'OpenStreetMaps' verilerinden gelen verileri kullanır.</translation>
     </message>
     <message>
         <source>Use Vienna-Style Speed Signs</source>
         <translation type="gpt-4o-generated">Viyana Tarzı Hız İşaretlerini Kullan</translation>
     </message>
     <message>
-        <source>Forces Vienna-style (EU) speed limit signs instead of MUTCD (US).</source>
-        <translation type="gpt-4o-generated">MUTCD (ABD) yerine Viyana tarzı (AB) hız sınırı işaretlerini zorlar.</translation>
-    </message>
-    <message>
-        <source>Onroad Screen Widgets</source>
-        <translation type="gpt-4o-generated">Yolda Ekran Araçları</translation>
-    </message>
-    <message>
         <source>Acceleration Path</source>
         <translation type="gpt-4o-generated">Hızlanma Yolu</translation>
-    </message>
-    <message>
-        <source>Projects a path based on openpilot's current desired acceleration or deceleration.</source>
-        <translation type="gpt-4o-generated">openpilot'ın mevcut istenen hızlanma veya yavaşlamasına dayalı bir yol projekte eder.</translation>
     </message>
     <message>
         <source>Adjacent Lanes</source>
         <translation type="gpt-4o-generated">Bitişik Şeritler</translation>
     </message>
     <message>
-        <source>Projects paths for the adjascent lanes.</source>
-        <translation type="gpt-4o-generated">Bitişik şeritlerin yollarını projelendirir.</translation>
-    </message>
-    <message>
         <source>Blind Spot Path</source>
         <translation type="gpt-4o-generated">Kör Noktası Yolu</translation>
     </message>
     <message>
-        <source>Projects a red path when vehicles are detected in the blind spot for the respective lane.</source>
-        <translation type="gpt-4o-generated">İlgili şeritte kör noktada araçlar tespit edildiğinde kırmızı bir yol projelendirir.</translation>
-    </message>
-    <message>
-        <source>Displays a compass to show the current driving direction.</source>
-        <translation type="gpt-4o-generated">Mevcut sürüş yönünü göstermek için bir pusula görüntüler.</translation>
-    </message>
-    <message>
         <source>Gas / Brake Pedal Indicators</source>
         <translation type="gpt-4o-generated">Gaz / Fren Pedal Göstergeleri</translation>
-    </message>
-    <message>
-        <source>Displays pedal indicators to indicate when either of the pedals are currently being used.</source>
-        <translation type="gpt-4o-generated">Pedallardan herhangi birinin şu anda kullanıldığını göstermek için pedal göstergelerini görüntüler.</translation>
-    </message>
-    <message>
-        <source>Rotates the steering wheel in the onroad UI rotates along with your steering wheel movements.</source>
-        <translation type="gpt-4o-generated">Yolda kullanıcı arayüzünde direksiyon simidi, direksiyon hareketlerinizle birlikte döner.</translation>
     </message>
     <message>
         <source>Auto</source>
@@ -3492,32 +3212,12 @@ Varsayılan, MUTCD standart şerit çizgi genişliğinin yarısı olan 4 inç'e 
         <translation type="gpt-4o-generated">inç</translation>
     </message>
     <message>
-        <source>%</source>
-        <translation type="gpt-4o-generated">%</translation>
-    </message>
-    <message>
         <source> feet</source>
         <translation type="gpt-4o-generated">feet</translation>
     </message>
     <message>
         <source>Stock</source>
         <translation type="gpt-4o-generated">Stok</translation>
-    </message>
-    <message>
-        <source>Adjust how thick the lane lines appear on the display.
-
-Default matches the Vienna standard of 10 centimeters.</source>
-        <translation type="gpt-4o-generated">Şerit çizgilerinin ekranda ne kadar kalın görüneceğini ayarlayın.
-
-Varsayılan, Viyana standardı olan 10 santimetre ile eşleşir.</translation>
-    </message>
-    <message>
-        <source>Adjust how thick the road edges appear on the display.
-
-Default matches half of the Vienna standard of 10 centimeters.</source>
-        <translation type="gpt-4o-generated">Yol kenarlarının ekranda nasıl görüneceğini ayarlayın.
-
-Varsayılan, Viyana standardının 10 santimetresinin yarısına eşittir.</translation>
     </message>
     <message>
         <source> centimeters</source>
@@ -3528,36 +3228,315 @@ Varsayılan, Viyana standardının 10 santimetresinin yarısına eşittir.</tran
         <translation type="gpt-4o-generated">metreler</translation>
     </message>
     <message>
-        <source>Adjust how thick the lane lines appear on the display.
-
-Default matches the MUTCD standard of 4 inches.</source>
-        <translation type="gpt-4o-generated">Şerit çizgilerinin ekranda ne kadar kalın görüneceğini ayarlayın.
-
-Varsayılan, MUTCD standardı olan 4 inç ile eşleşir.</translation>
-    </message>
-    <message>
-        <source>Adjust how thick the road edges appear on the display.
-
-Default matches half of the MUTCD standard of 4 inches.</source>
-        <translation type="gpt-4o-generated">Yol kenarlarının ekranda ne kadar kalın görüneceğini ayarlayın.
-
-Varsayılan, MUTCD standardının yarısı olan 4 inç ile eşleşir.</translation>
-    </message>
-    <message>
         <source>Adjacent Leads Tracking</source>
         <translation type="gpt-4o-generated">Komşu Takipleri İzleme</translation>
-    </message>
-    <message>
-        <source>Show adjacent leads being detected by the car's radar.</source>
-        <translation type="gpt-4o-generated">Aracın radarının tespit ettiği bitişik hedefleri göster.</translation>
     </message>
     <message>
         <source>Radar Tracks</source>
         <translation type="gpt-4o-generated">Radar İzleri</translation>
     </message>
     <message>
-        <source>Show all of the radar points being tracked by the car's radar.</source>
-        <translation type="gpt-4o-generated">Aracın radar tarafından izlenen tüm radar noktalarını göster.</translation>
+        <source>Advanced settings for fine-tuning openpilot's driving screen.</source>
+        <translation type="gpt-4o-generated">openpilot'ın sürüş ekranını ince ayarlamak için gelişmiş ayarlar.</translation>
+    </message>
+    <message>
+        <source>Hide the current speed from the driving screen.</source>
+        <translation type="gpt-4o-generated">Mevcut hızı sürüş ekranından gizle.</translation>
+    </message>
+    <message>
+        <source>Hide the marker for lead vehicles from the driving screen.</source>
+        <translation type="gpt-4o-generated">Öndeki araçların işaretçisini sürüş ekranından gizle.</translation>
+    </message>
+    <message>
+        <source>Hide Map Settings Button</source>
+        <translation type="gpt-4o-generated">Harita Ayarları Düğmesini Gizle</translation>
+    </message>
+    <message>
+        <source>Hide the map settings button from the driving screen.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranında harita ayarları düğmesini gizle.</translation>
+    </message>
+    <message>
+        <source>Hide the max speed from the driving screen.</source>
+        <translation type="gpt-4o-generated">Maksimum hızı sürüş ekranından gizle.</translation>
+    </message>
+    <message>
+        <source>Hide non-critical alerts from the driving screen.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranından kritik olmayan uyarıları gizle.</translation>
+    </message>
+    <message>
+        <source>Hide the speed limits from the driving screen.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranından hız sınırlarını gizle.</translation>
+    </message>
+    <message>
+        <source>Use the vehicle's wheel speed instead of the cluster speed. This is purely a visual change and doesn't impact how openpilot drives.</source>
+        <translation type="gpt-4o-generated">Aracın tekerlek hızını, gösterge hızı yerine kullanın. Bu yalnızca görsel bir değişikliktir ve openpilot'un sürüş biçimini etkilemez.</translation>
+    </message>
+    <message>
+        <source>Detailed information about openpilot's internal operations.</source>
+        <translation type="gpt-4o-generated">Openpilot'ın iç operasyonları hakkında detaylı bilgi.</translation>
+    </message>
+    <message>
+        <source>Performance data, sensor readings, and system metrics for debugging and optimizing openpilot.</source>
+        <translation type="gpt-4o-generated">openpilot'ı hata ayıklamak ve optimize etmek için performans verileri, sensör okumaları ve sistem metrikleri.</translation>
+    </message>
+    <message>
+        <source>Metrics displayed around the border of the driving screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Blind Spot&lt;/b&gt;: Turn the border red when a vehicle is detected in a blind spot&lt;br&gt;&lt;b&gt;Steering Torque&lt;/b&gt;: Highlight the border green to red in accordance to the amount of steering torque being used&lt;br&gt;&lt;b&gt;Turn Signal&lt;/b&gt;: Flash the border yellow when a turn signal is active</source>
+        <translation type="gpt-4o-generated">Sürüş ekranının kenarlarında gösterilen metrikler.&lt;br&gt;&lt;br&gt;&lt;b&gt;Kör Nokta&lt;/b&gt;: Bir araç kör noktada tespit edildiğinde kenarı kırmızıya çevir&lt;br&gt;&lt;b&gt;Direksiyon Torku&lt;/b&gt;: Kullanılan direksiyon torku miktarına göre kenarı yeşilden kırmızıya vurgula&lt;br&gt;&lt;b&gt;Dönüş Sinyali&lt;/b&gt;: Dönüş sinyali aktif olduğunda kenarı sarı renkte yanıp söndür</translation>
+    </message>
+    <message>
+        <source>Display the &lt;b&gt;Frames Per Second (FPS)&lt;/b&gt; at the bottom of the driving screen.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranının alt kısmında &lt;b&gt;Saniye Başına Kare (FPS)&lt;/b&gt; göster.</translation>
+    </message>
+    <message>
+        <source>Metrics related to steering control.&lt;br&gt;&lt;br&gt;&lt;b&gt;Adjacent Path Metrics&lt;/b&gt;: Paint the adjacent lanes and their width measurements&lt;br&gt;&lt;b&gt;Auto Tune&lt;/b&gt;: Display the &lt;b&gt;Friction&lt;/b&gt; and &lt;b&gt;Lateral Acceleration&lt;/b&gt; values from comma's auto tune at the top of the driving screen</source>
+        <translation type="gpt-4o-generated">Direksiyon kontrolüyle ilgili metrikler.&lt;br&gt;&lt;br&gt;&lt;b&gt;Bitişik Yol Metrikleri&lt;/b&gt;: Bitişik şeritleri ve genişlik ölçümlerini çizin&lt;br&gt;&lt;b&gt;Otomatik Ayarlama&lt;/b&gt;: Sürüş ekranının üst kısmında comma'nın otomatik ayarlamasından &lt;b&gt;Sürtünme&lt;/b&gt; ve &lt;b&gt;Yanal İvme&lt;/b&gt; değerlerini gösterin</translation>
+    </message>
+    <message>
+        <source>Metrics related to gas/brake control.&lt;br&gt;&lt;br&gt;&lt;b&gt;Lead Info&lt;/b&gt;: Display the lead vehicle's distance and speed on the lead marker&lt;br&gt;&lt;b&gt;Jerk Values&lt;/b&gt;: Display the current longitudinal jerk values and any offsets from FrogPilot functions at the top of the driving screen</source>
+        <translation type="gpt-4o-generated">Gaz/fren kontrolü ile ilgili metrikler.&lt;br&gt;&lt;br&gt;&lt;b&gt;Öncü Bilgisi&lt;/b&gt;: Öncü aracın mesafesini ve hızını öncü işaretçisinde göster&lt;br&gt;&lt;b&gt;Sarsıntı Değerleri&lt;/b&gt;: Sürüş ekranının üst kısmında mevcut boylamsal sarsıntı değerlerini ve FrogPilot fonksiyonlarından kaynaklanan herhangi bir sapmayı göster</translation>
+    </message>
+    <message>
+        <source>Use numerical temperature readings instead of status labels in the sidebar.</source>
+        <translation type="gpt-4o-generated">Kenar çubuğunda durum etiketleri yerine sayısal sıcaklık ölçümlerini kullanın.</translation>
+    </message>
+    <message>
+        <source>Display system information (&lt;b&gt;CPU&lt;/b&gt;, &lt;b&gt;GPU&lt;/b&gt;, &lt;b&gt;RAM usage&lt;/b&gt;, &lt;b&gt;IP address&lt;/b&gt;, &lt;b&gt;device storage&lt;/b&gt;) in the sidebar.</source>
+        <translation type="gpt-4o-generated">Kenar çubuğunda sistem bilgilerini göster (&lt;b&gt;CPU&lt;/b&gt;, &lt;b&gt;GPU&lt;/b&gt;, &lt;b&gt;RAM kullanımı&lt;/b&gt;, &lt;b&gt;IP adresi&lt;/b&gt;, &lt;b&gt;cihaz depolama&lt;/b&gt;).</translation>
+    </message>
+    <message>
+        <source>Display measurements using the &lt;b&gt;International System of Units (SI)&lt;/b&gt; standard.</source>
+        <translation type="gpt-4o-generated">Ölçümleri &lt;b&gt;Uluslararası Birim Sistemi (SI)&lt;/b&gt; standardını kullanarak göster.</translation>
+    </message>
+    <message>
+        <source>Overlays displaying debugging visuals, internal states, and model predictions on the driving screen.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranında hata ayıklama görselleri, iç durumlar ve model tahminlerini gösteren katmanlar.</translation>
+    </message>
+    <message>
+        <source>Adjacent leads detected by the car's radar to the left and right of the current driving path.</source>
+        <translation type="gpt-4o-generated">Aracın radarının mevcut sürüş yolunun solunda ve sağında tespit ettiği bitişik araçlar.</translation>
+    </message>
+    <message>
+        <source>Display an image on the screen where openpilot is wanting to stop.</source>
+        <translation type="gpt-4o-generated">openpilot'in durmak istediği yerde ekrana bir görüntü göster.</translation>
+    </message>
+    <message>
+        <source>Display all of the radar points produced by the car's radar.</source>
+        <translation type="gpt-4o-generated">Aracın radarının ürettiği tüm radar noktalarını göster.</translation>
+    </message>
+    <message>
+        <source>Driving Screen Widgets</source>
+        <translation type="gpt-4o-generated">Sürüş Ekranı Widget'ları</translation>
+    </message>
+    <message>
+        <source>Custom FrogPilot widgets for the driving screen.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranı için özel FrogPilot araçları.</translation>
+    </message>
+    <message>
+        <source>Colorize the driving path based on openpilot's current desired acceleration and deceleration rate.</source>
+        <translation type="gpt-4o-generated">openpilot'ın mevcut istenen ivme ve yavaşlama oranına göre sürüş yolunu renklendir.</translation>
+    </message>
+    <message>
+        <source>Driving paths for the left and right adjacent lanes.</source>
+        <translation type="gpt-4o-generated">Sol ve sağ bitişik şeritler için sürüş yolları.</translation>
+    </message>
+    <message>
+        <source>Display a red driving path for detected vehicles in the corresponding lane's blind spot.</source>
+        <translation type="gpt-4o-generated">Tespit edilen araçlar için ilgili şeridin kör noktasında kırmızı bir sürüş yolu göster.</translation>
+    </message>
+    <message>
+        <source>A compass to show the current driving direction.</source>
+        <translation type="gpt-4o-generated">Mevcut sürüş yönünü gösteren bir pusula.</translation>
+    </message>
+    <message>
+        <source>Pedals to indicate when either of the pedals are currently being used.&lt;br&gt;&lt;br&gt;&lt;b&gt;Dynamic&lt;/b&gt;: The pedals change in opacity in accordance to how much openpilot is accelerating or decelerating&lt;br&gt;&lt;b&gt;Static&lt;/b&gt;: The pedals are displayed with full opacity when active, and dimmed when not in use</source>
+        <translation type="gpt-4o-generated">Pedallar, pedallardan herhangi birinin şu anda kullanıldığını göstermek için.&lt;br&gt;&lt;br&gt;&lt;b&gt;Dinamik&lt;/b&gt;: openpilot'ın ne kadar hızlandığı veya yavaşladığına bağlı olarak pedalların opaklığı değişir&lt;br&gt;&lt;b&gt;Statik&lt;/b&gt;: Pedallar aktif olduğunda tam opaklıkla görüntülenir ve kullanılmadığında soluk gösterilir</translation>
+    </message>
+    <message>
+        <source>Rotate the steering wheel alongside the vehicle's physical steering wheel.</source>
+        <translation type="gpt-4o-generated">Araç direksiyonuyla birlikte direksiyon simidini çevirin.</translation>
+    </message>
+    <message>
+        <source>Model visualizations on the driving screen for the driving path, lane lines, path edges, and road edges.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranında sürüş yolu, şerit çizgileri, yol kenarları ve yol kenarlarının model görselleştirmeleri.</translation>
+    </message>
+    <message>
+        <source>Adjust the width of the driving path based on the current engagement state.&lt;br&gt;&lt;br&gt;&lt;b&gt;Fully engaged&lt;/b&gt;: 100%&lt;br&gt;&lt;b&gt;Always On Lateral&lt;/b&gt;: 75%&lt;br&gt;&lt;b&gt;Fully disengaged&lt;/b&gt;: 50%</source>
+        <translation type="gpt-4o-generated">Mevcut etkileşim durumuna göre sürüş yolunun genişliğini ayarlayın.&lt;br&gt;&lt;br&gt;&lt;b&gt;Tam etkileşimde&lt;/b&gt;: %100&lt;br&gt;&lt;b&gt;Her Zaman Açık Yan&lt;/b&gt;: %75&lt;br&gt;&lt;b&gt;Tamamen etkisiz&lt;/b&gt;: %50</translation>
+    </message>
+    <message>
+        <source>The thickness of the lane lines on the driving screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Default matches the &lt;b&gt;MUTCD&lt;/b&gt; lane line width standard of 4 inches.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranındaki şerit çizgilerinin kalınlığı.&lt;br&gt;&lt;br&gt;&lt;b&gt;Varsayılan, &lt;b&gt;MUTCD&lt;/b&gt; şerit çizgisi genişlik standardı olan 4 inç ile eşleşir.</translation>
+    </message>
+    <message>
+        <source>The width of the edges of the driving path that represent different driving modes and statuses.&lt;br&gt;&lt;br&gt;Default is &lt;b&gt;20%&lt;/b&gt; of the total path width.&lt;br&gt;&lt;br&gt;Color Guide:&lt;br&gt;&lt;br&gt;- &lt;b&gt;Blue&lt;/b&gt;: Navigation&lt;br&gt;- &lt;b&gt;Light Blue&lt;/b&gt;: Always On Lateral&lt;br&gt;- &lt;b&gt;Green&lt;/b&gt;: Default&lt;br&gt;- &lt;b&gt;Orange&lt;/b&gt;: Experimental Mode&lt;br&gt;- &lt;b&gt;Red&lt;/b&gt;: Traffic Mode&lt;br&gt;- &lt;b&gt;Yellow&lt;/b&gt;: Conditional Experimental Mode overridden</source>
+        <translation type="gpt-4o-generated">Sürüş modlarını ve durumlarını temsil eden sürüş yolunun kenarlarının genişliği.&lt;br&gt;&lt;br&gt;Varsayılan olarak, toplam yol genişliğinin &lt;b&gt;%20&lt;/b&gt;'sidir.&lt;br&gt;&lt;br&gt;Renk Kılavuzu:&lt;br&gt;&lt;br&gt;- &lt;b&gt;Mavi&lt;/b&gt;: Navigasyon&lt;br&gt;- &lt;b&gt;Açık Mavi&lt;/b&gt;: Her Zaman Açık Yan&lt;br&gt;- &lt;b&gt;Yeşil&lt;/b&gt;: Varsayılan&lt;br&gt;- &lt;b&gt;Turuncu&lt;/b&gt;: Deneysel Mod&lt;br&gt;- &lt;b&gt;Kırmızı&lt;/b&gt;: Trafik Modu&lt;br&gt;- &lt;b&gt;Sarı&lt;/b&gt;: Koşullu Deneysel Mod geçersiz kılındı</translation>
+    </message>
+    <message>
+        <source>The width of the driving path on the driving screen.&lt;br&gt;&lt;br&gt;Default &lt;b&gt;(6.1 feet / 1.9 meters)&lt;/b&gt; matches the width of a &lt;b&gt;2019 Lexus ES 350&lt;/b&gt;.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranındaki sürüş yolunun genişliği.&lt;br&gt;&lt;br&gt;Varsayılan &lt;b&gt;(6.1 feet / 1.9 metre)&lt;/b&gt; bir &lt;b&gt;2019 Lexus ES 350&lt;/b&gt;'nin genişliğiyle eşleşir.</translation>
+    </message>
+    <message>
+        <source>The thickness of the road edges on the driving screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Default matches half of the &lt;b&gt;MUTCD&lt;/b&gt; lane line width standard of 4 inches.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranındaki yol kenarlarının kalınlığı.&lt;br&gt;&lt;br&gt;&lt;b&gt;Varsayılan, &lt;b&gt;MUTCD&lt;/b&gt; şerit çizgisi genişlik standardı olan 4 inçin yarısıyla eşleşir.</translation>
+    </message>
+    <message>
+        <source>"Unlimited" Road UI</source>
+        <translation type="gpt-4o-generated">"Sınırsız" Yol Arayüzü</translation>
+    </message>
+    <message>
+        <source>Extend the display of the driving path, lane lines, and road edges as far as the model can see.</source>
+        <translation type="gpt-4o-generated">Modelin görebildiği kadar sürüş yolu, şerit çizgileri ve yol kenarlarının görüntüsünü genişlet.</translation>
+    </message>
+    <message>
+        <source>Map style tweaks, speed limits, and other navigation related widgets.</source>
+        <translation type="gpt-4o-generated">Harita tarzı ayarları, hız sınırları ve diğer navigasyonla ilgili widget'lar.</translation>
+    </message>
+    <message>
+        <source>Increase the size of the map for easier navigation readings.</source>
+        <translation type="gpt-4o-generated">Daha kolay navigasyon okumaları için harita boyutunu artırın.</translation>
+    </message>
+    <message>
+        <source>The map style used for &lt;b&gt;Navigate on openpilot (NOO)&lt;/b&gt;:&lt;br&gt;&lt;br&gt;&lt;b&gt;Stock&lt;/b&gt;: Default comma.ai style&lt;br&gt;&lt;b&gt;Mapbox Streets&lt;/b&gt;: Standard street-focused view&lt;br&gt;&lt;b&gt;Mapbox Outdoors&lt;/b&gt;: Emphasizes outdoor and terrain features&lt;br&gt;&lt;b&gt;Mapbox Light&lt;/b&gt;: Minimalist, bright theme&lt;br&gt;&lt;b&gt;Mapbox Dark&lt;/b&gt;: Minimalist, dark theme&lt;br&gt;&lt;b&gt;Mapbox Navigation Day&lt;/b&gt;: Optimized for daytime navigation&lt;br&gt;&lt;b&gt;Mapbox Navigation Night&lt;/b&gt;: Optimized for nighttime navigation&lt;br&gt;&lt;b&gt;Mapbox Satellite&lt;/b&gt;: Satellite imagery only&lt;br&gt;&lt;b&gt;Mapbox Satellite Streets&lt;/b&gt;: Hybrid satellite imagery with street labels&lt;br&gt;&lt;b&gt;Mapbox Traffic Night&lt;/b&gt;: Dark theme emphasizing traffic conditions&lt;br&gt;&lt;b&gt;mike854's (Satellite hybrid)&lt;/b&gt;: Customized hybrid satellite view</source>
+        <translation type="gpt-4o-generated">openpilot ile Seyir (NOO) için kullanılan harita stili:&lt;br&gt;&lt;br&gt;&lt;b&gt;Stock&lt;/b&gt;: Varsayılan comma.ai stili&lt;br&gt;&lt;b&gt;Mapbox Streets&lt;/b&gt;: Standart sokak odaklı görünüm&lt;br&gt;&lt;b&gt;Mapbox Outdoors&lt;/b&gt;: Açık hava ve arazi özelliklerini vurgular&lt;br&gt;&lt;b&gt;Mapbox Light&lt;/b&gt;: Minimalist, parlak tema&lt;br&gt;&lt;b&gt;Mapbox Dark&lt;/b&gt;: Minimalist, karanlık tema&lt;br&gt;&lt;b&gt;Mapbox Navigation Day&lt;/b&gt;: Gündüz navigasyonu için optimize edilmiştir&lt;br&gt;&lt;b&gt;Mapbox Navigation Night&lt;/b&gt;: Gece navigasyonu için optimize edilmiştir&lt;br&gt;&lt;b&gt;Mapbox Satellite&lt;/b&gt;: Yalnızca uydu görüntüleri&lt;br&gt;&lt;b&gt;Mapbox Satellite Streets&lt;/b&gt;: Sokak etiketli hibrit uydu görüntüleri&lt;br&gt;&lt;b&gt;Mapbox Traffic Night&lt;/b&gt;: Trafik koşullarını vurgulayan karanlık tema&lt;br&gt;&lt;b&gt;mike854's (Satellite hybrid)&lt;/b&gt;: Özelleştirilmiş hibrit uydu görünümü</translation>
+    </message>
+    <message>
+        <source>Display the road name at the bottom of the driving screen using data from &lt;b&gt;OpenStreetMap&lt;/b&gt;.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranının alt kısmında yol adını &lt;b&gt;OpenStreetMap&lt;/b&gt; verilerini kullanarak görüntüleyin.</translation>
+    </message>
+    <message>
+        <source>Display speed limits in the top left corner of the driving screen. Uses data from your car's dashboard (if supported) and data from &lt;b&gt;OpenStreetMaps&lt;/b&gt;.</source>
+        <translation type="gpt-4o-generated">Hız sınırlarını sürüş ekranının sol üst köşesinde görüntüleyin. Aracınızın gösterge panelinden (destekleniyorsa) ve &lt;b&gt;OpenStreetMaps&lt;/b&gt;'ten gelen verileri kullanır.</translation>
+    </message>
+    <message>
+        <source>Force &lt;b&gt;Vienna-style (EU)&lt;/b&gt; speed limit signs instead of &lt;b&gt;MUTCD (US)&lt;/b&gt;.</source>
+        <translation type="gpt-4o-generated">&lt;B&gt;Viyana tarzı (AB)&lt;/B&gt; hız sınırı işaretlerini &lt;B&gt;MUTCD (ABD)&lt;/B&gt; yerine zorla kullan.</translation>
+    </message>
+    <message>
+        <source>Quality of Life</source>
+        <translation type="gpt-4o-generated">Yaşam Kalitesi</translation>
+    </message>
+    <message>
+        <source>The active camera view display. This is purely a visual change and doesn't impact how openpilot drives!</source>
+        <translation type="gpt-4o-generated">Aktif kamera görünümü ekranı. Bu yalnızca görsel bir değişikliktir ve openpilot'ın sürüşünü etkilemez!</translation>
+    </message>
+    <message>
+        <source>Control Driving Personality via the Driving Screen</source>
+        <translation type="gpt-4o-generated">Sürüş Kişiliğini Sürüş Ekranı üzerinden Kontrol Et</translation>
+    </message>
+    <message>
+        <source>Display the current driving personality on the screen. Tap to switch personalities, or long press for 0.5 seconds to change the current state of &lt;b&gt;Experimental Mode&lt;/b&gt;, or 2.5 seconds for &lt;b&gt;Traffic Mode&lt;/b&gt;.</source>
+        <translation type="gpt-4o-generated">Mevcut sürüş kişiliğini ekranda göster. Kişilikleri değiştirmek için dokunun veya &lt;b&gt;Deneysel Mod&lt;/b&gt;'un mevcut durumunu değiştirmek için 0.5 saniye uzun basın veya &lt;b&gt;Trafik Modu&lt;/b&gt; için 2.5 saniye basılı tutun.</translation>
+    </message>
+    <message>
+        <source>Display the driver camera feed when the vehicle is in reverse.</source>
+        <translation type="gpt-4o-generated">Araç geri viteste olduğunda sürücü kamerası görüntüsünü göster.</translation>
+    </message>
+    <message>
+        <source>Turn the screen off when driving and automatically wake it up if engagement state changes or important alerts occur.</source>
+        <translation type="gpt-4o-generated">Sürüş sırasında ekranı kapatın ve katılım durumu değişirse veya önemli uyarılar meydana gelirse otomatik olarak uyandırın.</translation>
+    </message>
+    <message>
+        <source>Replace the current speed with a timer when stopped to indicate how long the vehicle has been stopped for.</source>
+        <translation type="gpt-4o-generated">Araç durduğunda mevcut hızı bir zamanlayıcı ile değiştirerek aracın ne kadar süredir durduğunu göster.</translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation type="gpt-4o-generated">Kapalı</translation>
+    </message>
+    <message>
+        <source> foot</source>
+        <translation type="gpt-4o-generated">ayak</translation>
+    </message>
+    <message>
+        <source> inch</source>
+        <translation type="gpt-4o-generated">inç</translation>
+    </message>
+    <message>
+        <source> meter</source>
+        <translation type="gpt-4o-generated">metre</translation>
+    </message>
+    <message>
+        <source> centimeter</source>
+        <translation type="gpt-4o-generated">santimetre</translation>
+    </message>
+    <message>
+        <source>The thickness of the lane lines on the driving screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Default matches the &lt;b&gt;MUTCD&lt;/b&gt; lane line width standard of 10 centimeters.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranındaki şerit çizgilerinin kalınlığı.&lt;br&gt;&lt;br&gt;&lt;b&gt;Varsayılan olarak &lt;b&gt;MUTCD&lt;/b&gt; şerit çizgisi genişlik standardı olan 10 santimetreye uygundur.</translation>
+    </message>
+    <message>
+        <source>The thickness of the road edges on the driving screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Default matches half of the &lt;b&gt;MUTCD&lt;/b&gt; lane line width standard of 10 centimeters.</source>
+        <translation type="gpt-4o-generated">Sürüş ekranında yol kenarlarının kalınlığı.&lt;br&gt;&lt;br&gt;&lt;b&gt;Varsayılan, &lt;b&gt;MUTCD&lt;/b&gt; şerit çizgi genişliği standardı olan 10 santimetrenin yarısıyla eşleşir.</translation>
+    </message>
+</context>
+<context>
+    <name>FrogPilotWheelPanel</name>
+    <message>
+        <source>Distance Button</source>
+        <translation type="gpt-4o-generated">Mesafe Düğmesi</translation>
+    </message>
+    <message>
+        <source>The action for a short press of the &lt;b&gt;Distance&lt;/b&gt; button.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Mesafe&lt;/b&gt; düğmesine kısa basma işlemi.</translation>
+    </message>
+    <message>
+        <source>Distance Button (Long Press)</source>
+        <translation type="gpt-4o-generated">Mesafe Düğmesi (Uzun Basma)</translation>
+    </message>
+    <message>
+        <source>The action for a 0.5+ second press of the &lt;b&gt;Distance&lt;/b&gt; button.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Mesafe&lt;/b&gt; düğmesine 0.5+ saniye basıldığında yapılacak eylem.</translation>
+    </message>
+    <message>
+        <source>Distance Button (Very Long Press)</source>
+        <translation type="gpt-4o-generated">Mesafe Düğmesi (Çok Uzun Basma)</translation>
+    </message>
+    <message>
+        <source>The action for a 2.5+ second press of the &lt;b&gt;Distance&lt;/b&gt; button.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;Mesafe&lt;/b&gt; düğmesine 2,5+ saniye basıldığında yapılacak işlem.</translation>
+    </message>
+    <message>
+        <source>LKAS Button</source>
+        <translation type="gpt-4o-generated">LKAS Düğmesi</translation>
+    </message>
+    <message>
+        <source>The ahe action for pressing the &lt;b&gt;LKAS&lt;/b&gt; button.</source>
+        <translation type="gpt-4o-generated">&lt;b&gt;LKAS&lt;/b&gt; düğmesine basma eylemi.</translation>
+    </message>
+    <message>
+        <source>Nothing</source>
+        <translation type="gpt-4o-generated">Hiçbir şey</translation>
+    </message>
+    <message>
+        <source>Pause Lateral</source>
+        <translation type="gpt-4o-generated">Yanalı Durdur</translation>
+    </message>
+    <message>
+        <source>Change "Personality Profile"</source>
+        <translation type="gpt-4o-generated">"Kişilik Profili" olarak değiştir</translation>
+    </message>
+    <message>
+        <source>Force openpilot to Coast</source>
+        <translation type="gpt-4o-generated">openpilot'ı Sahile Zorla</translation>
+    </message>
+    <message>
+        <source>Pause Longitudinal</source>
+        <translation type="gpt-4o-generated">Boylamasına Duraklat</translation>
+    </message>
+    <message>
+        <source>Toggle "Experimental Mode" On/Off</source>
+        <translation type="gpt-4o-generated">"Deneysel Mod"u Aç/Kapat</translation>
+    </message>
+    <message>
+        <source>Toggle "Traffic Mode" On/Off</source>
+        <translation type="gpt-4o-generated">"Trafik Modunu" Aç/Kapat</translation>
+    </message>
+    <message>
+        <source>SELECT</source>
+        <translation type="gpt-4o-generated">SEÇ</translation>
+    </message>
+    <message>
+        <source>Select a function to assign to this button</source>
+        <translation type="gpt-4o-generated">Bu düğmeye atanacak bir işlev seçin</translation>
     </message>
 </context>
 <context>

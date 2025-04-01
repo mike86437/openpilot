@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import glob
 import json
+import random
 import requests
 import shutil
 
@@ -17,6 +18,74 @@ DOWNLOAD_PROGRESS_PARAM = "ThemeDownloadProgress"
 
 HOLIDAY_THEME_PATH = Path(__file__).parent / "holiday_themes"
 STOCKOP_THEME_PATH = Path(__file__).parent / "stock_theme"
+
+def randomize_distance_icons():
+  theme_packs_path = THEME_SAVE_PATH / "theme_packs"
+  if not theme_packs_path.exists():
+    return "stock"
+
+  candidates = []
+  for theme_directory in theme_packs_path.iterdir():
+    if theme_directory.is_dir() and (theme_directory / "distance_icons").is_dir():
+      candidates.append(theme_directory.name)
+
+  return random.choice(candidates) if candidates else "stock"
+
+def randomize_theme_asset():
+  theme_packs_path = THEME_SAVE_PATH / "theme_packs"
+  if not theme_packs_path.exists():
+    return "stock"
+
+  candidates = []
+  required_folders = ["colors", "sounds"]
+  for theme_dir in theme_packs_path.iterdir():
+    if not theme_dir.is_dir():
+      continue
+
+    icons_exist = (theme_dir / "icons").is_dir()
+    required_exist = all((theme_dir / folder).is_dir() for folder in required_folders)
+
+    theme_name = theme_dir.name
+    if theme_name.endswith("-animated"):
+      if icons_exist and required_exist:
+        candidates.append(theme_name)
+    else:
+      if required_exist:
+        if icons_exist:
+          candidates.append(theme_name)
+        else:
+          animated_dir = theme_packs_path / f"{theme_name}-animated"
+          if animated_dir.is_dir() and (animated_dir / "icons").is_dir():
+            candidates.append(animated_dir.name)
+
+  return random.choice(candidates) if candidates else "stock"
+
+def randomize_wheel_image(selected_theme):
+  steering_wheels_path = THEME_SAVE_PATH / "steering_wheels"
+  if not steering_wheels_path.exists():
+    return "stock"
+
+  theme_packs_path = THEME_SAVE_PATH / "theme_packs"
+
+  theme_names = set()
+  for theme_dir in theme_packs_path.iterdir():
+    if not theme_dir.is_dir():
+      continue
+    name = theme_dir.name
+    base_name = name[:-9] if name.endswith("-animated") else name
+    theme_names.add(base_name)
+
+  selected_base = selected_theme[:-9] if selected_theme.endswith("-animated") else selected_theme
+
+  candidates = []
+  for item in steering_wheels_path.iterdir():
+    if item.is_file():
+      stem = item.stem
+      segments = stem.split("_")
+      if not any(seg == theme and theme != selected_base for seg in segments for theme in theme_names):
+        candidates.append(stem)
+
+  return random.choice(candidates) if candidates else "stock"
 
 def update_theme_asset(asset_type, theme, holiday_theme):
   save_location = ACTIVE_THEME_PATH / asset_type
@@ -83,7 +152,6 @@ def update_wheel_image(image, holiday_theme="stock", random_event=True):
       destination_file.unlink()
     destination_file.symlink_to(source_file)
     print(f"Linked {destination_file} to {source_file}")
-
 
 class ThemeManager:
   def __init__(self):
@@ -154,7 +222,21 @@ class ThemeManager:
         "turn_signal_pack": ("signals", self.theme_assets.get("holiday_theme")),
         "wheel_image": ("wheel_image", self.theme_assets.get("holiday_theme"))
       }
-    else:
+    elif boot_run and frogpilot_toggles.random_themes:
+      selected_theme = randomize_theme_asset()
+      selected_wheel = randomize_wheel_image(selected_theme)
+
+      asset_mappings = {
+        "color_scheme": ("colors", selected_theme),
+        "distance_icons": ("distance_icons", randomize_distance_icons()),
+        "icon_pack": ("icons", "frog-animated" if selected_theme == "frog" else selected_theme),
+        "sound_pack": ("sounds", selected_theme),
+        "turn_signal_pack": ("signals", selected_theme),
+        "wheel_image": ("wheel_image", selected_wheel)
+      }
+
+      frogpilot_toggles.wheel_image = selected_wheel
+    elif not frogpilot_toggles.random_themes:
       asset_mappings = {
         "color_scheme": ("colors", frogpilot_toggles.color_scheme),
         "distance_icons": ("distance_icons", frogpilot_toggles.distance_icons),
@@ -163,6 +245,8 @@ class ThemeManager:
         "turn_signal_pack": ("signals", frogpilot_toggles.signal_icons),
         "wheel_image": ("wheel_image", frogpilot_toggles.wheel_image)
       }
+    else:
+      return False
 
     theme_updated = False
     for asset, (asset_type, current_value) in asset_mappings.items():

@@ -121,9 +121,9 @@ private:
   bool blindSpotLeft;
   bool blindSpotRight;
   bool cemStatus;
+  bool cscStatus;
   bool compass;
   bool experimentalMode;
-  bool hideCSCUI;
   bool hideMapIcon;
   bool hideMaxSpeed;
   bool hideSpeed;
@@ -139,7 +139,7 @@ private:
   bool slcOverridden;
   bool speedLimitChanged;
   bool speedLimitSources;
-  bool trafficModeActive;
+  bool trafficMode;
   bool turnSignalAnimation;
   bool turnSignalLeft;
   bool turnSignalRight;
@@ -175,13 +175,13 @@ private:
   int standstillDuration;
   int totalFrames;
 
-  std::string speedLimitSource;
+  QColor blueColor(int alpha = 255) { return QColor(0, 0, 255, alpha); }
+  QColor greenColor(int alpha = 242) { return QColor(23, 134, 68, alpha); }
+  QColor orangeColor(int alpha = 255) { return QColor(255, 165, 0, alpha); }
+  QColor purpleColor(int alpha = 255) { return QColor(128, 0, 128, alpha); }
+  QColor yellowColor(int alpha = 255) { return QColor(255, 255, 0, alpha); }
 
-  inline QColor blueColor(int alpha = 255) { return QColor(0, 0, 255, alpha); }
-  inline QColor greenColor(int alpha = 242) { return QColor(23, 134, 68, alpha); }
-  inline QColor orangeColor(int alpha = 255) { return QColor(255, 165, 0, alpha); }
-  inline QColor purpleColor(int alpha = 255) { return QColor(128, 0, 128, alpha); }
-  inline QColor yellowColor(int alpha = 255) { return QColor(255, 255, 0, alpha); }
+  QString speedLimitSource;
 
 protected:
   void paintGL() override;
