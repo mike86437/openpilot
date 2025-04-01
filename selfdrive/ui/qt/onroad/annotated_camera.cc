@@ -1147,7 +1147,7 @@ void AnnotatedCameraWidget::drawCEMStatus(QPainter &p) {
   p.save();
   p.setOpacity(1.0);
 
-  QRect cemWidget(dmIconPosition.x() + (rightHandDM ? -img_size : img_size), dmIconPosition.y() - img_size / 2, img_size, img_size);
+  QRect cemWidget(dmIconPosition.x() + (rightHandDM ? -img_size : img_size), height() - 126 - img_size / 2, img_size, img_size);
   if (conditionalStatus == 1 || conditionalStatus == 3 || conditionalStatus == 5) {
     p.setPen(QPen(QColor(bg_colors[STATUS_CONDITIONAL_OVERRIDDEN]), 10));
   } else if (experimentalMode) {
