@@ -270,6 +270,7 @@ static void update_state(UIState *s) {
   if (sm.updated("carControl")) {
     auto carControl = sm["carControl"].getCarControl();
     scene.steer = carControl.getActuators().getSteer();
+    scene.accel = carControl.getActuators().getAccel();
   }
   if (sm.updated("carParams")) {
     scene.longitudinal_control = sm["carParams"].getCarParams().getOpenpilotLongitudinalControl();
