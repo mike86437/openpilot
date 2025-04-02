@@ -84,7 +84,7 @@ void OnroadWindow::updateState(const UIState &s) {
   // FrogPilot variables
   const UIScene &scene = s.scene;
 
-  accelAct = scene.accel;
+  accelAct = scene.accelAct;
   acceleration = scene.acceleration;
   accelerationJerk = scene.acceleration_jerk;
   accelerationJerkDifference = scene.acceleration_jerk_difference;

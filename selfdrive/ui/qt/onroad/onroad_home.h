@@ -36,7 +36,7 @@ private:
   bool showTuning;
   bool turnSignalLeft;
   bool turnSignalRight;
-
+  float accelAct;
   float acceleration;
   float accelerationJerk;
   float accelerationJerkDifference;
