@@ -224,6 +224,7 @@ typedef struct UIScene {
 
   double fps;
 
+  float accelAct;
   float acceleration;
   float acceleration_jerk;
   float acceleration_jerk_difference;
@@ -247,7 +248,6 @@ typedef struct UIScene {
   float speed_limit_offset;
   float speed_limit_overridden_speed;
   float steer;
-  float accel;
   float unconfirmed_speed_limit;
   float upcoming_maneuver_distance;
   float upcoming_speed_limit;

@@ -84,7 +84,7 @@ void OnroadWindow::updateState(const UIState &s) {
   // FrogPilot variables
   const UIScene &scene = s.scene;
 
-  accel = scene.accel;
+  accelAct = scene.accel;
   acceleration = scene.acceleration;
   accelerationJerk = scene.acceleration_jerk;
   accelerationJerkDifference = scene.acceleration_jerk_difference;
@@ -280,7 +280,7 @@ void OnroadWindow::paintEvent(QPaintEvent *event) {
     maxAccelTimer = maxAcceleration == acceleration && maxAcceleration != 0 ? UI_FREQ * 5 : maxAccelTimer - 1;
 
     logicsDisplayString += QString("Acceleration: %1 %2 - ").arg(acceleration, 0, 'f', 2).arg(nvg->accelerationUnit);
-    logicsDisplayString += QString("Accel: %1 %2 - ").arg(accel, 0, 'f', 2).arg(nvg->accelerationUnit);
+    logicsDisplayString += QString("Accel: %1 %2 - ").arg(accelAct, 0, 'f', 2).arg(nvg->accelerationUnit);
     logicsDisplayString += QString("Acceleration Jerk: %1 | ").arg(accelerationJerk, 0, 'f', 2);
     logicsDisplayString += QString("Speed Jerk: %1").arg(speedJerk, 0, 'f', 2);
   }
@@ -310,7 +310,7 @@ void OnroadWindow::paintEvent(QPaintEvent *event) {
         p.drawText(x, y, baseText);
         x += fontMetrics.horizontalAdvance(baseText);
 
-        QString maxText = QString("Max: %1 %2 | ").arg(maxAcceleration, 0, 'f', 2).arg(nvg->accelerationUnit);
+        QString maxText = QString("Act Accel: %1 %2 | ").arg(accelAct, 0, 'f', 2).arg(nvg->accelerationUnit);
         p.setPen(redColor());
         p.drawText(x, y, maxText);
         x += fontMetrics.horizontalAdvance(maxText);
