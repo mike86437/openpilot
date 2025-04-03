@@ -470,6 +470,7 @@ class CarInterfaceBase(ABC):
     if cs_out.gasPressed:
       events.add(EventName.gasPressedOverride)
 
+    self.targetCoast = params.get_bool("SetCoast")
     # Handle button presses
     for b in cs_out.buttonEvents:
       # Enable OP long on falling edge of enable buttons (defaults to accelCruise and decelCruise, overridable per-port)

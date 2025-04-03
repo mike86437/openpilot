@@ -71,6 +71,7 @@ class RouteEngine:
 
     self.stop_coord = []
     self.stop_signal = []
+    self.approach_latch = False
 
   def update(self):
     self.sm.update(0)
@@ -225,7 +226,7 @@ class RouteEngine:
 
           for step in self.route:
             for intersection in step["intersections"]:
-              if "stop_sign" in intersection or "traffic_signal" in intersection:
+              if "stop_sign" in intersection:
                 self.stop_signal.append(intersection["geometry_index"])
                 self.stop_coord.append(Coordinate.from_mapbox_tuple(intersection["location"]))
 
@@ -394,6 +395,11 @@ class RouteEngine:
 
         distance_to_condition = self.last_position.distance_to(self.stop_coord[index])
         self.approaching_intersection = self.frogpilot_toggles.conditional_navigation_intersections and distance_to_condition < max((seconds_to_stop * v_ego), 25)
+        if self.approaching_intersection and not self.approach_latch:
+          self.approach_latch = True
+          self.params.put_bool("SetCoast", True)
+        elif not self.approaching_intersection:
+          self.approach_latch = False
       else:
         self.approaching_intersection = False
 
