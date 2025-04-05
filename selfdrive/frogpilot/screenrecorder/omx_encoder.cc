@@ -426,25 +426,25 @@ void OmxEncoder::init_rtsp_stream() {
   // Initialize FFmpeg RTSP context
   // (this would be part of your initialization code, not inside `handle_out_buf`)
 
-  AVFormatContext *ofmt_ctx = nullptr;
-  AVOutputFormat *ofmt = nullptr;
+  AVFormatContext *local_ofmt_ctx = nullptr;
+  AVOutputFormat *local_ofmt = nullptr;
   const char *rtsp_url = "rtsp://localhost:8554/mystream";  // Set your RTSP URL
 
-  ofmt = av_guess_format("rtsp", rtsp_url, nullptr);
-  if (!ofmt) {
+  local_ofmt = av_guess_format("rtsp", rtsp_url, nullptr);
+  if (!local_ofmt) {
     LOGE("Could not find suitable output format for RTSP stream");
     return;
   }
 
-  int err = avformat_alloc_output_context2(&ofmt_ctx, ofmt, nullptr, rtsp_url);
+  int err = avformat_alloc_output_context2(&local_ofmt_ctx, local_ofmt, nullptr, rtsp_url);
   if (err < 0) {
     LOGE("Failed to allocate output context: %s", av_err2str(err));
     return;
   }
 
   // Open the RTSP stream for writing
-  if (!(ofmt->flags & AVFMT_NOFILE)) {
-    err = avio_open(&ofmt_ctx->pb, rtsp_url, AVIO_FLAG_WRITE);
+  if (!(local_ofmt->flags & AVFMT_NOFILE)) {
+    err = avio_open(&local_ofmt_ctx->pb, rtsp_url, AVIO_FLAG_WRITE);
     if (err < 0) {
       LOGE("Failed to open RTSP stream URL: %s", av_err2str(err));
       return;
@@ -453,7 +453,7 @@ void OmxEncoder::init_rtsp_stream() {
 
   // Setup video stream as in the previous steps...
   // Add a video stream (use H.264 in this case)
-  AVStream *out_stream = avformat_new_stream(ofmt_ctx, nullptr);
+  AVStream *out_stream = avformat_new_stream(local_ofmt_ctx, nullptr);
   if (!out_stream) {
     LOGE("Failed to create new stream");
     return;
