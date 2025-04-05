@@ -30,6 +30,8 @@ public:
   static OMX_ERRORTYPE fill_buffer_done(OMX_HANDLETYPE component, OMX_PTR app_data,
                                         OMX_BUFFERHEADERTYPE *buffer);
 
+  void init_rtsp_stream();
+
 private:
   void wait_for_state(OMX_STATETYPE state);
   static void handle_out_buf(OmxEncoder *e, OMX_BUFFERHEADERTYPE *out_buf);
