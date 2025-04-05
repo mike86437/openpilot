@@ -453,14 +453,14 @@ void OmxEncoder::init_rtsp_stream() {
 
   // Setup video stream as in the previous steps...
   // Add a video stream (use H.264 in this case)
-  AVStream *out_stream = avformat_new_stream(local_ofmt_ctx, nullptr);
-  if (!out_stream) {
+  AVStream *local_out_stream = avformat_new_stream(local_ofmt_ctx, nullptr);
+  if (!local_out_stream) {
     LOGE("Failed to create new stream");
     return;
   }
 
   // Set codec parameters for the video stream
-  AVCodecContext *codec_ctx = out_stream->codec;
+  AVCodecContext *codec_ctx = local_out_stream->codec;
   codec_ctx->codec_id = AV_CODEC_ID_H264; // Use H.264 codec
   codec_ctx->bit_rate = 1000000;  // Set bitrate (1Mbps)
   codec_ctx->width = SCREEN_WIDTH; // Set width (modify based on your input)
@@ -482,8 +482,8 @@ void OmxEncoder::init_rtsp_stream() {
   }
 
   // Set the extradata (codec configuration) for the stream
-  out_stream->codecpar->extradata = codec_ctx->extradata;
-  out_stream->codecpar->extradata_size = codec_ctx->extradata_size;
+  local_out_stream->codecpar->extradata = codec_ctx->extradata;
+  local_out_stream->codecpar->extradata_size = codec_ctx->extradata_size;
 
   // After stream is set up, you can write frames to RTSP stream in `handle_out_buf`
 }
