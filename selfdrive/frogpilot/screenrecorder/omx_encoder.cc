@@ -333,12 +333,16 @@ OmxEncoder::OmxEncoder(const char* path, int width, int height, int fps, int bit
   for (OMX_BUFFERHEADERTYPE* &buf : in_buf_headers) {
     free_in.push(buf);
   }
+
+  init_rtsp_stream();
+
 }
 
 void OmxEncoder::handle_out_buf(OmxEncoder *encoder, OMX_BUFFERHEADERTYPE *out_buf) {
   int err;
   uint8_t *buf_data = out_buf->pBuffer + out_buf->nOffset;
 
+  // **Original functionality**: Handle codec config data and write to file
   if (out_buf->nFlags & OMX_BUFFERFLAG_CODECCONFIG) {
     if (encoder->codec_config_len < out_buf->nFilledLen) {
       encoder->codec_config = (uint8_t *)realloc(encoder->codec_config, out_buf->nFilledLen);
@@ -350,12 +354,13 @@ void OmxEncoder::handle_out_buf(OmxEncoder *encoder, OMX_BUFFERHEADERTYPE *out_b
 #endif
   }
 
+  // If an output file exists, write to it
   if (encoder->of) {
     fwrite(buf_data, out_buf->nFilledLen, 1, encoder->of);
   }
 
+  // **Original functionality**: Write codec config once
   if (!encoder->wrote_codec_config && encoder->codec_config_len > 0) {
-    // extradata will be freed by av_free() in avcodec_free_context()
     encoder->out_stream->codecpar->extradata = (uint8_t*)av_mallocz(encoder->codec_config_len + AV_INPUT_BUFFER_PADDING_SIZE);
     encoder->out_stream->codecpar->extradata_size = encoder->codec_config_len;
     memcpy(encoder->out_stream->codecpar->extradata, encoder->codec_config, encoder->codec_config_len);
@@ -366,33 +371,49 @@ void OmxEncoder::handle_out_buf(OmxEncoder *encoder, OMX_BUFFERHEADERTYPE *out_b
     encoder->wrote_codec_config = true;
   }
 
+  // **Add FFmpeg stream handling**: Write video packet if timestamp is valid
   if (out_buf->nTimeStamp > 0) {
     // input timestamps are in microseconds
-    AVRational in_timebase = {1, 1000000};
+    AVRational in_timebase = {1, 1000000};  // microseconds
 
     AVPacket pkt;
-    av_new_packet(&pkt, out_buf->nFilledLen);
-    memcpy(pkt.data, buf_data, out_buf->nFilledLen);
-    pkt.data = buf_data;
-    pkt.size = out_buf->nFilledLen;
+    av_init_packet(&pkt);
 
-    enum AVRounding rnd = static_cast<enum AVRounding>(AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX);
+    // Allocate memory for the AVPacket data
+    pkt.size = out_buf->nFilledLen;
+    pkt.data = (uint8_t *)av_malloc(pkt.size + AV_INPUT_BUFFER_PADDING_SIZE);  // allocate memory
+    if (!pkt.data) {
+      LOGE("Failed to allocate AVPacket data");
+      return;
+    }
+
+    // Copy the buffer data into the packet
+    memcpy(pkt.data, buf_data, pkt.size);
+
+    // Set timestamp conversion (microseconds to stream timebase)
+    enum AVRounding rnd = static_cast<enum AVRounding>(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX);
     pkt.pts = pkt.dts = av_rescale_q_rnd(out_buf->nTimeStamp, in_timebase, encoder->ofmt_ctx->streams[0]->time_base, rnd);
     pkt.duration = av_rescale_q(50 * 1000, in_timebase, encoder->ofmt_ctx->streams[0]->time_base);
 
+    // Set the stream index (important for muxers like RTSP)
+    pkt.stream_index = encoder->out_stream->index;
+
+    // Mark this packet as a keyframe if required
     if (out_buf->nFlags & OMX_BUFFERFLAG_SYNCFRAME) {
       pkt.flags |= AV_PKT_FLAG_KEY;
     }
 
-    err = av_write_frame(encoder->ofmt_ctx, &pkt);
+    // Write the packet to the RTSP stream
+    err = av_interleaved_write_frame(encoder->ofmt_ctx, &pkt);
     if (err < 0) {
-      LOGW("ts encoder write issue");
+      LOGW("RTSP encoder write error: %s", av_err2str(err));
     }
 
+    // Clean up the packet
     av_packet_unref(&pkt);
   }
 
-  // give omx back the buffer
+  // Give OMX back the buffer for reuse
 #ifdef QCOM2
   if (out_buf->nFlags & OMX_BUFFERFLAG_EOS) {
     out_buf->nTimeStamp = 0;
@@ -400,6 +421,74 @@ void OmxEncoder::handle_out_buf(OmxEncoder *encoder, OMX_BUFFERHEADERTYPE *out_b
 #endif
   OMX_CHECK(OMX_FillThisBuffer(encoder->handle, out_buf));
 }
+
+void OmxEncoder::init_rtsp_stream() {
+  // Initialize FFmpeg RTSP context
+  // (this would be part of your initialization code, not inside `handle_out_buf`)
+
+  AVFormatContext *ofmt_ctx = nullptr;
+  AVOutputFormat *ofmt = nullptr;
+  const char *rtsp_url = "rtsp://localhost:8554/mystream";  // Set your RTSP URL
+
+  ofmt = av_guess_format("rtsp", rtsp_url, nullptr);
+  if (!ofmt) {
+    LOGE("Could not find suitable output format for RTSP stream");
+    return;
+  }
+
+  int err = avformat_alloc_output_context2(&ofmt_ctx, ofmt, nullptr, rtsp_url);
+  if (err < 0) {
+    LOGE("Failed to allocate output context: %s", av_err2str(err));
+    return;
+  }
+
+  // Open the RTSP stream for writing
+  if (!(ofmt->flags & AVFMT_NOFILE)) {
+    err = avio_open(&ofmt_ctx->pb, rtsp_url, AVIO_FLAG_WRITE);
+    if (err < 0) {
+      LOGE("Failed to open RTSP stream URL: %s", av_err2str(err));
+      return;
+    }
+  }
+
+  // Setup video stream as in the previous steps...
+  // Add a video stream (use H.264 in this case)
+  AVStream *out_stream = avformat_new_stream(ofmt_ctx, nullptr);
+  if (!out_stream) {
+    LOGE("Failed to create new stream");
+    return;
+  }
+
+  // Set codec parameters for the video stream
+  AVCodecContext *codec_ctx = out_stream->codec;
+  codec_ctx->codec_id = AV_CODEC_ID_H264; // Use H.264 codec
+  codec_ctx->bit_rate = 1000000;  // Set bitrate (1Mbps)
+  codec_ctx->width = SCREEN_WIDTH; // Set width (modify based on your input)
+  codec_ctx->height = SCREEN_HEIGHT; // Set height (modify based on your input)
+  codec_ctx->time_base = {1, 30};  // 30 FPS (modify as needed)
+  codec_ctx->gop_size = 12; // GOP size (for keyframes)
+  codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P; // Use YUV420P color format for H.264
+
+  // Open the encoder (H.264 encoder)
+  AVCodec *encoder = avcodec_find_encoder(codec_ctx->codec_id);
+  if (!encoder) {
+    LOGE("Codec not found");
+    return;
+  }
+  err = avcodec_open2(codec_ctx, encoder, nullptr);
+  if (err < 0) {
+    LOGE("Failed to open codec: %s", av_err2str(err));
+    return;
+  }
+
+  // Set the extradata (codec configuration) for the stream
+  out_stream->codecpar->extradata = codec_ctx->extradata;
+  out_stream->codecpar->extradata_size = codec_ctx->extradata_size;
+
+  // After stream is set up, you can write frames to RTSP stream in `handle_out_buf`
+}
+
+
 
 int OmxEncoder::encode_frame_rgba(const uint8_t *ptr, int in_width, int in_height, uint64_t ts) {
   if (!is_open) {
