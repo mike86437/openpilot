@@ -463,8 +463,8 @@ void OmxEncoder::init_rtsp_stream() {
   AVCodecContext *codec_ctx = local_out_stream->codec;
   codec_ctx->codec_id = AV_CODEC_ID_H264; // Use H.264 codec
   codec_ctx->bit_rate = 1000000;  // Set bitrate (1Mbps)
-  codec_ctx->width = SCREEN_WIDTH; // Set width (modify based on your input)
-  codec_ctx->height = SCREEN_HEIGHT; // Set height (modify based on your input)
+  codec_ctx->width = width; // Set width (modify based on your input)
+  codec_ctx->height = height; // Set height (modify based on your input)
   codec_ctx->time_base = {1, 30};  // 30 FPS (modify as needed)
   codec_ctx->gop_size = 12; // GOP size (for keyframes)
   codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P; // Use YUV420P color format for H.264
