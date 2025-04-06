@@ -342,7 +342,7 @@ void OmxEncoder::handle_out_buf(OmxEncoder *encoder, OMX_BUFFERHEADERTYPE *out_b
   int err;
   uint8_t *buf_data = out_buf->pBuffer + out_buf->nOffset;
 
-  // **Original functionality**: Handle codec config data and write to file
+  // **Original functionality**: Handle codec config data
   if (out_buf->nFlags & OMX_BUFFERFLAG_CODECCONFIG) {
     if (encoder->codec_config_len < out_buf->nFilledLen) {
       encoder->codec_config = (uint8_t *)realloc(encoder->codec_config, out_buf->nFilledLen);
@@ -354,13 +354,9 @@ void OmxEncoder::handle_out_buf(OmxEncoder *encoder, OMX_BUFFERHEADERTYPE *out_b
 #endif
   }
 
-  // If an output file exists, write to it
-  if (encoder->of) {
-    fwrite(buf_data, out_buf->nFilledLen, 1, encoder->of);
-  }
-
-  // **Original functionality**: Write codec config once
+  // **RTSP Streaming**: Only handle RTSP streaming
   if (!encoder->wrote_codec_config && encoder->codec_config_len > 0) {
+    // Set codec configuration extradata (once)
     encoder->out_stream->codecpar->extradata = (uint8_t*)av_mallocz(encoder->codec_config_len + AV_INPUT_BUFFER_PADDING_SIZE);
     encoder->out_stream->codecpar->extradata_size = encoder->codec_config_len;
     memcpy(encoder->out_stream->codecpar->extradata, encoder->codec_config, encoder->codec_config_len);
@@ -421,6 +417,7 @@ void OmxEncoder::handle_out_buf(OmxEncoder *encoder, OMX_BUFFERHEADERTYPE *out_b
 #endif
   OMX_CHECK(OMX_FillThisBuffer(encoder->handle, out_buf));
 }
+
 
 void OmxEncoder::init_rtsp_stream() {
   // Initialize FFmpeg RTSP context
