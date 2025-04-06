@@ -44,8 +44,9 @@ private:
   int counter = 0;
 
   std::string path;
-  FILE *of;
-
+  #ifdef WRITE_TO_FILE
+    FILE *of;
+  #endif
   size_t codec_config_len;
   uint8_t *codec_config = NULL;
   bool wrote_codec_config;
