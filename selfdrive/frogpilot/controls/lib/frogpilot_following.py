@@ -83,6 +83,18 @@ class FrogPilotFollowing:
       distance_factor = max(lead_distance - (v_lead * self.t_follow), 1)
       far_lead_offset = max(v_lead - CITY_SPEED_LIMIT, 1)
       braking_offset = float(np.clip(min(v_ego - v_lead, v_lead) * far_lead_offset - COMFORT_BRAKE, 1, distance_factor))
+      decelRate = (v_ego - v_lead) ** 2 / (2 * max(lead_distance, 1e-6)):
       if frogpilot_toggles.human_following:
         self.t_follow /= braking_offset
-      self.slower_lead = braking_offset / far_lead_offset > 1
+      self.slower_lead = decelRate > 1
+    else:
+      self.slower_lead = False
+
+      # Extended lead linear braking
+      d_rel = lead.dRel
+      v_lead = lead.vLead
+      v_rel = v_ego - v_lead
+      if (v_lead + 2) < v_ego > CRUISING_SPEED and self.frogpilot_planner.tracking_lead:
+        mtsc_active = True
+        decelRate = (v_rel ** 2) / (2 * max(d_rel, 1e-6)) * 4
+        self.mtsc_target = v_ego - decelRate
