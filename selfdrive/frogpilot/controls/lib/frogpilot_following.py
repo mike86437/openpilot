@@ -89,12 +89,3 @@ class FrogPilotFollowing:
       self.slower_lead = decelRate > 1
     else:
       self.slower_lead = False
-
-      # Extended lead linear braking
-      d_rel = lead.dRel
-      v_lead = lead.vLead
-      v_rel = v_ego - v_lead
-      if (v_lead + 2) < v_ego > CRUISING_SPEED and self.frogpilot_planner.tracking_lead:
-        mtsc_active = True
-        decelRate = (v_rel ** 2) / (2 * max(d_rel, 1e-6)) * 4
-        self.mtsc_target = v_ego - decelRate
