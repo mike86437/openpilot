@@ -86,6 +86,6 @@ class FrogPilotFollowing:
       decelRate = (v_ego - v_lead) ** 2 / (2 * max(lead_distance, 1e-6))
       if frogpilot_toggles.human_following:
         self.t_follow /= braking_offset
-      self.slower_lead = decelRate > 1
+      self.slower_lead = decelRate > 0.5
     else:
       self.slower_lead = False
