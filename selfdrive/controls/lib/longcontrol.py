@@ -4,6 +4,7 @@ from openpilot.common.realtime import DT_CTRL
 from openpilot.selfdrive.controls.lib.drive_helpers import CONTROL_N, apply_deadzone
 from openpilot.selfdrive.controls.lib.pid import PIDController
 from openpilot.selfdrive.modeld.constants import ModelConstants
+from openpilot.common.params import Params
 
 CONTROL_N_T_IDX = ModelConstants.T_IDXS[:CONTROL_N]
 
@@ -95,6 +96,7 @@ class LongControl:
                              k_f=CP.longitudinalTuning.kf, rate=1 / DT_CTRL)
     self.v_pid = 0.0
     self.last_output_accel = 0.0
+    self.params = Params()
 
   def reset(self):
     self.pid.reset()
@@ -128,6 +130,9 @@ class LongControl:
                                      feedforward=a_target)
 
     self.last_output_accel = clip(output_accel, accel_limits[0], accel_limits[1])
+    if self.params.get_bool("SetCoast"):
+      self.last_output_accel = -4.0
+
     return self.last_output_accel
 
   def reset_old_long(self, v_pid):
