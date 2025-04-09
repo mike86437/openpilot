@@ -123,6 +123,9 @@ class Track:
     left_lane = interp(self.dRel, model_data.laneLines[1].x, model_data.laneLines[1].y)
     right_lane = interp(self.dRel, model_data.laneLines[2].x, model_data.laneLines[2].y)
 
+    if left_lane < self.yRel < right_lane
+      print(f"Left: {left_lane:.2f}, Y Rel: {self.yRel:.2f}, Right: {right_lane:.2f}, Dist: {self.dRel:.2f}")
+
     return left_lane < self.yRel < right_lane
 
   def potential_low_speed_lead(self, v_ego: float):
