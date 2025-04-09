@@ -118,15 +118,15 @@ class Track:
     if standstill or self.vLeadK < 1:
       return False
 
-    lead_y = self.yRel + interp(self.dRel, model_data.position.x, model_data.position.y)
+    lead_y = -self.yRel
 
     left_lane = interp(self.dRel, model_data.laneLines[1].x, model_data.laneLines[1].y)
     right_lane = interp(self.dRel, model_data.laneLines[2].x, model_data.laneLines[2].y)
 
-    if left_lane < self.yRel < right_lane:
-      print(f"Left: {left_lane:.2f}, Y Rel: {self.yRel:.2f}, Right: {right_lane:.2f}, Dist: {self.dRel:.2f}")
+    if left_lane < lead_y < right_lane:
+      print(f"L: {left_lane:.2f}, -Y: {lead_y:.2f}, R: {right_lane:.2f}, Dist: {self.dRel:.2f}")
 
-    return left_lane < self.yRel < right_lane
+    return left_lane < lead_y < right_lane
 
   def potential_low_speed_lead(self, v_ego: float):
     # stop for stuff in front of you and low speed, even without model confirmation
