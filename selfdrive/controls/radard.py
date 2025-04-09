@@ -115,7 +115,7 @@ class Track:
       return lead_y > right_lane
 
   def potential_far_lead(self, standstill: bool, model_data: capnp._DynamicStructReader):
-    if standstill or self.vLeadK < 1 or abs(self.yRel) > 1:
+    if standstill or self.vLeadK < 1:
       return False
 
     lead_y = self.yRel + interp(self.dRel, model_data.position.x, model_data.position.y)
@@ -123,7 +123,7 @@ class Track:
     left_lane = interp(self.dRel, model_data.laneLines[1].x, model_data.laneLines[1].y)
     right_lane = interp(self.dRel, model_data.laneLines[2].x, model_data.laneLines[2].y)
 
-    return left_lane < lead_y < right_lane
+    return left_lane < self.yRel < right_lane
 
   def potential_low_speed_lead(self, v_ego: float):
     # stop for stuff in front of you and low speed, even without model confirmation
