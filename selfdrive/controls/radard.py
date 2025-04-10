@@ -6,6 +6,7 @@ from types import SimpleNamespace
 from typing import Any
 
 import csv
+import os
 from datetime import datetime
 
 import capnp
