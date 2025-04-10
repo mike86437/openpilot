@@ -95,11 +95,12 @@ class LongControl:
                              k_f=CP.longitudinalTuning.kf, rate=1 / DT_CTRL)
     self.v_pid = 0.0
     self.last_output_accel = 0.0
+    self.dRelk = 0.0
 
   def reset(self):
     self.pid.reset()
 
-  def update(self, active, CS, a_target, should_stop, accel_limits, frogpilot_toggles):
+  def update(self, active, CS, a_target, should_stop, accel_limits, frogpilot_toggles, t_follow, leadOne)
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     self.pid.neg_limit = accel_limits[0]
     self.pid.pos_limit = accel_limits[1]
@@ -122,6 +123,11 @@ class LongControl:
       output_accel = (a_target if frogpilot_toggles.human_acceleration else self.CP.startAccel)
       self.reset()
 
+    elif leadOne is not None:
+      self.dRelk = 0.8 * float(leadOne.dRel) + 0.2 * self.dRelk
+      error = (t_follow - self.dRelk) / 10.0
+      output_accel = self.pid.update(error, speed=CS.vEgo,
+                                     feedforward=leadOne.vRel)
     else:  # LongCtrlState.pid
       error = a_target - CS.aEgo
       output_accel = self.pid.update(error, speed=CS.vEgo,
