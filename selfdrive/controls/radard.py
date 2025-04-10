@@ -117,16 +117,6 @@ class Track:
       right_lane = interp(self.dRel, model_data.laneLines[2].x, model_data.laneLines[2].y)
       return lead_y > right_lane
 
-  def log_lead_data(left_lane, lead_y, right_lane, dRel):
-    log_dir = "/data/media/0/logs"
-    log_file = os.path.join(log_dir, "lead_log.csv")
-    os.makedirs(log_dir, exist_ok=True)
-
-    timestamp = datetime.now().isoformat()
-    with open(log_file, 'a', newline='') as csvfile:
-      writer = csv.writer(csvfile)
-      writer.writerow([timestamp, f"{left_lane:.2f}", f"{lead_y:.2f}", f"{right_lane:.2f}", f"{dRel:.2f}"])
-
   def potential_far_lead(self, standstill: bool, model_data: capnp._DynamicStructReader):
     if standstill or self.vLeadK < 1:
       return False
@@ -154,6 +144,15 @@ class Track:
     ret = f"x: {self.dRel:4.1f}  y: {self.yRel:4.1f}  v: {self.vRel:4.1f}  a: {self.aLeadK:4.1f}"
     return ret
 
+def log_lead_data(left_lane, lead_y, right_lane, dRel):
+  log_dir = "/data/media/0/logs"
+  log_file = os.path.join(log_dir, "lead_log.csv")
+  os.makedirs(log_dir, exist_ok=True)
+
+  timestamp = datetime.now().isoformat()
+  with open(log_file, 'a', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow([timestamp, f"{left_lane:.2f}", f"{lead_y:.2f}", f"{right_lane:.2f}", f"{dRel:.2f}"])
 
 def laplacian_pdf(x: float, mu: float, b: float):
   b = max(b, 1e-4)
