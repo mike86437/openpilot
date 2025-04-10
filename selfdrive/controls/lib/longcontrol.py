@@ -124,15 +124,16 @@ class LongControl:
       self.reset()
 
     elif 0 < leadOne.dRel < 100 and CS.cruiseState.speed > CS.vEgo:
-      dFollow = t_follow * CS.vEgo + 10.0
+      dFollow = t_follow * CS.vEgo + 6.0
       self.dRelk = 0.8 * float(leadOne.dRel) + 0.2 * self.dRelk
-      error = (self.dRelk - dFollow) / 10.0
+      error = (self.dRelk - dFollow) / 50.0
       output_accel = self.pid.update(error, speed=CS.vEgo,
-                                     feedforward=leadOne.vRel)
+                                     feedforward=a_target)
     else:  # LongCtrlState.pid
       error = a_target - CS.aEgo
       output_accel = self.pid.update(error, speed=CS.vEgo,
                                      feedforward=a_target)
+      output_accel = clip(output_accel, accel_limits[0], 1.5)
 
     self.last_output_accel = clip(output_accel, accel_limits[0], accel_limits[1])
     return self.last_output_accel
