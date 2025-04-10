@@ -123,10 +123,10 @@ class LongControl:
       output_accel = (a_target if frogpilot_toggles.human_acceleration else self.CP.startAccel)
       self.reset()
 
-    elif 0 < leadOne.dRel < 100:
-      dFollow = t_follow * CS.vEgo
+    elif 0 < leadOne.dRel < 100 and CS.cruiseState.speed < CS.vEgo:
+      dFollow = t_follow * CS.vEgo + 10.0
       self.dRelk = 0.8 * float(leadOne.dRel) + 0.2 * self.dRelk
-      error = (dFollow - self.dRelk) / 10.0
+      error = (self.dRelk - dFollow) / 10.0
       output_accel = self.pid.update(error, speed=CS.vEgo,
                                      feedforward=leadOne.vRel)
     else:  # LongCtrlState.pid
