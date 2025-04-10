@@ -100,7 +100,7 @@ class LongControl:
   def reset(self):
     self.pid.reset()
 
-  def update(self, active, CS, a_target, should_stop, accel_limits, frogpilot_toggles, t_follow, leadOne):
+  def update(self, active, CS, a_target, should_stop, accel_limits, frogpilot_toggles):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     self.pid.neg_limit = accel_limits[0]
     self.pid.pos_limit = accel_limits[1]
@@ -123,12 +123,6 @@ class LongControl:
       output_accel = (a_target if frogpilot_toggles.human_acceleration else self.CP.startAccel)
       self.reset()
 
-    elif 0 < leadOne.dRel < 100 and CS.cruiseState.speed > CS.vEgo:
-      dFollow = t_follow * CS.vEgo + 6.0
-      self.dRelk = 0.8 * float(leadOne.dRel) + 0.2 * self.dRelk
-      error = (self.dRelk - dFollow) / 20.0
-      output_accel = self.pid.update(error, speed=CS.vEgo,
-                                     feedforward=a_target)
     else:  # LongCtrlState.pid
       error = a_target - CS.aEgo
       output_accel = self.pid.update(error, speed=CS.vEgo,
