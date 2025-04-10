@@ -28,7 +28,7 @@ class FrogPilotPlanner:
     self.frogpilot_following = FrogPilotFollowing(self)
     self.frogpilot_vcruise = FrogPilotVCruise(self)
     self.lead_one = Lead()
-
+    self.frogtfollow = 0.0
     self.tracking_lead_filter = FirstOrderFilter(0, 1, DT_MDL)
 
     self.lateral_check = False
@@ -100,7 +100,7 @@ class FrogPilotPlanner:
 
     self.road_curvature = calculate_road_curvature(modelData, v_ego)
     self.road_curvature_detected = (1 / abs(self.road_curvature))**0.5 < v_ego > CRUISING_SPEED
-
+    self.frogtfollow = sm["frogpilotPlan"].tFollow
     self.tracking_lead = self.set_lead_status(v_lead)
     self.v_cruise = self.frogpilot_vcruise.update(carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles)
 
