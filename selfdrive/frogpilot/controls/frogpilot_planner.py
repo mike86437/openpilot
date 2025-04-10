@@ -100,7 +100,7 @@ class FrogPilotPlanner:
 
     self.road_curvature = calculate_road_curvature(modelData, v_ego)
     self.road_curvature_detected = (1 / abs(self.road_curvature))**0.5 < v_ego > CRUISING_SPEED
-    self.frogtfollow = sm["frogpilotPlan"].tFollow
+
     self.tracking_lead = self.set_lead_status(v_lead)
     self.v_cruise = self.frogpilot_vcruise.update(carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles)
 
@@ -122,7 +122,7 @@ class FrogPilotPlanner:
     frogpilotPlan.speedJerk = J_EGO_COST * self.frogpilot_following.speed_jerk
     frogpilotPlan.speedJerkStock = J_EGO_COST * self.frogpilot_following.base_speed_jerk
     frogpilotPlan.tFollow = self.frogpilot_following.t_follow
-
+    self.frogtfollow = frogpilotPlan.tFollow
     frogpilotPlan.desiredFollowDistance = self.frogpilot_following.desired_follow_distance
 
     frogpilotPlan.experimentalMode = self.cem.experimental_mode or self.frogpilot_vcruise.slc.experimental_mode
