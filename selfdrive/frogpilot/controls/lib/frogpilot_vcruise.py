@@ -76,13 +76,12 @@ class FrogPilotVCruise:
       # trim v_ego to when closer than expected following distance
       self.dRelk = 0.8 * float(lead.dRel) + 0.2 * self.dRelk
       self.vRelk = 0.8 * float(v_rel) + 0.2 * self.vRelk
-      stop_distance = 0.0
-      if self.dRelk < (self.frogpilot_planner.frogtfollow * v_ego + stop_distance) and v_ego > 2.0 and self.frogpilot_planner.tracking_lead: # target 1.5s gap
+      if self.dRelk < ((self.frogpilot_planner.frogtfollow - 0.25) * v_ego) and v_ego > 2.0 and self.frogpilot_planner.tracking_lead:
         mtsc_active = True
         k_p = 0.1
         k_v = 0.5
         max_trim = 5
-        error = (self.frogpilot_planner.frogtfollow * v_ego + stop_distance - self.dRelk)
+        error = ((self.frogpilot_planner.frogtfollow - 0.25) * v_ego - self.dRelk) # overlap with following distance for better transition
         trim = k_p * error + k_v * max(0, self.vRelk)
         trim = min(trim, max_trim)
         trimmed_vego = v_ego - max(0.0, trim)
