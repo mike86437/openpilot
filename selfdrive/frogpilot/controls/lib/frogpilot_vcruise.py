@@ -34,8 +34,6 @@ class FrogPilotVCruise:
     self.speed_limit_timer = 0
     self.tracked_model_length = 0
     self.vtsc_target = 0
-    self.dRelk = 0
-    self.vRelk = 0
 
   def update(self, carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles):
     force_stop = frogpilot_toggles.force_stops and self.frogpilot_planner.cem.stop_light_detected and controlsState.enabled
@@ -45,7 +43,6 @@ class FrogPilotVCruise:
     self.force_stop_timer = self.force_stop_timer + DT_MDL if force_stop else 0
 
     force_stop_enabled = self.force_stop_timer >= 1
-    lead = self.frogpilot_planner.lead_one
 
     self.override_force_stop |= not frogpilot_toggles.force_standstill and carState.standstill and self.frogpilot_planner.tracking_lead
     self.override_force_stop |= carState.gasPressed
@@ -64,33 +61,17 @@ class FrogPilotVCruise:
     v_ego_diff = v_ego_cluster - v_ego
 
     # Pfeiferj's Map Turn Speed Controller
-    if frogpilot_toggles.map_turn_speed_controller:
-      # Extended lead linear braking
-      d_rel = lead.dRel
-      v_lead = lead.vLead
-      v_rel = v_ego - v_lead
-      if (v_lead + 1) < v_ego > CRUISING_SPEED and self.frogpilot_planner.tracking_lead:
-        mtsc_active = True
-        decelRate = (v_rel ** 2) / (2 * max(d_rel, 1e-6)) * 4
-        self.mtsc_target = v_ego - decelRate
-      # trim v_ego to when closer than expected following distance
-      self.dRelk = 0.8 * float(lead.dRel) + 0.2 * self.dRelk
-      self.vRelk = 0.8 * float(v_rel) + 0.2 * self.vRelk
-      if self.dRelk < ((self.frogpilot_planner.frogtfollow - 0.25) * v_ego) and v_ego > 2.0 and self.frogpilot_planner.tracking_lead:
-        mtsc_active = True
-        k_p = 0.1
-        k_v = 0.5
-        max_trim = 5
-        error = ((self.frogpilot_planner.frogtfollow - 0.25) * v_ego - self.dRelk) # overlap with following distance for better transition
-        trim = k_p * error + k_v * max(0, self.vRelk)
-        trim = min(trim, max_trim)
-        trimmed_vego = v_ego - max(0.0, trim)
-        if self.mtsc_target > trimmed_vego: self.mtsc_target = trimmed_vego
-      elif self.params.get_bool("SetCoast"):
-        self.mtsc_target = max(v_ego - 2, CRUISING_SPEED)
-      else:
-        self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
-        mtsc_active = False
+    if frogpilot_toggles.map_turn_speed_controller and v_ego > CRUISING_SPEED and carControl.longActive:
+      mtsc_active = self.mtsc_target < v_cruise
+      mtsc_speed = ((TARGET_LAT_A * frogpilot_toggles.turn_aggressiveness) / (self.mtsc.get_map_curvature(gps_position, v_ego) * frogpilot_toggles.curve_sensitivity))**0.5
+      self.mtsc_target = np.clip(mtsc_speed, CRUISING_SPEED, v_cruise)
+
+      if self.frogpilot_planner.road_curvature_detected and mtsc_active:
+        self.mtsc_target = self.frogpilot_planner.v_cruise
+      elif not self.frogpilot_planner.road_curvature_detected and frogpilot_toggles.mtsc_curvature_check:
+        self.mtsc_target = v_cruise
+    else:
+      self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
 
     # Pfeiferj's Speed Limit Controller
     if frogpilot_toggles.show_speed_limits or frogpilot_toggles.speed_limit_controller:

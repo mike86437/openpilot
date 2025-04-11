@@ -28,7 +28,7 @@ class FrogPilotPlanner:
     self.frogpilot_following = FrogPilotFollowing(self)
     self.frogpilot_vcruise = FrogPilotVCruise(self)
     self.lead_one = Lead()
-    self.frogtfollow = 0.0
+
     self.tracking_lead_filter = FirstOrderFilter(0, 1, DT_MDL)
 
     self.lateral_check = False
@@ -122,7 +122,7 @@ class FrogPilotPlanner:
     frogpilotPlan.speedJerk = J_EGO_COST * self.frogpilot_following.speed_jerk
     frogpilotPlan.speedJerkStock = J_EGO_COST * self.frogpilot_following.base_speed_jerk
     frogpilotPlan.tFollow = self.frogpilot_following.t_follow
-    self.frogtfollow = frogpilotPlan.tFollow
+
     frogpilotPlan.desiredFollowDistance = self.frogpilot_following.desired_follow_distance
 
     frogpilotPlan.experimentalMode = self.cem.experimental_mode or self.frogpilot_vcruise.slc.experimental_mode
