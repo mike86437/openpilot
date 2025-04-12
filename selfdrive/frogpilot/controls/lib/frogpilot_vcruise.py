@@ -11,6 +11,7 @@ from openpilot.selfdrive.frogpilot.controls.lib.map_turn_speed_controller import
 from openpilot.selfdrive.frogpilot.controls.lib.speed_limit_controller import SpeedLimitController
 from openpilot.selfdrive.frogpilot.frogpilot_variables import CRUISING_SPEED, PLANNER_TIME, params_memory
 from openpilot.common.params import Params
+from collections import deque
 
 TARGET_LAT_A = 2.0
 
@@ -36,6 +37,8 @@ class FrogPilotVCruise:
     self.vtsc_target = 0
     self.dRelk = 0
     self.vRelk = 0
+    self.dRelk_hist = deque(maxlen=10)
+    self.drelk_stable = False
 
   def update(self, carControl, carState, controlsState, frogpilotCarControl, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles):
     force_stop = frogpilot_toggles.force_stops and self.frogpilot_planner.cem.stop_light_detected and controlsState.enabled
@@ -68,23 +71,37 @@ class FrogPilotVCruise:
       d_rel = lead.dRel
       v_lead = lead.vLead
       v_rel = v_ego - v_lead
-      if (v_lead + 1) < v_ego > CRUISING_SPEED and self.frogpilot_planner.tracking_lead: # 1 m/s under current v_ego activates
+      if (v_lead + 2) < v_ego > CRUISING_SPEED and self.frogpilot_planner.tracking_lead: # 2 m/s under current v_ego activates
         mtsc_active = True
         decelRate = (v_rel ** 2) / (2 * max(d_rel, 1e-6)) * 4 # 4x multipler to strengthen. Tune this as needed
         self.mtsc_target = v_ego - decelRate
+
+      if self.frogpilot_planner.tracking_lead: # clear trim variables when no lead
+        self.dRelk = 0.8 * float(lead.dRel) + 0.2 * self.dRelk # noisy dRel
+        self.vRelk = 0.8 * float(v_rel) + 0.2 * self.vRelk # noisy vRel
+        self.dRelk_hist.append(self.dRelk) # store dRelk history for slope calculation
+        if len(self.dRelk_hist) >= 5:  # Minimum length to avoid noise from too few points
+          y = np.array(self.dRelk_hist)
+          x = np.arange(len(y))
+          drel_slope = np.polyfit(x, y, 1)[0]  # 1st-degree polyfit returns [slope, intercept]
+          self.drelk_stable = drel_slope > -0.1 # consider stable when drelk not decreasing too fast or pulling away
+      else:
+        self.drelk_stable = False
+        self.dRelk_hist.clear() # clear history when no lead
       # trim v_ego to when closer than expected following distance
-      self.dRelk = 0.8 * float(lead.dRel) + 0.2 * self.dRelk
-      self.vRelk = 0.8 * float(v_rel) + 0.2 * self.vRelk
-      if self.dRelk < ((self.frogpilot_planner.frogtfollow - 0.25) * v_ego) and v_ego > 2.0 and self.frogpilot_planner.tracking_lead:
+      expected_dist = (self.frogpilot_planner.frogtfollow - 0.25) * v_ego # 0.25s overlap with following distance for better transition
+      distance_error = expected_dist - self.dRelk
+
+      if self.dRelk < expected_dist and v_ego > 2.0 and self.frogpilot_planner.tracking_lead and not self.drelk_stable:
         mtsc_active = True
         k_p = 0.1
         k_v = 0.5
-        max_trim = 5
-        error = ((self.frogpilot_planner.frogtfollow - 0.25) * v_ego - self.dRelk) # overlap with following distance for better transition
-        trim = k_p * error + k_v * max(0, self.vRelk)
+        max_trim = 3.0 # 3 m/s max trim ~ 6.7 mph
+        trim = k_p * distance_error + k_v * max(0, self.vRelk) # trim based on error and vRelk
         trim = min(trim, max_trim)
-        trimmed_vego = v_ego - max(0.0, trim)
-        if self.mtsc_target > trimmed_vego: self.mtsc_target = trimmed_vego
+        trimmed_vego = v_ego - max(0.0, trim) # current speed - trim
+        if self.mtsc_target > trimmed_vego: # extended lead braking could be stronger than trim
+          self.mtsc_target = trimmed_vego
       elif self.params.get_bool("SetCoast"):
         self.mtsc_target = max(v_ego - 2, CRUISING_SPEED)
       else:
