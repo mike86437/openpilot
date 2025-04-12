@@ -101,6 +101,8 @@ class FrogPilotVCruise:
         trimmed_vego = v_ego - max(0.0, trim) # current speed - trim
         if self.mtsc_target > trimmed_vego: # extended lead braking could be stronger than trim
           self.mtsc_target = trimmed_vego
+      elif self.params.get_bool("SetCoast"):
+        self.mtsc_target = max(v_ego - 2, CRUISING_SPEED)
       else:
         self.mtsc_target = v_cruise if v_cruise != V_CRUISE_UNSET else 0
         mtsc_active = False
