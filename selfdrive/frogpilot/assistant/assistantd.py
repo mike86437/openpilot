@@ -29,7 +29,6 @@ PROMPT = "GLaDOS-voiced visual assistant: sharp-tongued, real-time, zero toleran
   "Always read aloud traffic signs, city limits, and billboards (numbers and symbols as words), keeping the reading brief. " \
   "Briefly call out specific unusual, sketchy, beautiful, or out-of-place details. " \
   "Casual but clear address to driver (best friend tone), strictly no filler words or cliches at sentence start or anywhere (e.g., 'Seriously', 'Honestly', etc.). " \
-  "Aim for short, impactful pauses. " \
   "Never use ellipses ('...'), always full stops ('.'). " \
   "Replace all hyphens ('-') with full stops ('.'). " \
   "No asterisks, slashes, underscores, brackets, or special symbols; only clean words and regular punctuation. " \
@@ -174,18 +173,6 @@ class AssistantHandler:
     else:
       print("Request failed:", response.status_code)
 
-  def assistant_loop(self):
-    time.sleep(60)  # Initial delay
-    self.next_run_time = dt.datetime.now() + dt.timedelta(minutes=1)
-    self.first_run = False
-
-    while self.running:
-      now = dt.datetime.now()
-      if now >= self.next_run_time:
-        self.run_cycle()
-        self.next_run_time = now + dt.timedelta(minutes=1)
-      time.sleep(1)
-
   def run_cycle(self):
     try:
       print(f"[ASSISTANT] Starting new cycle at {dt.datetime.now().isoformat()}")
@@ -210,21 +197,21 @@ class AssistantHandler:
 
 def main():
   assistant = AssistantHandler()
-  if assistant.assistantd_enable:
-    assistant_thread = threading.Thread(target=assistant.assistant_loop)
-    assistant_thread.start()
-    print("[ASSISTANT] assistantd is enabled and running.")
-  else:
-    print("[ASSISTANT] assistantd is disabled in Params.")
-
+  last_run = time.monotonic()
+  initial_delay_done = False
   try:
     while True:
-      time.sleep(1)
+      now = time.monotonic()
+      if not initial_delay_done and now - last_run >= 60:
+        initial_delay_done = True
+        last_run = now  # Reset timer after delay
+      if assistant.assistantd_enable and initial_delay_done and now - last_run >= 60:
+        assistant.run_cycle()
+        last_run = now
+      time.sleep(0.1)
   except KeyboardInterrupt:
-    print("[ASSISTANT] Stopping...")
     assistant.stop()
-    assistant_thread.join()
-    print("[ASSISTANT] Stopped.")
+    print("[ASSISTANT] Exiting...")
 
 if __name__ == "__main__":
   main()
