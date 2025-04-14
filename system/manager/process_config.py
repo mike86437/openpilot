@@ -106,6 +106,7 @@ procs = [
   PythonProcess("webjoystick", "tools.bodyteleop.web", notcar),
 
   # FrogPilot processes
+  PythonProcess("assistantd", "selfdrive.frogpilot.assistant.assistantd", only_onroad),
   NativeProcess("classic_modeld", "selfdrive/classic_modeld", ["./classic_modeld"], run_classic_modeld),
   PythonProcess("fleet_manager", "selfdrive.frogpilot.fleetmanager.fleet_manager", always_run),
   PythonProcess("frogpilot_process", "selfdrive.frogpilot.frogpilot_process", always_run),
