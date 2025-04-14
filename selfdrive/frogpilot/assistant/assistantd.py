@@ -9,8 +9,6 @@ from PIL import Image
 import google.generativeai as genai
 import numpy as np
 import base64
-from io import BytesIO
-import threading
 import datetime as dt
 import time  # Still needed for initial delay
 
@@ -59,6 +57,14 @@ class AssistantHandler:
     if self.assistantd_enable is None:
       print("[ASSISTANT] AssistantdEnable parameter not found, defaulting to False.")
       self.assistantd_enable = False
+
+    self.vision_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_ROAD, True)
+    self._connect_camera()
+
+  def _connect_camera(self):
+    while not self.vision_client.connect(False):
+      time.sleep(0.1)
+    print("[ASSISTANT] VisionIPC connected.")
 
   def decode_nv12_to_jpeg(self, nv12_bytes, stride_y, width, height):
     """Convert NV12 format to JPEG without cropping, resizing to original aspect ratio"""
@@ -124,22 +130,18 @@ class AssistantHandler:
       return None
 
   def capture_snapshot(self):
-    config_realtime_process([0, 1, 2, 3], priority=5)
-    vision_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_ROAD, True)
-
-    while not vision_client.connect(False):
-      time.sleep(0.1)
-
-    print("[SNAPSHOT] Connected to camera")
-
     buf = None
-    while buf is None:
-      buf = vision_client.recv()
-
+    while buf is None and self.running::
+      buf = self.vision_client.recv()
+      if buf is None:
+        time.sleep(0.01)
+    if not self.running:
+      return None
     buf_data = bytes(buf.data)
     jpeg_bytes = self.decode_nv12_to_jpeg(buf_data, buf.stride, FRAME_WIDTH, buf.height)
 
     if jpeg_bytes:
+      print("[SNAPSHOT] Captured and encoded")
       return base64.b64encode(jpeg_bytes).decode() # Return base64 encoded for Gemini
     else:
       raise RuntimeError("Failed to encode frame")
@@ -230,6 +232,15 @@ class AssistantHandler:
     else:
       print("Request failed:", response.status_code)
 
+  def stop(self):
+    self.running = False
+    if hasattr(self.vision_client, "close"):
+      self.vision_client.close()
+      print("[ASSISTANT] VisionIPC disconnected.")
+    elif hasattr(self.vision_client, "disconnect"):
+      self.vision_client.disconnect()
+      print("[ASSISTANT] VisionIPC disconnected.")
+
   def run_cycle(self):
     try:
       print(f"[ASSISTANT] Starting new cycle at {dt.datetime.now().isoformat()}")
@@ -246,8 +257,6 @@ class AssistantHandler:
     except Exception as e:
       print(f"[ASSISTANT] An unexpected error occurred: {e}")
 
-  def stop(self):
-    self.running = False
 
 def main():
   assistant = AssistantHandler()
