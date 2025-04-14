@@ -43,10 +43,22 @@ class AssistantHandler:
   def __init__(self):
     self.params = Params()
     self.running = True
-    self.next_run_time = None
-    self.first_run = True
     self.gemini_api_key = self.params.get("GeminiAPIKey")
     self.assistantd_enable = self.params.get_bool("AssistantdEnable")
+
+    if self.gemini_api_key:
+      genai.configure(api_key=self.gemini_api_key)
+      self.model = genai.GenerativeModel("gemini-2.0-flash")
+      self.chat = self.model.start_chat()
+    else:
+      print("[ASSISTANT] Gemini API Key not found, Gemini functionality will be disabled.")
+      self.assistantd_enable = False
+      self.model = None
+      self.chat = None
+
+    if self.assistantd_enable is None:
+      print("[ASSISTANT] AssistantdEnable parameter not found, defaulting to False.")
+      self.assistantd_enable = False
 
   def decode_nv12_to_jpeg(self, nv12_bytes, stride_y, width, height):
     """Convert NV12 format to JPEG without cropping, resizing to original aspect ratio"""
@@ -133,11 +145,8 @@ class AssistantHandler:
       raise RuntimeError("Failed to encode frame")
 
   def send_to_gemini(self, image_bytes, prompt="What do you see in this image?"):
-    genai.configure(api_key=self.gemini_api_key)
-    model = genai.GenerativeModel("gemini-2.0-flash")
-
     image = Image.open(io.BytesIO(base64.b64decode(image_bytes)))
-    response = model.generate_content([prompt, image])
+    response = self.chat.send_message(image=image, text=prompt)
     return response.text.strip() if response.text else "No response from Gemini."
 
   def generate_tts(self, speech, locale):
@@ -180,13 +189,10 @@ class AssistantHandler:
       speech = self.send_to_gemini(jpeg_base64, PROMPT)
       print("Gemini response:", speech)
       self.generate_tts(speech, locale="en")
-      self.sound_daemon.play_audio_buffer(Path(WAV_FILE))
     except RuntimeError as e:
       print(f"[ASSISTANT] Error during snapshot: {e}")
     except requests.exceptions.RequestException as e:
       print(f"[ASSISTANT] Network error: {e}")
-    except genai.core.api_errors.GoogleGenerativeAIError as e:
-      print(f"[ASSISTANT] Gemini API error: {e}")
     except FileNotFoundError:
       print(f"[ASSISTANT] TTS output file not found: {WAV_FILE}")
     except Exception as e:
@@ -198,14 +204,10 @@ class AssistantHandler:
 def main():
   assistant = AssistantHandler()
   last_run = time.monotonic()
-  initial_delay_done = False
   try:
     while True:
       now = time.monotonic()
-      if not initial_delay_done and now - last_run >= 60:
-        initial_delay_done = True
-        last_run = now  # Reset timer after delay
-      if assistant.assistantd_enable and initial_delay_done and now - last_run >= 60:
+      if assistant.assistantd_enable and now - last_run >= 60:
         assistant.run_cycle()
         last_run = now
       time.sleep(0.1)
