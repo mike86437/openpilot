@@ -151,13 +151,13 @@ class AssistantHandler:
     image_bytes_for_api = buffered.getvalue()
 
     parts = [
-      genai.Part(text=prompt),
-      genai.Part(
-        inline_data=genai.Blob(
-          mime_type="image/jpeg",
-          data=image_bytes_for_api
-        )
-      )
+      {"text": prompt},
+      {
+      "inline_data": {
+        "mime_type": "image/jpeg",
+        "data": image_bytes_for_api
+        }
+      }
     ]
 
     response = self.chat.send_message(parts)
