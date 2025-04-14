@@ -131,7 +131,7 @@ class AssistantHandler:
 
   def capture_snapshot(self):
     buf = None
-    while buf is None and self.running::
+    while buf is None and self.running:
       buf = self.vision_client.recv()
       if buf is None:
         time.sleep(0.01)
