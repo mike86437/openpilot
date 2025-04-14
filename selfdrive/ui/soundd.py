@@ -181,7 +181,7 @@ class Soundd:
       if self.custom_sound_frame >= len(self.custom_sound_data):
         self.custom_sound_data = None
         self.custom_sound_frame = 0
-      self.current_volume = self.calculate_volume(float(self.spl_filter_weighted.x))
+      self.current_volume = 1.0
       if Path("/tmp/play.wav").exists():
         os.remove("/tmp/play.wav")
 
