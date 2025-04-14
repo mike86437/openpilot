@@ -176,7 +176,6 @@ class Soundd:
         self.current_sound_frame += frames_to_write
     # Mix in custom sound
     if self.custom_sound_data is not None:
-      print("get_sound_data custom sound data")
       remaining = len(self.custom_sound_data) - self.custom_sound_frame
       play_len = min(frames, remaining)
       ret[:play_len] += self.custom_sound_data[self.custom_sound_frame:self.custom_sound_frame + play_len]

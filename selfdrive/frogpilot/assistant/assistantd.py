@@ -13,7 +13,7 @@ import base64
 import datetime as dt
 import time  # Still needed for initial delay
 
-from openpilot.common.realtime import config_realtime_process
+from openpilot.common.realtime import config_realtime_process, set_core_affinity
 from msgq.visionipc import VisionIpcClient, VisionStreamType
 from openpilot.common.params import Params
 from openpilot.common.swaglog import cloudlog
@@ -260,6 +260,11 @@ class AssistantHandler:
 
 
 def main():
+  try:
+    set_core_affinity([0, 1, 2, 3])
+  except Exception:
+    print("AssistantD: failed to set core affinity")
+  config_realtime_process([0, 1, 2, 3], priority=5)
   assistant = AssistantHandler()
   last_run = time.monotonic()
   try:
