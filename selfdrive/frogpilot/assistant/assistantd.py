@@ -7,7 +7,6 @@ import requests
 import io
 from PIL import Image
 import google.generativeai as genai
-from google.generativeai.types import Part
 import numpy as np
 import base64
 from io import BytesIO
@@ -151,16 +150,20 @@ class AssistantHandler:
     image.save(buffered, format="JPEG")
     image_bytes_for_api = buffered.getvalue()
 
-    # Create a list of Parts: first the prompt (text), then the image
     parts = [
-        prompt,
-        Part.from_data(mime_type="image/jpeg", data=image_bytes_for_api),
+      genai.Part(text=prompt),
+      genai.Part(
+        inline_data=genai.Blob(
+          mime_type="image/jpeg",
+          data=image_bytes_for_api
+        )
+      )
     ]
 
-    # Send it as a user message using chat.send_message
     response = self.chat.send_message(parts)
 
     return response.text.strip() if response.text else "No response from Gemini."
+
 
   def generate_tts(self, speech, locale):
     encoded_speech = urllib.parse.quote(speech)
