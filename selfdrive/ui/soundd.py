@@ -141,7 +141,6 @@ class Soundd:
       self.loaded_sounds[sound] = np.frombuffer(wavefile.readframes(length), dtype=np.int16).astype(np.float32) / (2**16/2)
 
   def play_audio_buffer(self, wav_path):
-    import wave
     try:
       with wave.open(str(wav_path), 'rb') as wavefile:
         assert wavefile.getnchannels() == 1
@@ -151,10 +150,8 @@ class Soundd:
         frames = wavefile.getnframes()
         self.custom_sound_data = np.frombuffer(wavefile.readframes(frames), dtype=np.int16).astype(np.float32) / (2**16 / 2)
         self.custom_sound_frame = 0
-
-        cloudlog.info(f"[soundd] Loaded and scheduled playback: {wav_path}")
     except Exception as e:
-      cloudlog.exception(f"[soundd] Failed to load custom audio file: {e}")
+      print(f"[soundd] Failed to load custom audio file: {e}")
 
   def get_sound_data(self, frames): # get "frames" worth of data from the current alert sound, looping when required
 
