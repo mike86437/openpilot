@@ -72,7 +72,7 @@ class AssistantHandler:
       expected_uv_size = uv_height * uv_stride
 
       if len(uv_bytes) < expected_uv_size:
-        cloudlog.error(f"[ASSISTANT] UV data too short: got {len(uv_bytes)}, expected {expected_uv_size}")
+        print(f"[ASSISTANT] UV data too short: got {len(uv_bytes)}, expected {expected_uv_size}")
         return None
 
       uv_bytes = uv_bytes[:expected_uv_size]
@@ -120,7 +120,7 @@ class AssistantHandler:
       return buf.getvalue()
 
     except Exception as e:
-      cloudlog.error(f"[ASSISTANT] decode_nv12_to_jpeg: {e}")
+      print(f"[ASSISTANT] decode_nv12_to_jpeg: {e}")
       return None
 
   def capture_snapshot(self):
@@ -164,6 +164,38 @@ class AssistantHandler:
 
     return response.text.strip() if response.text else "No response from Gemini."
 
+  def send_to_gemini(self, image_bytes, prompt="What do you see in this image?"):
+    if not self.assistantd_enable or not self.chat:
+      return None
+
+    try:
+      image = Image.open(io.BytesIO(base64.b64decode(image_bytes)))
+      buffered = io.BytesIO()
+      image.save(buffered, format="JPEG")
+      image_bytes_for_api = buffered.getvalue()
+
+      parts = [
+        {"text": prompt},
+        {
+          "inline_data": {
+            "mime_type": "image/jpeg",
+            "data": image_bytes_for_api
+          }
+        }
+      ]
+
+      response = self.chat.send_message(parts)
+      return response.text.strip() if response.text else None
+
+    except requests.exceptions.RequestException as e:
+      print(f"[ASSISTANT] Network error during Gemini request: {e}")
+      return None
+    except genai.GenerativeModelError as e:
+      print(f"[ASSISTANT] Gemini API error: {e}")
+      return None
+    except Exception as e:
+      print(f"[ASSISTANT] An unexpected error occurred in send_to_gemini: {e}")
+      return None
 
   def generate_tts(self, speech, locale):
     encoded_speech = urllib.parse.quote(speech)
