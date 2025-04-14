@@ -15,6 +15,7 @@ from openpilot.common.swaglog import cloudlog
 from openpilot.system import micd
 
 from openpilot.selfdrive.frogpilot.frogpilot_variables import ACTIVE_THEME_PATH, ERROR_LOGS_PATH, RANDOM_EVENTS_PATH, get_frogpilot_toggles, params_memory
+import os
 
 SAMPLE_RATE = 48000
 SAMPLE_BUFFER = 4096 # (approx 100ms)
@@ -110,6 +111,8 @@ class Soundd:
     }
 
     self.update_frogpilot_sounds()
+    self.custom_sound_data = None
+    self.custom_sound_frame = 0
 
   def load_sounds(self):
     self.loaded_sounds: dict[int, np.ndarray] = {}
@@ -137,6 +140,22 @@ class Soundd:
       length = wavefile.getnframes()
       self.loaded_sounds[sound] = np.frombuffer(wavefile.readframes(length), dtype=np.int16).astype(np.float32) / (2**16/2)
 
+  def play_audio_buffer(self, wav_path):
+    import wave
+    try:
+      with wave.open(str(wav_path), 'rb') as wavefile:
+        assert wavefile.getnchannels() == 1
+        assert wavefile.getsampwidth() == 2
+        assert wavefile.getframerate() == SAMPLE_RATE
+
+        frames = wavefile.getnframes()
+        self.custom_sound_data = np.frombuffer(wavefile.readframes(frames), dtype=np.int16).astype(np.float32) / (2**16 / 2)
+        self.custom_sound_frame = 0
+
+        cloudlog.info(f"[soundd] Loaded and scheduled playback: {wav_path}")
+    except Exception as e:
+      cloudlog.exception(f"[soundd] Failed to load custom audio file: {e}")
+
   def get_sound_data(self, frames): # get "frames" worth of data from the current alert sound, looping when required
 
     ret = np.zeros(frames, dtype=np.float32)
@@ -155,6 +174,20 @@ class Soundd:
         ret[written_frames:written_frames+frames_to_write] = sound_data[current_sound_frame:current_sound_frame+frames_to_write]
         written_frames += frames_to_write
         self.current_sound_frame += frames_to_write
+    # Mix in custom sound
+    if self.custom_sound_data is not None:
+      print("get_sound_data custom sound data")
+      remaining = len(self.custom_sound_data) - self.custom_sound_frame
+      play_len = min(frames, remaining)
+      ret[:play_len] += self.custom_sound_data[self.custom_sound_frame:self.custom_sound_frame + play_len]
+      self.custom_sound_frame += play_len
+
+      if self.custom_sound_frame >= len(self.custom_sound_data):
+        self.custom_sound_data = None
+        self.custom_sound_frame = 0
+      self.current_volume = self.calculate_volume(float(self.spl_filter_weighted.x))
+      if Path("/tmp/play.wav").exists():
+        os.remove("/tmp/play.wav")
 
     return ret * self.current_volume
 
@@ -214,7 +247,10 @@ class Soundd:
       while True:
         sm.update(0)
 
-        if sm.updated['microphone'] and self.current_alert == AudibleAlert.none: # only update volume filter when not playing alert
+        if Path("/tmp/play.wav").exists() and self.custom_sound_data is None:
+          self.play_audio_buffer(Path("/tmp/play.wav"))
+
+        if sm.updated['microphone'] and self.custom_sound_data is None: # TODO: always update the filter, workaround.
           if self.frogpilot_toggles.alert_volume_control:
             self.spl_filter_weighted.update(sm["microphone"].soundPressureWeightedDb)
             self.auto_volume = self.calculate_volume(float(self.spl_filter_weighted.x))
