@@ -1166,7 +1166,7 @@ void AnnotatedCameraWidget::drawCEMStatus(QPainter &p) {
   }
 
   cemIconPosition.rx() = dmIconPosition.x();
-  cemIconPosition.ry() = dmIconPosition.y() - img_size / 2;
+  cemIconPosition.ry() = height() - 126 - img_size / 2;
   cemIconPosition.rx() += (rightHandDM ? -img_size : img_size) / (mapOpen ? 1.25 : 1);
 
   QRect cemWidget(cemIconPosition.x(), cemIconPosition.y(), img_size, img_size);
