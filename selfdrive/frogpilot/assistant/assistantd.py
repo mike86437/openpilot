@@ -146,7 +146,17 @@ class AssistantHandler:
 
   def send_to_gemini(self, image_bytes, prompt="What do you see in this image?"):
     image = Image.open(io.BytesIO(base64.b64decode(image_bytes)))
-    response = self.chat.send_message(image=image, text=prompt)
+    buffered = io.BytesIO()
+    image.save(buffered, format="JPEG")
+    image_bytes_for_api = buffered.getvalue()
+
+    content = [
+        {"role": "user", "parts": [
+            prompt,
+            {"mime_type": "image/jpeg", "data": base64.b64encode(image_bytes_for_api).decode()}
+        ]}
+    ]
+    response = self.chat.send_message(content=content)
     return response.text.strip() if response.text else "No response from Gemini."
 
   def generate_tts(self, speech, locale):
