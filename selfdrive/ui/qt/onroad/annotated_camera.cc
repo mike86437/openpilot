@@ -1161,7 +1161,7 @@ void AnnotatedCameraWidget::paintFrogPilotWidgets(QPainter &painter) {
 }
 
 void AnnotatedCameraWidget::drawCEMStatus(QPainter &p) {
-  if (dmIconPosition == QPoint(0, 0)) {
+  if (dmIconPosition == QPoint(0, 0) && false) {
     return;
   }
 
@@ -1173,7 +1173,8 @@ void AnnotatedCameraWidget::drawCEMStatus(QPainter &p) {
 
   p.save();
 
-  if (conditionalStatus == 1) {
+  QRect cemWidget(dmIconPosition.x() + (rightHandDM ? -img_size : img_size), height() - 126 - img_size / 2, img_size, img_size);
+  if (conditionalStatus == 1 || conditionalStatus == 3 || conditionalStatus == 5) {
     p.setPen(QPen(QColor(bg_colors[STATUS_CONDITIONAL_OVERRIDDEN]), 10));
   } else if (experimentalMode) {
     p.setPen(QPen(QColor(bg_colors[STATUS_EXPERIMENTAL_MODE_ACTIVE]), 10));
