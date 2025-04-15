@@ -116,9 +116,10 @@ AUDIO_VOLUME = 2.5
 WAV_FILE = "/tmp/play.wav"
 FRAME_WIDTH = 1928
 SOUND_PATH = "/data/openpilot/selfdrive/frogpilot/assistant/"
+HIPPITY_HOPPITY = "hippity.wav."
 DISABLED_SOUND_FILE = "gemini_disabled.wav"
 KEY_MISSING_SOUND_FILE = "key_missing.wav"
-STARTED_SOUND_FILE = "assistant_started.wav"
+STARTED_SOUND_FILE = "frogai_started.wav"
 FAILED_SOUND_FILE = "assistant_failed.wav"
 OHNO_SOUND_FILE = "ohno.wav"
 
@@ -126,19 +127,36 @@ class AssistantHandler:
   def __init__(self):
     self.params = Params()
     self.running = True
+    self.gemini_api_key = None
+    self.assistantd_enable = False
+    self.model = None
+    self.chat = None
+    self.system_instruction = None
+    self._reinitialize_attempted = False
+    self._first_run = True
+    self._play_prebuilt_sound(HIPPITY_HOPPITY)
+    try:
+      assistant.vision_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_ROAD, True)
+      assistant._connect_camera()
+    except Exception as e:
+      print(f"[ASSISTANT] Error connecting to camera: {e}")
+      assistant.running = False
+      assistant.assistantd_enable = False
+      assistant._play_prebuilt_sound(FAILED_SOUND_FILE)
+
+  def _initialize_gemini(self):
     self.gemini_api_key = self.params.get("GeminiAPIKey")
     self.assistantd_enable = self.params.get_bool("AssistantdEnable")
     self.model = None
     self.chat = None
-    self.system_instruction = None
-
-    if self.gemini_api_key:
+    if self.gemini_api_key and self.assistantd_enable:
       try:
         genai.configure(api_key=self.gemini_api_key)
         self.system_instruction = prompts.get(PROMPT, prompts[1])
         self.model = genai.GenerativeModel("gemini-2.0-flash")
         self.chat = self.model.start_chat()
         self.chat.send_message(self.system_instruction)
+        self._reinitialize_attempted = False
         self._play_prebuilt_sound(STARTED_SOUND_FILE)
       except Exception as e:
         print(f"[ASSISTANT] Error initializing Gemini client or chat: {e}")
@@ -157,18 +175,12 @@ class AssistantHandler:
       print("[ASSISTANT] AssistantdEnable parameter not found, defaulting to False.")
       self.assistantd_enable = False
 
-    self.vision_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_ROAD, True)
-    self._connect_camera()
-
   def _play_prebuilt_sound(self, filename):
     """Copies the specified sound file to /tmp/play.wav."""
     source_path = os.path.join(SOUND_PATH, filename)
     try:
       shutil.copy(source_path, WAV_FILE)
       print(f"[ASSISTANT] Copied '{source_path}' to '{WAV_FILE}'")
-    except FileNotFoundError:
-      print(f"[ASSISTANT] Error: Sound file not found at '{source_path}'")
-      self._play_prebuilt_sound(OHNO_SOUND_FILE)
     except Exception as e:
       print(f"[ASSISTANT] Error copying sound file: {e}")
       self._play_prebuilt_sound(OHNO_SOUND_FILE)
@@ -322,17 +334,13 @@ class AssistantHandler:
       response = self.chat.send_message(parts)
       return response.text.strip() if response.text else None
 
-    except requests.exceptions.RequestException as e:
-      print(f"[ASSISTANT] Network error during Gemini request: {e}")
-      self._play_prebuilt_sound(OHNO_SOUND_FILE)
-      return None
-    except genai.GenerativeModelError as e:
-      print(f"[ASSISTANT] Gemini API error: {e}")
-      self._play_prebuilt_sound(OHNO_SOUND_FILE)
-      return None
     except Exception as e:
       print(f"[ASSISTANT] An unexpected error occurred in send_to_gemini: {e}")
-      self._play_prebuilt_sound(OHNO_SOUND_FILE)
+      if not self._reinitialize_attempted:
+        if self._initialize_gemini():
+          return self.send_to_gemini(image_bytes, prompt)
+        else:
+          self._reinitialize_attempted = True
       return None
 
   def generate_tts(self, speech, locale):
@@ -378,6 +386,12 @@ class AssistantHandler:
       print("[ASSISTANT] VisionIPC disconnected.")
 
   def run_cycle(self):
+    if self._first_run:
+      try
+        self._initialize_gemini()
+        self._first_run = False
+      except Exception as e:
+        self._reinitialize_attempted = True
     try:
       print(f"[ASSISTANT] Starting new cycle at {dt.datetime.now().isoformat()}")
       jpeg_base64 = self.capture_snapshot()
@@ -385,15 +399,6 @@ class AssistantHandler:
       speech = self.send_to_gemini(jpeg_base64, prompt)
       print("Gemini response:", speech)
       self.generate_tts(speech, locale=LANGUAGE)
-    except RuntimeError as e:
-      print(f"[ASSISTANT] Error during snapshot: {e}")
-      self._play_prebuilt_sound(OHNO_SOUND_FILE)
-    except requests.exceptions.RequestException as e:
-      print(f"[ASSISTANT] Network error: {e}")
-      self._play_prebuilt_sound(OHNO_SOUND_FILE)
-    except FileNotFoundError:
-      print(f"[ASSISTANT] TTS output file not found: {WAV_FILE}")
-      self._play_prebuilt_sound(OHNO_SOUND_FILE)
     except Exception as e:
       print(f"[ASSISTANT] An unexpected error occurred: {e}")
       self._play_prebuilt_sound(OHNO_SOUND_FILE)
