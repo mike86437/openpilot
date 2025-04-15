@@ -19,8 +19,7 @@ import cereal.messaging as messaging
 
 # many credits to Elkoled for his implementation of AssistantD and eFiniLan for his TTS implementation
 # Personality 0: english neutral, 1: english sassy, 2: german neutral, 3: german sassy
-PROMPT = 2
-
+PROMPT = 2 # Set the desired personality here (0, 1, 2, or 3)
 prompt_config = {
     0: ('en'),
     1: ('en'),
@@ -139,7 +138,7 @@ class AssistantHandler:
         "Stelle sicher, dass deine Antwort leicht vorgelesen werden kann, mit ausgeschriebenen Zahlen, klaren Wortern, normalen Satzzeichen und genugend Pausen."
       ),
     }
-    return prompts.get(PROMPT, prompts[1])
+    return self.prompts.get(PROMPT, prompts[1])
 
   def get_vehicle_telemetry():
     """Get current vehicle telemetry data"""
@@ -176,7 +175,7 @@ class AssistantHandler:
     return f"{t['motion']}, {t['acc']}, {t['steer']}. {t['cruise']} {t['cam']}"
 
   def build_prompt():
-    return f"{get_system_prompt()} {get_vehicle_telemetry()}"
+    return f"{self.get_system_prompt()} {self.get_vehicle_telemetry()}"
 
   def _connect_camera(self):
     while not self.vision_client.connect(False):
@@ -362,7 +361,7 @@ class AssistantHandler:
     try:
       print(f"[ASSISTANT] Starting new cycle at {dt.datetime.now().isoformat()}")
       jpeg_base64 = self.capture_snapshot()
-      prompt = build_prompt()
+      prompt = self.build_prompt()
       speech = self.send_to_gemini(jpeg_base64, prompt)
       print("Gemini response:", speech)
       self.generate_tts(speech, locale=LANGUAGE)
