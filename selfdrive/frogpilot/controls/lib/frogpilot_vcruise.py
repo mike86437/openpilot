@@ -5,7 +5,7 @@ from openpilot.common.conversions import Conversions as CV
 from openpilot.common.realtime import DT_MDL
 from openpilot.selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX
 from openpilot.selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import COMFORT_BRAKE
-
+from collections import deque
 from openpilot.selfdrive.frogpilot.controls.lib.map_turn_speed_controller import MapTurnSpeedController
 from openpilot.selfdrive.frogpilot.controls.lib.speed_limit_controller import SpeedLimitController
 from openpilot.selfdrive.frogpilot.frogpilot_variables import CRUISING_SPEED, PLANNER_TIME, State, params_memory
@@ -29,6 +29,10 @@ class FrogPilotVCruise:
     self.slc_offset = 0
     self.slc_target = 0
     self.speed_limit_timer = 0
+    self.dRelk = 0
+    self.vRelk = 0
+    self.dRelk_hist = deque(maxlen=10)
+    self.drelk_stable = False
 
   def update(self, carState, controlsState, frogpilotCarState, frogpilotNavigation, gps_position, v_cruise, v_ego, frogpilot_toggles):
     force_stop = self.frogpilot_planner.cem.stop_light_detected and controlsState.enabled and frogpilot_toggles.force_stops
@@ -67,20 +71,44 @@ class FrogPilotVCruise:
       self.linear_braking_active = False
 
       self.braking_target = v_cruise
-
+    lead = self.frogpilot_planner.lead_one
     # Pfeiferj's Map Turn Speed Controller
-    if v_ego > CRUISING_SPEED and controlsState.enabled and frogpilot_toggles.map_turn_speed_controller:
-      mtsc_active = self.mtsc_target < v_cruise
+    if frogpilot_toggles.map_turn_speed_controller:
+      # Extended lead linear braking
+      d_rel = lead.dRel
+      v_lead = lead.vLead
+      v_rel = v_ego - v_lead
+      if (v_lead + 2) < v_ego > CRUISING_SPEED and self.frogpilot_planner.tracking_lead: # 2 m/s under current v_ego activates
+        decelRate = (v_rel ** 2) / (2 * max(d_rel, 1e-6)) * 4 # 4x multipler to strengthen. Tune this as needed
+        self.mtsc_target = v_ego - decelRate
 
-      if self.frogpilot_planner.road_curvature_detected and mtsc_active:
-        self.mtsc_target = self.mtsc_target
-      elif not self.frogpilot_planner.road_curvature_detected and frogpilot_toggles.mtsc_curvature_check:
-        self.mtsc_target = v_cruise
+      if self.frogpilot_planner.tracking_lead: # clear trim variables when no lead
+        self.dRelk = 0.8 * float(lead.dRel) + 0.2 * self.dRelk # noisy dRel
+        self.vRelk = 0.8 * float(v_rel) + 0.2 * self.vRelk # noisy vRel
+        self.dRelk_hist.append(self.dRelk) # store dRelk history for slope calculation
+        if len(self.dRelk_hist) >= 5:  # Minimum length to avoid noise from too few points
+          y = np.array(self.dRelk_hist)
+          x = np.arange(len(y))
+          drel_slope = np.polyfit(x, y, 1)[0]  # 1st-degree polyfit returns [slope, intercept]
+          self.drelk_stable = drel_slope > -0.1 # consider stable when drelk not decreasing too fast or pulling away
       else:
-        mtsc_speed = ((TARGET_LAT_A * frogpilot_toggles.turn_aggressiveness) / (self.mtsc.get_map_curvature(gps_position, v_ego) * frogpilot_toggles.curve_sensitivity))**0.5
-        self.mtsc_target = float(np.clip(mtsc_speed, CRUISING_SPEED, v_cruise))
-    else:
-      self.mtsc_target = v_cruise
+        self.drelk_stable = False
+        self.dRelk_hist.clear() # clear history when no lead
+      # trim v_ego to when closer than expected following distance
+      expected_dist = (self.frogpilot_planner.frogtfollow - 0.25) * v_ego # 0.25s overlap with following distance for better transition
+      distance_error = expected_dist - self.dRelk
+
+      if self.dRelk < expected_dist and v_ego > 2.0 and self.frogpilot_planner.tracking_lead and not self.drelk_stable:
+        k_p = 0.1
+        k_v = 0.5
+        max_trim = 3.0 # 3 m/s max trim ~ 6.7 mph
+        trim = k_p * distance_error + k_v * max(0, self.vRelk) # trim based on error and vRelk
+        trim = min(trim, max_trim)
+        trimmed_vego = v_ego - max(0.0, trim) # current speed - trim
+        if self.mtsc_target > trimmed_vego: # extended lead braking could be stronger than trim
+          self.mtsc_target = trimmed_vego
+      else:
+        self.mtsc_target = v_cruise
 
     # Pfeiferj's Speed Limit Controller
     if frogpilot_toggles.show_speed_limits or frogpilot_toggles.speed_limit_controller:

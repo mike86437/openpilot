@@ -42,6 +42,7 @@ class FrogPilotPlanner:
     self.model_length = 0
     self.road_curvature = 0
     self.v_cruise = 0
+    self.frogtfollow = 0
 
   def update(self, carState, controlsState, frogpilotCarState, frogpilotNavigation, liveLocationKalman, modelData, radarless_model, radarState, frogpilot_toggles):
     if radarless_model:
@@ -130,7 +131,7 @@ class FrogPilotPlanner:
     frogpilotPlan.speedJerk = J_EGO_COST * self.frogpilot_following.speed_jerk
     frogpilotPlan.speedJerkStock = J_EGO_COST * self.frogpilot_following.base_speed_jerk
     frogpilotPlan.tFollow = self.frogpilot_following.t_follow
-
+    self.frogtfollow = frogpilotPlan.tFollow
     frogpilotPlan.desiredFollowDistance = self.frogpilot_following.desired_follow_distance
 
     frogpilotPlan.experimentalMode = self.cem.experimental_mode or self.frogpilot_vcruise.slc.experimental_mode
