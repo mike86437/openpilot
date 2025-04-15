@@ -172,7 +172,7 @@ class AssistantHandler:
         }
     }[LANGUAGE]
 
-    return f"{t['motion']}, {t['acc']}, {t['steer']}. {t['cruise']} {t['cam']}"
+    return f"{t['motion']}, {t['acc']}, {t['steer']}. {t['cruise']}"
 
   def build_prompt(self):
     return f"{self.get_system_prompt()} {self.get_vehicle_telemetry()}"
