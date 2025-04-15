@@ -90,5 +90,5 @@ class FrogPilotFollowing:
       if frogpilot_toggles.human_following:
         self.t_follow /= braking_offset
       self.slower_lead = decelRate > 0.5
-      else:
-        self.slower_lead = False
+    else:
+      self.slower_lead = False
