@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import os
+import shutil
 import subprocess
 import urllib.parse
 import requests
@@ -113,6 +115,12 @@ prompts = {
 AUDIO_VOLUME = 2.5
 WAV_FILE = "/tmp/play.wav"
 FRAME_WIDTH = 1928
+SOUND_PATH = "/data/openpilot/selfdrive/frogpilot/assistant/"
+DISABLED_SOUND_FILE = "gemini_disabled.wav"
+KEY_MISSING_SOUND_FILE = "key_missing.wav"
+STARTED_SOUND_FILE = "assistant_started.wav"
+FAILED_SOUND_FILE = "assistant_failed.wav"
+OHNO_SOUND_FILE = "ohno.wav"
 
 class AssistantHandler:
   def __init__(self):
@@ -120,18 +128,29 @@ class AssistantHandler:
     self.running = True
     self.gemini_api_key = self.params.get("GeminiAPIKey")
     self.assistantd_enable = self.params.get_bool("AssistantdEnable")
+    self.model = None
+    self.chat = None
+    self.system_instruction = None
 
     if self.gemini_api_key:
-      genai.configure(api_key=self.gemini_api_key)
-      self.system_instruction = prompts.get(PROMPT, prompts[1])
-      self.model = genai.GenerativeModel("gemini-2.0-flash")
-      self.chat = self.model.start_chat()
-      self.chat.send_message(self.system_instruction)
+      try:
+        genai.configure(api_key=self.gemini_api_key)
+        self.system_instruction = prompts.get(PROMPT, prompts[1])
+        self.model = genai.GenerativeModel("gemini-2.0-flash")
+        self.chat = self.model.start_chat(system_instruction=self.system_instruction)
+        self._play_prebuilt_sound(STARTED_SOUND_FILE)
+      except Exception as e:
+        print(f"[ASSISTANT] Error initializing Gemini client or chat: {e}")
+        self.assistantd_enable = False
+        self.model = None
+        self.chat = None
+        self._play_prebuilt_sound(FAILED_SOUND_FILE)
     else:
       print("[ASSISTANT] Gemini API Key not found, Gemini functionality will be disabled.")
       self.assistantd_enable = False
       self.model = None
       self.chat = None
+      self._play_prebuilt_sound(KEY_MISSING_SOUND_FILE)
 
     if self.assistantd_enable is None:
       print("[ASSISTANT] AssistantdEnable parameter not found, defaulting to False.")
@@ -139,6 +158,19 @@ class AssistantHandler:
 
     self.vision_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_ROAD, True)
     self._connect_camera()
+
+  def _play_prebuilt_sound(self, filename):
+    """Copies the specified sound file to /tmp/play.wav."""
+    source_path = os.path.join(SOUND_PATH, filename)
+    try:
+      shutil.copy(source_path, WAV_FILE)
+      print(f"[ASSISTANT] Copied '{source_path}' to '{WAV_FILE}'")
+    except FileNotFoundError:
+      print(f"[ASSISTANT] Error: Sound file not found at '{source_path}'")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
+    except Exception as e:
+      print(f"[ASSISTANT] Error copying sound file: {e}")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
 
   def _connect_camera(self):
     while not self.vision_client.connect(False):
@@ -223,6 +255,7 @@ class AssistantHandler:
 
     except Exception as e:
       print(f"[ASSISTANT] decode_nv12_to_jpeg: {e}")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
       return None
 
   def build_prompt(self):
@@ -290,12 +323,15 @@ class AssistantHandler:
 
     except requests.exceptions.RequestException as e:
       print(f"[ASSISTANT] Network error during Gemini request: {e}")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
       return None
     except genai.GenerativeModelError as e:
       print(f"[ASSISTANT] Gemini API error: {e}")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
       return None
     except Exception as e:
       print(f"[ASSISTANT] An unexpected error occurred in send_to_gemini: {e}")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
       return None
 
   def generate_tts(self, speech, locale):
@@ -350,12 +386,16 @@ class AssistantHandler:
       self.generate_tts(speech, locale=LANGUAGE)
     except RuntimeError as e:
       print(f"[ASSISTANT] Error during snapshot: {e}")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
     except requests.exceptions.RequestException as e:
       print(f"[ASSISTANT] Network error: {e}")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
     except FileNotFoundError:
       print(f"[ASSISTANT] TTS output file not found: {WAV_FILE}")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
     except Exception as e:
       print(f"[ASSISTANT] An unexpected error occurred: {e}")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
 
 
 def main():
