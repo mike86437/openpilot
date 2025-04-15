@@ -57,7 +57,7 @@ class AssistantHandler:
     self._connect_camera()
 
   def get_system_prompt(self):
-    prompts = {
+    self.prompts = {
       0: (
         "You are a real time visual assistant that observes dashcam footage and describes what is visually interesting or relevant. "
         "Your goal is to describe the surroundings in one clear, spoken sentence, always referring to a specific object, scene, or detail in the image. "
@@ -138,7 +138,7 @@ class AssistantHandler:
         "Stelle sicher, dass deine Antwort leicht vorgelesen werden kann, mit ausgeschriebenen Zahlen, klaren Wortern, normalen Satzzeichen und genugend Pausen."
       ),
     }
-    return self.prompts.get(PROMPT, prompts[1])
+    return self.prompts.get(PROMPT, self.prompts[1])
 
   def get_vehicle_telemetry(self):
     """Get current vehicle telemetry data"""
