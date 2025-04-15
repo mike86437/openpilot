@@ -136,13 +136,13 @@ class AssistantHandler:
     self._first_run = True
     self._play_prebuilt_sound(HIPPITY_HOPPITY)
     try:
-      assistant.vision_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_ROAD, True)
-      assistant._connect_camera()
+      self.vision_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_ROAD, True)
+      self._connect_camera()
     except Exception as e:
       print(f"[ASSISTANT] Error connecting to camera: {e}")
-      assistant.running = False
-      assistant.assistantd_enable = False
-      assistant._play_prebuilt_sound(FAILED_SOUND_FILE)
+      self.running = False
+      self.assistantd_enable = False
+      self._play_prebuilt_sound(FAILED_SOUND_FILE)
 
   def _initialize_gemini(self):
     self.gemini_api_key = self.params.get("GeminiAPIKey")
