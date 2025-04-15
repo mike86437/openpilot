@@ -387,7 +387,7 @@ class AssistantHandler:
 
   def run_cycle(self):
     if self._first_run:
-      try
+      try:
         self._initialize_gemini()
         self._first_run = False
       except Exception as e:
