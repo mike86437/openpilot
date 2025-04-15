@@ -141,6 +141,7 @@ class Soundd:
       self.loaded_sounds[sound] = np.frombuffer(wavefile.readframes(length), dtype=np.int16).astype(np.float32) / (2**16/2)
 
   def play_audio_buffer(self, wav_path):
+    time.sleep(0.1)
     try:
       with wave.open(str(wav_path), 'rb') as wavefile:
         assert wavefile.getnchannels() == 1
