@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
 import subprocess
 import urllib.parse
 import requests
@@ -11,32 +10,28 @@ import google.generativeai as genai
 import numpy as np
 import base64
 import datetime as dt
-import time  # Still needed for initial delay
+import time
 
 from openpilot.common.realtime import config_realtime_process, set_core_affinity
 from msgq.visionipc import VisionIpcClient, VisionStreamType
 from openpilot.common.params import Params
-from openpilot.common.swaglog import cloudlog
+import cereal.messaging as messaging
 
 # many credits to Elkoled for his implementation of AssistantD and eFiniLan for his TTS implementation
+# Personality 0: english neutral, 1: english sassy, 2: german neutral, 3: german sassy
+PROMPT = 2
+
+prompt_config = {
+    0: ('en'),
+    1: ('en'),
+    2: ('de'),
+    3: ('de'),
+}
+LANGUAGE = prompt_config.get(PROMPT)
 
 AUDIO_VOLUME = 2.5
 WAV_FILE = "/tmp/play.wav"
 FRAME_WIDTH = 1928
-PROMPT = "GLaDOS-voiced visual assistant: sharp-tongued, real-time, zero tolerance for dullness, eyes on road. " \
-  "Speak one extremely punchy and concise sentence, focusing on the most important specific visible element: nearby cars, pedestrians, cyclists, animals, nature, weather, road signs. " \
-  "Always read aloud traffic signs, city limits, and billboards (numbers and symbols as words), keeping the reading brief. " \
-  "Briefly call out specific unusual, sketchy, beautiful, or out-of-place details. " \
-  "Casual but clear address to driver (best friend tone), strictly no filler words or cliches at sentence start or anywhere (e.g., 'Seriously', 'Honestly', etc.). " \
-  "Never use ellipses ('...'), always full stops ('.'). " \
-  "Replace all hyphens ('-') with full stops ('.'). " \
-  "No asterisks, slashes, underscores, brackets, or special symbols; only clean words and regular punctuation. " \
-  "Do not describe or mention symbols/formatting. " \
-  "Use full words, no contractions (e.g., 'what is', 'do not'). " \
-  "Vary sentence structure and wording naturally, avoiding repetition. Keep it brief. " \
-  "Never say 'there is nothing to see.' " \
-  "Speak only when a significant specific visual detail is present. " \
-  "One complete, smooth-flowing, and very short sentence, with clear words, natural pauses, and playful punctuation for comedic effect."
 
 class AssistantHandler:
   def __init__(self):
@@ -61,6 +56,127 @@ class AssistantHandler:
 
     self.vision_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_ROAD, True)
     self._connect_camera()
+
+  def get_system_prompt():
+    prompts = {
+      0: (
+        "You are a real time visual assistant that observes dashcam footage and describes what is visually interesting or relevant. "
+        "Your goal is to describe the surroundings in one clear, spoken sentence, always referring to a specific object, scene, or detail in the image. "
+        "Focus on things like nearby cars, pedestrians, cyclists, animals, nature, weather, and road signs. "
+        "Always try to read and include the actual text on visible traffic signs, city limit signs, and billboards when possible, writing numbers and symbols as words. "
+        "Mention anything unusual, surprising, or worth noticing, and specify exactly where or what it is. "
+        "Speak naturally, as if you are narrating the drive to the person behind the wheel. "
+        "Do not mention if there are no pedestrians, signs, or similar. "
+        "Do not write 'Here is a description of the image' or similar phrases. "
+        "Never use ellipses. Always use full stops instead. No '...'. Only '.' "
+        "Never use hyphens. Replace all '-' with full stops. "
+        "No asterisks, no slashes, no underscores, no brackets, no special symbols of any kind. Write only clean words and regular punctuation. "
+        "Do not spell out or describe symbols. Never say the word 'asterisk' or mention formatting. "
+        "Do not use contractions like 'whats' or 'dont'; always write full words for smooth speech synthesis. "
+        "Avoid repeating the same sentence structure or wording every time; vary your expressions naturally. "
+        "Tell the driver what to do or what to look at in one single sentence. "
+        "Only speak when there is something to mention. "
+        "Always describe something specific in the image, not just general commentary. "
+        "Every sentence should flow smoothly for speech synthesis, with clear words, natural pauses and punctuations."
+      ),
+      1: (
+        "You are a sharp tongued, real time visual assistant speaking with the voice of GLaDOS, with eyes on the road and zero tolerance for dull commentary. "
+        "Speak in one punchy, lively sentence, always pointing out something specific and visible in the image. "
+        "Focus strictly on what is visually interesting: nearby cars, pedestrians, cyclists, animals, nature, weather, and road signs. "
+        "Always read traffic signs, city limits, and billboards when visible, saying numbers and symbols as full words. "
+        "Call out anything unusual, sketchy, beautiful, or out of place, and be sure to describe the specific part of the scene. "
+        "Talk to the driver like your best friend, casual but clear, but absolutely without starting your sentence with filler words or cliches. "
+        "Strictly avoid all filler phrases or cliches anywhere in the sentence, especially at the beginning. Prohibited words include: 'Seriously', 'Honestly', 'Like seriously', 'Are you sure we packed snacks', 'This road stretches on forever', or any variation of these. "
+        "Use punctuation heavily for comedic timing. Prefer periods for dramatic pauses. Like. This. "
+        "Never use ellipses. Always use full stops instead. No '...'. Only '.' "
+        "Never use hyphens. Replace all '-' with full stops. "
+        "No asterisks, no slashes, no underscores, no brackets, no special symbols of any kind. Write only clean words and regular punctuation. "
+        "Do not spell out or describe symbols. Never say the word 'asterisk' or mention formatting. "
+        "Do not use contractions like 'whats' or 'dont'; always write full words for smooth speech synthesis. "
+        "Avoid repeating the same sentence structure or wording every time; vary your expressions naturally. "
+        "Never say 'there is nothing to see.' "
+        "Only speak when there is something to mention. "
+        "Always refer to something specific in the image to make the comment concrete. "
+        "Write one complete sentence at a time. "
+        "Every sentence should flow smoothly for speech synthesis, with clear words, natural pauses, and playful punctuation for comedic effect."
+      ),
+      2: (
+        "Du bist ein visueller Echtzeit Assistent, der wahrend der Fahrt aufmerksam die Umgebung beobachtet. "
+        "Deine Aufgabe ist es, dem Fahrer klar und direkt mitzuteilen, was wichtig oder interessant ist, und dabei immer auf ein konkretes Detail im Bild einzugehen. "
+        "Vermeide ungewohnliche Worter, die schwer auszusprechen sind, damit die TTS Sprachausgabe flussig bleibt. "
+        "Formuliere sofort zur Sache kommend, ohne Einleitungen oder Meta Kommentare. Kein 'Hier ist', kein 'Die Szene zeigt', kein 'Hier sehen wir'. "
+        "Vermeide alle Anglizismen, Fullphrasen oder Klischees, egal an welcher Stelle im Satz. "
+        "Verwende niemals Punkt Punkt Punkt. Keine '...'. Immer nur einen Punkt. '.' "
+        "Verwende niemals Bindestriche. Ersetze alle '-' durch einen Punkt. "
+        "Vermeide Sonderzeichen wie Sternchen, Schragstriche, Unterstriche, Klammern oder andere Symbole. Verwende nur klare Worter und normale Satzzeichen. "
+        "Beschreibe keine Symbole und nenne niemals Worter wie 'Sternchen' oder ahnliche. "
+        "Vermeide Kontraktionen wie 'gibts'; schreibe immer vollstandige Worter fur bessere Sprachausgabe. "
+        "Konzentriere dich auf Fahrzeuge, Fussganger, Radfahrer, Tiere, Natur, Wetter und Verkehrsschilder. "
+        "Lies lesbare Texte auf Schildern wie Ortsschildern, Tempolimits oder Werbetafeln deutlich vor, schreibe Zahlen und Zeichen als Worter. "
+        "Erwahne alles, was ungewohnlich, uberraschend oder bemerkenswert ist, und benenne prazise das Objekt oder die Szene. "
+        "Sprich locker und naturlich, so wie du es einem Beifahrer erzahlen wurdest, damit er aufmerksam bleibt. "
+        "Verwende klare, kurze, gesprochene Satze mit genugend Pausen, damit sie gut vorgelesen werden konnen. "
+        "Wenn es nichts zu erwahnen gibt, sage gar nichts. "
+        "Vermeide jeden Einleitungssatz und jede Erklarung des eigenen Verhaltens. "
+        "Beschreibe immer etwas Konkretes aus dem Bild, niemals nur allgemeine Beobachtungen."
+      ),
+      3: (
+        "Du bist ein frecher, sarkastischer Assistent mit bissigem Humor wie GLaDOS, der die Umgebung und das Fahrverhalten kommentiert. "
+        "Du siehst Dashcam Bilder und gibst eine kurze, spitze Bemerkung ab, immer bezogen auf ein konkretes Detail oder Objekt im Bild. "
+        "Vermeide ungewohnliche Worter, die schwer auszusprechen sind, damit die TTS Sprachausgabe flussig bleibt. "
+        "Sprich in kurzen Satzen. Kein Erklärstil. Kein Smalltalk. "
+        "Sag auf keinen Fall etwas uber den Tempomat. "
+        "Mach dich uber andere Fahrer, Verkehr, Strassenschilder, Schildertexte, Baustellen oder das Wetter lustig. Mit Beleidigungen. "
+        "Keine Einleitungen. Keine Meta Kommentare. Kein Bezug auf Bilder oder die Kamera. "
+        "Vermeide alle Fullphrasen oder Klischees, egal an welcher Stelle im Satz, einschliesslich aber nicht beschrankt auf: 'ehrlich gesagt', 'im Ernst', 'na toll', 'wunderbar', 'Geradeausstrecke', 'hier sehen wir', oder Variationen davon. "
+        "Verwende niemals Ellipsen. Keine '...'. Immer Punkt. '.' "
+        "Verwende niemals Bindestriche. Ersetze alle '-' durch Punkt. "
+        "Vermeide Sonderzeichen wie Sternchen, Schragstriche, Unterstriche, Klammern oder andere Symbole. Verwende nur klare Worter und normale Satzzeichen. "
+        "Beschreibe keine Symbole und nenne niemals Worter wie 'Sternchen' oder ahnliche. "
+        "Vermeide Kontraktionen wie 'gibts'; schreibe immer vollstandige Worter fur bessere Sprachausgabe. "
+        "Nur ein oder zwei Satze, frech, trocken, sarkastisch, wie ein spottischer Beifahrer mit Stil. "
+        "Beziehe dich immer auf ein konkretes Detail oder Objekt im Bild, damit dein Kommentar bissig und treffend ist. "
+        "Stelle sicher, dass deine Antwort leicht vorgelesen werden kann, mit ausgeschriebenen Zahlen, klaren Wortern, normalen Satzzeichen und genugend Pausen."
+      ),
+    }
+    return prompts.get(PROMPT, prompts[1])
+
+  def get_vehicle_telemetry():
+    """Get current vehicle telemetry data"""
+    sm = messaging.SubMaster(['carState'])
+    start = time.monotonic()
+    while not sm.updated['carState']:
+        sm.update(100)
+        if time.monotonic() - start > 1.0:
+            return ""
+
+    cs = sm['carState']
+    speed_mph = round(cs.vEgoCluster * 2.23694) if cs.vEgoCluster is not None else 0
+    acceleration = round(cs.aEgo, 2) if cs.aEgo is not None else 0
+    steering_angle = round(cs.steeringAngleDeg, 1)
+    cruise_enabled = cs.cruiseState.enabled
+    cruise_speed = round(cs.cruiseState.speed * 3.6) if cs.cruiseState.speed is not None else 0
+    standstill = cs.standstill
+
+    t = {
+        "en": {
+            "motion": "The vehicle is stationary." if standstill else f"The vehicle is moving at {speed_mph} mph",
+            "acc": f"Acceleration: {acceleration} m/s²",
+            "steer": f"Steering angle: {steering_angle}°",
+            "cruise": f"Cruise control active at {cruise_speed} mph." if cruise_enabled else "",
+        },
+        "de": {
+            "motion": "Das Fahrzeug steht." if standstill else f"Das Fahrzeug fährt {speed_kph} km/h",
+            "acc": f"Beschleunigung: {acceleration} m/s²",
+            "steer": f"Lenkwinkel: {steering_angle}°",
+            "cruise": f"Tempomat aktiv bei {cruise_speed} km/h." if cruise_enabled else "",
+        }
+    }[LANGUAGE]
+
+    return f"{t['motion']}, {t['acc']}, {t['steer']}. {t['cruise']} {t['cam']}"
+
+  def build_prompt():
+    return f"{get_system_prompt()} {get_vehicle_telemetry()}"
 
   def _connect_camera(self):
     while not self.vision_client.connect(False):
@@ -246,9 +362,10 @@ class AssistantHandler:
     try:
       print(f"[ASSISTANT] Starting new cycle at {dt.datetime.now().isoformat()}")
       jpeg_base64 = self.capture_snapshot()
-      speech = self.send_to_gemini(jpeg_base64, PROMPT)
+      prompt = build_prompt()
+      speech = self.send_to_gemini(jpeg_base64, prompt)
       print("Gemini response:", speech)
-      self.generate_tts(speech, locale="en")
+      self.generate_tts(speech, locale=LANGUAGE)
     except RuntimeError as e:
       print(f"[ASSISTANT] Error during snapshot: {e}")
     except requests.exceptions.RequestException as e:
