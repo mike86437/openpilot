@@ -19,7 +19,7 @@ import cereal.messaging as messaging
 
 # many credits to Elkoled for his implementation of AssistantD and eFiniLan for his TTS implementation
 # Personality 0: english neutral, 1: english sassy, 2: german neutral, 3: german sassy
-PROMPT = 2 # Set the desired personality here (0, 1, 2, or 3)
+PROMPT = 1 # Set the desired personality here (0, 1, 2, or 3)
 prompt_config = {
     0: ('en'),
     1: ('en'),
