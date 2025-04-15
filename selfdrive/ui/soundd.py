@@ -141,7 +141,6 @@ class Soundd:
       self.loaded_sounds[sound] = np.frombuffer(wavefile.readframes(length), dtype=np.int16).astype(np.float32) / (2**16/2)
 
   def play_audio_buffer(self, wav_path):
-    import wave
     try:
       with wave.open(str(wav_path), 'rb') as wavefile:
         assert wavefile.getnchannels() == 1
@@ -151,10 +150,8 @@ class Soundd:
         frames = wavefile.getnframes()
         self.custom_sound_data = np.frombuffer(wavefile.readframes(frames), dtype=np.int16).astype(np.float32) / (2**16 / 2)
         self.custom_sound_frame = 0
-
-        cloudlog.info(f"[soundd] Loaded and scheduled playback: {wav_path}")
     except Exception as e:
-      cloudlog.exception(f"[soundd] Failed to load custom audio file: {e}")
+      print(f"[soundd] Failed to load custom audio file: {e}")
 
   def get_sound_data(self, frames): # get "frames" worth of data from the current alert sound, looping when required
 
@@ -176,7 +173,6 @@ class Soundd:
         self.current_sound_frame += frames_to_write
     # Mix in custom sound
     if self.custom_sound_data is not None:
-      print("get_sound_data custom sound data")
       remaining = len(self.custom_sound_data) - self.custom_sound_frame
       play_len = min(frames, remaining)
       ret[:play_len] += self.custom_sound_data[self.custom_sound_frame:self.custom_sound_frame + play_len]
@@ -185,7 +181,7 @@ class Soundd:
       if self.custom_sound_frame >= len(self.custom_sound_data):
         self.custom_sound_data = None
         self.custom_sound_frame = 0
-      self.current_volume = self.calculate_volume(float(self.spl_filter_weighted.x))
+      self.current_volume = 1.0
       if Path("/tmp/play.wav").exists():
         os.remove("/tmp/play.wav")
 
