@@ -56,7 +56,7 @@ class AssistantHandler:
     self.vision_client = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_ROAD, True)
     self._connect_camera()
 
-  def get_system_prompt():
+  def get_system_prompt(self):
     prompts = {
       0: (
         "You are a real time visual assistant that observes dashcam footage and describes what is visually interesting or relevant. "
@@ -140,7 +140,7 @@ class AssistantHandler:
     }
     return self.prompts.get(PROMPT, prompts[1])
 
-  def get_vehicle_telemetry():
+  def get_vehicle_telemetry(self):
     """Get current vehicle telemetry data"""
     sm = messaging.SubMaster(['carState'])
     start = time.monotonic()
@@ -174,7 +174,7 @@ class AssistantHandler:
 
     return f"{t['motion']}, {t['acc']}, {t['steer']}. {t['cruise']} {t['cam']}"
 
-  def build_prompt():
+  def build_prompt(self):
     return f"{self.get_system_prompt()} {self.get_vehicle_telemetry()}"
 
   def _connect_camera(self):
