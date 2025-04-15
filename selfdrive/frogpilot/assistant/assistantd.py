@@ -137,7 +137,8 @@ class AssistantHandler:
         genai.configure(api_key=self.gemini_api_key)
         self.system_instruction = prompts.get(PROMPT, prompts[1])
         self.model = genai.GenerativeModel("gemini-2.0-flash")
-        self.chat = self.model.start_chat(system_instruction=self.system_instruction)
+        self.chat = self.model.start_chat()
+        self.chat.send_message(self.system_instruction)
         self._play_prebuilt_sound(STARTED_SOUND_FILE)
       except Exception as e:
         print(f"[ASSISTANT] Error initializing Gemini client or chat: {e}")
