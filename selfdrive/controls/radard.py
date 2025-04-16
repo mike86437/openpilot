@@ -8,7 +8,7 @@ from typing import Any
 import csv
 import os
 from datetime import datetime
-import numpy as np
+
 import capnp
 from cereal import messaging, log, car
 from openpilot.common.filter_simple import FirstOrderFilter
@@ -187,29 +187,12 @@ def get_RadarState_from_vision(lead_msg: capnp._DynamicStructReader, v_ego: floa
   prev_aLeadK = getattr(get_RadarState_from_vision, "prev_aLeadK", 0.0)
   blended_aLeadK = 0.8 * float(lead_msg.a[0]) + 0.2 * prev_aLeadK
   get_RadarState_from_vision.prev_aLeadK = blended_aLeadK
-  # back calc vLead from dRelk
-  raw_dRel = float(lead_msg.x[0] - RADAR_TO_CAMERA)
-  if not hasattr(get_RadarState_from_vision, "dRelk"):
-    get_RadarState_from_vision.dRelk = raw_dRel
-    get_RadarState_from_vision.dRelk_hist = [raw_dRel]
-  else:
-    get_RadarState_from_vision.dRelk = 0.8 * raw_dRel + 0.2 * get_RadarState_from_vision.dRelk
-    get_RadarState_from_vision.dRelk_hist.append(get_RadarState_from_vision.dRelk)
-
-  if len(get_RadarState_from_vision.dRelk_hist) >= 5:
-    y = np.array(get_RadarState_from_vision.dRelk_hist)
-    x = np.arange(len(y)) * DT_MDL
-    drel_slope = np.polyfit(x, y, 1)[0]
-    vLead_estimated = v_ego - drel_slope
-  else:
-    vLead_estimated = float(lead_msg.v[0] - model_v_ego)
-
   return {
     "dRel": float(lead_msg.x[0] - RADAR_TO_CAMERA),
     "yRel": float(-lead_msg.y[0]),
     "vRel": float(lead_msg.v[0] - model_v_ego),
-    "vLead": vLead_estimated,
-    "vLeadK": vLead_estimated,
+    "vLead": float(v_ego + (lead_msg.v[0] - model_v_ego)),
+    "vLeadK": float(v_ego + (lead_msg.v[0] - model_v_ego)),
     "aLeadK": blended_aLeadK,
     "aLeadTau": 0.3,
     "fcw": False,
