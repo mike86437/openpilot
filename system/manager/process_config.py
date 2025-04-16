@@ -60,7 +60,7 @@ def run_tinygrad_modeld(started, params, CP: car.CarParams, classic_model, tinyg
 procs = [
   DaemonProcess("manage_athenad", "system.athena.manage_athenad", "AthenadPid"),
 
-  NativeProcess("camerad", "system/camerad", ["./camerad"], driverview),
+  NativeProcess("camerad", "system/camerad", ["./camerad"], always_run),
   NativeProcess("logcatd", "system/logcatd", ["./logcatd"], allow_logging),
   NativeProcess("proclogd", "system/proclogd", ["./proclogd"], allow_logging),
   PythonProcess("logmessaged", "system.logmessaged", allow_logging),
@@ -74,9 +74,9 @@ procs = [
   NativeProcess("modeld", "selfdrive/modeld", ["./modeld"], run_new_modeld),
   NativeProcess("mapsd", "selfdrive/navd", ["./mapsd"], run_classic_modeld),
   PythonProcess("navmodeld", "selfdrive.classic_modeld.navmodeld", run_classic_modeld),
-  NativeProcess("sensord", "system/sensord", ["./sensord"], only_onroad, enabled=not PC),
+  NativeProcess("sensord", "system/sensord", ["./sensord"], always_run, enabled=not PC),
   NativeProcess("ui", "selfdrive/ui", ["./ui"], always_run, watchdog_max_dt=(5 if not PC else None)),
-  PythonProcess("soundd", "selfdrive.ui.soundd", only_onroad),
+  PythonProcess("soundd", "selfdrive.ui.soundd", always_run),
   NativeProcess("locationd", "selfdrive/locationd", ["./locationd"], only_onroad),
   NativeProcess("pandad", "selfdrive/pandad", ["./pandad"], always_run, enabled=False),
   PythonProcess("calibrationd", "selfdrive.locationd.calibrationd", only_onroad),
@@ -111,6 +111,7 @@ procs = [
   PythonProcess("fleet_manager", "selfdrive.frogpilot.fleetmanager.fleet_manager", always_run),
   PythonProcess("frogpilot_process", "selfdrive.frogpilot.frogpilot_process", always_run),
   PythonProcess("mapd", "selfdrive.frogpilot.navigation.mapd", always_run),
+  PythonProcess("sentryd", "selfdrive.frogpilot.sentryd.sentryd", only_offroad),
   NativeProcess("tinygrad_modeld", "selfdrive/tinygrad_modeld", ["./tinygrad_modeld"], run_tinygrad_modeld),
 ]
 
