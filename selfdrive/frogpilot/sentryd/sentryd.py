@@ -64,9 +64,14 @@ class SentryMode:
       while not self.vision_client_w.connect(False) and not self.vision_client_d.connect(False):
         time.sleep(0.1)
       print("[SENTRY] VisionIPC connected.")
-      pic, fpic = None, None
-      pic = extract_image(self.vision_client_w.recv())
-      fpic = extract_image(self.vision_client_d.recv())
+      buf_pic, buf_fpic, pic, fpic = None, None, None, None
+      while buf_pic is None or buf_fpic is None:
+        buf_pic = self.vision_client_w.recv()
+        buf_fpic = self.vision_client_d.recv()
+        if buf_pic is None and buf_fpic is None:
+          time.sleep(0.01)
+      pic = extract_image(buf_pic)
+      fpic = extract_image(buf_fpic)
       timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
       target_directory = "/data/media/0/sentryd/"
       os.makedirs(target_directory, exist_ok=True)
