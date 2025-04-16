@@ -147,6 +147,11 @@ class AssistantHandler:
       self.assistantd_enable = False
       self._play_prebuilt_sound(FAILED_SOUND_FILE)
 
+  def _connect_camera(self):
+    while not self.vision_client.connect(False):
+      time.sleep(0.1)
+    print("[ASSISTANT] VisionIPC connected.")
+
   def _initialize_gemini(self):
     self.gemini_api_key = self.params.get("GeminiAPIKey")
     self.assistantd_enable = self.params.get_bool("AssistantdEnable")
@@ -187,11 +192,6 @@ class AssistantHandler:
     except Exception as e:
       print(f"[ASSISTANT] Error copying sound file: {e}")
       self._play_prebuilt_sound(OHNO_SOUND_FILE)
-
-  def _connect_camera(self):
-    while not self.vision_client.connect(False):
-      time.sleep(0.1)
-    print("[ASSISTANT] VisionIPC connected.")
 
   def capture_snapshot(self):
     buf = None
@@ -389,6 +389,7 @@ class AssistantHandler:
       print("[ASSISTANT] VisionIPC disconnected.")
 
   def run_cycle(self):
+    print(f"[ASSISTANT] Starting new cycle at {dt.datetime.now().isoformat()}")
     if self._first_run:
       try:
         self._initialize_gemini()
@@ -396,7 +397,6 @@ class AssistantHandler:
       except Exception as e:
         self._reinitialize_attempted = True
     try:
-      print(f"[ASSISTANT] Starting new cycle at {dt.datetime.now().isoformat()}")
       jpeg_base64 = self.capture_snapshot()
       prompt = self.build_prompt()
       speech = self.send_to_gemini(jpeg_base64, prompt)
