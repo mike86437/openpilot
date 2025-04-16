@@ -64,7 +64,7 @@ procs = [
   NativeProcess("logcatd", "system/logcatd", ["./logcatd"], allow_logging),
   NativeProcess("proclogd", "system/proclogd", ["./proclogd"], allow_logging),
   PythonProcess("logmessaged", "system.logmessaged", allow_logging),
-  PythonProcess("micd", "system.micd", iscar),
+  PythonProcess("micd", "system.micd", always_run),
   PythonProcess("timed", "system.timed", always_run, enabled=not PC),
 
   PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", driverview, enabled=False),
