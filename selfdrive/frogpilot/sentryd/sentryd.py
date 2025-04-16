@@ -156,8 +156,8 @@ class SentryMode:
     if self.armed:
       if delta > SENSITIVITY_THRESHOLD: # Check if delta is greater than sensitivity threshold and sentry is armed
         self.trigger_counter += 1 # Count number of triggers
-      if self.trigger_counter == WARNING_TRIGGER_COUNT: # Trigger Warning threshold one shot
         self.trigger_time = t # Set trigger time
+      if self.trigger_counter == WARNING_TRIGGER_COUNT: # Trigger Warning threshold one shot
         print("Movement Detected!")
         self._play_prebuilt_sound(WARNING_SOUND_FILE) # Play warning sound
         if self.frontAllowed: # Check if snapshot should be performed
