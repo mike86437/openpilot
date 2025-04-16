@@ -13,11 +13,12 @@ import numpy as np
 import base64
 import datetime as dt
 import time
-
+import cereal.messaging as messaging
 from openpilot.common.realtime import config_realtime_process, set_core_affinity
 from msgq.visionipc import VisionIpcClient, VisionStreamType
 from openpilot.common.params import Params
-import cereal.messaging as messaging
+from openpilot.system.camerad.snapshot.snapshot import extract_image
+
 
 # many credits to Elkoled for his implementation of AssistantD and eFiniLan for his TTS implementation
 # Personality 0: english neutral, 1: english sassy, 2: german neutral, 3: german sassy
@@ -201,78 +202,20 @@ class AssistantHandler:
         time.sleep(0.01)
     if not self.running:
       return None
-    buf_data = bytes(buf.data)
-    jpeg_bytes = self.decode_nv12_to_jpeg(buf_data, buf.stride, FRAME_WIDTH, buf.height)
 
-    if jpeg_bytes:
-      print("[SNAPSHOT] Captured and encoded")
-      return base64.b64encode(jpeg_bytes).decode() # Return base64 encoded for Gemini
-    else:
-      raise RuntimeError("Failed to encode frame")
-
-  def decode_nv12_to_jpeg(self, nv12_bytes, stride_y, width, height):
-    """Convert NV12 format to JPEG without cropping, resizing to original aspect ratio"""
-    try:
-      y_size = stride_y * height
-      y = np.frombuffer(nv12_bytes[:y_size], dtype=np.uint8).reshape((height, stride_y))[:, :width]
-
-      uv_bytes = nv12_bytes[y_size:]
-      uv_height = height // 2
-      uv_stride = stride_y
-      expected_uv_size = uv_height * uv_stride
-
-      if len(uv_bytes) < expected_uv_size:
-        print(f"[ASSISTANT] UV data too short: got {len(uv_bytes)}, expected {expected_uv_size}")
+    frame_rgb = extract_image(buf)
+    if frame_rgb is not None:
+      try:
+        img = Image.fromarray(frame_rgb)
+        buf = BytesIO()
+        img.save(buf, format="JPEG", quality=50)
+        print("[SNAPSHOT] Captured and encoded")
+        return base64.b64encode(buf.getvalue()).decode()
+      except Exception as e:
+        print(f"[SNAPSHOT] JPEG encode failed: {e}")
         return None
-
-      uv_bytes = uv_bytes[:expected_uv_size]
-      uv = np.frombuffer(uv_bytes, dtype=np.uint8).reshape((uv_height, uv_stride))
-      u = uv[:, 0::2][:, :width // 2]
-      v = uv[:, 1::2][:, :width // 2]
-
-      u_up = np.repeat(np.repeat(u, 2, axis=0), 2, axis=1)
-      v_up = np.repeat(np.repeat(v, 2, axis=0), 2, axis=1)
-
-      min_h = min(y.shape[0], u_up.shape[0])
-      crop_offset = 16  # crop top rows due to green lines
-      y = y[crop_offset:min_h, :]
-      u_up = u_up[crop_offset:min_h, :]
-      v_up = v_up[crop_offset:min_h, :]
-
-      # Convert to RGB
-      y_f = y.astype(np.float32)
-      u_f = u_up.astype(np.float32) - 128
-      v_f = v_up.astype(np.float32) - 128
-
-      r = y_f + 1.402 * v_f
-      g = y_f - 0.344136 * u_f - 0.714136 * v_f
-      b = y_f + 1.772 * u_f
-
-      rgb = np.stack([
-          np.clip(r, 0, 255).astype(np.uint8),
-          np.clip(g, 0, 255).astype(np.uint8),
-          np.clip(b, 0, 255).astype(np.uint8),
-      ], axis=2)
-
-      img = Image.fromarray(rgb)
-
-      # --- Remove cropping and resize to original aspect ratio ---
-      # Calculate new height based on the original aspect ratio
-      original_aspect = width / height
-      new_height = int(img.width / original_aspect)
-
-      # Resize the image
-      img = img.resize((img.width, new_height), Image.LANCZOS)
-      # ---------------------------------------------------------
-
-      buf = BytesIO()
-      img.save(buf, format="JPEG", quality=50)
-      return buf.getvalue()
-
-    except Exception as e:
-      print(f"[ASSISTANT] decode_nv12_to_jpeg: {e}")
-      self._play_prebuilt_sound(OHNO_SOUND_FILE)
-      return None
+    else:
+      raise RuntimeError("Failed to extract RGB image from NV12")
 
   def build_prompt(self):
     basic_prompt = "Describe what you see in the image concisely, paying attention to the vehicle's current state."
@@ -286,7 +229,6 @@ class AssistantHandler:
         sm.update(100)
         if time.monotonic() - start > 1.0:
             return ""
-
     cs = sm['carState']
     cc = sm['carControl']
     speed_mph = round(cs.vEgoCluster * 2.23694) if cs.vEgoCluster is not None else 0
@@ -296,7 +238,6 @@ class AssistantHandler:
     cruise_enabled = cc.longActive
     cruise_speed = round(cs.cruiseState.speed * 3.6) if cs.cruiseState.speed is not None else 0
     standstill = cs.standstill
-
     t = {
         "en": {
             "motion": "The vehicle is stationary." if standstill else f"The vehicle is moving at {speed_mph} mph",
@@ -311,19 +252,13 @@ class AssistantHandler:
             "cruise": f"Tempomat aktiv bei {cruise_speed} mph." if cruise_enabled else "",
         }
     }[LANGUAGE]
-
     return f"{t['motion']}, {t['acc']}, {t['steer']}. {t['cruise']}"
 
-  def send_to_gemini(self, image_bytes, prompt="What do you see in this image?"):
+  def send_to_gemini(self, image_base64, prompt="What do you see in this image?"):
     if not self.assistantd_enable or not self.chat:
       return None
-
     try:
-      image = Image.open(io.BytesIO(base64.b64decode(image_bytes)))
-      buffered = io.BytesIO()
-      image.save(buffered, format="JPEG")
-      image_bytes_for_api = buffered.getvalue()
-
+      image_bytes = base64.b64decode(image_base64)
       parts = [
         {"text": prompt},
         {
@@ -333,10 +268,8 @@ class AssistantHandler:
           }
         }
       ]
-
       response = self.chat.send_message(parts)
       return response.text.strip() if response.text else None
-
     except Exception as e:
       print(f"[ASSISTANT] An unexpected error occurred in send_to_gemini: {e}")
       if not self._reinitialize_attempted:
@@ -353,7 +286,6 @@ class AssistantHandler:
         "Referer": "http://translate.google.com/",
         "User-Agent": "stagefright/1.2 (Linux;Android 5.0)"
     })
-
     if response.status_code == 200:
       ffmpeg_process = subprocess.Popen(
           [
@@ -369,9 +301,7 @@ class AssistantHandler:
           stderr=subprocess.PIPE,
           text=False
       )
-
       stdout, stderr = ffmpeg_process.communicate(input=response.content)
-
       if ffmpeg_process.returncode != 0:
         print("FFmpeg Error:\n", stderr.decode())
       else:
@@ -405,7 +335,6 @@ class AssistantHandler:
     except Exception as e:
       print(f"[ASSISTANT] An unexpected error occurred: {e}")
       self._play_prebuilt_sound(OHNO_SOUND_FILE)
-
 
 def main():
   try:
