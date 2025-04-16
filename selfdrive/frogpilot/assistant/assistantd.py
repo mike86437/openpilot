@@ -131,7 +131,7 @@ class AssistantHandler:
     self.params = Params()
     self.running = True
     self.gemini_api_key = None
-    self.assistantd_enable = False
+    self.assistantd_enable = self.params.get_bool("AssistantdEnable")
     self.model = None
     self.chat = None
     self.system_instruction = None
