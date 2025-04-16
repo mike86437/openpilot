@@ -17,8 +17,8 @@ from openpilot.system.manager.process_config import managed_processes
 
 WARNING_TRIGGER_COUNT = 10
 MAX_TRIGGER_COUNT = 25
-ALARM_TRIGGER_COUNT = 220
-RESET_FRAME_COUNT = 600
+ALARM_TIME = 30
+RESET_TIME = 60
 SENSITIVITY_THRESHOLD = 0.04
 OFFROAD_DELAY = 90
 ALERT_MESSAGE = "🚨 ALERT! Sentry Detected Movement!"
@@ -40,13 +40,12 @@ class SentryMode:
     self.webhook_url = params.get("SentryDhook", encoding='utf8')
     self.sentryd_Enable = bool(int(params.get("SentryDEnable", "0")))
     self.frontAllowed = bool(int(params.get("RecordFront", "0")))
-    self.reset_counter = 0
     self.trigger_counter = 0
     self.armed = False
     self.sentry_problem = False
     self.played = False
     self.triggered_alarm = False
-    self.camera_counter = 0
+    self.trigger_time = 0
 
   def _play_prebuilt_sound(self, filename):
     """Copies the specified sound file to /tmp/play.wav."""
@@ -157,33 +156,32 @@ class SentryMode:
       if delta > SENSITIVITY_THRESHOLD: # Check if delta is greater than sensitivity threshold and sentry is armed
         self.trigger_counter += 1 # Count number of triggers
       if self.trigger_counter == WARNING_TRIGGER_COUNT: # Trigger Warning threshold one shot
+        self.trigger_time = t # Set trigger time
         print("Movement Detected!")
         self._play_prebuilt_sound(WARNING_SOUND_FILE) # Play warning sound
-      if self.trigger_counter > MAX_TRIGGER_COUNT and self.reset_counter == ALARM_TRIGGER_COUNT: # Trigger Alarm threshold after 22 seconds
-        print("🚨 Movement Detected! Taking snapshot...")
-        self.triggered_alarm = True # Set triggered alarm to true
         if self.frontAllowed: # Check if snapshot should be performed
           managed_processes['camerad'].start() # Start camerad
-      if self.triggered_alarm: # Check if alarm is triggered
-        self.camera_counter += 1 # Increment for camera delay
-      if self.triggered_alarm and self.camera_counter == 10: # Delay 2 seconds after alarm trigger before connecting camera
-        self.connect_camera() # Connect to camera after starting camerad
-      if self.triggered_alarm and self.camera_counter == 80: # Delay 8 seconds after alarm trigger before taking snapshot
+          self.connect_camera() # Connect to camera after starting camerad
+          self.camera_trigger = True # Set camera trigger to true. Prep for image capture
+
+      if self.trigger_counter > MAX_TRIGGER_COUNT and t - self.trigger_time >= ALARM_TIME and not self.triggered_alarm: # Trigger Alarm threshold after 30 seconds
+        print("🚨 Movement Detected! Taking snapshot...")
+        self.triggered_alarm = True # Set triggered alarm to true
         self._play_prebuilt_sound(ALARM_SOUND_FILE) # Play alarm sound, 30 seconds after initial trigger. 22+8=30 seconds
-        self.triggered_alarm = False # Reset triggered alarm
-        self.camera_counter = 0 # Reset camera delay counter
-        if self.frontAllowed: # Check if snapshot should be performed
+        if self.camera_trigger: # Check if snapshot should be performed
           self.takeSnapshot() # Take snapshot
           managed_processes['camerad'].stop() # Stop camerad
+          self.camera_trigger = False
         else:
           self.send_discord_webhook(ALERT_MESSAGE) # send webhook without image
-      if self.trigger_counter > 0: # After first trigger, before reset
-        self.reset_counter += 1 # Increment reset counter
-        if self.reset_counter == RESET_FRAME_COUNT: # Reset trigger and reset counter
-          print("✅ Movement Ended")
-          self.trigger_counter = 0
-          self.reset_counter = 0
 
+      if self.trigger_counter > 0 and t - self.trigger_time >= RESET_TIME: # After first trigger, before reset
+        print("✅ Movement Ended")
+        self.trigger_counter = 0
+        self.triggered_alarm = False
+        if self.camera_trigger:
+          managed_processes['camerad'].stop() # Stop camerad
+          self.camera_trigger = False
     self.prev_accel = curr_accel # Ready for next iteration
 
   def start(self):
