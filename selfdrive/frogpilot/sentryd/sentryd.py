@@ -17,7 +17,7 @@ from openpilot.system.manager.process_config import managed_processes
 
 WARNING_TRIGGER_COUNT = 10
 MAX_TRIGGER_COUNT = 25
-ALARM_TRIGGER_COUNT = 240
+ALARM_TRIGGER_COUNT = 220
 RESET_FRAME_COUNT = 600
 SENSITIVITY_THRESHOLD = 0.04
 OFFROAD_DELAY = 90
@@ -159,17 +159,17 @@ class SentryMode:
       if self.trigger_counter == WARNING_TRIGGER_COUNT: # Trigger Warning threshold one shot
         print("Movement Detected!")
         self._play_prebuilt_sound(WARNING_SOUND_FILE) # Play warning sound
-      if self.trigger_counter > MAX_TRIGGER_COUNT and self.reset_counter == ALARM_TRIGGER_COUNT: # Trigger Alarm threshold after 24 seconds
+      if self.trigger_counter > MAX_TRIGGER_COUNT and self.reset_counter == ALARM_TRIGGER_COUNT: # Trigger Alarm threshold after 22 seconds
         print("🚨 Movement Detected! Taking snapshot...")
         self.triggered_alarm = True # Set triggered alarm to true
         if self.frontAllowed: # Check if snapshot should be performed
           managed_processes['camerad'].start() # Start camerad
       if self.triggered_alarm: # Check if alarm is triggered
         self.camera_counter += 1 # Increment for camera delay
-      if self.triggered_alarm and self.camera_counter == 10: # Delay 1 seconds after alarm trigger before connecting camera
+      if self.triggered_alarm and self.camera_counter == 10: # Delay 2 seconds after alarm trigger before connecting camera
         self.connect_camera() # Connect to camera after starting camerad
-      if self.triggered_alarm and self.camera_counter == 60: # Delay 6 seconds after alarm trigger before taking snapshot
-        self._play_prebuilt_sound(ALARM_SOUND_FILE) # Play alarm sound, 30 seconds after initial trigger. 24+2+4=30 seconds
+      if self.triggered_alarm and self.camera_counter == 80: # Delay 8 seconds after alarm trigger before taking snapshot
+        self._play_prebuilt_sound(ALARM_SOUND_FILE) # Play alarm sound, 30 seconds after initial trigger. 22+8=30 seconds
         self.triggered_alarm = False # Reset triggered alarm
         self.camera_counter = 0 # Reset camera delay counter
         if self.frontAllowed: # Check if snapshot should be performed
@@ -192,7 +192,6 @@ class SentryMode:
         self.sm.update()
         self.update()
       time.sleep(0.1)
-
 
 def main():
   try:
