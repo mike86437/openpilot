@@ -166,9 +166,9 @@ class SentryMode:
           managed_processes['camerad'].start() # Start camerad
       if self.triggered_alarm: # Check if alarm is triggered
         self.camera_counter += 1 # Increment for camera delay
-      if self.triggered_alarm and self.camera_counter == 20: # Delay 2 seconds after alarm trigger before connecting camera
+      if self.triggered_alarm and self.camera_counter == 10: # Delay 1 seconds after alarm trigger before connecting camera
         self.connect_camera() # Connect to camera after starting camerad
-      if self.triggered_alarm and self.camera_counter == 40: # Delay 4 seconds after connect camera before taking snapshot
+      if self.triggered_alarm and self.camera_counter == 60: # Delay 6 seconds after alarm trigger before taking snapshot
         self._play_prebuilt_sound(ALARM_SOUND_FILE) # Play alarm sound, 30 seconds after initial trigger. 24+2+4=30 seconds
         self.triggered_alarm = False # Reset triggered alarm
         self.camera_counter = 0 # Reset camera delay counter
