@@ -60,8 +60,8 @@ class SentryMode:
     """Copies the specified sound file to /tmp/play.wav."""
     source_path = os.path.join(SOUND_PATH, filename)
     try:
-      subprocess.Popen(["aplay", sound_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-      print(f"[SENTRY] Playing sound: {sound_path}")
+      subprocess.Popen(["aplay", source_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+      print(f"[SENTRY] Playing sound: {source_path}")
     except Exception as e:
       print(f"[SENTRY] Error playing sound file: {e}")
 
