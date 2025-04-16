@@ -25,7 +25,7 @@ OHNO_SOUND_FILE = "ohno.wav"
 ARMING_SOUND_FILE = "arming.wav"
 ARMED_SOUND_FILE = "armed.wav"
 WARNING_SOUND_FILE = "warning.wav"
-ALERT_SOUND_FILE = "alert.wav"
+ALARM_SOUND_FILE = "alarm.wav"
 PROBLEM_SOUND_FILE = "problem.wav"
 
 class SentryMode:
