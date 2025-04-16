@@ -57,13 +57,16 @@ class SentryMode:
     except Exception as e:
       print(f"[SENTRY] Error playing sound file: {e}")
 
-  def takeSnapshot(self):
+  def connect_camera(self):
     try:
       self.vision_client_w = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_WIDE_ROAD, True)
       self.vision_client_d = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_DRIVER, True)
       while not self.vision_client_w.connect(False) and not self.vision_client_d.connect(False):
         time.sleep(0.1)
       print("[SENTRY] VisionIPC connected.")
+
+  def takeSnapshot(self):
+    try:
       buf_pic, buf_fpic, pic, fpic = None, None, None, None
       while buf_pic is None or buf_fpic is None:
         buf_pic = self.vision_client_w.recv()
@@ -160,7 +163,9 @@ class SentryMode:
           managed_processes['camerad'].start() # Start camerad
       if self.triggered_alarm: # Check if alarm is triggered
         self.camera_counter += 1 # Increment for camera delay
-      if self.triggered_alarm and self.camera_counter == 60: # Delay 4 seconds  after starting camerad before taking snapshot one shot
+      if self.triggered_alarm and self.camera_counter == 20:
+        self.connect_camera() # Connect to camera after starting camerad
+      if self.triggered_alarm and self.camera_counter == 40: # Delay 4 seconds  after connect camera before taking snapshot
         self._play_prebuilt_sound(ALARM_SOUND_FILE) # Play alarm sound
         self.triggered_alarm = False # Reset triggered alarm
         self.camera_counter = 0 # Reset camera delay counter
