@@ -52,8 +52,8 @@ class SentryMode:
       self._play_prebuilt_sound(PROBLEM_SOUND_FILE)
 
   def _connect_camera(self):
-    self.vision_client_w.connect(True):
-    self.vision_client_d.connect(True):
+    self.vision_client_w.connect(True)
+    self.vision_client_d.connect(True)
     print("[SENTRY] VisionIPC connected.")
 
   def _play_prebuilt_sound(self, filename):
