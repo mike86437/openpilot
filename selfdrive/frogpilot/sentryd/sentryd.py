@@ -46,6 +46,7 @@ class SentryMode:
     self.played = False
     self.triggered_alarm = False
     self.trigger_time = 0
+    self.camera_trigger = False
 
   def _play_prebuilt_sound(self, filename):
     """Copies the specified sound file to /tmp/play.wav."""
