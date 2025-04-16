@@ -119,7 +119,7 @@ class SentryMode:
 
   def update(self):
     t = time.monotonic() #  Get time
-    if (t - self.transition_to_offroad_last) <= OFFROAD_DELAY * 0.5 and not self.played: # Delay half of offroad delay
+    if (t - self.transition_to_offroad_last) >= OFFROAD_DELAY * 0.5 and not self.played: # Delay half of offroad delay
       self.played = True # Play sound only once
       self._play_prebuilt_sound(ARMING_SOUND_FILE) # Play sound
     if (t - self.transition_to_offroad_last) <= OFFROAD_DELAY: # Delay full offroad delay
@@ -160,7 +160,6 @@ class SentryMode:
         self.triggered_alarm = False # Reset triggered alarm
         self.camera_counter = 0 # Reset camera delay counter
         if self.frontAllowed: # Check if snapshot should be performed
-          self._connect_camera() # Connect to camera
           self.takeSnapshot() # Take snapshot
           managed_processes['camerad'].stop() # Stop camerad
         else:
