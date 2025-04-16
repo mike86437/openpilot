@@ -42,11 +42,11 @@ class SentryMode:
     self.trigger_counter = 0
     self.armed = False
     self.sentry_problem = False
+    self.played = False
     try:
       self.vision_client_w = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_WIDE_ROAD, True)
       self.vision_client_d = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_DRIVER, True)
       self._connect_camera()
-      self._play_prebuilt_sound(ARMING_SOUND_FILE)
     except Exception as e:
       print(f"[SENTRY] Error connecting to camera: {e}")
       self._play_prebuilt_sound(PROBLEM_SOUND_FILE)
@@ -152,6 +152,9 @@ class SentryMode:
 
   def update(self):
     t = time.monotonic()
+    if (t - self.transition_to_offroad_last) <= OFFROAD_DELAY * 0.5 and not self.played:
+      self.played = True
+      self._play_prebuilt_sound(ARMING_SOUND_FILE)
     if (t - self.transition_to_offroad_last) <= OFFROAD_DELAY:
       return
 
