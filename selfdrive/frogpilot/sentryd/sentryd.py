@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import subprocess
 import shutil
 import numpy as np
 import cereal.messaging as messaging
@@ -51,19 +52,18 @@ class SentryMode:
       self._play_prebuilt_sound(PROBLEM_SOUND_FILE)
 
   def _connect_camera(self):
-    while not self.vision_client_w.connect(False) and not self.vision_client_d.connect(False):
-      time.sleep(0.1)
+    self.vision_client_w.connect(True):
+    self.vision_client_d.connect(True):
     print("[SENTRY] VisionIPC connected.")
 
   def _play_prebuilt_sound(self, filename):
     """Copies the specified sound file to /tmp/play.wav."""
     source_path = os.path.join(SOUND_PATH, filename)
     try:
-      shutil.copy(source_path, WAV_FILE)
-      print(f"[SENTRY] Copied '{source_path}' to '{WAV_FILE}'")
+      subprocess.Popen(["aplay", sound_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+      print(f"[SENTRY] Playing sound: {sound_path}")
     except Exception as e:
-      print(f"[SENTRY] Error copying sound file: {e}")
-      self._play_prebuilt_sound(OHNO_SOUND_FILE)
+      print(f"[SENTRY] Error playing sound file: {e}")
 
   def takeSnapshot(self):
     try:
