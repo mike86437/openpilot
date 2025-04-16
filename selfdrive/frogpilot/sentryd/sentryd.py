@@ -47,6 +47,7 @@ class SentryMode:
     self.triggered_alarm = False
     self.trigger_time = 0
     self.camera_trigger = False
+    self.vipc_clients = {}
 
   def _play_prebuilt_sound(self, filename):
     """Copies the specified sound file to /tmp/play.wav."""
@@ -59,10 +60,8 @@ class SentryMode:
 
   def connect_camera(self):
     try:
-      self.vision_client_w = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_WIDE_ROAD, True)
-      self.vision_client_d = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_DRIVER, True)
-      while not self.vision_client_w.connect(False) and not self.vision_client_d.connect(False):
-        time.sleep(0.1)
+      sockets = ["roadCameraState", "driverCameraState"]
+      self.vipc_clients = {s: VisionIpcClient("camerad", VISION_STREAMS[s], True) for s in sockets}
       print("[SENTRY] VisionIPC connected.")
     except Exception as e:
       print(f"[SENTRY] Error connecting to camera: {e}")
@@ -70,6 +69,8 @@ class SentryMode:
 
   def takeSnapshot(self):
     try:
+      for client in self.vipc_clients.values():
+        client.connect(True)
       buf_pic, buf_fpic, pic, fpic = None, None, None, None
       while buf_pic is None or buf_fpic is None:
         buf_pic = self.vision_client_w.recv()
@@ -156,7 +157,8 @@ class SentryMode:
     if self.armed:
       if delta > SENSITIVITY_THRESHOLD: # Check if delta is greater than sensitivity threshold and sentry is armed
         self.trigger_counter += 1 # Count number of triggers
-        self.trigger_time = t # Set trigger time
+        if self.trigger_counter == 1:
+          self.trigger_time = t # Set trigger time
       if self.trigger_counter == WARNING_TRIGGER_COUNT: # Trigger Warning threshold one shot
         print("Movement Detected!")
         self._play_prebuilt_sound(WARNING_SOUND_FILE) # Play warning sound
