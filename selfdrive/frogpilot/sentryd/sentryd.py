@@ -19,7 +19,7 @@ WARNING_TRIGGER_COUNT = 10
 MAX_TRIGGER_COUNT = 25
 ALARM_TRIGGER_COUNT = 300
 RESET_FRAME_COUNT = 600
-SENSITIVITY_THRESHOLD = 0.08
+SENSITIVITY_THRESHOLD = 0.05
 OFFROAD_DELAY = 90
 ALERT_MESSAGE = "🚨 ALERT! Sentry Detected Movement!"
 WAV_FILE = "/tmp/play.wav"
@@ -150,13 +150,13 @@ class SentryMode:
         self._play_prebuilt_sound(WARNING_SOUND_FILE) # Play warning sound
       if self.trigger_counter > MAX_TRIGGER_COUNT and self.reset_counter == ALARM_TRIGGER_COUNT: # Trigger Alarm threshold one shot
         print("🚨 Movement Detected! Taking snapshot...")
-        self._play_prebuilt_sound(ALARM_SOUND_FILE) # Play alarm sound
         self.triggered_alarm = True # Set triggered alarm to true
         if self.frontAllowed: # Check if snapshot should be performed
           managed_processes['camerad'].start() # Start camerad
       if self.triggered_alarm: # Check if alarm is triggered
         self.camera_counter += 1 # Increment for camera delay
-      if self.triggered_alarm and self.camera_counter == 20: # Delay 2 seconds before taking snapshot one shot
+      if self.triggered_alarm and self.camera_counter == 40: # Delay 4 seconds  after starting camerad before taking snapshot one shot
+        self._play_prebuilt_sound(ALARM_SOUND_FILE) # Play alarm sound
         self.triggered_alarm = False # Reset triggered alarm
         self.camera_counter = 0 # Reset camera delay counter
         if self.frontAllowed: # Check if snapshot should be performed
