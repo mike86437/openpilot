@@ -30,6 +30,11 @@ ARMED_SOUND_FILE = "armed.wav"
 WARNING_SOUND_FILE = "warning.wav"
 ALARM_SOUND_FILE = "alarm.wav"
 PROBLEM_SOUND_FILE = "problem.wav"
+VISION_STREAMS = {
+  "roadCameraState": VisionStreamType.VISION_STREAM_ROAD,
+  "driverCameraState": VisionStreamType.VISION_STREAM_DRIVER,
+  "wideRoadCameraState": VisionStreamType.VISION_STREAM_WIDE_ROAD,
+}
 
 class SentryMode:
   def __init__(self):
@@ -73,8 +78,8 @@ class SentryMode:
         client.connect(True)
       buf_pic, buf_fpic, pic, fpic = None, None, None, None
       while buf_pic is None or buf_fpic is None:
-        buf_pic = self.vision_client_w.recv()
-        buf_fpic = self.vision_client_d.recv()
+        buf_pic = self.vipc_clients["roadCameraState"].recv()
+        buf_fpic = self.vipc_clients["driverCameraState"].recv()
         if buf_pic is None and buf_fpic is None:
           time.sleep(0.01)
       pic = extract_image(buf_pic)
