@@ -60,7 +60,7 @@ def run_tinygrad_modeld(started, params, CP: car.CarParams, classic_model, tinyg
 procs = [
   DaemonProcess("manage_athenad", "system.athena.manage_athenad", "AthenadPid"),
 
-  NativeProcess("camerad", "system/camerad", ["./camerad"], always_run),
+  NativeProcess("camerad", "system/camerad", ["./camerad"], driverview),
   NativeProcess("logcatd", "system/logcatd", ["./logcatd"], allow_logging),
   NativeProcess("proclogd", "system/proclogd", ["./proclogd"], allow_logging),
   PythonProcess("logmessaged", "system.logmessaged", allow_logging),

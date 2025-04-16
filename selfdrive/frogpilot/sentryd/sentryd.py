@@ -12,8 +12,10 @@ from datetime import datetime
 from common.params import Params
 from msgq.visionipc import VisionIpcClient, VisionStreamType
 from openpilot.common.realtime import config_realtime_process, set_core_affinity
+from openpilot.system.camerad.snapshot.snapshot import extract_image, yuv_to_rgb, jpeg_write
+from openpilot.system.manager.process_config import managed_processes
 
-WARNING_RESET_COUNT = 10
+WARNING_TRIGGER_COUNT = 10
 MAX_TRIGGER_COUNT = 25
 ALARM_TRIGGER_COUNT = 300
 RESET_FRAME_COUNT = 600
@@ -43,18 +45,8 @@ class SentryMode:
     self.armed = False
     self.sentry_problem = False
     self.played = False
-    try:
-      self.vision_client_w = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_WIDE_ROAD, True)
-      self.vision_client_d = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_DRIVER, True)
-      self._connect_camera()
-    except Exception as e:
-      print(f"[SENTRY] Error connecting to camera: {e}")
-      self._play_prebuilt_sound(PROBLEM_SOUND_FILE)
-
-  def _connect_camera(self):
-    self.vision_client_w.connect(True)
-    self.vision_client_d.connect(True)
-    print("[SENTRY] VisionIPC connected.")
+    self.triggered_alarm = False
+    self.camera_counter = 0
 
   def _play_prebuilt_sound(self, filename):
     """Copies the specified sound file to /tmp/play.wav."""
@@ -67,9 +59,14 @@ class SentryMode:
 
   def takeSnapshot(self):
     try:
+      self.vision_client_w = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_WIDE_ROAD, True)
+      self.vision_client_d = VisionIpcClient("camerad", VisionStreamType.VISION_STREAM_DRIVER, True)
+      while not self.vision_client_w.connect(False) and not self.vision_client_d.connect(False):
+        time.sleep(0.1)
+      print("[SENTRY] VisionIPC connected.")
       pic, fpic = None, None
-      pic = self.extract_image(self.vision_client_w.recv())
-      fpic = self.extract_image(self.vision_client_d.recv())
+      pic = extract_image(self.vision_client_w.recv())
+      fpic = extract_image(self.vision_client_d.recv())
       timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
       target_directory = "/data/media/0/sentryd/"
       os.makedirs(target_directory, exist_ok=True)
@@ -77,9 +74,9 @@ class SentryMode:
       front_path = f"{target_directory}front_image_{timestamp}.jpg"
       stitch_path = f"{target_directory}360_image_{timestamp}.jpg"
       if pic is not None:
-        self.jpeg_write(back_path, pic)
+        jpeg_write(back_path, pic)
       if fpic is not None:
-        self.jpeg_write(front_path, fpic)
+        jpeg_write(front_path, fpic)
       # If both images are available, create a stitched image
       if pic is not None and fpic is not None:
         front_image = Image.open(front_path)
@@ -103,40 +100,10 @@ class SentryMode:
       print(f"❌ Error in takeSnapshot: {e}")
       self._play_prebuilt_sound(OHNO_SOUND_FILE)
 
-  def extract_image(self, buf):
-    if buf.uv_offset >= len(buf.data):
-      print("⚠️ Warning: UV offset is greater than data length.")
-      return None
-    y = np.array(buf.data[:buf.uv_offset], dtype=np.uint8).reshape((-1, buf.stride))[:buf.height, :buf.width]
-    u = np.array(buf.data[buf.uv_offset::2], dtype=np.uint8).reshape((-1, buf.stride//2))[:buf.height//2, :buf.width//2]
-    v = np.array(buf.data[buf.uv_offset+1::2], dtype=np.uint8).reshape((-1, buf.stride//2))[:buf.height//2, :buf.width//2]
-
-    return self.yuv_to_rgb(y, u, v)
-
-  def yuv_to_rgb(self, y, u, v):
-    ul = np.repeat(np.repeat(u, 2).reshape(u.shape[0], y.shape[1]), 2, axis=0).reshape(y.shape)
-    vl = np.repeat(np.repeat(v, 2).reshape(v.shape[0], y.shape[1]), 2, axis=0).reshape(y.shape)
-
-    yuv = np.dstack((y, ul, vl)).astype(np.int16)
-    yuv[:, :, 1:] -= 128
-
-    m = np.array([
-      [1.00000,  1.00000, 1.00000],
-      [0.00000, -0.39465, 2.03211],
-      [1.13983, -0.58060, 0.00000],
-    ])
-    rgb = np.dot(yuv, m).clip(0, 255)
-    return rgb.astype(np.uint8)
-
-  def jpeg_write(self, fn, dat):
-    img = Image.fromarray(dat)
-    img.save(fn, "JPEG")
-
   def send_discord_webhook(self, message, image_path=None):
     if not self.webhook_url:
       print("⚠️ Warning: Webhook URL is not set.")
       return
-
     try:
       if image_path:
         with open(image_path, "rb") as file:
@@ -151,50 +118,61 @@ class SentryMode:
       print(f"❌ Error sending webhook: {e}")
 
   def update(self):
-    t = time.monotonic()
-    if (t - self.transition_to_offroad_last) <= OFFROAD_DELAY * 0.5 and not self.played:
-      self.played = True
-      self._play_prebuilt_sound(ARMING_SOUND_FILE)
-    if (t - self.transition_to_offroad_last) <= OFFROAD_DELAY:
-      return
+    t = time.monotonic() #  Get time
+    if (t - self.transition_to_offroad_last) <= OFFROAD_DELAY * 0.5 and not self.played: # Delay half of offroad delay
+      self.played = True # Play sound only once
+      self._play_prebuilt_sound(ARMING_SOUND_FILE) # Play sound
+    if (t - self.transition_to_offroad_last) <= OFFROAD_DELAY: # Delay full offroad delay
+      return # Return while waiting for offroad delay
 
-    if self.sm['accelerometer'] is None or self.sm['accelerometer'].acceleration is None:
+    if self.sm['accelerometer'] is None or self.sm['accelerometer'].acceleration is None: # Check if accelerometer data is available
       print("⚠️ Warning: No accelerometer data available.")
-      if not self.sentry_problem:
-        self._play_prebuilt_sound(PROBLEM_SOUND_FILE)
-        self.sentry_problem = True
-      return
+      if not self.sentry_problem: # Check if sentry problem is not already triggered
+        self._play_prebuilt_sound(PROBLEM_SOUND_FILE) # Play problem sound
+        self.sentry_problem = True # Prevents future sound playing
+      return # Return if no accelerometer data
 
-    if self.armed == False:
-      self._play_prebuilt_sound(ARMED_SOUND_FILE)
-      self.armed = True
+    if self.armed == False: # Check if sentry is not armed
+      self._play_prebuilt_sound(ARMED_SOUND_FILE) # Play armed sound
+      self.armed = True # Set armed to true
       print("🔒 SentryD Armed")
 
-    curr_accel = np.array(self.sm['accelerometer'].acceleration.v)
-    if self.prev_accel is None:
-      self.prev_accel = curr_accel
+    curr_accel = np.array(self.sm['accelerometer'].acceleration.v) # Get current acceleration data
+    if self.prev_accel is None: # Check if first run
+      self.prev_accel = curr_accel # Initialize previous acceleration data
 
-    delta = abs(np.linalg.norm(curr_accel) - np.linalg.norm(self.prev_accel))
-    if delta > SENSITIVITY_THRESHOLD and self.armed:
-      self.trigger_counter += 1
-    if self.trigger_counter == WARNING_RESET_COUNT:
-      print("Movement Detected!")
-      self._play_prebuilt_sound(WARNING_SOUND_FILE)
-    if self.trigger_counter > MAX_TRIGGER_COUNT and self.reset_counter == ALARM_TRIGGER_COUNT and self.armed:
-      print("🚨 Movement Detected! Taking snapshot...")
-      self._play_prebuilt_sound(ALARM_SOUND_FILE)
-      if self.frontAllowed:
-        self.takeSnapshot()
-      else:
-        self.send_discord_webhook(ALERT_MESSAGE)
-    if self.trigger_counter > 0:
-      self.reset_counter += 1
-      if self.reset_counter == RESET_FRAME_COUNT:
-        print("✅ Movement Ended")
-        self.trigger_counter = 0
-        self.reset_counter = 0
+    delta = abs(np.linalg.norm(curr_accel) - np.linalg.norm(self.prev_accel)) # Calculate delta between current and previous acceleration data
+    if self.armed:
+      if delta > SENSITIVITY_THRESHOLD: # Check if delta is greater than sensitivity threshold and sentry is armed
+        self.trigger_counter += 1 # Count number of triggers
+      if self.trigger_counter == WARNING_TRIGGER_COUNT: # Trigger Warning threshold one shot
+        print("Movement Detected!")
+        self._play_prebuilt_sound(WARNING_SOUND_FILE) # Play warning sound
+      if self.trigger_counter > MAX_TRIGGER_COUNT and self.reset_counter == ALARM_TRIGGER_COUNT: # Trigger Alarm threshold one shot
+        print("🚨 Movement Detected! Taking snapshot...")
+        self._play_prebuilt_sound(ALARM_SOUND_FILE) # Play alarm sound
+        self.triggered_alarm = True # Set triggered alarm to true
+        if self.frontAllowed: # Check if snapshot should be performed
+          managed_processes['camerad'].start() # Start camerad
+      if self.triggered_alarm: # Check if alarm is triggered
+        self.camera_counter += 1 # Increment for camera delay
+      if self.triggered_alarm and self.camera_counter == 20: # Delay 2 seconds before taking snapshot one shot
+        self.triggered_alarm = False # Reset triggered alarm
+        self.camera_counter = 0 # Reset camera delay counter
+        if self.frontAllowed: # Check if snapshot should be performed
+          self._connect_camera() # Connect to camera
+          self.takeSnapshot() # Take snapshot
+          managed_processes['camerad'].stop() # Stop camerad
+        else:
+          self.send_discord_webhook(ALERT_MESSAGE) # send webhook without image
+      if self.trigger_counter > 0: # After first trigger, before reset
+        self.reset_counter += 1 # Increment reset counter
+        if self.reset_counter == RESET_FRAME_COUNT: # Reset trigger and reset counter
+          print("✅ Movement Ended")
+          self.trigger_counter = 0
+          self.reset_counter = 0
 
-    self.prev_accel = curr_accel
+    self.prev_accel = curr_accel # Ready for next iteration
 
   def start(self):
     while True:
