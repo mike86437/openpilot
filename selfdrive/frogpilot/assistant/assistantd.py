@@ -264,7 +264,7 @@ class AssistantHandler:
         {
           "inline_data": {
             "mime_type": "image/jpeg",
-            "data": image_bytes_for_api
+            "data": image_bytes
           }
         }
       ]
