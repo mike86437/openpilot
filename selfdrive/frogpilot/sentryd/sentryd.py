@@ -64,6 +64,9 @@ class SentryMode:
       while not self.vision_client_w.connect(False) and not self.vision_client_d.connect(False):
         time.sleep(0.1)
       print("[SENTRY] VisionIPC connected.")
+    except Exception as e:
+      print(f"[SENTRY] Error connecting to camera: {e}")
+      self._play_prebuilt_sound(OHNO_SOUND_FILE)
 
   def takeSnapshot(self):
     try:
@@ -156,17 +159,17 @@ class SentryMode:
       if self.trigger_counter == WARNING_TRIGGER_COUNT: # Trigger Warning threshold one shot
         print("Movement Detected!")
         self._play_prebuilt_sound(WARNING_SOUND_FILE) # Play warning sound
-      if self.trigger_counter > MAX_TRIGGER_COUNT and self.reset_counter == ALARM_TRIGGER_COUNT: # Trigger Alarm threshold one shot
+      if self.trigger_counter > MAX_TRIGGER_COUNT and self.reset_counter == ALARM_TRIGGER_COUNT: # Trigger Alarm threshold after 24 seconds
         print("🚨 Movement Detected! Taking snapshot...")
         self.triggered_alarm = True # Set triggered alarm to true
         if self.frontAllowed: # Check if snapshot should be performed
           managed_processes['camerad'].start() # Start camerad
       if self.triggered_alarm: # Check if alarm is triggered
         self.camera_counter += 1 # Increment for camera delay
-      if self.triggered_alarm and self.camera_counter == 20:
+      if self.triggered_alarm and self.camera_counter == 20: # Delay 2 seconds after alarm trigger before connecting camera
         self.connect_camera() # Connect to camera after starting camerad
-      if self.triggered_alarm and self.camera_counter == 40: # Delay 4 seconds  after connect camera before taking snapshot
-        self._play_prebuilt_sound(ALARM_SOUND_FILE) # Play alarm sound
+      if self.triggered_alarm and self.camera_counter == 40: # Delay 4 seconds after connect camera before taking snapshot
+        self._play_prebuilt_sound(ALARM_SOUND_FILE) # Play alarm sound, 30 seconds after initial trigger. 24+2+4=30 seconds
         self.triggered_alarm = False # Reset triggered alarm
         self.camera_counter = 0 # Reset camera delay counter
         if self.frontAllowed: # Check if snapshot should be performed
