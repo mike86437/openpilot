@@ -253,6 +253,7 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
       print(f"calc_vLead: {calc_vLead:.2f}, vLead (before avg): {lead_dict['vLead']:.2f}")
       lead_dict['vLead'] = (calc_vLead + float(lead_dict['vLead'])) / 2
   else:
+    print(f"track: {track}")
     if hasattr(get_lead, "dRelk_hist"):
       get_lead.dRelk_hist.clear()
       print("dRelk_hist cleared")
