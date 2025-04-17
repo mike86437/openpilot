@@ -4,7 +4,7 @@ import math
 from collections import deque
 from types import SimpleNamespace
 from typing import Any
-
+import numpy as np
 import csv
 import os
 from datetime import datetime
@@ -234,6 +234,25 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
         closest_track = min(far_lead_tracks, key=lambda c: c.dRel)
         lead_dict = closest_track.get_RadarState()
         lead_dict['vLead'] = lead_dict['vLeadK']
+
+  if track == -1 and 'dRel' in lead_dict and 'vLead' in lead_dict:
+    # back calc vLead from dRelk
+    raw_dRel = lead_dict['dRel']
+    if not hasattr(get_lead, "dRelk"):
+      get_lead.dRelk = raw_dRel
+      get_lead.dRelk_hist = [raw_dRel]
+    else:
+      get_lead.dRelk = 0.8 * raw_dRel + 0.2 * get_lead.dRelk
+      get_lead.dRelk_hist.append(get_lead.dRelk)
+
+    if len(get_lead.dRelk_hist) >= 5:
+      y = np.array(get_lead.dRelk_hist)
+      x = np.arange(len(y)) * DT_MDL
+      drel_slope = np.polyfit(x, y, 1)[0]
+      calc_vLead = v_ego - drel_slope
+      lead_dict['vLead'] = np.clip(calc_vLead, 0, 40)
+  else:
+    get_lead.dRelk_hist.clear()
 
   if 'dRel' in lead_dict:
     lead_dict['dRel'] -= frogpilot_toggles.increased_stopped_distance if not frogpilotCarState.trafficModeActive else 0
