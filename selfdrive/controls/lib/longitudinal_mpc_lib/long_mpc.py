@@ -352,6 +352,27 @@ class LongitudinalMpc:
     lead_xv = self.extrapolate_lead(x_lead, v_lead, a_lead, a_lead_tau)
     return lead_xv
 
+  def process_leadone(self, lead):
+    v_ego = self.x0[1]
+    if lead is not None and lead.get('status', False):
+      x_lead = lead.get('dRel')
+      v_lead = lead.get('vLead')
+      a_lead = lead.get('aLeadK')
+      a_lead_tau = lead.get('aLeadTau', LEAD_ACCEL_TAU)
+    else:
+      # Handle the case where lead_dict is None or status is False
+      x_lead = 50.0
+      v_lead = v_ego + 10.0
+      a_lead = 0.0
+      a_lead_tau = LEAD_ACCEL_TAU
+
+    min_x_lead = ((v_ego + v_lead)/2) * (v_ego - v_lead) / (-ACCEL_MIN * 2)
+    x_lead = clip(x_lead, min_x_lead, 1e8)
+    v_lead = clip(v_lead, 0.0, 1e8)
+    a_lead = clip(a_lead, -10., 5.)
+    lead_xv = self.extrapolate_lead(x_lead, v_lead, a_lead, a_lead_tau)
+    return lead_xv
+
   def set_accel_limits(self, min_a, max_a):
     # TODO this sets a max accel limit, but the minimum limit is only for cruise decel
     # needs refactor
@@ -362,19 +383,31 @@ class LongitudinalMpc:
     v_ego = self.x0[1]
     self.status = lead_one.status or lead_two.status
 
-    if lead_one is not None and hasattr(lead_one, 'dRel'):
-      self.dRelk = 0.8 * float(lead_one.dRel) + 0.2 * self.dRelk
+    processed_lead_one = None
+    if lead_one is not None and lead_one.status:
+      dRel_lead_one = float(lead_one.dRel)
+      self.dRelk = 0.8 * dRel_lead_one + 0.2 * self.dRelk
       self.dRelk_hist.append(self.dRelk)
-      if len(self.dRelk_hist) >= 5 and hasattr(lead_one, 'vLead'):
+      calc_vLead = None
+      if len(self.dRelk_hist) >= 5:
         y = np.array(self.dRelk_hist)
         x = np.arange(len(y)) * DT_MDL
         drel_slope = np.polyfit(x, y, 1)[0]
-        lead_one.vLead = v_ego - drel_slope
-        lead_one.vLead = np.clip(lead_one.vLead, 0, 40)
+        calc_vLead = v_ego - drel_slope
+        calc_vLead = np.clip(calc_vLead, 0, 40)
+      processed_lead_one = {}
+      if calc_vLead is not None:
+        processed_lead_one['vLead'] = calc_vLead
+      else:
+        processed_lead_one['vLead'] = float(lead_one.vLead)
+      processed_lead_one['dRel'] = dRel_lead_one
+      processed_lead_one['aLeadK'] = float(lead_one.aLeadK)
+      processed_lead_one['aLeadTau'] = float(lead_one.aLeadTau)
+      processed_lead_one['status'] = bool(lead_one.status)
     else:
       self.dRelk_hist.clear()
 
-    lead_xv_0 = self.process_lead(lead_one)
+    lead_xv_0 = self.process_leadone(processed_lead_one)
     lead_xv_1 = self.process_lead(lead_two)
 
     # To estimate a safe distance from a moving lead, we calculate how much stopping
