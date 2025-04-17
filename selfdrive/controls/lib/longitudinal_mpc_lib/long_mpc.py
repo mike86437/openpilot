@@ -408,7 +408,7 @@ class LongitudinalMpc:
       self.dRelk_hist.clear()
 
     lead_xv_0 = self.process_leadone(processed_lead_one)
-    lead_xv_1 = self.process_lead(lead_two)
+    lead_xv_1 = self.process_leadone(processed_lead_one)
 
     # To estimate a safe distance from a moving lead, we calculate how much stopping
     # distance that lead needs as a minimum. We can add that to the current distance
