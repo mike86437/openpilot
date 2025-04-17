@@ -237,23 +237,23 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
         lead_dict['vLead'] = lead_dict['vLeadK']
 
   if track == -1 and 'dRel' in lead_dict and 'vLead' in lead_dict and not lead_dict['dRel'] == 0:
-      raw_dRel = lead_dict['dRel']
-      if self.dRelk is None:
-        self.dRelk = raw_dRel
-        self.dRelk_hist.append(self.dRelk)
-      else:
-        self.dRelk = 0.8 * raw_dRel + 0.2 * self.dRelk
-        self.dRelk_hist.append(self.dRelk)
-
-      if len(self.dRelk_hist) >= 5:
-        y = np.array(self.dRelk_hist)
-        x = np.arange(len(y)) * DT_MDL
-        drel_slope = np.polyfit(x, y, 1)[0]
-        calc_vLead = np.clip(v_ego - drel_slope, 0, 40)
-        print(f"calc_vLead: {calc_vLead:.2f}, vLead (before avg): {lead_dict['vLead']:.2f}")
-        lead_dict['vLead'] = (calc_vLead + float(lead_dict['vLead'])) / 2
+    raw_dRel = lead_dict['dRel']
+    if self.dRelk is None:
+      self.dRelk = raw_dRel
+      self.dRelk_hist.append(self.dRelk)
     else:
-      self.dRelk_hist.clear()
+      self.dRelk = 0.8 * raw_dRel + 0.2 * self.dRelk
+      self.dRelk_hist.append(self.dRelk)
+
+    if len(self.dRelk_hist) >= 5:
+      y = np.array(self.dRelk_hist)
+      x = np.arange(len(y)) * DT_MDL
+      drel_slope = np.polyfit(x, y, 1)[0]
+      calc_vLead = np.clip(v_ego - drel_slope, 0, 40)
+      print(f"calc_vLead: {calc_vLead:.2f}, vLead (before avg): {lead_dict['vLead']:.2f}")
+      lead_dict['vLead'] = (calc_vLead + float(lead_dict['vLead'])) / 2
+  else:
+    self.dRelk_hist.clear()
 
   if 'dRel' in lead_dict:
     lead_dict['dRel'] -= frogpilot_toggles.increased_stopped_distance if not frogpilotCarState.trafficModeActive else 0
