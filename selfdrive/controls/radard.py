@@ -240,7 +240,8 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
     raw_dRel = lead_dict['dRel']
     if not hasattr(get_lead, "dRelk"):
       get_lead.dRelk = raw_dRel
-      get_lead.dRelk_hist = [raw_dRel]
+      get_lead.dRelk_hist = deque(maxlen=10)
+      get_lead.dRelk_hist.append(get_lead.dRelk)
     else:
       get_lead.dRelk = 0.8 * raw_dRel + 0.2 * get_lead.dRelk
       get_lead.dRelk_hist.append(get_lead.dRelk)
@@ -249,8 +250,8 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
       y = np.array(get_lead.dRelk_hist)
       x = np.arange(len(y)) * DT_MDL
       drel_slope = np.polyfit(x, y, 1)[0]
-      calc_vLead = v_ego - drel_slope
-      lead_dict['vLead'] = np.clip(calc_vLead, 0, 40)
+      calc_vLead = np.clip(v_ego - drel_slope, 0 40)
+      lead_dict['vLead'] = (calc_vLead + float(lead_dict['vLead'])) / 2
   else:
     if hasattr(get_lead, "dRelk_hist"):
       get_lead.dRelk_hist.clear()
