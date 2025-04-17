@@ -64,8 +64,6 @@ class Track:
     self.K_C = kalman_params.C
     self.K_K = kalman_params.K
     self.kf = KF1D([[v_lead], [0.0]], self.K_A, self.K_C, self.K_K)
-    self.dRelk_hist = deque(maxlen=10)
-    self.dRelk = None
 
   def update(self, d_rel: float, y_rel: float, v_rel: float, v_lead: float, measured: float):
     # relative values, copy
@@ -236,24 +234,27 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
         lead_dict = closest_track.get_RadarState()
         lead_dict['vLead'] = lead_dict['vLeadK']
 
-  if track == -1 and 'dRel' in lead_dict and 'vLead' in lead_dict and not lead_dict['dRel'] == 0:
+    if track == -1 and 'dRel' in lead_dict and 'vLead' in lead_dict and lead_dict['dRel'] != 0:
     raw_dRel = lead_dict['dRel']
-    if self.dRelk is None:
-      self.dRelk = raw_dRel
-      self.dRelk_hist.append(self.dRelk)
+    if not hasattr(get_lead, "dRelk"):
+      get_lead.dRelk = raw_dRel
+      get_lead.dRelk_hist = deque(maxlen=10)
+      get_lead.dRelk_hist.append(get_lead.dRelk)
     else:
-      self.dRelk = 0.8 * raw_dRel + 0.2 * self.dRelk
-      self.dRelk_hist.append(self.dRelk)
+      get_lead.dRelk = 0.8 * raw_dRel + 0.2 * get_lead.dRelk
+      get_lead.dRelk_hist.append(get_lead.dRelk)
 
-    if len(self.dRelk_hist) >= 5:
-      y = np.array(self.dRelk_hist)
+    if len(get_lead.dRelk_hist) >= 5:
+      y = np.array(get_lead.dRelk_hist)
       x = np.arange(len(y)) * DT_MDL
       drel_slope = np.polyfit(x, y, 1)[0]
       calc_vLead = np.clip(v_ego - drel_slope, 0, 40)
       print(f"calc_vLead: {calc_vLead:.2f}, vLead (before avg): {lead_dict['vLead']:.2f}")
       lead_dict['vLead'] = (calc_vLead + float(lead_dict['vLead'])) / 2
-  else:
-    self.dRelk_hist.clear()
+    else:
+      if hasattr(get_lead, "dRelk_hist"):
+        get_lead.dRelk_hist.clear()
+
 
   if 'dRel' in lead_dict:
     lead_dict['dRel'] -= frogpilot_toggles.increased_stopped_distance if not frogpilotCarState.trafficModeActive else 0
