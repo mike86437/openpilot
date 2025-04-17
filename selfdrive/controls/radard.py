@@ -234,7 +234,7 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
         lead_dict = closest_track.get_RadarState()
         lead_dict['vLead'] = lead_dict['vLeadK']
 
-    if track == -1 and 'dRel' in lead_dict and 'vLead' in lead_dict and lead_dict['dRel'] != 0:
+  if track == -1 and 'dRel' in lead_dict and 'vLead' in lead_dict and lead_dict['dRel'] != 0:
     raw_dRel = lead_dict['dRel']
     if not hasattr(get_lead, "dRelk"):
       get_lead.dRelk = raw_dRel
@@ -251,9 +251,9 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
       calc_vLead = np.clip(v_ego - drel_slope, 0, 40)
       print(f"calc_vLead: {calc_vLead:.2f}, vLead (before avg): {lead_dict['vLead']:.2f}")
       lead_dict['vLead'] = (calc_vLead + float(lead_dict['vLead'])) / 2
-    else:
-      if hasattr(get_lead, "dRelk_hist"):
-        get_lead.dRelk_hist.clear()
+  else:
+    if hasattr(get_lead, "dRelk_hist"):
+      get_lead.dRelk_hist.clear()
 
 
   if 'dRel' in lead_dict:
