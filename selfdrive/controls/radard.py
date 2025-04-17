@@ -192,18 +192,18 @@ def get_RadarState_from_vision(lead_msg: capnp._DynamicStructReader, v_ego: floa
     get_RadarState_from_vision.dRelk = raw_dRel
     get_RadarState_from_vision.dRelk_hist = deque(maxlen=10)
     get_RadarState_from_vision.dRelk_hist.append(get_RadarState_from_vision.dRelk)
-    print(f"raw_dRel: {raw_dRel:.2f}")
+    
   else:
     get_RadarState_from_vision.dRelk = 0.8 * raw_dRel + 0.2 * get_RadarState_from_vision.dRelk
     get_RadarState_from_vision.dRelk_hist.append(get_RadarState_from_vision.dRelk)
-    print(f"dRelk: {get_RadarState_from_vision.dRelk:.2f}, dRelk_hist len: {len(get_RadarState_from_vision.dRelk_hist)}")
+    
 
   if len(get_RadarState_from_vision.dRelk_hist) >= 5:
     y = np.array(get_RadarState_from_vision.dRelk_hist)
     x = np.arange(len(y)) * DT_MDL
     drel_slope = np.polyfit(x, y, 1)[0]
     calc_vLead = np.clip(v_ego - drel_slope, 0, 40)
-    print(f"calc_vLead: {calc_vLead:.2f}, vLead: {float(v_ego + (lead_msg.v[0] - model_v_ego)):.2f}")
+    print(f"diff {float(v_ego + (lead_msg.v[0] - model_v_ego) - calc_vLead):.2f}")
     vLead_estimated = float((calc_vLead + float(v_ego + (lead_msg.v[0] - model_v_ego))) / 2)
   else:
     vLead_estimated = float(lead_msg.v[0] - model_v_ego)
