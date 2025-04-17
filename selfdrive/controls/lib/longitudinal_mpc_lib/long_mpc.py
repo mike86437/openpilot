@@ -9,6 +9,7 @@ from openpilot.common.swaglog import cloudlog
 # WARNING: imports outside of constants will not trigger a rebuild
 from openpilot.selfdrive.modeld.constants import index_function
 from openpilot.selfdrive.car.interfaces import ACCEL_MIN
+from collections import deque
 
 if __name__ == '__main__':  # generating code
   from openpilot.third_party.acados.acados_template import AcadosModel, AcadosOcp, AcadosOcpSolver
@@ -251,6 +252,8 @@ class LongitudinalMpc:
     self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
     self.reset()
     self.source = SOURCES[2]
+    self.dRelk = 0
+    self.dRelk_hist = deque(maxlen=10)
 
   def reset(self):
     # self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
@@ -358,6 +361,20 @@ class LongitudinalMpc:
   def update(self, lead_one, lead_two, v_cruise, x, v, a, j, radarless_model, t_follow, trafficModeActive, personality=log.LongitudinalPersonality.standard):
     v_ego = self.x0[1]
     self.status = lead_one.status or lead_two.status
+
+    if lead_one is not None:
+      self.dRelk = 0.8 * float(lead_one.dRel) + 0.2 * self.dRelk
+      self.dRelk_hist.append(self.dRelk)
+    else:
+      self.dRelk_hist.clear()
+    if len(self.dRelk_hist) >= 5:
+      y = np.array(self.dRelk_hist)
+      x = np.arange(len(y)) * DT_MDL
+      drel_slope = np.polyfit(x, y, 1)[0]
+      lead_one.vLead = v_ego - drel_slope
+      lead_one.vLead = np.clip(lead_one.vLead, 0, 40)
+    else:
+      lead_one.vLead = lead_one.vLead
 
     lead_xv_0 = self.process_lead(lead_one)
     lead_xv_1 = self.process_lead(lead_two)
