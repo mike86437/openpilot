@@ -186,12 +186,34 @@ def get_RadarState_from_vision(lead_msg: capnp._DynamicStructReader, v_ego: floa
   prev_aLeadK = getattr(get_RadarState_from_vision, "prev_aLeadK", 0.0)
   blended_aLeadK = 0.8 * float(lead_msg.a[0]) + 0.2 * prev_aLeadK
   get_RadarState_from_vision.prev_aLeadK = blended_aLeadK
+  raw_dRel = float(lead_msg.x[0] - RADAR_TO_CAMERA)
+
+  if not hasattr(get_RadarState_from_vision, "dRelk"):
+    get_RadarState_from_vision.dRelk = raw_dRel
+    get_RadarState_from_vision.dRelk_hist = deque(maxlen=10)
+    get_RadarState_from_vision.dRelk_hist.append(get_RadarState_from_vision.dRelk)
+    print(f"raw_dRel: {raw_dRel:.2f}")
+  else:
+    get_RadarState_from_vision.dRelk = 0.8 * raw_dRel + 0.2 * get_RadarState_from_vision.dRelk
+    get_RadarState_from_vision.dRelk_hist.append(get_RadarState_from_vision.dRelk)
+    print(f"dRelk: {get_RadarState_from_vision.dRelk:.2f}, dRelk_hist len: {len(get_RadarState_from_vision.dRelk_hist)}")
+
+  if len(get_RadarState_from_vision.dRelk_hist) >= 5:
+    y = np.array(get_RadarState_from_vision.dRelk_hist)
+    x = np.arange(len(y)) * DT_MDL
+    drel_slope = np.polyfit(x, y, 1)[0]
+    calc_vLead = v_ego - drel_slope
+    print(f"calc_vLead: {calc_vLead:.2f}, vLead: {float(v_ego + (lead_msg.v[0] - model_v_ego)):.2f}")
+    vLead_estimated = (calc_vLead + float(v_ego + (lead_msg.v[0] - model_v_ego))) / 2
+  else:
+    vLead_estimated = float(lead_msg.v[0] - model_v_ego)
+
   return {
     "dRel": float(lead_msg.x[0] - RADAR_TO_CAMERA),
     "yRel": float(-lead_msg.y[0]),
     "vRel": float(lead_msg.v[0] - model_v_ego),
-    "vLead": float(v_ego + (lead_msg.v[0] - model_v_ego)),
-    "vLeadK": float(v_ego + (lead_msg.v[0] - model_v_ego)),
+    "vLead": vLead_estimated,
+    "vLeadK": float(v_ego + (lead_msg.v[0] - model_v_ego)), # Keep the original calculation for vLeadK if needed
     "aLeadK": blended_aLeadK,
     "aLeadTau": 0.3,
     "fcw": False,
@@ -233,30 +255,6 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
         closest_track = min(far_lead_tracks, key=lambda c: c.dRel)
         lead_dict = closest_track.get_RadarState()
         lead_dict['vLead'] = lead_dict['vLeadK']
-
-  if track == -1 and 'dRel' in lead_dict and 'vLead' in lead_dict and lead_dict['dRel'] != 0:
-    raw_dRel = lead_dict['dRel']
-    if not hasattr(get_lead, "dRelk"):
-      get_lead.dRelk = raw_dRel
-      get_lead.dRelk_hist = deque(maxlen=10)
-      get_lead.dRelk_hist.append(get_lead.dRelk)
-      print(f"raw_dRel: {raw_dRel:.2f}")
-    else:
-      get_lead.dRelk = 0.8 * raw_dRel + 0.2 * get_lead.dRelk
-      get_lead.dRelk_hist.append(get_lead.dRelk)
-      print(f"dRelk: {get_lead.dRelk:.2f}, dRelk_hist len: {len(get_lead.dRelk_hist)}")
-    if len(get_lead.dRelk_hist) >= 5:
-      y = np.array(get_lead.dRelk_hist)
-      x = np.arange(len(y)) * DT_MDL
-      drel_slope = np.polyfit(x, y, 1)[0]
-      calc_vLead = np.clip(v_ego - drel_slope, 0, 40)
-      print(f"calc_vLead: {calc_vLead:.2f}, vLead (before avg): {lead_dict['vLead']:.2f}")
-      lead_dict['vLead'] = (calc_vLead + float(lead_dict['vLead'])) / 2
-  else:
-    print(f"track: {track}")
-    if hasattr(get_lead, "dRelk_hist"):
-      get_lead.dRelk_hist.clear()
-      print("dRelk_hist cleared")
 
 
   if 'dRel' in lead_dict:
