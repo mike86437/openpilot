@@ -250,7 +250,7 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
       y = np.array(get_lead.dRelk_hist)
       x = np.arange(len(y)) * DT_MDL
       drel_slope = np.polyfit(x, y, 1)[0]
-      calc_vLead = np.clip(v_ego - drel_slope, 0 40)
+      calc_vLead = np.clip(v_ego - drel_slope, 0, 40)
       lead_dict['vLead'] = (calc_vLead + float(lead_dict['vLead'])) / 2
   else:
     if hasattr(get_lead, "dRelk_hist"):
