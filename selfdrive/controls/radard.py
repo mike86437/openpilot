@@ -252,7 +252,7 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
       calc_vLead = v_ego - drel_slope
       lead_dict['vLead'] = np.clip(calc_vLead, 0, 40)
   else:
-    get_lead.dRelk_hist.clear() if hasattr(get_lead, "dRelk_hist")
+    get_lead.dRelk_hist.clear() if hasattr(get_lead, "dRelk_hist") else pass
 
   if 'dRel' in lead_dict:
     lead_dict['dRel'] -= frogpilot_toggles.increased_stopped_distance if not frogpilotCarState.trafficModeActive else 0
