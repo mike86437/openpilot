@@ -235,13 +235,10 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
         lead_dict = closest_track.get_RadarState()
         lead_dict['vLead'] = lead_dict['vLeadK']
 
-  if track == -1 and 'dRel' in lead_dict and 'vLead' in lead_dict:
-    if lead_dict['dRel'] == 0:
-      get_lead.dRelk_hist.clear()
-      return
+  if track == -1 and 'dRel' in lead_dict and 'vLead' in lead_dict and not lead_dict['dRel'] == 0:
     # back calc vLead from dRelk
     raw_dRel = lead_dict['dRel']
-    elif not hasattr(get_lead, "dRelk"):
+    if not hasattr(get_lead, "dRelk"):
       get_lead.dRelk = raw_dRel
       get_lead.dRelk_hist = [raw_dRel]
     else:
