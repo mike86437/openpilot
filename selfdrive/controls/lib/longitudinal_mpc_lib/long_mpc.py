@@ -373,7 +373,7 @@ class LongitudinalMpc:
       drel_slope = np.polyfit(x, y, 1)[0]
       lead_one.vLead = v_ego - drel_slope
       lead_one.vLead = np.clip(lead_one.vLead, 0, 40)
-    else:
+    elif lead_one is not None:
       lead_one.vLead = lead_one.vLead
 
     lead_xv_0 = self.process_lead(lead_one)
