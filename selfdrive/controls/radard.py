@@ -240,10 +240,11 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
       get_lead.dRelk = raw_dRel
       get_lead.dRelk_hist = deque(maxlen=10)
       get_lead.dRelk_hist.append(get_lead.dRelk)
+      print(f"raw_dRel: {raw_dRel:.2f}")
     else:
       get_lead.dRelk = 0.8 * raw_dRel + 0.2 * get_lead.dRelk
       get_lead.dRelk_hist.append(get_lead.dRelk)
-
+      print(f"dRelk: {get_lead.dRelk:.2f}, dRelk_hist len: {len(get_lead.dRelk_hist)}")
     if len(get_lead.dRelk_hist) >= 5:
       y = np.array(get_lead.dRelk_hist)
       x = np.arange(len(y)) * DT_MDL
@@ -254,6 +255,7 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
   else:
     if hasattr(get_lead, "dRelk_hist"):
       get_lead.dRelk_hist.clear()
+      print("dRelk_hist cleared")
 
 
   if 'dRel' in lead_dict:
