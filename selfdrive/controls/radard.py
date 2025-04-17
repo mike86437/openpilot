@@ -204,7 +204,7 @@ def get_RadarState_from_vision(lead_msg: capnp._DynamicStructReader, v_ego: floa
     drel_slope = np.polyfit(x, y, 1)[0]
     calc_vLead = v_ego - drel_slope
     print(f"calc_vLead: {calc_vLead:.2f}, vLead: {float(v_ego + (lead_msg.v[0] - model_v_ego)):.2f}")
-    vLead_estimated = (calc_vLead + float(v_ego + (lead_msg.v[0] - model_v_ego))) / 2
+    vLead_estimated = float((calc_vLead + float(v_ego + (lead_msg.v[0] - model_v_ego))) / 2)
   else:
     vLead_estimated = float(lead_msg.v[0] - model_v_ego)
 
