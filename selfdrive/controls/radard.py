@@ -189,26 +189,31 @@ def get_RadarState_from_vision(lead_msg: capnp._DynamicStructReader, v_ego: floa
   raw_dRel = float(lead_msg.x[0] - RADAR_TO_CAMERA)
 
   if not hasattr(get_RadarState_from_vision, "dRel_history"):
-    get_RadarState_from_vision.dRel_history = deque(maxlen=3) # Store the last 3 raw dRel values
+    get_RadarState_from_vision.dRel_history = deque(maxlen=5) # Store the last 5 raw dRel values
   if not hasattr(get_RadarState_from_vision, "vLead_override"):
     get_RadarState_from_vision.vLead_override = None # Store overridden vLead
 
   get_RadarState_from_vision.dRel_history.append(raw_dRel)
   vLead_estimated = float(lead_msg.v[0] - model_v_ego) # Default
 
-  if len(get_RadarState_from_vision.dRel_history) >= 3 and get_RadarState_from_vision.vLead_override is None:
+  if len(get_RadarState_from_vision.dRel_history) >= 5 and get_RadarState_from_vision.vLead_override is None:
     dRel_list = list(get_RadarState_from_vision.dRel_history)
-    time_stamps = np.arange(len(dRel_list)) * DT_MDL
-    dRel_slope, _ = np.polyfit(time_stamps, dRel_list, 1) # Slope is approximately -v_ego if lead is stopped
+    time_stamps_3 = np.arange(3) * DT_MDL
 
+    # Check slope of frames 0, 1, 2
+    dRel_slope1, _ = np.polyfit(time_stamps_3, dRel_list[0:3], 1)
     expected_dRel_slope_stopped = -v_ego
-    slope_tolerance = 1.0 # Changed to 1.0 m/s
+    slope_tolerance = 1.0
 
-    # If the observed rate of dRel reduction is close to what we'd expect for a stopped lead
-    if abs(dRel_slope - expected_dRel_slope_stopped) < slope_tolerance and abs(v_ego) > 0.1: # Avoid div by zero or very low speed
-      vLead_estimated = 0.0 # Assume lead is stopped
-      print("Lead is stopped, setting vLead to 0.0")
-      get_RadarState_from_vision.vLead_override = 0.0 # Mark as overridden
+    slope1_matches = abs(dRel_slope1 - expected_dRel_slope_stopped) < slope_tolerance
+
+    # Check slope of frames 2, 3, 4
+    dRel_slope2, _ = np.polyfit(time_stamps_3, dRel_list[2:5], 1)
+    slope2_matches = abs(dRel_slope2 - expected_dRel_slope_stopped) < slope_tolerance
+
+    if slope1_matches and slope2_matches and v_ego > 5.0:
+      vLead_estimated = 0.0
+      get_RadarState_from_vision.vLead_override = 0.0
 
   elif get_RadarState_from_vision.vLead_override is not None:
     vLead_estimated = get_RadarState_from_vision.vLead_override
