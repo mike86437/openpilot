@@ -188,32 +188,37 @@ def get_RadarState_from_vision(lead_msg: capnp._DynamicStructReader, v_ego: floa
   get_RadarState_from_vision.prev_aLeadK = blended_aLeadK
   raw_dRel = float(lead_msg.x[0] - RADAR_TO_CAMERA)
 
-  if not hasattr(get_RadarState_from_vision, "dRelk"):
-    get_RadarState_from_vision.dRelk = raw_dRel
-    get_RadarState_from_vision.dRelk_hist = deque(maxlen=10)
-    get_RadarState_from_vision.dRelk_hist.append(get_RadarState_from_vision.dRelk)
-    
-  else:
-    get_RadarState_from_vision.dRelk = 0.8 * raw_dRel + 0.2 * get_RadarState_from_vision.dRelk
-    get_RadarState_from_vision.dRelk_hist.append(get_RadarState_from_vision.dRelk)
-    
+  if not hasattr(get_RadarState_from_vision, "dRel_history"):
+    get_RadarState_from_vision.dRel_history = deque(maxlen=3) # Store the last 3 raw dRel values
+  if not hasattr(get_RadarState_from_vision, "vLead_override"):
+    get_RadarState_from_vision.vLead_override = None # Store overridden vLead
 
-  if len(get_RadarState_from_vision.dRelk_hist) >= 5:
-    y = np.array(get_RadarState_from_vision.dRelk_hist)
-    x = np.arange(len(y)) * DT_MDL
-    drel_slope = np.polyfit(x, y, 1)[0]
-    calc_vLead = np.clip(v_ego - drel_slope, 0, 40)
-    print(f"diff {float(v_ego + (lead_msg.v[0] - model_v_ego) - calc_vLead):.2f}")
-    vLead_estimated = float((calc_vLead + float(v_ego + (lead_msg.v[0] - model_v_ego))) / 2)
-  else:
-    vLead_estimated = float(lead_msg.v[0] - model_v_ego)
+  get_RadarState_from_vision.dRel_history.append(raw_dRel)
+  vLead_estimated = float(lead_msg.v[0] - model_v_ego) # Default
+
+  if len(get_RadarState_from_vision.dRel_history) >= 3 and get_RadarState_from_vision.vLead_override is None:
+    dRel_list = list(get_RadarState_from_vision.dRel_history)
+    time_stamps = np.arange(len(dRel_list)) * DT_MDL
+    dRel_slope, _ = np.polyfit(time_stamps, dRel_list, 1) # Slope is approximately -v_ego if lead is stopped
+
+    expected_dRel_slope_stopped = -v_ego
+    slope_tolerance = 1.0 # Changed to 1.0 m/s
+
+    # If the observed rate of dRel reduction is close to what we'd expect for a stopped lead
+    if abs(dRel_slope - expected_dRel_slope_stopped) < slope_tolerance and abs(v_ego) > 0.1: # Avoid div by zero or very low speed
+      vLead_estimated = 0.0 # Assume lead is stopped
+      print("Lead is stopped, setting vLead to 0.0")
+      get_RadarState_from_vision.vLead_override = 0.0 # Mark as overridden
+
+  elif get_RadarState_from_vision.vLead_override is not None:
+    vLead_estimated = get_RadarState_from_vision.vLead_override
 
   return {
     "dRel": float(lead_msg.x[0] - RADAR_TO_CAMERA),
     "yRel": float(-lead_msg.y[0]),
     "vRel": float(lead_msg.v[0] - model_v_ego),
     "vLead": vLead_estimated,
-    "vLeadK": float(v_ego + (lead_msg.v[0] - model_v_ego)), # Keep the original calculation for vLeadK if needed
+    "vLeadK": float(v_ego + (lead_msg.v[0] - model_v_ego)),
     "aLeadK": blended_aLeadK,
     "aLeadTau": 0.3,
     "fcw": False,
