@@ -186,6 +186,26 @@ def get_RadarState_from_vision(lead_msg: capnp._DynamicStructReader, v_ego: floa
   prev_aLeadK = getattr(get_RadarState_from_vision, "prev_aLeadK", 0.0)
   blended_aLeadK = 0.8 * float(lead_msg.a[0]) + 0.2 * prev_aLeadK
   get_RadarState_from_vision.prev_aLeadK = blended_aLeadK
+
+  return {
+    "dRel": float(lead_msg.x[0] - RADAR_TO_CAMERA),
+    "yRel": float(-lead_msg.y[0]),
+    "vRel": float(lead_msg.v[0] - model_v_ego),
+    "vLead": float(v_ego + (lead_msg.v[0] - model_v_ego)),
+    "vLeadK": float(v_ego + (lead_msg.v[0] - model_v_ego)),
+    "aLeadK": blended_aLeadK,
+    "aLeadTau": 0.3,
+    "fcw": False,
+    "modelProb": float(lead_msg.prob),
+    "status": True,
+    "radar": False,
+    "radarTrackId": -1,
+  }
+
+def get_RadarState_from_visionone(lead_msg: capnp._DynamicStructReader, v_ego: float, model_v_ego: float):
+  prev_aLeadK = getattr(get_RadarState_from_vision, "prev_aLeadK", 0.0)
+  blended_aLeadK = 0.8 * float(lead_msg.a[0]) + 0.2 * prev_aLeadK
+  get_RadarState_from_vision.prev_aLeadK = blended_aLeadK
   raw_dRel = float(lead_msg.x[0] - RADAR_TO_CAMERA)
 
   if not hasattr(get_RadarState_from_vision, "dRel_history"):
@@ -247,6 +267,8 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
   lead_dict = {'status': False}
   if track is not None:
     lead_dict = track.get_RadarState(lead_msg.prob)
+  elif (track is None) and ready and (lead_msg.prob > frogpilot_toggles.lead_detection_probability) and low_speed_override:
+    lead_dict = get_RadarState_from_visionone(lead_msg, v_ego, model_v_ego)
   elif (track is None) and ready and (lead_msg.prob > frogpilot_toggles.lead_detection_probability):
     lead_dict = get_RadarState_from_vision(lead_msg, v_ego, model_v_ego)
 
