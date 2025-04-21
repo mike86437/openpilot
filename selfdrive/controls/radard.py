@@ -213,30 +213,41 @@ def get_RadarState_from_visionone(lead_msg: capnp._DynamicStructReader, v_ego: f
   if not hasattr(get_RadarState_from_vision, "vLead_override"):
     get_RadarState_from_vision.vLead_override = None # Store overridden vLead
 
-  get_RadarState_from_vision.dRel_history.append(raw_dRel)
-  vLead_estimated = float(lead_msg.v[0] - model_v_ego) # Default
+  vLead_estimated_default = float(lead_msg.v[0] - model_v_ego) # Store default value
+  radar_track_id = -1 # Default radarTrackId
+  vLead_estimated = vLead_estimated_default # Initialize vLead_estimated with the default
 
-  if len(get_RadarState_from_vision.dRel_history) >= 5 and get_RadarState_from_vision.vLead_override is None:
-    dRel_list = list(get_RadarState_from_vision.dRel_history)
-    time_stamps_3 = np.arange(3) * DT_MDL
+  if lead_msg.prob > 0.5:
+    get_RadarState_from_visionone.dRel_history.append(raw_dRel)
 
-    # Check slope of frames 0, 1, 2
-    dRel_slope1, _ = np.polyfit(time_stamps_3, dRel_list[0:3], 1)
-    expected_dRel_slope_stopped = -v_ego
-    slope_tolerance = 1.0
+    if len(get_RadarState_from_visionone.dRel_history) >= 5 and get_RadarState_from_visionone.vLead_override is None:
+      dRel_list = list(get_RadarState_from_visionone.dRel_history)
+      time_stamps_3 = np.arange(3) * DT_MDL
 
-    slope1_matches = abs(dRel_slope1 - expected_dRel_slope_stopped) < slope_tolerance
+      # Check slope of frames 0, 1, 2
+      dRel_slope1, _ = np.polyfit(time_stamps_3, dRel_list[0:3], 1)
+      expected_dRel_slope_stopped = -v_ego
+      slope_tolerance = 1.0
 
-    # Check slope of frames 2, 3, 4
-    dRel_slope2, _ = np.polyfit(time_stamps_3, dRel_list[2:5], 1)
-    slope2_matches = abs(dRel_slope2 - expected_dRel_slope_stopped) < slope_tolerance
+      slope1_matches = abs(dRel_slope1 - expected_dRel_slope_stopped) < slope_tolerance
 
-    if slope1_matches and slope2_matches and v_ego > 5.0:
-      vLead_estimated = 0.0
-      get_RadarState_from_vision.vLead_override = 0.0
+      # Check slope of frames 2, 3, 4
+      dRel_slope2, _ = np.polyfit(time_stamps_3, dRel_list[2:5], 1)
+      slope2_matches = abs(dRel_slope2 - expected_dRel_slope_stopped) < slope_tolerance
 
-  elif get_RadarState_from_vision.vLead_override is not None:
-    vLead_estimated = get_RadarState_from_vision.vLead_override
+      if slope1_matches and slope2_matches and v_ego > 5.0 and abs(vLead_estimated_default) > 1.0:
+        vLead_estimated = 0.0
+        get_RadarState_from_visionone.vLead_override = 0.0
+        radar_track_id = -2 # Set radarTrackId when threshold is met
+      elif get_RadarState_from_visionone.vLead_override is not None:
+        vLead_estimated = get_RadarState_from_visionone.vLead_override
+        radar_track_id = -2 # Keep radarTrackId as -2 if still in override state
+
+  else:
+    if hasattr(get_RadarState_from_visionone, "dRel_history"):
+      get_RadarState_from_visionone.dRel_history.clear()
+      get_RadarState_from_visionone.vLead_override = None # Also clear override
+    vLead_estimated = vLead_estimated_default
 
   return {
     "dRel": float(lead_msg.x[0] - RADAR_TO_CAMERA),
@@ -250,7 +261,7 @@ def get_RadarState_from_visionone(lead_msg: capnp._DynamicStructReader, v_ego: f
     "modelProb": float(lead_msg.prob),
     "status": True,
     "radar": False,
-    "radarTrackId": -1,
+    "radarTrackId": radar_track_id,
   }
 
 
