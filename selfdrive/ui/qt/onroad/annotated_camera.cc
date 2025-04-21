@@ -706,6 +706,7 @@ void AnnotatedCameraWidget::drawLead(QPainter &painter, const cereal::RadarState
   const float leadBuff = 40.;
   const float d_rel = lead_data.getDRel() + (adjacent ? fabs(lead_data.getYRel()) : 0);
   const float v_rel = lead_data.getVRel();
+  const float radartrackid = lead_dta.getRadarTrackId();
 
   float fillAlpha = 0;
   if (adjacent) {
@@ -755,7 +756,7 @@ void AnnotatedCameraWidget::drawLead(QPainter &painter, const cereal::RadarState
       text = QString("%1 %2 (%3) | %4 %5 | %6%7")
               .arg(qRound(d_rel * distanceConversion))
               .arg(leadDistanceUnit)
-              .arg(QString("Desired: %1").arg(desiredFollow * distanceConversion))
+              .arg(QString("Track: %1").arg(radartrackid))
               .arg(qRound(lead_speed * speedConversionMetrics))
               .arg(leadSpeedUnit)
               .arg(QString::number(std::max(d_rel / std::max(v_ego, 1.0f), 1.0f), 'f', 2))
