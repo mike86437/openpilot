@@ -706,7 +706,7 @@ void AnnotatedCameraWidget::drawLead(QPainter &painter, const cereal::RadarState
   const float leadBuff = 40.;
   const float d_rel = lead_data.getDRel() + (adjacent ? fabs(lead_data.getYRel()) : 0);
   const float v_rel = lead_data.getVRel();
-  const float radartrackid = lead_dta.getRadarTrackId();
+  const float radartrackid = lead_data.getRadarTrackId();
 
   float fillAlpha = 0;
   if (adjacent) {
