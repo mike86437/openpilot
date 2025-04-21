@@ -203,15 +203,15 @@ def get_RadarState_from_vision(lead_msg: capnp._DynamicStructReader, v_ego: floa
   }
 
 def get_RadarState_from_visionone(lead_msg: capnp._DynamicStructReader, v_ego: float, model_v_ego: float):
-  prev_aLeadK = getattr(get_RadarState_from_vision, "prev_aLeadK", 0.0)
+  prev_aLeadK = getattr(get_RadarState_from_visionone, "prev_aLeadK", 0.0)
   blended_aLeadK = 0.8 * float(lead_msg.a[0]) + 0.2 * prev_aLeadK
-  get_RadarState_from_vision.prev_aLeadK = blended_aLeadK
+  get_RadarState_from_visionone.prev_aLeadK = blended_aLeadK
   raw_dRel = float(lead_msg.x[0] - RADAR_TO_CAMERA)
 
-  if not hasattr(get_RadarState_from_vision, "dRel_history"):
-    get_RadarState_from_vision.dRel_history = deque(maxlen=5) # Store the last 5 raw dRel values
-  if not hasattr(get_RadarState_from_vision, "vLead_override"):
-    get_RadarState_from_vision.vLead_override = None # Store overridden vLead
+  if not hasattr(get_RadarState_from_visionone, "dRel_history"):
+    get_RadarState_from_visionone.dRel_history = deque(maxlen=5) # Store the last 5 raw dRel values
+  if not hasattr(get_RadarState_from_visionone, "vLead_override"):
+    get_RadarState_from_visionone.vLead_override = None # Store overridden vLead
 
   vLead_estimated_default = float(lead_msg.v[0] - model_v_ego) # Store default value
   radar_track_id = -1 # Default radarTrackId
