@@ -209,7 +209,7 @@ def get_RadarState_from_visionone(lead_msg: capnp._DynamicStructReader, v_ego: f
   raw_dRel = float(lead_msg.x[0] - RADAR_TO_CAMERA)
 
   if not hasattr(get_RadarState_from_visionone, "dRel_history"):
-    get_RadarState_from_visionone.dRel_history = deque(maxlen=5) # Store the last 5 raw dRel values
+    get_RadarState_from_visionone.dRel_history = deque(maxlen=10) # Store the last 5 raw dRel values
   if not hasattr(get_RadarState_from_visionone, "vLead_override"):
     get_RadarState_from_visionone.vLead_override = None # Store overridden vLead
 
@@ -225,14 +225,14 @@ def get_RadarState_from_visionone(lead_msg: capnp._DynamicStructReader, v_ego: f
       time_stamps_3 = np.arange(3) * DT_MDL
 
       # Check slope of frames 0, 1, 2
-      dRel_slope1, _ = np.polyfit(time_stamps_3, dRel_list[0:3], 1)
+      dRel_slope1, _ = np.polyfit(time_stamps_3, dRel_list[0:5], 1)
       expected_dRel_slope_stopped = -v_ego
       slope_tolerance = 1.0
 
       slope1_matches = abs(dRel_slope1 - expected_dRel_slope_stopped) < slope_tolerance
 
       # Check slope of frames 2, 3, 4
-      dRel_slope2, _ = np.polyfit(time_stamps_3, dRel_list[2:5], 1)
+      dRel_slope2, _ = np.polyfit(time_stamps_3, dRel_list[4:9], 1)
       slope2_matches = abs(dRel_slope2 - expected_dRel_slope_stopped) < slope_tolerance
 
       if slope1_matches and slope2_matches and v_ego > 5.0 and abs(vLead_estimated_default) > 1.0:
