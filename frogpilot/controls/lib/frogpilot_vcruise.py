@@ -102,7 +102,7 @@ class FrogPilotVCruise:
     if self.vtsc_target >= v_cruise and self.mtsc_target >= v_cruise and v_ego < (v_cruise - 0.5):
       v_cruise = max(v_ego + 0.5, v_cruise - 2.2352)
 
-    if carState.standstill and not self.override_force_stop and controlsState.enabled and frogpilot_toggles.force_standstill and not (self.frogpilot_planner.tracking_lead and getattr(lead, "dRel", float("inf")) < 15)::
+    if carState.standstill and not self.override_force_stop and controlsState.enabled and frogpilot_toggles.force_standstill and not (self.frogpilot_planner.tracking_lead and getattr(lead, "dRel", float("inf")) < 15):
       self.forcing_stop = True
 
       v_cruise = -1
