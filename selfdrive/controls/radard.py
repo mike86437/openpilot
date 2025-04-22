@@ -217,7 +217,7 @@ def get_RadarState_from_visionone(lead_msg: capnp._DynamicStructReader, v_ego: f
   radar_track_id = -1 # Default radarTrackId
   vLead_estimated = vLead_estimated_default # Initialize vLead_estimated with the default
 
-  if lead_msg.prob > 0.5:
+  if lead_msg.prob > 0.5 and False:
     get_RadarState_from_visionone.dRel_history.append(raw_dRel)
 
     if len(get_RadarState_from_visionone.dRel_history) >= 5 and get_RadarState_from_visionone.vLead_override is None:
