@@ -97,8 +97,8 @@ class Controls:
     self.car_state_sock = messaging.sub_sock('carState', timeout=20)
 
     ignore = self.sensor_packets + ['testJoystick']
-    if SIMULATION:
-      ignore += ['driverCameraState', 'managerState']
+    if True:
+      ignore += ['driverCameraState', 'managerState','driverMonitoringState']
     if REPLAY:
       # no vipc in replay will make them ignored anyways
       ignore += ['roadCameraState', 'wideRoadCameraState']
@@ -112,6 +112,8 @@ class Controls:
                                   frequency=int(1/DT_CTRL))
 
     self.joystick_mode = self.params.get_bool("JoystickDebugMode")
+    ignore += ['driverMonitoringState']
+    self.params.put_bool("DmModelInitialized", True)
 
     # read params
     self.is_metric = self.params.get_bool("IsMetric")
@@ -329,7 +331,7 @@ class Controls:
     num_events = len(self.events)
 
     not_running = {p.name for p in self.sm['managerState'].processes if not p.running and p.shouldBeRunning}
-    if self.sm.recv_frame['managerState'] and (not_running - IGNORE_PROCESSES):
+    if False: # self.sm.recv_frame['managerState'] and (not_running - IGNORE_PROCESSES):
       self.events.add(EventName.processNotRunning)
       if not_running != self.not_running_prev:
         cloudlog.event("process_not_running", not_running=not_running, error=True)
