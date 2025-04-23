@@ -126,8 +126,8 @@ class FrogPilotCard:
     if lkas_button:
       self.update_lkas_button(sm)
 
-      if self.force_coast and (carState.gasPressed or carState.brakePressed or carState.vEgo < 2):
-        self.force_coast = False
+    if self.force_coast and (carState.gasPressed or carState.brakePressed or carState.vEgo < 2):
+      self.force_coast = False
 
     frogpilotCarState.accelPressed = self.accel_pressed
     frogpilotCarState.alwaysOnLateralEnabled = self.always_on_lateral_enabled
