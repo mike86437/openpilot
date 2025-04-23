@@ -166,7 +166,7 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
     } else if (param == "TrafficPersonalityProfile") {
       FrogPilotManageControl *trafficPersonalityToggle = new FrogPilotManageControl(param, title, desc, icon);
       QObject::connect(trafficPersonalityToggle, &FrogPilotManageControl::manageButtonClicked, [this, longitudinalLayout, trafficPersonalityPanel]() {
-        openSubParentToggle();
+        openSubSubPanel();
 
         longitudinalLayout->setCurrentWidget(trafficPersonalityPanel);
 
@@ -176,7 +176,7 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
     } else if (param == "AggressivePersonalityProfile") {
       FrogPilotManageControl *aggressivePersonalityToggle = new FrogPilotManageControl(param, title, desc, icon);
       QObject::connect(aggressivePersonalityToggle, &FrogPilotManageControl::manageButtonClicked, [this, longitudinalLayout, aggressivePersonalityPanel]() {
-        openSubParentToggle();
+        openSubSubPanel();
 
         longitudinalLayout->setCurrentWidget(aggressivePersonalityPanel);
 
@@ -186,7 +186,7 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
     } else if (param == "StandardPersonalityProfile") {
       FrogPilotManageControl *standardPersonalityToggle = new FrogPilotManageControl(param, title, desc, icon);
       QObject::connect(standardPersonalityToggle, &FrogPilotManageControl::manageButtonClicked, [this, longitudinalLayout, standardPersonalityPanel]() {
-        openSubParentToggle();
+        openSubSubPanel();
 
         longitudinalLayout->setCurrentWidget(standardPersonalityPanel);
 
@@ -196,7 +196,7 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
     } else if (param == "RelaxedPersonalityProfile") {
       FrogPilotManageControl *relaxedPersonalityToggle = new FrogPilotManageControl(param, title, desc, icon);
       QObject::connect(relaxedPersonalityToggle, &FrogPilotManageControl::manageButtonClicked, [this, longitudinalLayout, relaxedPersonalityPanel]() {
-        openSubParentToggle();
+        openSubSubPanel();
 
         longitudinalLayout->setCurrentWidget(relaxedPersonalityPanel);
 
@@ -397,7 +397,7 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
     } else if (param == "SLCOffsets") {
       ButtonControl *manageSLCOffsetsBtn = new ButtonControl(title, tr("MANAGE"), desc);
       QObject::connect(manageSLCOffsetsBtn, &ButtonControl::clicked, [this, longitudinalLayout, speedLimitControllerOffsetsPanel]() {
-        openSubParentToggle();
+        openSubSubPanel();
 
         longitudinalLayout->setCurrentWidget(speedLimitControllerOffsetsPanel);
 
@@ -409,7 +409,7 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
     } else if (param == "SLCQOL") {
       ButtonControl *manageSLCQOLBtn = new ButtonControl(title, tr("MANAGE"), desc);
       QObject::connect(manageSLCQOLBtn, &ButtonControl::clicked, [this, longitudinalLayout, speedLimitControllerQOLPanel]() {
-        openSubParentToggle();
+        openSubSubPanel();
 
         longitudinalLayout->setCurrentWidget(speedLimitControllerQOLPanel);
 
@@ -470,7 +470,7 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
     } else if (param == "SLCVisuals") {
       ButtonControl *manageSLCVisualsBtn = new ButtonControl(title, tr("MANAGE"), desc);
       QObject::connect(manageSLCVisualsBtn, &ButtonControl::clicked, [this, longitudinalLayout, speedLimitControllerVisualPanel]() {
-        openSubParentToggle();
+        openSubSubPanel();
 
         longitudinalLayout->setCurrentWidget(speedLimitControllerVisualPanel);
 
@@ -517,7 +517,7 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
     }
 
     if (FrogPilotManageControl *frogPilotManageToggle = qobject_cast<FrogPilotManageControl*>(longitudinalToggle)) {
-      QObject::connect(frogPilotManageToggle, &FrogPilotManageControl::manageButtonClicked, this, &FrogPilotLongitudinalPanel::openParentToggle);
+      QObject::connect(frogPilotManageToggle, &FrogPilotManageControl::manageButtonClicked, this, &FrogPilotLongitudinalPanel::openSubPanel);
     }
 
     QObject::connect(longitudinalToggle, &AbstractControl::showDescriptionEvent, [this]() {
@@ -625,8 +625,8 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
     }
   });
 
-  QObject::connect(parent, &FrogPilotSettingsWindow::closeParentToggle, [longitudinalLayout, longitudinalPanel] {longitudinalLayout->setCurrentWidget(longitudinalPanel);});
-  QObject::connect(parent, &FrogPilotSettingsWindow::closeSubParentToggle, [this, longitudinalLayout, customDrivingPersonalityPanel, speedLimitControllerPanel]() {
+  QObject::connect(parent, &FrogPilotSettingsWindow::closeSubPanel, [longitudinalLayout, longitudinalPanel] {longitudinalLayout->setCurrentWidget(longitudinalPanel);});
+  QObject::connect(parent, &FrogPilotSettingsWindow::closeSubSubPanel, [this, longitudinalLayout, customDrivingPersonalityPanel, speedLimitControllerPanel]() {
     if (customPersonalityOpen) {
       longitudinalLayout->setCurrentWidget(customDrivingPersonalityPanel);
 

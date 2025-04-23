@@ -43,15 +43,11 @@ public:
   QJsonObject frogpilotToggleLevels;
 
 signals:
-  void closeMapBoxInstructions();
-  void closeMapSelection();
-  void closeParentToggle();
-  void closeSubParentToggle();
-  void openMapBoxInstructions();
-  void openMapSelection();
+  void closeSubPanel();
+  void closeSubSubPanel();
   void openPanel();
-  void openParentToggle();
-  void openSubParentToggle();
+  void openSubPanel();
+  void openSubSubPanel();
   void updateMetric(bool metric, bool bootRun=false);
 
 private:

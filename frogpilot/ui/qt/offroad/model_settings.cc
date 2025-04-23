@@ -180,7 +180,7 @@ FrogPilotModelPanel::FrogPilotModelPanel(FrogPilotSettingsWindow *parent) : Frog
             params_cache.remove("ModelDrivesAndScores");
           }
         } else if (id == 1) {
-          openParentToggle();
+          openSubPanel();
 
           updateModelLabels(modelLabelsList);
 
@@ -246,11 +246,12 @@ FrogPilotModelPanel::FrogPilotModelPanel(FrogPilotSettingsWindow *parent) : Frog
     }
   });
 
-  QObject::connect(parent, &FrogPilotSettingsWindow::closeParentToggle, [modelLayout, modelPanel] {modelLayout->setCurrentWidget(modelPanel);});
+  QObject::connect(parent, &FrogPilotSettingsWindow::closeSubPanel, [modelLayout, modelPanel] {modelLayout->setCurrentWidget(modelPanel);});
   QObject::connect(uiState(), &UIState::uiUpdate, this, &FrogPilotModelPanel::updateState);
 }
 
 void FrogPilotModelPanel::showEvent(QShowEvent *event) {
+  FrogPilotUIState *fs = fs;
   UIState *s = s;
 
   frogpilotToggleLevels = parent->frogpilotToggleLevels;
@@ -289,19 +290,19 @@ void FrogPilotModelPanel::showEvent(QShowEvent *event) {
   currentModel = modelFileToNameMap.value(QString::fromStdString(params.get("Model")));
   selectModelBtn->setValue(currentModel);
 
-  bool parked = !s->scene.started || s->scene.parked;
+  bool parked = !s->scene.started || fs->frogpilot_scene.parked;
 
   deleteModelBtn->setEnabled(!(allModelsDownloading || modelDownloading || noModelsDownloaded));
 
-  downloadModelBtn->setEnabledButtons(0, !allModelsDownloaded && !allModelsDownloading && !cancellingDownload && s->scene.online && parked);
-  downloadModelBtn->setEnabledButtons(1, !allModelsDownloaded && !modelDownloading && !cancellingDownload && s->scene.online && parked);
+  downloadModelBtn->setEnabledButtons(0, !allModelsDownloaded && !allModelsDownloading && !cancellingDownload && fs->frogpilot_scene.online && parked);
+  downloadModelBtn->setEnabledButtons(1, !allModelsDownloaded && !modelDownloading && !cancellingDownload && fs->frogpilot_scene.online && parked);
 
   started = s->scene.started;
 
   updateToggles();
 }
 
-void FrogPilotModelPanel::updateState(const UIState &s) {
+void FrogPilotModelPanel::updateState(const UIState &s, const FrogPilotUIState &fs) {
   if (!isVisible() || finalizingDownload) {
     return;
   }
@@ -336,15 +337,15 @@ void FrogPilotModelPanel::updateState(const UIState &s) {
     }
   }
 
-  bool parked = !started || s.scene.parked || s.scene.frogs_go_moo;
+  bool parked = !started || fs.frogpilot_scene.parked || fs.frogpilot_toggles.value("frogs_go_moo").toBool();
 
   deleteModelBtn->setEnabled(!(allModelsDownloading || modelDownloading || noModelsDownloaded));
 
   downloadModelBtn->setText(0, modelDownloading ? tr("CANCEL") : tr("DOWNLOAD"));
   downloadModelBtn->setText(1, allModelsDownloading ? tr("CANCEL") : tr("DOWNLOAD ALL"));
 
-  downloadModelBtn->setEnabledButtons(0, !allModelsDownloaded && !allModelsDownloading && !cancellingDownload && s.scene.online && parked);
-  downloadModelBtn->setEnabledButtons(1, !allModelsDownloaded && !modelDownloading && !cancellingDownload && s.scene.online && parked);
+  downloadModelBtn->setEnabledButtons(0, !allModelsDownloaded && !allModelsDownloading && !cancellingDownload && fs.frogpilot_scene.online && parked);
+  downloadModelBtn->setEnabledButtons(1, !allModelsDownloaded && !modelDownloading && !cancellingDownload && fs.frogpilot_scene.online && parked);
 
   downloadModelBtn->setVisibleButton(0, !allModelsDownloading);
   downloadModelBtn->setVisibleButton(1, !modelDownloading);

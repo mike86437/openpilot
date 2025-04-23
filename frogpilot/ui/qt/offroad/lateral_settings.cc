@@ -150,7 +150,7 @@ FrogPilotLateralPanel::FrogPilotLateralPanel(FrogPilotSettingsWindow *parent) : 
     }
 
     if (FrogPilotManageControl *frogPilotManageToggle = qobject_cast<FrogPilotManageControl*>(lateralToggle)) {
-      QObject::connect(frogPilotManageToggle, &FrogPilotManageControl::manageButtonClicked, this, &FrogPilotLateralPanel::openParentToggle);
+      QObject::connect(frogPilotManageToggle, &FrogPilotManageControl::manageButtonClicked, this, &FrogPilotLateralPanel::openSubPanel);
     }
 
     QObject::connect(lateralToggle, &AbstractControl::showDescriptionEvent, [this]() {
@@ -212,7 +212,7 @@ FrogPilotLateralPanel::FrogPilotLateralPanel(FrogPilotSettingsWindow *parent) : 
     }
   });
 
-  QObject::connect(parent, &FrogPilotSettingsWindow::closeParentToggle, [lateralLayout, lateralPanel] {lateralLayout->setCurrentWidget(lateralPanel);});
+  QObject::connect(parent, &FrogPilotSettingsWindow::closeSubPanel, [lateralLayout, lateralPanel] {lateralLayout->setCurrentWidget(lateralPanel);});
   QObject::connect(parent, &FrogPilotSettingsWindow::updateMetric, this, &FrogPilotLateralPanel::updateMetric);
   QObject::connect(uiState(), &UIState::uiUpdate, this, &FrogPilotLateralPanel::updateState);
 }

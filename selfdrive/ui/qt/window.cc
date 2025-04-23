@@ -92,8 +92,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     case QEvent::MouseButtonPress:
     case QEvent::MouseMove: {
       // ignore events when device is awakened by resetInteractiveTimeout
-      ignore = !device()->isAwake() || uiState()->scene.driver_camera_timer >= UI_FREQ / 2;
-      device()->resetInteractiveTimeout(uiState()->scene.screen_timeout, uiState()->scene.screen_timeout_onroad);
+      ignore = !device()->isAwake() || frogpilotUIState()->frogpilot_toggles.value("driver_camera_timer").toInt() >= UI_FREQ / 2;
+      device()->resetInteractiveTimeout(frogpilotUIState()->frogpilot_toggles.value("screen_timeout").toInt(), frogpilotUIState()->frogpilot_toggles.value("screen_timeout_onroad").toInt());
       break;
     }
     default:

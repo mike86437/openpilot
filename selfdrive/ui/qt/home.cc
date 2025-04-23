@@ -60,7 +60,7 @@ void HomeWindow::showMapPanel(bool show) {
   onroad->showMapPanel(show);
 }
 
-void HomeWindow::updateState(const UIState &s) {
+void HomeWindow::updateState(const UIState &s, const FrogPilotUIState &fs) {
   const SubMaster &sm = *(s.sm);
 
   // switch to the generic robot UI
@@ -70,8 +70,8 @@ void HomeWindow::updateState(const UIState &s) {
   }
 
   if (s.scene.started) {
-    showDriverView(s.scene.driver_camera_timer >= UI_FREQ / 2, true);
-    if (s.scene.map_open) {
+    showDriverView(fs.frogpilot_toggles.value("driver_camera_timer").toInt() >= UI_FREQ / 2, true);
+    if (fs.frogpilot_scene.map_open) {
       showSidebar(false);
     }
   }
@@ -184,7 +184,7 @@ OffroadHome::OffroadHome(QWidget* parent) : QFrame(parent) {
     connect(modelReview, &ModelReview::driveRated, [=]() {
       left_widget->setCurrentIndex(1);
     });
-    connect(uiState(), &UIState::reviewModel, [=]() {
+    connect(frogpilotUIState(), &FrogPilotUIState::reviewModel, [=]() {
       left_widget->setCurrentIndex(2);
     });
 
@@ -223,8 +223,6 @@ OffroadHome::OffroadHome(QWidget* parent) : QFrame(parent) {
   timer = new QTimer(this);
   timer->callOnTimeout(this, &OffroadHome::refresh);
 
-  QObject::connect(uiState(), &UIState::togglesUpdated, this, &OffroadHome::refresh);
-
   setStyleSheet(R"(
     * {
       color: white;
@@ -254,12 +252,10 @@ void OffroadHome::hideEvent(QHideEvent *event) {
 }
 
 void OffroadHome::refresh() {
-  QString model = processModelName(uiState()->scene.model_name);
-
   date->setText(QLocale(uiState()->language.mid(5)).toString(QDateTime::currentDateTime(), "dddd, MMMM d"));
-  version->setText(getBrand() + " v" + getVersion().left(14).trimmed() + " - " + model);
-
   date->setVisible(util::system_time_valid());
+
+  version->setText(getBrand() + " v" + getVersion().left(14).trimmed() + " - " + processModelName(frogpilotUIState()->frogpilot_toggles.value("model_name").toString()));
 
   bool updateAvailable = update_widget->refresh();
   int alerts = alerts_widget->refresh();
