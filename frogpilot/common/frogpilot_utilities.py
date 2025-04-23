@@ -166,7 +166,7 @@ def restart_processes(sm):
   while running_threads.get("lock_doors", threading.Thread()).is_alive():
     time.sleep(1)
 
-  wait_for_no_driver(sm)
+  # wait_for_no_driver(sm)
 
   if not any(ps.ignitionLine or ps.ignitionCan for ps in sm["pandaStates"] if ps.pandaType != log.PandaState.PandaType.unknown):
     for name in ["mapd", "ui"]:
