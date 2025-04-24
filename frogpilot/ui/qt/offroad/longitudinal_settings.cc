@@ -422,6 +422,51 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
       longitudinalToggle = new FrogPilotButtonToggleControl(param, title, desc, icon, confirmationToggles, confirmationToggleNames);
     } else if (param == "SLCLookaheadHigher" || param == "SLCLookaheadLower") {
       longitudinalToggle = new FrogPilotParamValueControl(param, title, desc, icon, 0, 30, tr(" seconds"));
+    } else if (param == "SpeedLimitFiller") {
+      std::vector<QString> filterButtonNames{tr("Update Speed Limits")};
+      updateSpeedLimitsToggle = new FrogPilotButtonControl(param, title, desc, icon, filterButtonNames);
+      QObject::connect(updateSpeedLimitsToggle, &FrogPilotButtonControl::buttonClicked, [this](int id) {
+        QJsonObject overpassRequests = QJsonDocument::fromJson(QString::fromStdString(params.get("OverpassRequests")).toUtf8()).object();
+
+        int totalRequests = overpassRequests.value("total_requests").toInt(0);
+        int maxRequests = overpassRequests.value("max_requests").toInt(10000);
+        int savedDay = overpassRequests.value("day").toInt(QDate::currentDate().day());
+
+        int currentDay = QDate::currentDate().day();
+
+        if (savedDay != currentDay) {
+          totalRequests = 0;
+        }
+
+        if (totalRequests >= maxRequests) {
+          QTime now = QTime::currentTime();
+
+          int secondsUntilMidnight = (24 * 3600) - (now.hour() * 3600 + now.minute() * 60 + now.second());
+          int hours = secondsUntilMidnight / 3600;
+          int minutes = (secondsUntilMidnight % 3600) / 60;
+
+          ConfirmationDialog::alert(QString(tr("You have reached the request limit.\n\nIt will reset in %1 hours and %2 minutes.")).arg(hours).arg(minutes), this);
+
+          updateSpeedLimitsToggle->clearCheckedButtons();
+          return;
+        }
+
+        if (!params_memory.getBool("UpdateSpeedLimits")) {
+          if (FrogPilotConfirmationDialog::yesorno(tr("This process will take awhile, so it's advised to start when you're done driving with a stable Wi-Fi connection. Do you wish to proceed?"), this)) {
+            updatingLimits = true;
+
+            params_memory.putBool("UpdateSpeedLimits", true);
+            params_memory.put("UpdateSpeedLimitsStatus", "Calculating...");
+          } else {
+            updateSpeedLimitsToggle->clearCheckedButtons();
+          }
+        } else {
+          updateSpeedLimitsToggle->clearCheckedButtons();
+
+          params_memory.remove("UpdateSpeedLimits");
+        }
+      });
+      longitudinalToggle = updateSpeedLimitsToggle;
     } else if (param == "SLCVisuals") {
       ButtonControl *manageSLCVisualsBtn = new ButtonControl(title, tr("MANAGE"), desc);
       QObject::connect(manageSLCVisualsBtn, &ButtonControl::clicked, [this, longitudinalLayout, speedLimitControllerVisualPanel]() {
@@ -593,9 +638,12 @@ FrogPilotLongitudinalPanel::FrogPilotLongitudinalPanel(FrogPilotSettingsWindow *
     }
   });
   QObject::connect(parent, &FrogPilotSettingsWindow::updateMetric, this, &FrogPilotLongitudinalPanel::updateMetric);
+  QObject::connect(uiState(), &UIState::uiUpdate, this, &FrogPilotLongitudinalPanel::updateState);
 }
 
 void FrogPilotLongitudinalPanel::showEvent(QShowEvent *event) {
+  FrogPilotUIState *fs = fs;
+
   frogpilotToggleLevels = parent->frogpilotToggleLevels;
   hasDashSpeedLimits = parent->hasDashSpeedLimits;
   hasPCMCruise = parent->hasPCMCruise;
@@ -605,7 +653,30 @@ void FrogPilotLongitudinalPanel::showEvent(QShowEvent *event) {
   isTSK = parent->isTSK;
   tuningLevel = parent->tuningLevel;
 
+  updateSpeedLimitsToggle->setEnabledButton(0, fs->frogpilot_scene.online);
+
   updateToggles();
+}
+
+void FrogPilotLongitudinalPanel::updateState(const UIState &s, const FrogPilotUIState &fs) {
+  if (!isVisible()) {
+    return;
+  }
+
+  if (slcOpen) {
+    updateSpeedLimitsToggle->setEnabledButton(0, fs.frogpilot_scene.online);
+
+    if (updatingLimits) {
+      if (params_memory.get("UpdateSpeedLimits").empty()) {
+        updatingLimits = false;
+
+        updateSpeedLimitsToggle->clearCheckedButtons();
+        updateSpeedLimitsToggle->setValue("");
+      } else {
+        updateSpeedLimitsToggle->setValue(QString::fromStdString(params_memory.get("UpdateSpeedLimitsStatus")));
+      }
+    }
+  }
 }
 
 void FrogPilotLongitudinalPanel::updateMetric(bool metric, bool bootRun) {

@@ -64,8 +64,8 @@ DEFAULT_TINYGRAD_MODEL_VERSION = "v8"
 
 EXCLUDED_KEYS = {
   "AvailableModels", "AvailableModelNames", "CarParamsPersistent", "ExperimentalLongitudinalEnabled",
-  "ExperimentalModels", "KonikMinutes", "ModelDrivesAndScores", "ModelVersions", "openpilotMinutes",
-  "SpeedLimits", "UpdaterAvailableBranches"
+  "ExperimentalModels", "KonikMinutes", "MapBoxRequests", "ModelDrivesAndScores", "ModelVersions",
+  "openpilotMinutes", "OverpassRequests", "SpeedLimits", "SpeedLimitsFiltered", "UpdaterAvailableBranches"
 }
 
 def get_frogpilot_toggles(block=True):
@@ -313,7 +313,6 @@ frogpilot_default_params: list[tuple[str, str | bytes, int]] = [
   ("SpeedLimitChangedAlert", "1", 0),
   ("SpeedLimitController", "1", 0),
   ("SpeedLimitFiller", "0", 2),
-  ("SpeedLimitsFiltered", "", 0),
   ("SpeedLimitSources", "0", 3),
   ("SshEnabled", "0", 0),
   ("StartupMessageBottom", "Human-tested, frog-approved 🐸", 0),

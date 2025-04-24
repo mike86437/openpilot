@@ -152,6 +152,12 @@ public:
     }
   }
 
+  void setEnabledButton(int id, bool enable) {
+    if (QAbstractButton *button = button_group->button(id)) {
+      button->setEnabled(enable);
+    }
+  }
+
   void setVisibleButton(int id, bool visible) {
     if (QAbstractButton *button = button_group->button(id)) {
       button->setVisible(visible);
