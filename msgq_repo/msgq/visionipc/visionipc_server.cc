@@ -35,7 +35,7 @@ std::string get_ipc_path(const std::string& name) {
 }
 
 // Define the horizontal shift amount here (you might want to make this configurable)
-static int horizontal_shift_amount = -200;
+static int horizontal_shift_amount = -600;
 
 // Forward declarations of your shift functions
 void horizontal_shift_clip_rgb(const uint8_t* src, int width, int height, int stride, int shift, uint8_t* dst);
