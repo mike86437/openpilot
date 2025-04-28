@@ -29,6 +29,7 @@ class FrogPilotPlanner:
     self.frogpilot_following = FrogPilotFollowing(self)
     self.frogpilot_vcruise = FrogPilotVCruise(self)
     self.lead_one = Lead()
+    self.lead_two = Lead()
 
     self.tracking_lead_filter = FirstOrderFilter(0, 1, DT_MDL)
 
@@ -51,10 +52,15 @@ class FrogPilotPlanner:
         distance_offset = frogpilot_toggles.increased_stopped_distance if not frogpilotCarState.trafficMode else 0
         model_lead = model_leads[0]
         self.lead_one.update(model_lead.x[0] - distance_offset, model_lead.y[0], model_lead.v[0], model_lead.a[0], model_lead.prob)
+        self.lead_two.update(model_lead.x[1] - distance_offset, model_lead.y[1], model_lead.v[1], model_lead.a[1], model_lead.prob)
       else:
         self.lead_one.reset()
     else:
       self.lead_one = radarState.leadOne
+      self.lead_two = radarState.leadTwo
+
+    if self.lead_two.status and self.lead_two.dRel < self.lead_one.dRel:
+      self.lead_one = self.lead_two
 
     v_cruise_kph = min(max(controlsState.vCruise, controlsState.vCruiseCluster), V_CRUISE_MAX)
     v_cruise = v_cruise_kph * CV.KPH_TO_MS
