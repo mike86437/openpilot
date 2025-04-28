@@ -287,7 +287,6 @@ void horizontal_shift_clip_yuv(const uint8_t* y_src, const uint8_t* uv_src,
   for (int y = 0; y < uv_height; ++y) {
     for (int x = 0; x < uv_width; ++x) {
       int original_x = x + (shift / 2); // Adjust shift for chroma
-      int out_offset_uv = height * width + y * uv_width * bytesPerUV + x * bytesPerUV;
 
       if (original_x >= 0 && original_x < uv_width) {
         int in_offset_uv;
@@ -306,9 +305,12 @@ void horizontal_shift_clip_yuv(const uint8_t* y_src, const uint8_t* uv_src,
         }
       } else {
         // Fill with neutral chroma (U=128, V=128)
-        dst[height * width + y * uv_width * bytesPerUV + x * bytesPerUV + 0] = 128;
-        dst[height * width + y * uv_width * bytesPerUV + x * bytesPerUV + 1] = 128;
+        int out_offset_uv = height * width + y * uv_width * bytesPerUV + x * bytesPerUV;
+        dst[out_offset_uv + 0] = 128;
+        dst[out_offset_uv + 1] = 128;
       }
     }
   }
 }
+
+
