@@ -461,6 +461,10 @@ def main() -> None:
       manual_update_requested = params_memory.get_bool("ManualUpdateInitiated")
       params_memory.remove("ManualUpdateInitiated")
 
+      if not (frogpilot_toggles.automatic_updates or manual_update_requested):
+        wait_helper.sleep(60*60*24*365*100)
+        continue
+
       # Attempt an update
       exception = None
       try:
@@ -479,10 +483,6 @@ def main() -> None:
         if not install_date_set:
           params.put("InstallDate", datetime.datetime.now().astimezone(ZoneInfo('America/Phoenix')).strftime("%B %d, %Y - %I:%M%p").encode('utf8'))
           install_date_set = True
-
-        if not (frogpilot_toggles.automatic_updates or manual_update_requested):
-          wait_helper.sleep(60*60*24*365*100)
-          continue
 
         update_failed_count += 1
 
@@ -525,7 +525,7 @@ def main() -> None:
 
       # infrequent attempts if we successfully updated recently
       wait_helper.user_request = UserRequest.NONE
-      wait_helper.sleep(5*60 if update_failed_count > 0 else 1.5*60*60)
+      wait_helper.sleep(5*60 if update_failed_count > 0 and updater.has_internet else 1.5*60*60)
 
 
 if __name__ == "__main__":
