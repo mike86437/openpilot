@@ -156,7 +156,7 @@ class LongControl:
     else:  # LongCtrlState.pid
       error = a_target - CS.aEgo
       raw_output_accel = self.pid.update(error, speed=CS.vEgo, feedforward=a_target)
-       if self.transitioning and self.prev_mode == 'acc' and self.current_mode == 'blended':
+      if self.transitioning and self.prev_mode == 'acc' and self.current_mode == 'blended':
         if raw_output_accel < 0 and raw_output_accel < self.last_output_accel:
           progress = min(1.0, self.mode_transition_timer / self.mode_transition_duration)
           blend_factor = 1.0 - (1.0 - progress) * (1.0 - abs(raw_output_accel / CarControllerParams.ACCEL_MIN))
