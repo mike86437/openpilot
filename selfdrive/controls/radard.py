@@ -139,7 +139,7 @@ def laplacian_pdf(x: float, mu: float, b: float):
   return math.exp(-abs(x-mu)/b)
 
 
-def match_vision_to_track(v_ego: float, lead: capnp._DynamicStructReader, tracks: dict[int, Track]):
+def match_vision_to_track(v_ego: float, lead: capnp._DynamicStructReader, tracks: dict[int, Track], model_data: capnp._DynamicStructReader):
   offset_vision_dist = lead.x[0] - RADAR_TO_CAMERA
 
   def prob(c):
@@ -156,7 +156,11 @@ def match_vision_to_track(v_ego: float, lead: capnp._DynamicStructReader, tracks
   # stationary radar points can be false positives
   dist_sane = abs(track.dRel - offset_vision_dist) < max([(offset_vision_dist)*.25, 5.0])
   vel_sane = (abs(track.vRel + v_ego - lead.v[0]) < 10) or (v_ego + track.vRel > 3)
-  if dist_sane and vel_sane:
+
+  left_lane = interp(track.dRel, model_data.laneLines[1].x, model_data.laneLines[1].y)
+  right_lane = interp(track.dRel, model_data.laneLines[2].x, model_data.laneLines[2].y)
+
+  if dist_sane and vel_sane and (left_lane < -track.yRel < right_lane):
     return track
   else:
     return None
@@ -186,7 +190,7 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
              low_speed_override: bool = True) -> dict[str, Any]:
   # Determine leads, this is where the essential logic happens
   if len(tracks) > 0 and ready and lead_msg.prob > frogpilot_toggles.lead_detection_probability:
-    track = match_vision_to_track(v_ego, lead_msg, tracks)
+    track = match_vision_to_track(v_ego, lead_msg, tracks, model_data)
   else:
     track = None
 
