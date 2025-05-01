@@ -28,7 +28,7 @@ def compute_gb_honda_nidec(accel, speed):
   if speed < creep_speed:
     creep_brake = (creep_speed - speed) / creep_speed * creep_brake_value
   gb = float(accel) / 4.8 - creep_brake
-  just_brake = float(accel) / interp(float(accel), [-4.0, -3.0], [-4.0, -4.8]) + creep_brake
+  just_brake = float(accel) / interp(float(accel), [-4.0, -3.5], [-4.0, -4.8]) + creep_brake
   return clip(gb, 0.0, 1.0), clip(just_brake, 0.0, 1.0)
 
 
