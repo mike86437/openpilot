@@ -21,7 +21,8 @@ from openpilot.common.realtime import DT_DMON, DT_HW
 from openpilot.selfdrive.car.toyota.carcontroller import LOCK_CMD
 from openpilot.system.hardware import HARDWARE
 
-from openpilot.frogpilot.common.frogpilot_variables import EARTH_RADIUS, KONIK_PATH, MAPD_PATH, MAPS_PATH, panda, params, params_memory
+from openpilot.frogpilot.common.frogpilot_variables import EARTH_RADIUS, KONIK_PATH, MAPD_PATH, MAPS_PATH, params, params_memory
+from panda import Panda
 
 running_threads = {}
 
@@ -153,9 +154,9 @@ def lock_doors(lock_doors_timer, sm):
   wait_for_no_driver(sm, lock_doors_timer)
 
   if not any(ps.ignitionLine or ps.ignitionCan for ps in sm["pandaStates"] if ps.pandaType != log.PandaState.PandaType.unknown):
-    panda.set_safety_mode(panda.SAFETY_TOYOTA)
-    panda.can_send(0x750, LOCK_CMD, 0)
-    panda.send_heartbeat()
+    Panda.set_safety_mode(panda.SAFETY_TOYOTA)
+    Panda.can_send(0x750, LOCK_CMD, 0)
+    Panda.send_heartbeat()
 
 def run_cmd(cmd, success_message, fail_message, report=True):
   try:
