@@ -18,7 +18,6 @@ from openpilot.system.hardware.power_monitoring import VBATT_PAUSE_CHARGING
 from openpilot.system.version import get_build_metadata
 from panda import ALTERNATIVE_EXPERIENCE, Panda
 
-panda = Panda()
 
 params = Params()
 params_cache = Params("/cache/params")
@@ -446,7 +445,7 @@ class FrogPilotVariables:
         openpilot_longitudinal = CP.openpilotLongitudinalControl
         pcm_cruise = CP.pcmCruise
         stoppingDecelRate = CP.stoppingDecelRate
-        taco_hacks_allowed = car_make == "hyundai" and CP.safetyConfigs[0].safetyModel == SafetyModel.hyundaiCanfd and CP.safetyConfigs[0].safetyParam != panda.FLAG_HYUNDAI_CANFD_HDA2
+        taco_hacks_allowed = car_make == "hyundai" and CP.safetyConfigs[0].safetyModel == SafetyModel.hyundaiCanfd and CP.safetyConfigs[0].safetyParam != Panda.FLAG_HYUNDAI_CANFD_HDA2
         toggle.use_lkas_for_aol = not openpilot_longitudinal and CP.safetyConfigs[0].safetyModel == SafetyModel.hyundaiCanfd
         vEgoStopping = CP.vEgoStopping
         vEgoStarting = CP.vEgoStarting
