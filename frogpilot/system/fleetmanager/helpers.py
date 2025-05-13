@@ -43,7 +43,8 @@ from openpilot.system.loggerd.uploader import listdir_by_creation
 from openpilot.system.loggerd.xattr_cache import getxattr
 from tools.lib.route import SegmentName
 
-from openpilot.frogpilot.common.frogpilot_variables import ERROR_LOGS_PATH, EXCLUDED_KEYS, frogpilot_default_params, panda, params, params_cache, update_frogpilot_toggles
+from openpilot.frogpilot.common.frogpilot_variables import ERROR_LOGS_PATH, EXCLUDED_KEYS, frogpilot_default_params, params, params_cache, update_frogpilot_toggles
+from panda import Panda
 
 XOR_KEY = "s8#pL3*Xj!aZ@dWq"
 
@@ -513,7 +514,7 @@ def update_dataset():
 def lock_doors():
   try:
     print("Attempting to lock doors...")
-
+    panda = Panda()
     print(f"Panda connected: {panda.get_usb_serial()}")
     print(f"Firmware Version: {panda.get_version()}")
     print(f"Hardware Type: {panda.get_type()}")
