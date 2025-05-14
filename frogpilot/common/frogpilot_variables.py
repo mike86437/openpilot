@@ -376,6 +376,7 @@ misc_tuning_levels: list[tuple[str, str | bytes, int]] = [
 
 class FrogPilotVariables:
   def __init__(self):
+    print("Initializing FrogPilot variables...")
     self.frogpilot_toggles = get_frogpilot_toggles(block=False)
     self.tuning_levels = {key: lvl for key, _, lvl in frogpilot_default_params + misc_tuning_levels}
 
@@ -866,5 +867,5 @@ class FrogPilotVariables:
 
     params_memory.put("FrogPilotToggles", json.dumps(toggle.__dict__))
     if not test_init:
-      print("FrogPilotToggles initialized")
+      print("FrogPilotToggles updated successfully")
     params_memory.remove("FrogPilotTogglesUpdated")

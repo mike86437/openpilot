@@ -149,14 +149,14 @@ def manager_thread() -> None:
   pm = messaging.PubMaster(['managerState'])
 
   write_onroad_params(False, params)
-  print("Step 6 write_onroad_params")
+  print("Step 5 write_onroad_params")
   ensure_running(managed_processes.values(), False, params=params, CP=sm['carParams'], not_run=ignore, classic_model=False, tinygrad_model=False, frogpilot_toggles=get_frogpilot_toggles())
 
   started_prev = False
 
   # FrogPilot variables
   frogpilot_toggles = get_frogpilot_toggles()
-  print("Step 7 get_frogpilot_toggles")
+  print("Step 6 get_frogpilot_toggles")
 
   classic_model = frogpilot_toggles.classic_model
   tinygrad_model = frogpilot_toggles.tinygrad_model
@@ -171,7 +171,7 @@ def manager_thread() -> None:
 
       # FrogPilot variables
       frogpilot_toggles = get_frogpilot_toggles()
-      print("Step 8 started and not started_prev frogpilot_toggles")
+      print("Step 7 started and not started_prev frogpilot_toggles")
 
       classic_model = frogpilot_toggles.classic_model
       tinygrad_model = frogpilot_toggles.tinygrad_model
@@ -183,6 +183,7 @@ def manager_thread() -> None:
     # update onroad params, which drives pandad's safety setter thread
     if started != started_prev:
       write_onroad_params(started, params)
+      print("Step 8 started != started_prev write_onroad_params")
 
     started_prev = started
 
@@ -214,8 +215,8 @@ def manager_thread() -> None:
       frogpilot_toggles = get_frogpilot_toggles()
 
 def main() -> None:
-  manager_init()
   print("Step 2 starting manager_init")
+  manager_init()
   if os.getenv("PREPAREONLY") is not None:
     return
 
@@ -223,8 +224,8 @@ def main() -> None:
   signal.signal(signal.SIGTERM, lambda signum, frame: sys.exit(1))
 
   try:
-    manager_thread()
     print("Step 5 starting manager_thread")
+    manager_thread()
   except Exception:
     traceback.print_exc()
     sentry.capture_exception()
@@ -247,8 +248,8 @@ if __name__ == "__main__":
   unblock_stdout()
 
   try:
-    main()
     print("Step 1 starting main")
+    main()
   except KeyboardInterrupt:
     print("got CTRL-C, exiting")
   except Exception:

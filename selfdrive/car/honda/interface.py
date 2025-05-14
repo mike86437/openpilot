@@ -54,6 +54,8 @@ class CarInterface(CarInterfaceBase):
       ret.pcmCruise = not ret.openpilotLongitudinalControl
     else:
       ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.hondaNidec)]
+      if not ret.enableGasInterceptor:
+        print("Just before pedal detection")
       ret.enableGasInterceptor = 0x201 in fingerprint[CAN.pt]
       ret.openpilotLongitudinalControl = not frogpilot_toggles.disable_openpilot_long
 
