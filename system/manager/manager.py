@@ -36,6 +36,7 @@ def manager_init() -> None:
 
   # FrogPilot variables
   setup_frogpilot(build_metadata)
+  print("Step 3 setup_frogpilot")
   convert_params(params_cache)
 
   default_params: list[tuple[str, str | bytes]] = [
@@ -67,6 +68,7 @@ def manager_init() -> None:
   params.remove("DoToggleReset")
 
   frogpilot_boot_functions(build_metadata, params_cache)
+  print("Step 4 frogpilot_boot_functions")
 
   # Create folders needed for msgq
   try:
@@ -147,12 +149,14 @@ def manager_thread() -> None:
   pm = messaging.PubMaster(['managerState'])
 
   write_onroad_params(False, params)
+  print("Step 6 write_onroad_params")
   ensure_running(managed_processes.values(), False, params=params, CP=sm['carParams'], not_run=ignore, classic_model=False, tinygrad_model=False, frogpilot_toggles=get_frogpilot_toggles())
 
   started_prev = False
 
   # FrogPilot variables
   frogpilot_toggles = get_frogpilot_toggles()
+  print("Step 7 get_frogpilot_toggles")
 
   classic_model = frogpilot_toggles.classic_model
   tinygrad_model = frogpilot_toggles.tinygrad_model
@@ -167,6 +171,7 @@ def manager_thread() -> None:
 
       # FrogPilot variables
       frogpilot_toggles = get_frogpilot_toggles()
+      print("Step 8 started and not started_prev frogpilot_toggles")
 
       classic_model = frogpilot_toggles.classic_model
       tinygrad_model = frogpilot_toggles.tinygrad_model
@@ -210,6 +215,7 @@ def manager_thread() -> None:
 
 def main() -> None:
   manager_init()
+  print("Step 2 starting manager_init")
   if os.getenv("PREPAREONLY") is not None:
     return
 
@@ -218,6 +224,7 @@ def main() -> None:
 
   try:
     manager_thread()
+    print("Step 5 starting manager_thread")
   except Exception:
     traceback.print_exc()
     sentry.capture_exception()
@@ -241,6 +248,7 @@ if __name__ == "__main__":
 
   try:
     main()
+    print("Step 1 starting main")
   except KeyboardInterrupt:
     print("got CTRL-C, exiting")
   except Exception:

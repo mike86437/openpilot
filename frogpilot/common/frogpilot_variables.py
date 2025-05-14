@@ -18,6 +18,7 @@ from openpilot.system.hardware.power_monitoring import VBATT_PAUSE_CHARGING
 from openpilot.system.version import get_build_metadata
 from panda import ALTERNATIVE_EXPERIENCE
 
+test_init = False
 params = Params()
 params_cache = Params("/cache/params")
 params_default = Params("/dev/shm/params_default")
@@ -864,4 +865,6 @@ class FrogPilotVariables:
     toggle.volt_sng = car_model == "CHEVROLET_VOLT" and (params.get_bool("VoltSNG") if tuning_level >= level["VoltSNG"] else default.get_bool("VoltSNG"))
 
     params_memory.put("FrogPilotToggles", json.dumps(toggle.__dict__))
+    if not test_init:
+      print("FrogPilotToggles initialized")
     params_memory.remove("FrogPilotTogglesUpdated")
