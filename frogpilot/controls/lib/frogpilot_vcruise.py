@@ -57,12 +57,15 @@ class FrogPilotVCruise:
     if v_ego > CRUISING_SPEED and sm["controlsState"].enabled and frogpilot_toggles.map_turn_speed_controller:
       mtsc_active = self.mtsc_target < v_cruise
 
-      if self.frogpilot_planner.road_curvature_detected and mtsc_active:
-        self.mtsc_target = self.mtsc_target
-      elif not self.frogpilot_planner.road_curvature_detected and frogpilot_toggles.mtsc_curvature_check:
-        self.mtsc_target = v_cruise
-      else:
-        mtsc_speed = ((TARGET_LAT_A * frogpilot_toggles.turn_aggressiveness) / (self.mtsc.get_map_curvature(gps_position, v_ego) * frogpilot_toggles.curve_sensitivity))**0.5
+      # Extended lead linear braking
+      lead = self.frogpilot_planner.lead_one
+      d_rel = lead.dRel
+      v_lead = lead.vLead
+      v_rel = v_ego - v_lead
+      if (v_lead + 3) < v_ego > CRUISING_SPEED and self.frogpilot_planner.tracking_lead: # 3 m/s under current v_ego activates
+        mtsc_active = True
+        decelRate = (v_rel ** 2) / (2 * max(d_rel, 1e-6)) * 3 # 3x multipler to strengthen. Tune this as needed
+        mtsc_speed = v_ego - decelRate
         self.mtsc_target = max(CRUISING_SPEED, mtsc_speed)
     else:
       self.mtsc_target = v_cruise

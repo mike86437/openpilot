@@ -16,6 +16,7 @@ FrogPilotAnnotatedCameraWidget::FrogPilotAnnotatedCameraWidget(QWidget *parent) 
   leadIcon = loadPixmap("../../frogpilot/assets/other_images/lead_icon.png", {btn_size / 2, btn_size / 2});
   lightIcon = loadPixmap("../../frogpilot/assets/other_images/light_icon.png", {btn_size / 2, btn_size / 2});
   mapDataIcon = loadPixmap("../../frogpilot/assets/other_images/offline_maps_icon.png", {btn_size / 2, btn_size / 2});
+  mtscIcon = loadPixmap("../../frogpilot/assets/other_images/brake_pedal.png", {btn_size, btn_size});
   navigationIcon = loadPixmap("../../frogpilot/assets/other_images/navigation_icon.png", {btn_size / 2, btn_size / 2});
   nextMapsIcon = loadPixmap("../../frogpilot/assets/other_images/next_maps_icon.png", {btn_size / 2, btn_size / 2});
   pausedIcon = loadPixmap("../../frogpilot/assets/other_images/paused_icon.png", {btn_size / 2, btn_size / 2});
@@ -468,7 +469,7 @@ void FrogPilotAnnotatedCameraWidget::paintCurveSpeedControl(QPainter &p, const c
   };
 
   QRect curveSpeedRect(QPoint(setSpeedRect.right() + UI_BORDER_SIZE, setSpeedRect.top()), QSize(defaultSize.width() * 1.25, defaultSize.width() * 1.25));
-  QPixmap scaledCurveSpeedIcon = (frogpilotPlan.getRoadCurvature() < 0 ? curveSpeedLeftIcon : curveSpeedRightIcon).scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  QPixmap scaledCurveSpeedIcon = !vtscControllingCurve ? mtscIcon.scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation) : (frogpilotPlan.getRoadCurvature() < 0 ? curveSpeedLeftIcon : curveSpeedRightIcon).scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
   p.setOpacity(1.0);
 
