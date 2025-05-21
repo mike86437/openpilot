@@ -469,7 +469,7 @@ void FrogPilotAnnotatedCameraWidget::paintCurveSpeedControl(QPainter &p, const c
   };
 
   QRect curveSpeedRect(QPoint(setSpeedRect.right() + UI_BORDER_SIZE, setSpeedRect.top()), QSize(defaultSize.width() * 1.25, defaultSize.width() * 1.25));
-  QPixmap scaledCurveSpeedIcon = !vtscControllingCurve ? mtscIcon.scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation) : (frogpilotPlan.getRoadCurvature() < 0 ? curveSpeedLeftIcon : curveSpeedRightIcon).scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  QPixmap scaledCurveSpeedIcon = !frogpilotPlan.getVtscControllingCurve() ? mtscIcon.scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation) : (frogpilotPlan.getRoadCurvature() < 0 ? curveSpeedLeftIcon : curveSpeedRightIcon).scaled(curveSpeedRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
   p.setOpacity(1.0);
 
