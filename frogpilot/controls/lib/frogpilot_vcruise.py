@@ -67,6 +67,8 @@ class FrogPilotVCruise:
         decelRate = (v_rel ** 2) / (2 * max(d_rel, 1e-6)) * 3 # 3x multipler to strengthen. Tune this as needed
         mtsc_speed = v_ego - decelRate
         self.mtsc_target = max(CRUISING_SPEED, mtsc_speed)
+      else:
+        self.mtsc_target = v_cruise
     else:
       self.mtsc_target = v_cruise
 
