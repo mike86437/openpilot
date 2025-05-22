@@ -68,9 +68,9 @@ class FrogPilotVCruise:
         mtsc_speed = v_ego - decelRate
         self.mtsc_target = max(CRUISING_SPEED, mtsc_speed)
       else:
-        self.mtsc_target = v_cruise
+        self.mtsc_target = v_cruise + 1
     else:
-      self.mtsc_target = v_cruise
+      self.mtsc_target = v_cruise + 1
 
     # Pfeiferj's Speed Limit Controller
     self.slc.frogpilot_toggles = frogpilot_toggles
@@ -95,7 +95,7 @@ class FrogPilotVCruise:
       vtsc_speed = ((TARGET_LAT_A * frogpilot_toggles.turn_aggressiveness) / (abs(self.frogpilot_planner.road_curvature) * frogpilot_toggles.curve_sensitivity))**0.5
       self.vtsc_target = max(CRUISING_SPEED, vtsc_speed)
     else:
-      self.vtsc_target = v_cruise
+      self.vtsc_target = v_cruise + 1
 
     # Float 10 mph over vcruise
     if self.vtsc_target >= v_cruise and self.mtsc_target >= v_cruise and v_ego > (v_cruise + 0.25):

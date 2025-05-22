@@ -473,7 +473,7 @@ void FrogPilotAnnotatedCameraWidget::paintCurveSpeedControl(QPainter &p, const c
 
   p.setOpacity(1.0);
 
-  if (frogpilotPlan.getVCruise() > frogpilotPlan.getMtscSpeed() && frogpilot_toggles.value("map_turn_speed_controller").toBool()) {
+  if (frogpilotPlan.getVCruise() == frogpilotPlan.getMtscSpeed() && frogpilot_toggles.value("map_turn_speed_controller").toBool()) {
     QRect mtscRect(curveSpeedRect.topLeft() + QPoint(0, curveSpeedRect.height() + 10), QSize(curveSpeedRect.width(), frogpilotPlan.getVtscControllingCurve() ? 50 : 100));
     drawCurveSpeedControl(mtscRect, mtscSpeedStr, true);
 
@@ -483,7 +483,7 @@ void FrogPilotAnnotatedCameraWidget::paintCurveSpeedControl(QPainter &p, const c
     }
 
     p.drawPixmap(curveSpeedRect, scaledCurveSpeedIcon);
-  } else if (frogpilotPlan.getVCruise() > frogpilotPlan.getVtscSpeed() && frogpilot_toggles.value("vision_turn_speed_controller").toBool()) {
+  } else if (frogpilotPlan.getVCruise() == frogpilotPlan.getVtscSpeed() && frogpilot_toggles.value("vision_turn_speed_controller").toBool()) {
     QRect vtscRect(curveSpeedRect.topLeft() + QPoint(0, curveSpeedRect.height() + 10), QSize(curveSpeedRect.width(), frogpilotPlan.getVtscControllingCurve() ? 100 : 50));
     drawCurveSpeedControl(vtscRect, vtscSpeedStr, false);
 
