@@ -80,7 +80,7 @@ void DeveloperSidebar::updateState(const UIState &s, const FrogPilotUIState &fs)
   totalEngagementTime += !(frogpilot_scene.reverse || frogpilot_scene.standstill) ? 1 : 0;
 
   accelerationStatus = ItemStatus(QPair<QString, QString>(tr("ACCEL"), QString::number(acceleration, 'f', 2) + accelerationUnit), metricColor);
-  accelerationJerkStatus = ItemStatus(QPair<QString, QString>(tr("ACCEL JERK"), QString::number(frogpilotPlan.getAccelerationJerk(), 'f', 2)), metricColor);
+  accelerationJerkStatus = ItemStatus(QPair<QString, QString>(tr("vCruise"), QString::number(frogpilotPlan.getVCruise(), 'f', 2)), metricColor);
   actuatorAccelerationStatus = ItemStatus(QPair<QString, QString>(tr("ACT ACCEL"), QString::number(carControl.getActuators().getAccel() * accelerationConversion, 'f', 2) + accelerationUnit), metricColor);
   dangerJerkStatus = ItemStatus(QPair<QString, QString>(tr("DANGER JERK"), QString::number(frogpilotPlan.getDangerJerk(), 'f', 2)), metricColor);
   delayStatus = ItemStatus(QPair<QString, QString>(tr("STEER DELAY"), QString::number(liveDelay.getLateralDelay(), 'f', 5)), metricColor);
