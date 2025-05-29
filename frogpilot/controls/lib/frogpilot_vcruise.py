@@ -63,9 +63,10 @@ class FrogPilotVCruise:
       v_lead = lead.vLead
       v_rel = v_ego - v_lead
       tFollow = self.frogpilot_planner.frogpilot_following.t_follow
-      if (v_lead + min(d_rel / max(v_ego, 1e-3), 3)) < v_ego > CRUISING_SPEED and self.frogpilot_planner.tracking_lead:
+      dFollow = max(d_rel - v_lead * tFollow, 1e-6)
+      if (v_lead + min(dFollow, 3)) < v_ego > CRUISING_SPEED and self.frogpilot_planner.tracking_lead:
         mtsc_active = True
-        decelRate = (v_rel ** 2) / (2 * max(d_rel - v_lead * tFollow, 1e-6))
+        decelRate = (v_rel ** 2) / (2 * dFollow)
         mtsc_speed = v_ego - decelRate
         self.mtsc_target = max(CRUISING_SPEED, mtsc_speed)
       else:
