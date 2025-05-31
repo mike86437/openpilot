@@ -26,7 +26,7 @@ def compute_gb_honda_nidec(accel, speed):
   global _IterationCnt, _BrakeModifier
   if accel == -4.0:
     _IterationCnt += 1
-    if _IterationCnt %5 == 0:
+    if _IterationCnt % 5 == 0:
       # every 5th iteration, increase the brake modifier
       _BrakeModifier += 0.1
   else:
