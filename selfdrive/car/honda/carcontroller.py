@@ -14,7 +14,8 @@ from openpilot.frogpilot.controls.lib.frogpilot_acceleration import get_max_allo
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 LongCtrlState = car.CarControl.Actuators.LongControlState
-
+_IterationCnt = 0
+_BrakeModifier = 0.0
 
 def compute_gb_honda_bosch(accel, speed):
   # TODO returns 0s, is unused
@@ -22,13 +23,22 @@ def compute_gb_honda_bosch(accel, speed):
 
 
 def compute_gb_honda_nidec(accel, speed):
+  global _IterationCnt, _BrakeModifier
+  if accel == -4.0:
+    _IterationCnt += 1
+    if _IterationCnt %5 == 0:
+      # every 5th iteration, increase the brake modifier
+      _BrakeModifier += 0.1
+  else:
+    _IterationCnt = 0
+    _BrakeModifier = 0.0
   creep_brake = 0.0
   creep_speed = 2.3
   creep_brake_value = 0.15
   if speed < creep_speed:
     creep_brake = (creep_speed - speed) / creep_speed * creep_brake_value
   gb = float(accel) / interp(float(accel), [4.0, 3.5], [4.0, 4.8]) - creep_brake
-  just_brake = float(accel) / interp(float(accel), [-4.0, -3.5], [-4.0, -4.8]) + creep_brake
+  just_brake = float(accel) / (-4.8 + _BrakeModifier) + creep_brake
   return clip(gb, 0.0, 1.0), clip(just_brake, 0.0, 1.0)
 
 
