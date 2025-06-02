@@ -159,7 +159,7 @@ def match_vision_to_track(v_ego: float, lead: capnp._DynamicStructReader, tracks
   # if no 'sane' match is found return -1
   # stationary radar points can be false positives
   dist_sane = abs(track.dRel - offset_vision_dist) < max([(offset_vision_dist)*.25, 5.0])
-  vel_sane = (abs(track.vRel + v_ego - lead.v[0]) < 10) or (v_ego + track.vRel > 3)
+  vel_sane = (abs(track.vRel + v_ego - lead.v[0]) < 15) or (v_ego + track.vRel > 3)
   left_lane = interp(track.dRel, model_data.laneLines[1].x, model_data.laneLines[1].y)
   right_lane = interp(track.dRel, model_data.laneLines[2].x, model_data.laneLines[2].y)
   if dist_sane and vel_sane and (left_lane < -track.yRel < right_lane):
