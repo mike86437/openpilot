@@ -83,7 +83,7 @@ void DeveloperSidebar::updateState(const UIState &s, const FrogPilotUIState &fs)
   accelerationStatus = ItemStatus(QPair<QString, QString>(tr("ACCEL"), QString::number(acceleration, 'f', 2) + accelerationUnit), metricColor);
   accelerationJerkStatus = ItemStatus(QPair<QString, QString>(tr("vCruise"), QString::number(frogpilotPlan.getVCruise(), 'f', 2)), metricColor);
   actuatorAccelerationStatus = ItemStatus(QPair<QString, QString>(tr("ACT ACCEL"), QString::number(carControl.getActuators().getAccel() * accelerationConversion, 'f', 2) + accelerationUnit), metricColor);
-  dangerJerkStatus = ItemStatus(QPair<QString, QString>(tr("DANGER JERK"), QString::number(frogpilotPlan.getDangerJerk(), 'f', 2)), metricColor);
+  dangerJerkStatus = ItemStatus(QPair<QString, QString>(tr("LATERAL G"), QString::number((controlsState.getCurvature() * carState.getVEgo() - liveParameters.getRoll() * 9.81) / 9.81, 'f', 2)), metricColor);
   delayStatus = ItemStatus(QPair<QString, QString>(tr("STEER DELAY"), QString::number(liveDelay.getLateralDelay(), 'f', 5)), metricColor);
   frictionStatus = ItemStatus(QPair<QString, QString>(tr("FRICTION"), QString::number(liveTorqueParameters.getFrictionCoefficientFiltered(), 'f', 5)), metricColor);
   latAccelStatus = ItemStatus(QPair<QString, QString>(tr("LAT ACCEL"), QString::number(controlsState.getCurvature() * carState.getVEgo() - liveParameters.getRoll() * 9.81, 'f', 2)), metricColor);
