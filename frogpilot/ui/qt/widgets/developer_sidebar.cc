@@ -59,7 +59,7 @@ void DeveloperSidebar::updateState(const UIState &s, const FrogPilotUIState &fs)
   const cereal::LiveDelayData::Reader &liveDelay = fpsm["liveDelay"].getLiveDelay();
   const cereal::LiveParametersData::Reader &liveParameters = fpsm["liveParameters"].getLiveParameters();
   const cereal::LiveTorqueParametersData::Reader &liveTorqueParameters = fpsm["liveTorqueParameters"].getLiveTorqueParameters();
-  const cereal::ControlsState::Reader &controlsState = sm["controlsState"].getControlsState();
+  const cereal::ControlsState::Reader &controlsState = fpsm["controlsState"].getControlsState();
 
   const bool is_metric = s.scene.is_metric;
   const bool use_si = fs.frogpilot_toggles.value("use_si_metrics").toBool();
