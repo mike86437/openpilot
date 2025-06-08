@@ -53,26 +53,19 @@ class FrogPilotVCruise:
 
       self.braking_target = v_cruise
 
-    # Pfeiferj's Map Turn Speed Controller
+    # Extended lead linear braking
+    self.mtsc_target = v_cruise + 1
+    mtsc_active = False
     if v_ego > CRUISING_SPEED and sm["controlsState"].enabled and frogpilot_toggles.map_turn_speed_controller:
-      mtsc_active = self.mtsc_target < v_cruise
-
-      # Extended lead linear braking
-      lead = self.frogpilot_planner.lead_one
-      d_rel = lead.dRel
-      v_lead = lead.vLead
-      v_rel = v_ego - v_lead
-      tFollow = self.frogpilot_planner.frogpilot_following.t_follow
-      dFollow = max(d_rel - v_lead * tFollow, 1e-6)
-      if (v_lead + dFollow / v_ego) < v_ego > CRUISING_SPEED and self.frogpilot_planner.tracking_lead:
-        mtsc_active = True
-        decelRate = (v_rel ** 2) / (2 * dFollow)
-        mtsc_speed = v_ego - decelRate
-        self.mtsc_target = max(CRUISING_SPEED, mtsc_speed)
-      else:
-        self.mtsc_target = v_cruise + 1
-    else:
-      self.mtsc_target = v_cruise + 1
+      if self.frogpilot_planner.tracking_lead:
+        lead = self.frogpilot_planner.lead_one
+        tFollow = self.frogpilot_planner.frogpilot_following.t_follow
+        dFollow = max(lead.dRel - lead.vLead * tFollow, 1e-6)
+        if (lead.vLead + dFollow / v_ego) < v_ego:
+          mtsc_active = True
+          decelRate = (lead.vRel ** 2) / (2 * dFollow)
+          mtsc_speed = v_ego - decelRate
+          self.mtsc_target = max(CRUISING_SPEED, mtsc_speed, lead.vLead)
 
     # Pfeiferj's Speed Limit Controller
     self.slc.frogpilot_toggles = frogpilot_toggles
