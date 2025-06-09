@@ -23,7 +23,7 @@ class FrogPilotVCruise:
     self.mtsc_target = 0
     self.override_force_stop_timer = 0
 
-    self.dRel_hist = collections.deque(maxlen=5)
+    self.dRel_hist = collections.deque(maxlen=10)
 
   def update(self, gps_position, v_cruise, v_ego, sm, frogpilot_toggles):
     force_stop = self.frogpilot_planner.cem.stop_light_detected and sm["controlsState"].enabled and frogpilot_toggles.force_stops
