@@ -123,7 +123,7 @@ class FrogPilotVCruise:
         if (vLead_calc + dFollow / v_ego) < v_ego:
           decelRate = (vRel_calc ** 2) / (2 * dFollow)
           vtsc_speed = v_ego - decelRate
-          self.vtsc_target = max(CRUISING_SPEED, vtsc_speed, vLead_calc)
+          self.vtsc_target = float(max(CRUISING_SPEED, vtsc_speed, vLead_calc))
       else:
         self.dRel_hist.clear()
 
