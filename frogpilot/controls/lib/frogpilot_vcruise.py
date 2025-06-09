@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import collections
+import numpy as np
 from openpilot.common.realtime import DT_MDL
 from openpilot.selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import COMFORT_BRAKE
 
@@ -20,6 +22,8 @@ class FrogPilotVCruise:
 
     self.mtsc_target = 0
     self.override_force_stop_timer = 0
+
+    self.dRel_hist = collections.deque(maxlen=5)
 
   def update(self, gps_position, v_cruise, v_ego, sm, frogpilot_toggles):
     force_stop = self.frogpilot_planner.cem.stop_light_detected and sm["controlsState"].enabled and frogpilot_toggles.force_stops
@@ -53,7 +57,7 @@ class FrogPilotVCruise:
 
       self.braking_target = v_cruise
 
-    # Extended lead linear braking
+    # Radar Extended lead linear braking
     self.mtsc_target = v_cruise + 1
     mtsc_active = False
     if v_ego > CRUISING_SPEED and sm["controlsState"].enabled and frogpilot_toggles.map_turn_speed_controller:
@@ -86,11 +90,42 @@ class FrogPilotVCruise:
       self.slc_target = 0
 
     # Pfeiferj's Vision Turn Controller
-    if v_ego > CRUISING_SPEED and sm["controlsState"].enabled and self.frogpilot_planner.road_curvature_detected and frogpilot_toggles.vision_turn_speed_controller:
-      vtsc_speed = ((TARGET_LAT_A * frogpilot_toggles.turn_aggressiveness) / (abs(self.frogpilot_planner.road_curvature) * frogpilot_toggles.curve_sensitivity))**0.5
-      self.vtsc_target = max(CRUISING_SPEED, vtsc_speed)
-    else:
-      self.vtsc_target = v_cruise + 1
+    # if v_ego > CRUISING_SPEED and sm["controlsState"].enabled and self.frogpilot_planner.road_curvature_detected and frogpilot_toggles.vision_turn_speed_controller:
+      # vtsc_speed = ((TARGET_LAT_A * frogpilot_toggles.turn_aggressiveness) / (abs(self.frogpilot_planner.road_curvature) * frogpilot_toggles.curve_sensitivity))**0.5
+      # self.vtsc_target = max(CRUISING_SPEED, vtsc_speed)
+    # else:
+      # self.vtsc_target = v_cruise + 1
+
+    # Vision Extended lead linear braking
+    self.vtsc_target = v_cruise + 1
+    if v_ego > CRUISING_SPEED and sm["controlsState"].enabled and frogpilot_toggles.vision_turn_speed_controller:
+      if self.frogpilot_planner.tracking_lead:
+        lead = self.frogpilot_planner.lead_one
+        tFollow = self.frogpilot_planner.frogpilot_following.t_follow
+        self.dRel_hist.append(lead.dRel)
+        if len(self.dRel_hist) == self.dRel_hist.maxlen:
+          y = np.array(self.dRel_hist)
+          x = np.arange(len(y)) * DT_MDL
+          try:
+            drel_slope = np.polyfit(x, y, 1)[0]
+            vRel_calc = -drel_slope
+            vLead_calc = v_ego - vRel_calc
+            dFollow = max(lead.dRel - vLead_calc * tFollow, 1e-6)
+          except Exception as e:
+            print(f"Error during polyfit calculation: {e}")
+            vRel_calc = lead.vRel
+            vLead_calc = lead.vLead
+            dFollow = max(lead.dRel - lead.vLead * tFollow, 1e-6)
+        else:
+          vRel_calc = lead.vRel
+          vLead_calc = lead.vLead
+          dFollow = max(lead.dRel - lead.vLead * tFollow, 1e-6)
+        if (vLead_calc + dFollow / v_ego) < v_ego:
+          decelRate = (vRel_calc ** 2) / (2 * dFollow)
+          vtsc_speed = v_ego - decelRate
+          self.vtsc_target = max(CRUISING_SPEED, vtsc_speed, vLead_calc)
+      else:
+        self.dRel_hist.clear()
 
     # Float 10 mph over vcruise
     actuators = sm["carControl"].actuators
