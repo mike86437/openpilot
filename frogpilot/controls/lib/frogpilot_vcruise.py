@@ -103,6 +103,9 @@ class FrogPilotVCruise:
         lead = self.frogpilot_planner.lead_one
         tFollow = self.frogpilot_planner.frogpilot_following.t_follow
         self.dRel_hist.append(lead.dRel)
+        vRel_calc = lead.vRel
+        vLead_calc = lead.vLead
+        dFollow = max(lead.dRel - lead.vLead * tFollow, 1e-6)
         if len(self.dRel_hist) == self.dRel_hist.maxlen:
           y = np.array(self.dRel_hist)
           x = np.arange(len(y)) * DT_MDL
@@ -113,13 +116,6 @@ class FrogPilotVCruise:
             dFollow = max(lead.dRel - vLead_calc * tFollow, 1e-6)
           except Exception as e:
             print(f"Error during polyfit calculation: {e}")
-            vRel_calc = lead.vRel
-            vLead_calc = lead.vLead
-            dFollow = max(lead.dRel - lead.vLead * tFollow, 1e-6)
-        else:
-          vRel_calc = lead.vRel
-          vLead_calc = lead.vLead
-          dFollow = max(lead.dRel - lead.vLead * tFollow, 1e-6)
         if (vLead_calc + dFollow / v_ego) < v_ego and lead.dRel < 100:
           decelRate = (vRel_calc ** 2) / (2 * dFollow)
           vtsc_speed = v_ego - decelRate
