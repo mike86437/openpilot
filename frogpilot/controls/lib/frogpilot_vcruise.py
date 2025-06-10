@@ -120,7 +120,7 @@ class FrogPilotVCruise:
           vRel_calc = lead.vRel
           vLead_calc = lead.vLead
           dFollow = max(lead.dRel - lead.vLead * tFollow, 1e-6)
-        if (vLead_calc + dFollow / v_ego) < v_ego:
+        if (vLead_calc + dFollow / v_ego) < v_ego and lead.dRel < 100:
           decelRate = (vRel_calc ** 2) / (2 * dFollow)
           vtsc_speed = v_ego - decelRate
           self.vtsc_target = float(max(CRUISING_SPEED, vtsc_speed, vLead_calc))
