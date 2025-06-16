@@ -66,7 +66,7 @@ class FrogPilotVCruise:
       v_lead = lead.vLead
       tFollow = self.frogpilot_planner.frogpilot_following.t_follow
       self.dRel_hist.append(lead.dRel)
-      if len(self.dRel_hist) == self.dRel_hist.maxlen and lead.dRel < 100:
+      if len(self.dRel_hist) == self.dRel_hist.maxlen and lead.dRel < 100 and False:
         y = np.array(self.dRel_hist)
         x = np.arange(len(y)) * DT_MDL
         try:
