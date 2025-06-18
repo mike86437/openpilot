@@ -78,11 +78,11 @@ class FrogPilotVCruise:
             v_lead = vLead_calc
         except Exception as e:
           print(f"Error during polyfit calculation: {e}")
-      dFollow = max(lead.dRel - v_lead * tFollow, 1e-6)
+      dFollow = max(lead.dRel - v_lead * tFollow - 6, 1e-6)
       if (v_lead + dFollow / v_ego) < v_ego:
         mtsc_active = True
         decelRate = (v_rel ** 2) / (2 * dFollow)
-        mtsc_speed = v_ego - decelRate
+        mtsc_speed = v_ego - (decelRate - lead.aLeadK)
         self.mtsc_target = float(max(CRUISING_SPEED, mtsc_speed, v_lead))
     else:
       self.dRel_hist.clear()
