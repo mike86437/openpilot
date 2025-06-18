@@ -23,7 +23,7 @@ def compute_gb_honda_bosch(accel, speed):
 
 def compute_gb_honda_nidec(accel, speed):
   global _BrakeModifier
-  if accel == -4.0:
+  if accel < -3.9:
     _BrakeModifier += 0.01
   else:
     _BrakeModifier = 0.0
