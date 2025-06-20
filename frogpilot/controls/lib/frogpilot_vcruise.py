@@ -23,7 +23,6 @@ class FrogPilotVCruise:
     self.mtsc_target = 0
     self.override_force_stop_timer = 0
 
-    self.dRel_hist = collections.deque(maxlen=10)
 
   def update(self, gps_position, v_cruise, v_ego, sm, frogpilot_toggles):
     force_stop = self.frogpilot_planner.cem.stop_light_detected and sm["controlsState"].enabled and frogpilot_toggles.force_stops
@@ -62,30 +61,13 @@ class FrogPilotVCruise:
     mtsc_active = False
     if v_ego > CRUISING_SPEED and sm["controlsState"].enabled and frogpilot_toggles.map_turn_speed_controller and self.frogpilot_planner.tracking_lead:
       lead = self.frogpilot_planner.lead_one
-      v_rel = lead.vRel
-      v_lead = lead.vLead
       tFollow = self.frogpilot_planner.frogpilot_following.t_follow
-      self.dRel_hist.append(lead.dRel)
-      if len(self.dRel_hist) == self.dRel_hist.maxlen and lead.dRel < 100 and False:
-        y = np.array(self.dRel_hist)
-        x = np.arange(len(y)) * DT_MDL
-        try:
-          drel_slope = np.polyfit(x, y, 1)[0]
-          vRel_calc = -drel_slope
-          vLead_calc = max(v_ego - vRel_calc, 0)
-          if vLead_calc < v_lead:
-            v_rel = vRel_calc
-            v_lead = vLead_calc
-        except Exception as e:
-          print(f"Error during polyfit calculation: {e}")
-      dFollow = max(lead.dRel - v_lead * (tFollow + 0.5), 1e-6)
-      if (v_lead + dFollow / v_ego) < v_ego:
+      dFollow = max(lead.dRel - lead.vLead * (tFollow + 0.5), 1e-6)
+      if (lead.vLead + dFollow / v_ego) < v_ego:
         mtsc_active = True
-        decelRate = (v_rel ** 2) / (2 * dFollow)
+        decelRate = (lead.vRel ** 2) / (2 * dFollow)
         mtsc_speed = v_ego - (decelRate - lead.aLeadK)
-        self.mtsc_target = float(max(CRUISING_SPEED, mtsc_speed, v_lead))
-    else:
-      self.dRel_hist.clear()
+        self.mtsc_target = float(max(CRUISING_SPEED, mtsc_speed, lead.vLead))
 
     # Pfeiferj's Speed Limit Controller
     self.slc.frogpilot_toggles = frogpilot_toggles
