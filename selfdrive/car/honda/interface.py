@@ -86,7 +86,7 @@ class CarInterface(CarInterfaceBase):
     elif ret.enableGasInterceptor:
       # default longitudinal tuning for all hondas with GasInterceptor
       ret.longitudinalTuning.kiBP = [0., 5., 35.]
-      ret.longitudinalTuning.kiV = [0.8, 0.6, 0.4]
+      ret.longitudinalTuning.kiV = [1.2, 0.8, 0.5]
     else:
       # modified longitudinal tuning for all hondas without GasInterceptor
       ret.longitudinalTuning.kiBP = [0., 5., 35.]
