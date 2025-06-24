@@ -313,7 +313,7 @@ void FrogPilotAnnotatedCameraWidget::paintBlindSpotPath(QPainter &p, const cerea
 }
 
 void FrogPilotAnnotatedCameraWidget::paintCEMStatus(QPainter &p, FrogPilotUIScene &frogpilot_scene, SubMaster &sm) {
-  if (dmIconPosition == QPoint(0, 0)) {
+  if (dmIconPosition == QPoint(0, 0) && false) {
     return;
   }
 
@@ -482,7 +482,7 @@ void FrogPilotAnnotatedCameraWidget::paintCurveSpeedControl(QPainter &p, const c
 }
 
 void FrogPilotAnnotatedCameraWidget::paintLateralPaused(QPainter &p, FrogPilotUIScene &frogpilot_scene) {
-  if (dmIconPosition == QPoint(0, 0)) {
+  if (dmIconPosition == QPoint(0, 0) && false) {
     return;
   }
 
@@ -492,7 +492,7 @@ void FrogPilotAnnotatedCameraWidget::paintLateralPaused(QPainter &p, FrogPilotUI
     lateralPausedPosition = cemStatusPosition;
   } else {
     lateralPausedPosition.rx() = dmIconPosition.x();
-    lateralPausedPosition.ry() = dmIconPosition.y() - widget_size / 2;
+    lateralPausedPosition.ry() = height() - 126 - widget_size / 2;
   }
   lateralPausedPosition.rx() += (rightHandDM ? -UI_BORDER_SIZE - widget_size - UI_BORDER_SIZE : UI_BORDER_SIZE + widget_size + UI_BORDER_SIZE) / (frogpilot_scene.map_open ? 1.25 : 1);
 
@@ -557,7 +557,7 @@ void FrogPilotAnnotatedCameraWidget::paintLeadMetrics(QPainter &p, bool adjacent
 }
 
 void FrogPilotAnnotatedCameraWidget::paintLongitudinalPaused(QPainter &p, FrogPilotUIScene &frogpilot_scene) {
-  if (dmIconPosition == QPoint(0, 0)) {
+  if (dmIconPosition == QPoint(0, 0) && false) {
     return;
   }
 
@@ -570,7 +570,7 @@ void FrogPilotAnnotatedCameraWidget::paintLongitudinalPaused(QPainter &p, FrogPi
     longitudinalIconPosition = cemStatusPosition;
   } else {
     longitudinalIconPosition.rx() = dmIconPosition.x();
-    longitudinalIconPosition.ry() = dmIconPosition.y() - widget_size / 2;
+    longitudinalIconPosition.ry() = height() - 126 - widget_size / 2;
   }
   longitudinalIconPosition.rx() += (rightHandDM ? -UI_BORDER_SIZE - widget_size - UI_BORDER_SIZE : UI_BORDER_SIZE + widget_size + UI_BORDER_SIZE) / (frogpilot_scene.map_open ? 1.25 : 1);
 
