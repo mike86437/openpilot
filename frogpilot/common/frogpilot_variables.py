@@ -518,7 +518,6 @@ class FrogPilotVariables:
     always_on_lateral_set = bool(CP.alternativeExperience & ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL)
     car_make = CP.carName
     car_model = CP.carFingerprint
-    friction = 0.25458812851328544
     has_auto_tune = car_make in {"hyundai", "toyota"} and CP.lateralTuning.which() == "torque"
     has_bsm = CP.enableBsm
     toggle.has_cc_long = bool(CP.flags & GMFlags.CC_LONG.value)
@@ -527,14 +526,20 @@ class FrogPilotVariables:
     has_radar = not CP.radarUnavailable
     has_sng = CP.autoResumeSng
     is_torque_car = CP.lateralTuning.which() == "torque"
-    latAccelFactor = 1.6528895627785531
+    if is_torque_car:
+      friction = CP.lateralTuning.torque.friction
+      latAccelFactor = CP.lateralTuning.torque.latAccelFactor
+      steerKp = CP.lateralTuning.torque.kp
+    else:
+      friction = 0.25458812851328544
+      latAccelFactor = 1.6528895627785531
+      steerKp = 1.0
     longitudinalActuatorDelay = CP.longitudinalActuatorDelay
     openpilot_longitudinal = CP.openpilotLongitudinalControl
     pcm_cruise = CP.pcmCruise
     startAccel = CP.startAccel
     stopAccel = CP.stopAccel
     steerActuatorDelay = CP.steerActuatorDelay
-    steerKp = 1.0
     steerRatio = CP.steerRatio
     toggle.stoppingDecelRate = CP.stoppingDecelRate
     taco_hacks_allowed = car_make == "hyundai" and CP.safetyConfigs[0].safetyModel == SafetyModel.hyundaiCanfd and CP.safetyConfigs[0].safetyParam != Panda.FLAG_HYUNDAI_CANFD_HDA2
