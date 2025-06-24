@@ -78,7 +78,6 @@ class CarInterface(CarInterfaceBase):
     ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
     ret.lateralTuning.pid.kf = 0.00006  # conservative feed-forward
 
-    CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)
 
     if candidate in HONDA_BOSCH:
       ret.longitudinalActuatorDelay = 0.5 # s
