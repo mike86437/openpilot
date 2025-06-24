@@ -14,6 +14,7 @@ from openpilot.common.params import Params
 from openpilot.selfdrive.car import gen_empty_fingerprint
 from openpilot.selfdrive.car.car_helpers import interfaces
 from openpilot.selfdrive.car.gm.values import GMFlags
+from openpilot.selfdrive.car.interfaces import CarInterfaceBase
 from openpilot.selfdrive.car.mock.interface import CarInterface
 from openpilot.selfdrive.car.mock.values import CAR as MOCK
 from openpilot.selfdrive.controls.lib.desire_helper import LANE_CHANGE_SPEED_MIN
@@ -504,8 +505,8 @@ class FrogPilotVariables:
 
     msg_bytes = params.get("CarParams" if started else "CarParamsPersistent", block=started)
     if msg_bytes:
-      with car.CarParams.from_bytes(msg_bytes) as CP:
-        CP = CP
+      with car.CarParams.from_bytes(msg_bytes) as cp_reader:
+        CP = cp_reader.as_builder()
     else:
       CarInterface, _, _ = interfaces[MOCK.MOCK]
       CP = CarInterface.get_params(MOCK.MOCK, gen_empty_fingerprint(), [], False, toggle, False)
@@ -515,9 +516,14 @@ class FrogPilotVariables:
       safety_config.safetyModel = car.CarParams.SafetyModel.noOutput
       CP.safetyConfigs = [safety_config]
 
+    is_torque_car = CP.lateralTuning.which() == "torque"
+    if not is_torque_car:
+      CarInterfaceBase.configure_torque_tune(CP.carFingerprint, CP.lateralTuning)
+
     always_on_lateral_set = bool(CP.alternativeExperience & ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL)
     car_make = CP.carName
     car_model = CP.carFingerprint
+    friction = CP.lateralTuning.torque.friction
     has_auto_tune = car_make in {"hyundai", "toyota"} and CP.lateralTuning.which() == "torque"
     has_bsm = CP.enableBsm
     toggle.has_cc_long = bool(CP.flags & GMFlags.CC_LONG.value)
@@ -525,21 +531,14 @@ class FrogPilotVariables:
     has_pedal = CP.enableGasInterceptor
     has_radar = not CP.radarUnavailable
     has_sng = CP.autoResumeSng
-    is_torque_car = CP.lateralTuning.which() == "torque"
-    if is_torque_car:
-      friction = CP.lateralTuning.torque.friction
-      latAccelFactor = CP.lateralTuning.torque.latAccelFactor
-      steerKp = CP.lateralTuning.torque.kp
-    else:
-      friction = 0.25458812851328544
-      latAccelFactor = 1.6528895627785531
-      steerKp = 1.0
+    latAccelFactor = CP.lateralTuning.torque.latAccelFactor
     longitudinalActuatorDelay = CP.longitudinalActuatorDelay
     openpilot_longitudinal = CP.openpilotLongitudinalControl
     pcm_cruise = CP.pcmCruise
     startAccel = CP.startAccel
     stopAccel = CP.stopAccel
     steerActuatorDelay = CP.steerActuatorDelay
+    steerKp = CP.lateralTuning.torque.kp
     steerRatio = CP.steerRatio
     toggle.stoppingDecelRate = CP.stoppingDecelRate
     taco_hacks_allowed = car_make == "hyundai" and CP.safetyConfigs[0].safetyModel == SafetyModel.hyundaiCanfd and CP.safetyConfigs[0].safetyParam != Panda.FLAG_HYUNDAI_CANFD_HDA2
