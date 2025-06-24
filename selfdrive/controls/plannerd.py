@@ -39,7 +39,7 @@ def plannerd_thread():
 
   classic_model = frogpilot_toggles.classic_model
   radarless_model = frogpilot_toggles.radarless_model
-  tomb_raider = frogpilot_toggles.model == "down-to-ride"
+  tomb_raider = frogpilot_toggles.model == "tomb-raider"
 
   while True:
     sm.update()
