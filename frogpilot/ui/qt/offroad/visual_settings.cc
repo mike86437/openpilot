@@ -178,17 +178,17 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(FrogPilotSettingsWindow *parent) : 
         {2, tr("Acceleration: Max")},
         {3, tr("Auto Tune: Actuator Delay")},
         {4, tr("Auto Tune: Friction")},
-        {5, tr("Auto Tune: Lateral Acceleration")},
+        {5, tr("Lateral Accel Roll Compensated")},
         {6, tr("Auto Tune: Steer Ratio")},
-        {7, tr("Auto Tune: Stiffness Factor")},
+        {7, tr("vEgo")},
         {8, tr("Engagement %: Lateral")},
         {9, tr("Engagement %: Longitudinal")},
         {10, tr("Lateral Control: Steering Angle")},
         {11, tr("Lateral Control: Torque % Used")},
         {12, tr("Longitudinal Control: Actuator Acceleration Output")},
-        {13, tr("Longitudinal MPC Jerk: Acceleration")},
-        {14, tr("Longitudinal MPC Jerk: Danger Zone")},
-        {15, tr("Longitudinal MPC Jerk: Speed Control")},
+        {13, tr("vCruise")},
+        {14, tr("vLead")},
+        {15, tr("dRel")},
       };
 
       ButtonControl *metricToggle = new ButtonControl(title, tr("SELECT"), desc);
