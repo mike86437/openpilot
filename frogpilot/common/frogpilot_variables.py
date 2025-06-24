@@ -527,7 +527,7 @@ class FrogPilotVariables:
     has_radar = not CP.radarUnavailable
     has_sng = CP.autoResumeSng
     is_torque_car = CP.lateralTuning.which() == "torque"
-    latAccelFactor = CP.lateralTuning.torque.latAccelFactor
+    latAccelFactor = 1.6528895627785531
     longitudinalActuatorDelay = CP.longitudinalActuatorDelay
     openpilot_longitudinal = CP.openpilotLongitudinalControl
     pcm_cruise = CP.pcmCruise
