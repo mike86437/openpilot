@@ -368,12 +368,10 @@ void FrogPilotLateralPanel::updateToggles() {
 
     if (key == "NNFF") {
       setVisible &= hasNNFFLog;
-      setVisible &= !isHonda;
     }
 
     if (key == "NNFFLite") {
       setVisible &= !usingNNFF;
-      setVisible &= !isHonda;
     }
 
     if (key == "SteerDelay") {
