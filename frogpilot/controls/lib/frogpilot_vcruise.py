@@ -83,7 +83,7 @@ class FrogPilotVCruise:
 
     # Float 10 mph over vcruise
     actuators = sm["carControl"].actuators
-    if self.vtsc_target >= v_cruise and self.mtsc_target >= v_cruise and v_ego > (v_cruise + 0.15):
+    if v_ego > (v_cruise + 0.15):
       buffer = 0.0 if actuators.accel < 0.2 else 0.15
       v_cruise = min(v_ego - buffer, v_cruise + 4.4704)
 
