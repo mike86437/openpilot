@@ -518,7 +518,7 @@ class FrogPilotVariables:
     always_on_lateral_set = bool(CP.alternativeExperience & ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL)
     car_make = CP.carName
     car_model = CP.carFingerprint
-    friction = CarInterface.get_torque_params()[car_model]['FRICTION']
+    friction = interfaces.get_torque_params()[car_model]['FRICTION']
     has_auto_tune = car_make in {"hyundai", "toyota"} and CP.lateralTuning.which() == "torque"
     has_bsm = CP.enableBsm
     toggle.has_cc_long = bool(CP.flags & GMFlags.CC_LONG.value)
