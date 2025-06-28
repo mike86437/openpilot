@@ -244,8 +244,7 @@ class CarController(CarControllerBase):
 
           if self.CP.enableGasInterceptor:
             # way too aggressive at low speed without this
-            if self.CP.carFingerprint == "HONDA_CLARITY":
-              print("Hello 2")
+            if self.CP.carFingerprint == CAR.HONDA_CLARITY:
               gas_mult = interp(CS.out.vEgo, [0., 10.], [1.0, 1.0])
             else:
               gas_mult = interp(CS.out.vEgo, [0., 10.], [0.4, 1.0])
