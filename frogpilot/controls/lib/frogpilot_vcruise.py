@@ -59,7 +59,7 @@ class FrogPilotVCruise:
       lead = self.frogpilot_planner.lead_one
       tFollow = self.frogpilot_planner.frogpilot_following.t_follow
       dFollow = max(lead.dRel - lead.vLead * (tFollow + 0.5), 1e-6)
-      if (lead.vLead + dFollow / v_ego) < v_ego:
+      if (lead.vLead + dFollow / v_ego) < v_ego and lead.dRel < 125:
         decelRate = (lead.vRel ** 2) / (2 * dFollow) * 2
         brake_speed = v_ego - (decelRate - lead.aLeadK)
         self.braking_target = float(max(CRUISING_SPEED, brake_speed, lead.vLead))
