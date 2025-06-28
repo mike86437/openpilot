@@ -6,7 +6,7 @@ from openpilot.common.realtime import DT_CTRL
 from opendbc.can.packer import CANPacker
 from openpilot.selfdrive.car import create_gas_interceptor_command
 from openpilot.selfdrive.car.honda import hondacan
-from openpilot.selfdrive.car.honda.values import CruiseButtons, VISUAL_HUD, HONDA_BOSCH, HONDA_BOSCH_RADARLESS, HONDA_NIDEC_ALT_PCM_ACCEL, CarControllerParams
+from openpilot.selfdrive.car.honda.values import CAR, CruiseButtons, VISUAL_HUD, HONDA_BOSCH, HONDA_BOSCH_RADARLESS, HONDA_NIDEC_ALT_PCM_ACCEL, CarControllerParams
 from openpilot.selfdrive.car.interfaces import CarControllerBase
 from openpilot.selfdrive.controls.lib.drive_helpers import rate_limit
 
@@ -244,7 +244,7 @@ class CarController(CarControllerBase):
 
           if self.CP.enableGasInterceptor:
             # way too aggressive at low speed without this
-            if self.CP.carFingerprint == (HONDA_CLARITY):
+            if self.CP.carFingerprint == CAR.HONDA_CLARITY:
               gas_mult = interp(CS.out.vEgo, [0., 10.], [1.0, 1.0])
             else:
               gas_mult = interp(CS.out.vEgo, [0., 10.], [0.4, 1.0])
