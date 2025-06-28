@@ -25,7 +25,10 @@ class CarInterface(CarInterfaceBase):
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
     if CP.carFingerprint in HONDA_BOSCH:
       return CarControllerParams.BOSCH_ACCEL_MIN, CarControllerParams.BOSCH_ACCEL_MAX
-    elif CP.enableGasInterceptor:
+    elif CP.enableGasInterceptor and (CP.carFingerprint == (CAR.HONDA_CLARITY)):
+      CLARITY_PEDAL_MAX = 4.0
+      return CarControllerParams.NIDEC_ACCEL_MIN, CLARITY_PEDAL_MAX
+    elif CP.enableGasInterceptor and (CP.carFingerprint != (CAR.HONDA_CLARITY))::
       return CarControllerParams.NIDEC_ACCEL_MIN, CarControllerParams.NIDEC_ACCEL_MAX
     else:
       # NIDECs don't allow acceleration near cruise_speed,
