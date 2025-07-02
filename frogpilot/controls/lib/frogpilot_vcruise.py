@@ -58,7 +58,7 @@ class FrogPilotVCruise:
     if v_ego > CRUISING_SPEED and sm["controlsState"].enabled and self.frogpilot_planner.tracking_lead and frogpilot_toggles.human_following:
       lead = self.frogpilot_planner.lead_one
       tFollow = self.frogpilot_planner.frogpilot_following.t_follow
-      dFollow = max(lead.dRel - lead.vLead * (tFollow + 0.5), 1e-6)
+      dFollow = max(lead.dRel - lead.vLead * (tFollow + 0.35), 1e-6)
       if (lead.vLead + dFollow / v_ego) < v_ego and lead.dRel < 125:
         decelRate = (lead.vRel ** 2) / (2 * dFollow) * 2
         brake_speed = v_ego - (decelRate - lead.aLeadK)
