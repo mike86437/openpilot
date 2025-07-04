@@ -105,6 +105,12 @@ class FrogPilotVCruise:
       if frogpilot_toggles.speed_limit_controller:
         targets.append(max(self.slc.overridden_speed, self.slc_target + self.slc_offset))
 
-      v_cruise = min([target if target > CRUISING_SPEED else v_cruise for target in targets])
+      # Float 10 mph over vcruise
+      actuators = sm["carControl"].actuators
+      if all(target >= v_cruise for target in targets) and v_ego > (v_cruise + 0.5):
+        buffer = 0.1 if actuators.accel < 0 else 0.5
+        v_cruise = min(v_ego - buffer, v_cruise + 4.4704)
+      else:
+        v_cruise = min([target if target > CRUISING_SPEED else v_cruise for target in targets])
 
     return v_cruise
