@@ -28,7 +28,7 @@ class CarInterface(CarInterfaceBase):
     elif CP.enableGasInterceptor and (CP.carFingerprint == (CAR.HONDA_CLARITY)):
       CLARITY_PEDAL_MAX = 4.0
       return CarControllerParams.NIDEC_ACCEL_MIN, CLARITY_PEDAL_MAX
-    elif CP.enableGasInterceptor and (CP.carFingerprint != (CAR.HONDA_CLARITY))::
+    elif CP.enableGasInterceptor and (CP.carFingerprint != (CAR.HONDA_CLARITY)):
       return CarControllerParams.NIDEC_ACCEL_MIN, CarControllerParams.NIDEC_ACCEL_MAX
     else:
       # NIDECs don't allow acceleration near cruise_speed,
