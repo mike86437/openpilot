@@ -1,5 +1,5 @@
 from collections import namedtuple
-
+import math
 from cereal import car
 from openpilot.common.numpy_fast import clip, interp
 from openpilot.common.realtime import DT_CTRL
@@ -135,6 +135,9 @@ class CarController(CarControllerBase):
     self.gas = 0.0
     self.brake = 0.0
     self.last_steer = 0.0
+    self.blend_pcm_accel = 0.0
+    self.blend_pcm_speed = 0.0
+    self.pitch = 0.0
 
   def update(self, CC, CS, now_nanos, frogpilot_toggles):
     actuators = CC.actuators
@@ -143,12 +146,20 @@ class CarController(CarControllerBase):
     hud_v_cruise = hud_control.setSpeed / conversion if hud_control.speedVisible else 255
     pcm_cancel_cmd = CC.cruiseControl.cancel
 
+    if len(CC.orientationNED) == 3:
+      self.pitch = CC.orientationNED[1]
+
     if CC.longActive:
-      accel = actuators.accel
-      gas, brake = compute_gas_brake(actuators.accel, CS.out.vEgo, self.CP.carFingerprint)
+      hill_brake = math.sin(self.pitch) * 9.81
+      accel = float (max ( actuators.accel + hill_brake, CarControllerParams.NIDEC_ACCEL_MIN ) )
+      if accel > max ( 0, CS.out.aEgo) + 0.1 and not self.CP.enableGasInterceptor:
+        accel = 10000.0
+      gas, brake = compute_gas_brake(accel, CS.out.vEgo, self.CP.carFingerprint)
     else:
       accel = 0.0
       gas, brake = 0.0, 0.0
+
+    speed_control = 1 if ( (accel <= 0.0) and (CS.out.vEgo == 0) ) else 0
 
     # *** rate limit steer ***
     limited_steer = rate_limit_steer(actuators.steer, self.last_steer)
@@ -190,7 +201,7 @@ class CarController(CarControllerBase):
     pcm_speed_BP = [-wind_brake,
                     -wind_brake * (3 / 4),
                     0.0,
-                    0.5]
+                    2.0]
     # The Honda ODYSSEY seems to have different PCM_ACCEL
     # msgs, is it other cars too?
     if self.CP.enableGasInterceptor or not CC.longActive:
@@ -200,16 +211,19 @@ class CarController(CarControllerBase):
       pcm_speed_V = [0.0,
                      clip(CS.out.vEgo - 3.0, 0.0, 100.0),
                      clip(CS.out.vEgo + 0.0, 0.0, 100.0),
-                     clip(CS.out.vEgo + 5.0, 0.0, 100.0)]
+                     clip(CS.out.vEgo + 20.0, 0.0, 100.0)]
       pcm_speed = interp(gas - brake, pcm_speed_BP, pcm_speed_V)
       pcm_accel = int(1.0 * self.params.NIDEC_GAS_MAX)
     else:
       pcm_speed_V = [0.0,
                      clip(CS.out.vEgo - 2.0, 0.0, 100.0),
                      clip(CS.out.vEgo + 2.0, 0.0, 100.0),
-                     clip(CS.out.vEgo + 5.0, 0.0, 100.0)]
+                     clip(CS.out.vEgo + 20.0, 0.0, 100.0)]
       pcm_speed = interp(gas - brake, pcm_speed_BP, pcm_speed_V)
-      pcm_accel = int(clip((accel / 1.44) / max_accel, 0.0, 1.0) * self.params.NIDEC_GAS_MAX)
+      pcm_accel = int(clip((accel / 1.44) / max_accel, 10.0 / self.params.NIDEC_GAS_MAX, 1.0) * self.params.NIDEC_GAS_MAX)
+
+      if speed_control == 1 and CC.longActive:
+        pcm_accel = 198
 
     if not self.CP.openpilotLongitudinalControl:
       if self.frame % 2 == 0 and self.CP.carFingerprint not in HONDA_BOSCH_RADARLESS:  # radarless cars don't have supplemental message
@@ -263,6 +277,18 @@ class CarController(CarControllerBase):
 
     # Send dashboard UI commands.
     if self.frame % 10 == 0:
+      # ----------------- new test logic start ---------------------
+
+      if CC.longActive:
+        PERCENT_BLEND = 0.99
+        self.blend_pcm_accel =  self.blend_pcm_accel * PERCENT_BLEND + pcm_accel * ( 1 - PERCENT_BLEND )
+        self.blend_pcm_speed =  self.blend_pcm_speed * PERCENT_BLEND + pcm_speed * ( 1 - PERCENT_BLEND )
+
+        # standstill disengage
+        if ( accel >= 0.01 ) and (CS.out.vEgo < 4.0 ) and ( pcm_speed < 25.0 / 3.6):
+          pcm_speed = 25.0 / 3.6
+
+      # ----------------- new test logic end ---------------------
       hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), hud_control.leadVisible,
                     hud_control.lanesVisible, fcw_display, acc_alert, steer_required, hud_control.leadDistanceBars)
       can_sends.extend(hondacan.create_ui_commands(self.packer, self.CAN, self.CP, CC.enabled, pcm_speed, hud, CS.is_metric, CS.acc_hud, CS.lkas_hud, CC.latActive))
@@ -270,7 +296,7 @@ class CarController(CarControllerBase):
       if self.CP.openpilotLongitudinalControl and self.CP.carFingerprint not in HONDA_BOSCH:
         self.speed = pcm_speed
         if not self.CP.enableGasInterceptor:
-          self.gas = pcm_accel / self.params.NIDEC_GAS_MAX
+          self.gas = pcm_accel
 
     new_actuators = actuators.as_builder()
     new_actuators.speed = self.speed
