@@ -152,7 +152,7 @@ class CarController(CarControllerBase):
     if CC.longActive:
       hill_brake = math.sin(self.pitch) * 9.81
       accel = float (max ( actuators.accel + hill_brake, CarControllerParams.NIDEC_ACCEL_MIN ) )
-      if accel > max ( 0, CS.out.aEgo) + 0.1 and not self.CP.enableGasInterceptor:
+      if accel > max ( 0, CS.out.aEgo) + 0.1 and not self.CP.enableGasInterceptor and CS.out.vEgo < 5.0:
         accel = 10000.0
       gas, brake = compute_gas_brake(accel, CS.out.vEgo, self.CP.carFingerprint)
     else:
