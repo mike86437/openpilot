@@ -64,6 +64,8 @@ def update_checks(manually_updated, model_manager, now, sm, theme_manager, frogp
 def frogpilot_thread():
   config_realtime_process(5, Priority.CTRL_LOW)
 
+  frogpilot_toggles = get_frogpilot_toggles()
+
   error_log = ERROR_LOGS_PATH / "error.txt"
   if error_log.is_file():
     error_log.unlink()
@@ -72,21 +74,20 @@ def frogpilot_thread():
   model_manager = ModelManager()
   theme_manager = ThemeManager()
 
+  toggles_last_updated = datetime.datetime.now()
+
+  pm = messaging.PubMaster(["frogpilotPlan"])
+  sm = messaging.SubMaster(["carControl", "carState", "controlsState", "deviceState", "driverMonitoringState",
+                            "liveLocationKalman", "liveParameters", "managerState", "modelV2", "onroadEvents",
+                            "pandaStates", "frogpilotCarState", "frogpilotControlsState", "frogpilotModelV2",
+                            "frogpilotNavigation", "frogpilotRadarState"],
+                            poll="modelV2", ignore_avg_freq=["frogpilotRadarState"])
+
   assets_checked = False
   run_update_checks = False
   started_previously = False
   time_validated = False
   toggles_updated = False
-
-  frogpilot_toggles = get_frogpilot_toggles()
-
-  toggles_last_updated = datetime.datetime.now()
-
-  pm = messaging.PubMaster(["frogpilotPlan"])
-  sm = messaging.SubMaster(["carControl", "carState", "controlsState", "deviceState", "driverMonitoringState",
-                            "liveLocationKalman", "managerState", "modelV2", "pandaStates", "radarState",
-                            "frogpilotCarState", "frogpilotNavigation"],
-                            poll="modelV2", ignore_avg_freq=["radarState"])
 
   while True:
     sm.update()
@@ -125,7 +126,7 @@ def frogpilot_thread():
       frogpilot_tracking.update(sm)
     elif not started and toggles_updated:
       frogpilot_plan_send = messaging.new_message("frogpilotPlan")
-      frogpilot_plan_send.frogpilotPlan.themeUpdated = theme_manager.theme_updated
+      frogpilot_plan_send.frogpilotPlan.themeUpdated = theme_manager.theme_updated or params_memory.get_bool("UseActiveTheme")
       frogpilot_plan_send.frogpilotPlan.togglesUpdated = toggles_updated
       pm.send("frogpilotPlan", frogpilot_plan_send)
 

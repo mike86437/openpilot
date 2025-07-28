@@ -1,20 +1,7 @@
 #include "frogpilot/ui/qt/offroad/theme_settings.h"
 
-QStringList getHolidaySchemes() {
-  return QStringList()
-         << "New Year's"
-         << "Valentine's Day"
-         << "St. Patrick's Day"
-         << "World Frog Day"
-         << "April Fools"
-         << "Easter"
-         << "May the Fourth"
-         << "Cinco de Mayo"
-         << "Stitch Day"
-         << "Fourth of July"
-         << "Halloween"
-         << "Thanksgiving"
-         << "Christmas";
+bool isUserCreatedTheme(const QString &themeName) {
+  return themeName.endsWith("-user_created");
 }
 
 void updateAssetParam(const QString &assetParam, Params &params, const QString &value, bool add) {
@@ -34,11 +21,30 @@ void updateAssetParam(const QString &assetParam, Params &params, const QString &
 void deleteThemeAsset(QDir &directory, const QString &subFolder, const QString &assetParam, const QString &themeToDelete, Params &params) {
   bool useFiles = subFolder.isEmpty();
 
-  QString themeName = themeToDelete.toLower().replace(" (", "-").replace(")", "").replace(" ", "-");
+  QString themeName;
+  if (isUserCreatedTheme(themeToDelete)) {
+    themeName = themeToDelete;
+  } else {
+    QString author;
+    QString baseName = themeToDelete;
+
+    int byIndex = themeToDelete.indexOf(" - by: ");
+    if (byIndex != -1) {
+      baseName = themeToDelete.left(byIndex).trimmed();
+      author = themeToDelete.mid(byIndex + 7).trimmed();
+    }
+
+    themeName = baseName.toLower().replace("(", "-").replace(")", "").replace(" ", "-");
+    if (!author.isEmpty()) {
+      QString cleanAuthor = author;
+      cleanAuthor.replace(" ", "");
+      themeName += "~" + cleanAuthor;
+    }
+  }
+
   if (useFiles) {
     for (const QString &file : directory.entryList(QDir::Files)) {
-      QString fileName = QFileInfo(file).baseName().toLower().replace("_", "-");
-      if (fileName == themeName) {
+      if (QFileInfo(file).baseName().compare(themeName, Qt::CaseInsensitive) == 0) {
         QFile::remove(directory.filePath(file));
         break;
       }
@@ -54,12 +60,36 @@ void deleteThemeAsset(QDir &directory, const QString &subFolder, const QString &
 }
 
 void downloadThemeAsset(const QString &input, const std::string &paramKey, const QString &assetParam, Params &params, Params &params_memory) {
-  QString output = input.toLower().remove("(").remove(")");
+  QString output = input;
+  int tilde = output.indexOf("~");
+  if (tilde >= 0) {
+    output = output.left(tilde).toLower() + "~" + output.mid(tilde + 1);
+  } else {
+    output = output.toLower();
+  }
+  output.remove("(").remove(")");
   output.replace(" ", input.contains("(") ? "-" : "_");
 
   params_memory.put(paramKey, output.toStdString());
 
   updateAssetParam(assetParam, params, input, false);
+}
+
+QStringList getHolidayThemes() {
+  return QStringList()
+         << "New Year's"
+         << "Valentine's Day"
+         << "St. Patrick's Day"
+         << "World Frog Day"
+         << "April Fools"
+         << "Easter"
+         << "May the Fourth"
+         << "Cinco de Mayo"
+         << "Stitch Day"
+         << "Fourth of July"
+         << "Halloween"
+         << "Thanksgiving"
+         << "Christmas";
 }
 
 QStringList getThemeList(const bool &randomThemes, const QDir &themePacksDirectory, const QString &subFolder, const QString &assetParam, Params &params) {
@@ -84,12 +114,39 @@ QStringList getThemeList(const bool &randomThemes, const QDir &themePacksDirecto
       }
     }
 
-    QStringList parts = entry.baseName().split(entry.baseName().contains("-") ? "-" : "_", QString::SkipEmptyParts);
+    QString baseName = entry.baseName();
+    bool userCreated = isUserCreatedTheme(baseName);
+    if (userCreated) {
+      baseName = baseName.replace("-user_created", "");
+    }
+
+    int tildeIdx = baseName.indexOf("~");
+    QString creator;
+    if (tildeIdx >= 0) {
+      creator = baseName.mid(tildeIdx + 1);
+      baseName = baseName.left(tildeIdx);
+    }
+
+    QStringList parts = baseName.split(baseName.contains("-") ? "-" : "_", QString::SkipEmptyParts);
     for (QString &part : parts) {
       part[0] = part[0].toUpper();
     }
 
-    themeList.append(parts.size() <= 1 || useFiles ? parts.join(" ") : QString("%1 (%2)").arg(parts[0], parts.mid(1).join(" ")));
+    QString displayName;
+    if (userCreated) {
+      displayName = parts.join(" ");
+    } else {
+      displayName = (parts.size() <= 1 || useFiles) ? parts.join(" ") : QString("%1 (%2)").arg(parts[0], parts.mid(1).join(" "));
+    }
+
+    if (userCreated) {
+      displayName += " 🌟";
+    }
+    if (!creator.isEmpty()) {
+      displayName += " - by: " + creator;
+    }
+
+    themeList.append(displayName);
   }
 
   return themeList;
@@ -98,21 +155,45 @@ QStringList getThemeList(const bool &randomThemes, const QDir &themePacksDirecto
 QString getThemeName(const std::string &paramKey, Params &params) {
   QString value = QString::fromStdString(params.get(paramKey));
 
-  QStringList parts = value.split(value.contains("-") ? "-" : "_", QString::SkipEmptyParts);
+  QString baseName = value;
+
+  int tildeIdx = baseName.indexOf("~");
+  QString creator;
+  if (tildeIdx >= 0) {
+    creator = baseName.mid(tildeIdx + 1);
+    baseName = baseName.left(tildeIdx);
+  }
+
+  QStringList parts = baseName.split(baseName.contains("-") ? "-" : "_", QString::SkipEmptyParts);
   for (QString &part : parts) {
     part[0] = part[0].toUpper();
   }
 
-  if (value.contains("-") && parts.size() > 1) {
-    return QString("%1 (%2)").arg(parts[0], parts.mid(1).join(" "));
+  QString displayName;
+  if (baseName.contains("-") && parts.size() > 1) {
+    displayName = QString("%1 (%2)").arg(parts[0], parts.mid(1).join(" "));
+  } else {
+    displayName = parts.join(" ");
   }
-  return parts.join(" ");
+
+  if (isUserCreatedTheme(value)) {
+    displayName = displayName.split(" (")[0] + " 🌟";
+  }
+  if (!creator.isEmpty()) {
+    displayName += " - by: " + creator;
+  }
+
+  return displayName;
 }
 
 QString storeThemeName(const QString &input, const std::string &paramKey, Params &params) {
   QString output = input.toLower().remove("(").remove(")").remove("'").remove(".");
   output.replace(" ", input.contains("(") ? "-" : "_");
+  output.replace("_🌟", "-user_created");
+  output = output.trimmed();
+
   params.put(paramKey, output.toStdString());
+
   return getThemeName(paramKey, params);
 }
 
@@ -201,7 +282,7 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
           }
         } else if (id == 2) {
           colorSchemes.append("Stock");
-          colorSchemes.append(getHolidaySchemes());
+          colorSchemes.append(getHolidayThemes());
           colorSchemes.sort();
 
           QString colorSchemeToSelect = MultiOptionDialog::getSelection(tr("Select a color scheme"), colorSchemes, getThemeName("CustomColors", params), this);
@@ -255,7 +336,7 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
           }
         } else if (id == 2) {
           distanceIconPacks.append("Stock");
-          distanceIconPacks.append(getHolidaySchemes());
+          distanceIconPacks.append(getHolidayThemes());
           distanceIconPacks.sort();
 
           QString distanceIconPackToSelect = MultiOptionDialog::getSelection(tr("Select a distance icon pack"), distanceIconPacks, getThemeName("CustomDistanceIcons", params), this);
@@ -309,7 +390,7 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
           }
         } else if (id == 2) {
           iconPacks.append("Stock");
-          iconPacks.append(getHolidaySchemes());
+          iconPacks.append(getHolidayThemes());
           iconPacks.sort();
 
           QString iconPackToSelect = MultiOptionDialog::getSelection(tr("Select an icon pack"), iconPacks, getThemeName("CustomIcons", params), this);
@@ -363,7 +444,7 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
           }
         } else if (id == 2) {
           signalAnimations.append("None");
-          signalAnimations.append(getHolidaySchemes());
+          signalAnimations.append(getHolidayThemes());
           signalAnimations.sort();
 
           QString signalAnimationToSelect = MultiOptionDialog::getSelection(tr("Select a signal animation"), signalAnimations, getThemeName("CustomSignals", params), this);
@@ -417,7 +498,7 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
           }
         } else if (id == 2) {
           soundPacks.append("Stock");
-          soundPacks.append(getHolidaySchemes());
+          soundPacks.append(getHolidayThemes());
           soundPacks.sort();
 
           QString soundPackToSelect = MultiOptionDialog::getSelection(tr("Select a sound pack"), soundPacks, getThemeName("CustomSounds", params), this);
@@ -472,7 +553,7 @@ FrogPilotThemesPanel::FrogPilotThemesPanel(FrogPilotSettingsWindow *parent) : Fr
         } else if (id == 2) {
           wheelIcons.append("None");
           wheelIcons.append("Stock");
-          wheelIcons.append(getHolidaySchemes());
+          wheelIcons.append(getHolidayThemes());
           wheelIcons.sort();
 
           QString steeringWheelToSelect = MultiOptionDialog::getSelection(tr("Select a steering wheel"), wheelIcons, getThemeName("WheelIcon", params), this);
