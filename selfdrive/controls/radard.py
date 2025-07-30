@@ -189,7 +189,7 @@ def get_lead(v_ego: float, ready: bool, tracks: dict[int, Track], lead_msg: capn
              model_v_ego: float, low_speed_override: bool = True) -> dict[str, Any]:
   # Determine leads, this is where the essential logic happens
   if len(tracks) > 0 and ready and lead_msg.prob > .5:
-    track = match_vision_to_track(v_ego, lead_msg, tracks)
+    track = match_vision_to_track(v_ego, lead_msg, tracks, model_data)
   else:
     track = None
 
