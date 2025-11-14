@@ -20,7 +20,7 @@ class FrogPilotVCruise:
     self.override_force_stop_timer = 0
 
   def update(self, gps_position, v_cruise, v_ego, sm, frogpilot_toggles):
-    force_stop = self.frogpilot_planner.cem.stop_light_detected and sm["controlsState"].enabled and frogpilot_toggles.force_stops and v_ego < 22.352
+    force_stop = self.frogpilot_planner.cem.stop_light_detected and sm["controlsState"].enabled and frogpilot_toggles.force_stops
     force_stop &= self.frogpilot_planner.model_stopped
     force_stop &= self.override_force_stop_timer <= 0
 
