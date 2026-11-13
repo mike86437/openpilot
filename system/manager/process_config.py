@@ -127,8 +127,10 @@ procs = [
   PythonProcess("radard", "selfdrive.controls.radard", only_onroad),
   PythonProcess("hardwared", "system.hardware.hardwared", always_run),
   PythonProcess("tombstoned", "system.tombstoned", always_run, enabled=not PC),
-  PythonProcess("updated", "system.updated.updated", always_run, enabled=not PC),
-  PythonProcess("uploader", "system.loggerd.uploader", allow_uploads),
+  # Disabled on this fork: no branch/software updates pulled in underneath a test, and no
+  # route data uploaded to connect.comma.ai or to the konik server.
+  PythonProcess("updated", "system.updated.updated", always_run, enabled=False),
+  PythonProcess("uploader", "system.loggerd.uploader", allow_uploads, enabled=False),
   PythonProcess("statsd", "system.statsd", allow_logging),
   PythonProcess("feedbackd", "selfdrive.ui.feedback.feedbackd", only_onroad),
 
