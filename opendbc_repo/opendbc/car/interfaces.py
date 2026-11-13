@@ -20,7 +20,7 @@ from opendbc.car.common.simple_kalman import KF1D, get_kalman_gain
 from opendbc.car.ford.fordcan import CanBus as FordCanBus
 from opendbc.car.ford.values import CAR as FORD, FordFlags
 from opendbc.car.gm.values import CAR as GM
-from opendbc.car.honda.values import CAR as HONDA, HONDA_BOSCH
+from opendbc.car.honda.values import CAR as HONDA, HONDA_BOSCH, clarity_mod_eps
 from opendbc.car.hyundai.hyundaicanfd import CanBus as HyundaiCanBus
 from opendbc.car.hyundai.values import CAR as HYUNDAI, CANFD_CAR, HyundaiFlags, HyundaiFrogPilotSafetyFlags
 from opendbc.car.mock.values import CAR as MOCK
@@ -209,18 +209,25 @@ class CarInterfaceBase(ABC):
         # FrogPilot variables: the modified-EPS Clarity (EPS firmware 39990-TRW,A020). honda/interface.py
         # selects this car's table with "any EPS record without a dash", and this car also answers a
         # comma-less UDS serial record, so it lands on the 15360-count table with 0.1575 / 0.05175 gains.
-        # Measured on route 0000001a--53907c44af: torqueOutputCan pinned at the 3840 ceiling for 114 s of
-        # driver override, and two steerFaultTemporary onsets at 0.4 and 3.9 kph at 22 deg and 167 deg.
-        # These are the values the NRDR fork runs this EPS at, gated by the same firmware test NRDR uses
-        # (nrdr honda/interface.py:377-390, and its brand default kf 0.00006 at :86): over the first
-        # segment the current map asks the EPS for 1.77x more CAN torque per unit of lateral error.
-        # No parameter gates this one - it is scoped to a single car by its EPS firmware, and reverting it
-        # is a checkout of 28f6e09. The which() test keeps it inert, not fatal, if a torque controller or
-        # NNFF is ever selected for this car.
-        if candidate == HONDA.HONDA_CLARITY and CP.lateralTuning.which() == "pid" and \
-           any(fw.ecu == "eps" and b"-" in fw.fwVersion and b"," in fw.fwVersion for fw in car_fw):
+        # Measured on route 0000001a--53907c44af: the delivered torque sat at the 3840 ceiling in 12 % of the
+        # sub-8 kph steering frames and 34 % of the 8-20 kph ones, with steerFaultTemporary onsets at 0.4 and
+        # 3.9 kph at 22 deg and 167 deg. The map part is NRDR's (nrdr honda/interface.py:377-390, and its
+        # brand default kf 0.00006 at :86): the stock map asks this EPS for 1.77x more CAN torque per unit of
+        # lateral error. The map is kept - on route 0000001d it is what took the delivered torque off the
+        # ceiling (0.0 % of frames at or above 3700 CAN units, against 12 % and 49 % in 0000001a/1c) without
+        # changing what the loop asked for.
+        # The gains are the part being reverted, after 0000001c and 0000001d. At kpV 0.3 with STEER_MAX
+        # 10240 the loop reaches full output at 3.33 units of kp-scaled error instead of 6.35, and 0000001d -
+        # the drive that had the actuator smoothing live and felt good at speed - still commanded >= 0.95 of
+        # full output in 51 % of steering frames below 8 kph and 34 % of them at 8-20 kph, with 178 and 243
+        # command sign reversals per minute in those two bands. "It oversteers at very low speeds" is that
+        # ceiling arriving at half the lateral error it used to. Restoring the tree's own gains keeps the
+        # corrected knee and removes the early ceiling.
+        # No parameter gates this one - it is scoped to a single car by its EPS firmware. The which() test
+        # keeps it inert, not fatal, if a torque controller or NNFF is ever selected for this car.
+        if clarity_mod_eps(candidate, car_fw) and CP.lateralTuning.which() == "pid":
           CP.lateralParams.torqueBP, CP.lateralParams.torqueV = [[0, 5760, 10240], [0, 2560, 3840]]
-          CP.lateralTuning.pid.kpV, CP.lateralTuning.pid.kiV = [[0.3], [0.1]]
+          CP.lateralTuning.pid.kpV, CP.lateralTuning.pid.kiV = [[0.1575], [0.05175]]
           CP.lateralTuning.pid.kf = 0.00006
 
       elif platform in HYUNDAI:

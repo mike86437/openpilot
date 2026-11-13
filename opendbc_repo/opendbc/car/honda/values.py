@@ -382,6 +382,20 @@ HONDA_NIDEC_BRAKE_LIGHT_CARS = {CAR.HONDA_CIVIC, CAR.HONDA_ODYSSEY}
 DBC = CAR.create_dbc_map()
 
 
+def clarity_mod_eps(car_fingerprint: str, car_firmware) -> bool:
+  """True for the modified-EPS Honda Clarity: an EPS version carrying both a dash and a comma. This car
+  answers 39990-TRW,A020, which is the NRDR-blessed modified EPS.
+
+  One predicate for the whole Clarity port: it selects the lateral tune in car/interfaces.py, the actuator
+  smoothing in honda/carcontroller.py, and the phase-latched integrator freeze in
+  selfdrive/controls/lib/latcontrol_pid.py. It takes the fingerprint and the firmware list rather than a
+  CarParams because interfaces.py has only the live fingerprint query at the point it needs the answer, while
+  the controllers have CarParams; scoped by the car's own firmware rather than by a parameter, every other
+  car keeps the behaviour it has today."""
+  return car_fingerprint == CAR.HONDA_CLARITY and \
+      any(fw.ecu == "eps" and b"-" in fw.fwVersion and b"," in fw.fwVersion for fw in car_firmware)
+
+
 STEER_THRESHOLD = {
   # default is 1200, overrides go here
   CAR.ACURA_RDX: 400,

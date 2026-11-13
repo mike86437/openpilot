@@ -5,7 +5,8 @@ from opendbc.car import Bus, DT_CTRL, create_gas_interceptor_command, rate_limit
 from opendbc.car.common.conversions import Conversions as CV
 from opendbc.car.honda import hondacan
 from opendbc.car.honda.values import CAR, CruiseButtons, HONDA_BOSCH, HONDA_BOSCH_CANFD, HONDA_BOSCH_RADARLESS, \
-                                     HONDA_BOSCH_TJA_CONTROL, HONDA_NIDEC_ALT_PCM_ACCEL, CarControllerParams
+                                     HONDA_BOSCH_TJA_CONTROL, HONDA_NIDEC_ALT_PCM_ACCEL, CarControllerParams, \
+                                     clarity_mod_eps
 from opendbc.car.interfaces import CarControllerBase
 
 VisualAlert = structs.CarControl.HUDControl.VisualAlert
@@ -24,13 +25,6 @@ OVERRIDE_FADE_UP_S = 1.0
 # ramp. FrogPilot's Always On Lateral gate keys on the driver-override flags and drops lateral hundreds of
 # times per minute on this car (see plan.md): restarting a 1 s ramp on every one of those starves the EPS.
 LATCH_OFF_S = 0.25
-
-
-def clarity_mod_eps(CP) -> bool:
-  """The same test as the Clarity tune selection in car/interfaces.py: an EPS version carrying both a dash
-  and a comma. This car answers 39990-TRW,A020, which is the NRDR-blessed modified EPS."""
-  return CP.carFingerprint == CAR.HONDA_CLARITY and \
-      any(fw.ecu == "eps" and b"-" in fw.fwVersion and b"," in fw.fwVersion for fw in CP.carFw)
 
 
 def compute_gb_honda_bosch(accel, speed):
@@ -139,7 +133,7 @@ class CarController(CarControllerBase):
     self.last_torque = 0.0
 
     # FrogPilot variables: modified-EPS Clarity only. See clarity_mod_eps and smooth_torque.
-    self.actuator_smoothing = clarity_mod_eps(CP)
+    self.actuator_smoothing = clarity_mod_eps(CP.carFingerprint, CP.carFw)
     self.torque_lpf = 0.0
     self.override_ramp = 0.0
     self.lat_off_time = 0.0
