@@ -2,6 +2,7 @@ import numpy as np
 
 from opendbc.can import CANPacker
 from opendbc.car import Bus, DT_CTRL, create_gas_interceptor_command, rate_limit, make_tester_present_msg, structs
+from opendbc.car.common.conversions import Conversions as CV
 from opendbc.car.honda import hondacan
 from opendbc.car.honda.values import CAR, CruiseButtons, HONDA_BOSCH, HONDA_BOSCH_CANFD, HONDA_BOSCH_RADARLESS, \
                                      HONDA_BOSCH_TJA_CONTROL, HONDA_NIDEC_ALT_PCM_ACCEL, CarControllerParams
@@ -9,6 +10,23 @@ from opendbc.car.interfaces import CarControllerBase
 
 VisualAlert = structs.CarControl.HUDControl.VisualAlert
 LongCtrlState = structs.CarControl.Actuators.LongControlState
+
+# FrogPilot variables: actuator smoothing for the modified-EPS Clarity, mirroring the NRDR fork's
+# opendbc/sunnypilot/car/honda/controller_features.py. First-order torque filter, time constant in seconds,
+# banded the same way NRDR bands it. Only clarity_mod_eps() cars take this path.
+LPF_TAU_LOW = 0.1
+LPF_TAU_STANDARD = 0.1
+LPF_TAU_HIGHWAY = 0.01
+LPF_SPEED_LOW = 25. * CV.MPH_TO_MS
+LPF_SPEED_HIGH = 50. * CV.MPH_TO_MS
+OVERRIDE_FADE_UP_S = 1.0
+
+
+def clarity_mod_eps(CP) -> bool:
+  """The same test as the Clarity tune selection in car/interfaces.py: an EPS version carrying both a dash
+  and a comma. This car answers 39990-TRW,A020, which is the NRDR-blessed modified EPS."""
+  return CP.carFingerprint == CAR.HONDA_CLARITY and \
+      any(fw.ecu == "eps" and b"-" in fw.fwVersion and b"," in fw.fwVersion for fw in CP.carFw)
 
 
 def compute_gb_honda_bosch(accel, speed):
@@ -116,6 +134,36 @@ class CarController(CarControllerBase):
     self.brake = 0.0
     self.last_torque = 0.0
 
+    # FrogPilot variables: modified-EPS Clarity only. See clarity_mod_eps and smooth_torque.
+    self.actuator_smoothing = clarity_mod_eps(CP)
+    self.torque_lpf = 0.0
+    self.override_ramp = 1.0
+    self.lat_active_previous = False
+
+  def smooth_torque(self, commanded: float, lat_active: bool, steering_pressed: bool, v_ego: float) -> float:
+    """NRDR's actuator path for this EPS: override fade, then a first-order low-pass on the normalized
+    torque. The stock +/- STEER_DELTA clamp is deliberately not applied here: a rate limiter reshapes the
+    edges of a limit cycle and leaves its amplitude alone, while a 0.1 s filter attenuates the amplitude
+    itself. That alternation between no torque and the 3840 ceiling is what is being fixed (plan.md fact 46)."""
+    if not lat_active:
+      self.override_ramp = 0.0
+      self.torque_lpf = 0.0
+      self.lat_active_previous = False
+      return 0.0
+
+    # Torque always comes back up over OVERRIDE_FADE_UP_S, both after a driver takeover and after any
+    # re-engagement, instead of snapping to whatever the controller is asking for.
+    if not self.lat_active_previous:
+      self.override_ramp = 0.0
+    self.lat_active_previous = True
+    self.override_ramp = 0.0 if steering_pressed else min(1.0, self.override_ramp + DT_CTRL / OVERRIDE_FADE_UP_S)
+
+    torque = commanded * self.override_ramp
+    tau = LPF_TAU_HIGHWAY if v_ego >= LPF_SPEED_HIGH else (LPF_TAU_STANDARD if v_ego >= LPF_SPEED_LOW else LPF_TAU_LOW)
+    alpha = DT_CTRL / (tau + DT_CTRL)
+    self.torque_lpf = alpha * torque + (1.0 - alpha) * self.torque_lpf
+    return self.torque_lpf
+
   def update(self, CC, CS, now_nanos):
     actuators = CC.actuators
     hud_control = CC.hudControl
@@ -130,8 +178,11 @@ class CarController(CarControllerBase):
       gas, brake = 0.0, 0.0
 
     # *** rate limit steer ***
-    limited_torque = rate_limit(actuators.torque, self.last_torque, -self.params.STEER_DELTA_DOWN * DT_CTRL,
-                                self.params.STEER_DELTA_UP * DT_CTRL)
+    if self.actuator_smoothing:
+      limited_torque = self.smooth_torque(actuators.torque, CC.latActive, CS.out.steeringPressed, CS.out.vEgo)
+    else:
+      limited_torque = rate_limit(actuators.torque, self.last_torque, -self.params.STEER_DELTA_DOWN * DT_CTRL,
+                                  self.params.STEER_DELTA_UP * DT_CTRL)
     self.last_torque = limited_torque
 
     # *** apply brake hysteresis ***
