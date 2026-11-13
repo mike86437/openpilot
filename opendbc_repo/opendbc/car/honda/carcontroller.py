@@ -20,6 +20,10 @@ LPF_TAU_HIGHWAY = 0.01
 LPF_SPEED_LOW = 25. * CV.MPH_TO_MS
 LPF_SPEED_HIGH = 50. * CV.MPH_TO_MS
 OVERRIDE_FADE_UP_S = 1.0
+# A lateral dropout shorter than this is treated as a flicker, not a disengagement, and does not restart the
+# ramp. FrogPilot's Always On Lateral gate keys on the driver-override flags and drops lateral hundreds of
+# times per minute on this car (see plan.md): restarting a 1 s ramp on every one of those starves the EPS.
+LATCH_OFF_S = 0.25
 
 
 def clarity_mod_eps(CP) -> bool:
@@ -137,8 +141,8 @@ class CarController(CarControllerBase):
     # FrogPilot variables: modified-EPS Clarity only. See clarity_mod_eps and smooth_torque.
     self.actuator_smoothing = clarity_mod_eps(CP)
     self.torque_lpf = 0.0
-    self.override_ramp = 1.0
-    self.lat_active_previous = False
+    self.override_ramp = 0.0
+    self.lat_off_time = 0.0
 
   def smooth_torque(self, commanded: float, lat_active: bool, steering_pressed: bool, v_ego: float) -> float:
     """NRDR's actuator path for this EPS: override fade, then a first-order low-pass on the normalized
@@ -146,16 +150,15 @@ class CarController(CarControllerBase):
     edges of a limit cycle and leaves its amplitude alone, while a 0.1 s filter attenuates the amplitude
     itself. That alternation between no torque and the 3840 ceiling is what is being fixed (plan.md fact 46)."""
     if not lat_active:
-      self.override_ramp = 0.0
       self.torque_lpf = 0.0
-      self.lat_active_previous = False
+      self.lat_off_time += DT_CTRL
+      if self.lat_off_time > LATCH_OFF_S:
+        self.override_ramp = 0.0
       return 0.0
 
-    # Torque always comes back up over OVERRIDE_FADE_UP_S, both after a driver takeover and after any
-    # re-engagement, instead of snapping to whatever the controller is asking for.
-    if not self.lat_active_previous:
-      self.override_ramp = 0.0
-    self.lat_active_previous = True
+    # Torque comes back up over OVERRIDE_FADE_UP_S after a driver takeover or a real disengagement instead of
+    # snapping to whatever the controller is asking for.
+    self.lat_off_time = 0.0
     self.override_ramp = 0.0 if steering_pressed else min(1.0, self.override_ramp + DT_CTRL / OVERRIDE_FADE_UP_S)
 
     torque = commanded * self.override_ramp
