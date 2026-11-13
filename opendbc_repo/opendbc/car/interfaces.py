@@ -206,6 +206,23 @@ class CarInterfaceBase(ABC):
         if candidate not in HONDA_BOSCH and frogpilot_toggles.honda_alt_tune:
           CP.longitudinalTuning.kiV = [0.6, 0.4, 0.25]
 
+        # FrogPilot variables: the modified-EPS Clarity (EPS firmware 39990-TRW,A020). honda/interface.py
+        # selects this car's table with "any EPS record without a dash", and this car also answers a
+        # comma-less UDS serial record, so it lands on the 15360-count table with 0.1575 / 0.05175 gains.
+        # Measured on route 0000001a--53907c44af: torqueOutputCan pinned at the 3840 ceiling for 114 s of
+        # driver override, and two steerFaultTemporary onsets at 0.4 and 3.9 kph at 22 deg and 167 deg.
+        # These are the values the NRDR fork runs this EPS at, gated by the same firmware test NRDR uses
+        # (nrdr honda/interface.py:377-390, and its brand default kf 0.00006 at :86): over the first
+        # segment the current map asks the EPS for 1.77x more CAN torque per unit of lateral error.
+        # No parameter gates this one - it is scoped to a single car by its EPS firmware, and reverting it
+        # is a checkout of 28f6e09. The which() test keeps it inert, not fatal, if a torque controller or
+        # NNFF is ever selected for this car.
+        if candidate == HONDA.HONDA_CLARITY and CP.lateralTuning.which() == "pid" and \
+           any(fw.ecu == "eps" and b"-" in fw.fwVersion and b"," in fw.fwVersion for fw in car_fw):
+          CP.lateralParams.torqueBP, CP.lateralParams.torqueV = [[0, 5760, 10240], [0, 2560, 3840]]
+          CP.lateralTuning.pid.kpV, CP.lateralTuning.pid.kiV = [[0.3], [0.1]]
+          CP.lateralTuning.pid.kf = 0.00006
+
       elif platform in HYUNDAI:
         if candidate in CANFD_CAR:
           can_bus = HyundaiCanBus(CP)

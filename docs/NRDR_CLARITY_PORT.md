@@ -6,9 +6,31 @@ separate NRDR install for the Clarity.
 
 Vehicle facts that drive every decision below:
 
-- EPS firmware reported by the car: `39990-TRW,A020` (contains a dash **and** a comma).
+- EPS firmware reported by the car: `39990-TRW,A020` (contains a dash **and** a comma). The car also
+  answers a second EPS record, `b'\x0c BK8F162914D'`, which contains **neither**.
 - Modified-EPS detection in this tree is `fw.ecu == "eps" and b"," in fw.fwVersion`
   (`opendbc_repo/opendbc/car/honda/interface.py`), so this car takes the `eps_modified` path.
+- **Correction (2026-11-13):** which Clarity table that path picks is decided by a *second*, looser test
+  — `any(fw.ecu == "eps" and b"-" not in fw.fwVersion)` — and the serial record above satisfies it. So
+  this car never reaches the `[[0, 2560, 10240]]` / `kpV 0.3` branch below; it takes the
+  `[[0, 2560, 15360]]` / `kpV 0.1575`, `kiV 0.05175`, `kf 4e-05` branch. Verified by decoding
+  `CarParamsPersistent` on the device. NRDR's test requires a dash **and** a comma, so it selects the
+  `[[0, 5760, 10240]]` / `0.3` / `0.1` pair for this car.
+
+## Applied in this tree
+
+`opendbc_repo/opendbc/car/interfaces.py`, `CarInterfaceBase.get_frogpilot_params`, `elif platform in HONDA:`
+— when the candidate is `HONDA_CLARITY`, the tune is still `pid`, and an EPS record carries both a dash and
+a comma, set `lateralParams.torqueBP/torqueV = [[0, 5760, 10240], [0, 2560, 3840]]`,
+`pid.kpV/kiV = [[0.3]] / [[0.1]]`, `pid.kf = 0.00006` (NRDR's brand default). Not parameter-gated: scoped
+to one car by its EPS firmware, revertable with `git checkout 28f6e09`. `honda/interface.py` itself is left
+alone — its test is a genuine bug, but correcting it changes every Clarity owner's tune and has to be a
+separate, later decision.
+
+Why the knee matters more than the gains: over the first segment, CAN torque per unit of normalized
+command is `torqueV[1] * torqueBP[-1] / torqueBP[1]` — `15360` for the branch this car was on, `10240` for
+FrogPilot's intended one, `4551` for NRDR's. With gains included, the branch this car was on asked for
+**1.77x** more torque per unit of lateral error than NRDR does, at the same 3840 ceiling.
 
 ## Already present in FrogPilot — do not re-port
 
