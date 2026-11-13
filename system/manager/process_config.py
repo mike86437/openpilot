@@ -9,6 +9,7 @@ from openpilot.common.params import Params
 from openpilot.system.hardware import HARDWARE, PC, TICI
 from openpilot.system.manager.process import PythonProcess, NativeProcess, DaemonProcess
 
+from opendbc.car.honda.values import clarity_mod_eps
 from openpilot.frogpilot.common import frogpilot_paths
 
 WEBCAM = os.getenv("USE_WEBCAM") is not None
@@ -46,6 +47,24 @@ def long_maneuver(started: bool, params: Params, CP: car.CarParams, frogpilot_to
 
 def not_long_maneuver(started: bool, params: Params, CP: car.CarParams, frogpilot_toggles: SimpleNamespace) -> bool:
   return started and not params.get_bool("LongitudinalManeuverMode")
+
+def no_driver_monitoring_for_this_car(started: bool, params: Params, CP: car.CarParams, frogpilot_toggles: SimpleNamespace) -> bool:
+  """FrogPilot variables (NRDR): driver monitoring does not run on the modified-EPS Clarity.
+
+  clarity_mod_eps() (opendbc/car/honda/values.py) is the same firmware gate the lateral tune (car/interfaces.py),
+  the carcontroller smoothing (honda/carcontroller.py) and the phase-latched integrator freeze
+  (selfdrive/controls/lib/latcontrol_pid.py) already share, and the manager hands every gate the live CarParams
+  (system/manager/process.py:280-288), so the car's own EPS version decides this and there is no parameter to
+  mis-set. Measured on this device while driving: dmonitoringmodeld 9.4 % CPU / 181 MB and dmonitoringd 4.5 %
+  CPU, plus the driver camera stream and the GPU inference for the driver model.
+
+  Two things follow, and both are handled. CP is the last carParams the manager received, so on a cold start it
+  is empty: driver monitoring starts and ensure_running() stops it a few seconds later when card publishes
+  carParams (selfdrive/car/card.py:262-267) - nothing can alert in that window because openpilot is not
+  engaged. And driverMonitoringState is then a 20 Hz service nobody publishes: selfdrived lists it in its
+  SubMaster, so selfdrive/selfdrived/selfdrived.py ignores it for this car or all_checks() would raise
+  commIssue, a soft-disable, on a car that is driving normally."""
+  return not clarity_mod_eps(CP.carFingerprint, CP.carFw)
 
 def qcomgps(started: bool, params: Params, CP: car.CarParams, frogpilot_toggles: SimpleNamespace) -> bool:
   return started and not ublox_available()
@@ -102,7 +121,7 @@ procs = [
   PythonProcess("timed", "system.timed", always_run, enabled=not PC),
 
   PythonProcess("modeld", "selfdrive.modeld.modeld", only_onroad),
-  PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", driverview, enabled=(WEBCAM or not PC)),
+  PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", and_(driverview, no_driver_monitoring_for_this_car), enabled=(WEBCAM or not PC)),
 
   PythonProcess("sensord", "system.sensord.sensord", only_onroad, enabled=not PC),
   PythonProcess("soundd", "selfdrive.ui.soundd", driverview),
@@ -115,7 +134,7 @@ procs = [
   PythonProcess("selfdrived", "selfdrive.selfdrived.selfdrived", only_onroad),
   PythonProcess("card", "selfdrive.car.card", only_onroad),
   PythonProcess("deleter", "system.loggerd.deleter", always_run),
-  PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", driverview, enabled=(WEBCAM or not PC)),
+  PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", and_(driverview, no_driver_monitoring_for_this_car), enabled=(WEBCAM or not PC)),
   PythonProcess("qcomgpsd", "system.qcomgpsd.qcomgpsd", qcomgps, enabled=TICI),
   PythonProcess("pandad", "selfdrive.pandad.pandad", always_run),
   PythonProcess("paramsd", "selfdrive.locationd.paramsd", only_onroad),

@@ -8,6 +8,7 @@ import cereal.messaging as messaging
 from cereal import car, custom, log
 from msgq.visionipc import VisionIpcClient, VisionStreamType
 from opendbc.car.gm.values import CC_ONLY_CAR
+from opendbc.car.honda.values import clarity_mod_eps
 
 
 from openpilot.common.params import Params
@@ -83,6 +84,13 @@ class SelfdriveD:
     self.car_state_sock = messaging.sub_sock('carState', timeout=20)
 
     ignore = self.sensor_packets + self.gps_packets + ['alertDebug', 'frogpilotProcessState']
+    # FrogPilot variables (NRDR): driver monitoring is not started for the modified-EPS Clarity
+    # (system/manager/process_config.py, no_driver_monitoring_for_this_car). Its 20 Hz service must not be
+    # judged missing here: all_checks() would add commIssue, a soft-disable and a no-entry alert, on a car that
+    # is driving normally. The events it used to contribute are simply absent, which is the intent. Every other
+    # car keeps the health check.
+    if clarity_mod_eps(self.CP.carFingerprint, self.CP.carFw):
+      ignore += ['driverMonitoringState']
     if SIMULATION:
       ignore += ['driverCameraState', 'managerState']
     if REPLAY:
