@@ -23,7 +23,17 @@ class CarInterface(CarInterfaceBase):
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
     # FrogPilot variables
     if CP.enableGasInterceptorDEPRECATED:
-      return CarControllerParams.NIDEC_ACCEL_MIN, CarControllerParams.NIDEC_ACCEL_MAX
+      # The branch below is the stock-PCM case, and NIDEC_ACCEL_MAX is 1.6 for the reason stated there: a PCM
+      # openpilot cannot command the throttle through will not accelerate near cruise_speed, so the PID must not
+      # ask for it. With a gas interceptor openpilot commands the pedal, that constraint is gone, and 1.6 becomes
+      # the smallest number in the chain - lower than openpilot's own cruise table (A_CRUISE_MAX_VALS,
+      # longitudinal_planner.py:21-22), lower than the FrogPilot acceleration profile the driver selected (the
+      # source of frogpilotPlan.maxAcceleration, longitudinal_planner.py:137), and lower than the
+      # MaxDesiredAcceleration clamp controlsd applies to this return value on the next line
+      # (selfdrive/controls/controlsd.py:154). Return FrogPilot's ceiling instead so this function is never what
+      # limits the car. Only a non-Bosch Honda reaches here: canUsePedal is False for Bosch (car/interfaces.py:
+      # 204), and car_helpers sets the interceptor flag only where canUsePedal is True.
+      return CarControllerParams.NIDEC_ACCEL_MIN, CarControllerParams.GAS_INTERCEPTOR_ACCEL_MAX
 
     if CP.carFingerprint in HONDA_BOSCH:
       return CarControllerParams.BOSCH_ACCEL_MIN, CarControllerParams.BOSCH_ACCEL_MAX
