@@ -38,14 +38,27 @@ if arch == "larch64":
 
 tinygrad_files = ["#"+x for x in glob.glob(env.Dir("#tinygrad_repo").relpath + "/**", recursive=True, root_dir=env.Dir("#").abspath) if 'pycache' not in x]
 
+# FrogPilot's compiled tree ships the model artifacts ("*_tinygrad.pkl", "*_metadata.pkl") without the
+# driving ONNX sources they were made from: "Compile FrogPilot" (5382071) deleted driving_vision.onnx and
+# driving_policy.onnx, and they are not part of this tree. SCons fails any target whose source is absent,
+# which stopped every build on this device at selfdrive/modeld. So ask for a model target only when its
+# ONNX source is actually here: a build must neither stop on a source this tree does not ship, nor silently
+# recompile the driving model the car runs.
+def model_source_exists(model_name):
+  return os.path.isfile(File(f"models/{model_name}").abspath + ".onnx")
+
 # Get model metadata
 for model_name in ['driving_vision', 'driving_policy', 'dmonitoring_model']:
+  if not model_source_exists(model_name):
+    continue
   fn = File(f"models/{model_name}").abspath
   script_files = [File(Dir("#selfdrive/modeld").File("get_model_metadata.py").abspath)]
   cmd = f'python3 {Dir("#selfdrive/modeld").abspath}/get_model_metadata.py {fn}.onnx'
   lenv.Command(fn + "_metadata.pkl", [fn + ".onnx"] + tinygrad_files + script_files, cmd)
 
 def tg_compile(flags, model_name):
+  if not model_source_exists(model_name):
+    return None
   pythonpath_string = 'PYTHONPATH="${PYTHONPATH}:' + env.Dir("#tinygrad_repo").abspath + '"'
   fn = File(f"models/{model_name}").abspath
   return lenv.Command(
@@ -72,6 +85,7 @@ if "USBGPU" in os.environ:
     flags = "DEV=AMD AMD_IFACE=USB AMD_LLVM=1 NOLOCALS=0 IMAGE=0"
     bp = tg_compile(flags, "big_driving_policy")
     bv = tg_compile(flags, "big_driving_vision")
-    lenv.SideEffect('lock', [bp, bv])  # tg doesn't support multi-process so build serially
+    if bp and bv:
+      lenv.SideEffect('lock', [bp, bv])  # tg doesn't support multi-process so build serially
   else:
     print("USB GPU not detected... skipping")
