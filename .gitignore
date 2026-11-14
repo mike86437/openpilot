@@ -38,6 +38,10 @@ a.out
 *.vcd
 *.mo
 *_pyx.cpp
+# A real (non-CI) build writes these next to their sources: moc emits its meta-object sources beside the
+# headers they mirror, lrelease writes the compiled translations. Neither is ever a source of truth.
+moc_*.cc
+*.qm
 *.stats
 config.json
 clcache
