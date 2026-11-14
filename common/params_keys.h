@@ -233,6 +233,14 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"ForceStops", {PERSISTENT, BOOL, "0", "0", 2}},
     {"ForceTorqueController", {PERSISTENT, BOOL, "0", "0", 3}},
     {"FPSCounter", {PERSISTENT, BOOL, "1", "0", 3}},
+    // FrogPilot variables (NRDR): the Honda driver-override ladder - see the comment in
+    // frogpilot/common/frogpilot_variables.py where these are read, and the press test in
+    // opendbc_repo/opendbc/car/honda/carstate.py where they are applied. "0" is not a value here, it means
+    // "this car's own STEER_THRESHOLD from opendbc/car/honda/values.py, with the centre window closed".
+    {"FrogHondaDriverOverrideThreshold", {PERSISTENT, INT, "0", "0", 3}},
+    {"FrogHondaIncreaseOverrideTolerance", {PERSISTENT, BOOL, "0", "0", 3}},
+    {"FrogHondaOverrideCenterAngle", {PERSISTENT, FLOAT, "0.0", "0.0", 3}},
+    {"FrogHondaOverrideCenterThreshold", {PERSISTENT, INT, "0", "0", 3}},
     {"FrogPilotApiToken", {PERSISTENT | DONT_LOG, STRING, "", "", 0}},
     {"FrogPilotCarParams", {CLEAR_ON_MANAGER_START | CLEAR_ON_ONROAD_TRANSITION, BYTES, "", ""}},
     {"FrogPilotCarParamsPersistent", {PERSISTENT, BYTES, "", ""}},

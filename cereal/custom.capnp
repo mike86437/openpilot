@@ -23,6 +23,17 @@ struct FrogPilotCarParams @0xaedffd8f31e7b55d {
   flags @2 :UInt32;
   hasDashboardSpeedLimit @3 :Bool;
   openpilotLongitudinalControlDisabled @4 :Bool;
+
+  # FrogPilot variables (NRDR): the Honda driver-override ladder - what it takes for openpilot to consider the
+  # steering yours. Filled in opendbc/car/interfaces.py (the HONDA branch of get_frogpilot_params) and read by
+  # opendbc/car/honda/carstate.py's press test. A zero in any of these means "this car's stock
+  # STEER_THRESHOLD", or for the angle "no centre window" - never zero torque - so a car that never sets them
+  # behaves exactly as it did before these fields existed. New ordinals only: @0-@4 are what existing
+  # FrogPilotCarParamsPersistent blobs and old logs are written with.
+  hondaOverrideThreshold @5 :Float32;
+  hondaOverrideCenterThreshold @6 :Float32;
+  hondaOverrideCenterAngle @7 :Float32;
+  hondaRaiseOverrideTolerance @8 :Bool;
 }
 
 struct FrogPilotCarState @0xf35cc4560bbf6ec2 {

@@ -879,6 +879,14 @@ SETTING_LABELS = {
   "ForceStops": {"name": "Force Stop at \"Detected\" Stop Lights/Signs"},
   "ForceTorqueController": {"name": "Force Torque Controller"},
   "FPSCounter": {"name": "FPS Display"},
+  # FrogPilot variables (NRDR): the Honda driver-override ladder. Read in the advanced-lateral-tuning block
+  # below, carried to the car in FrogPilotCarParams, and applied by the press test in
+  # opendbc/car/honda/carstate.py. Every one of them defaults to 0, which means this car's own
+  # STEER_THRESHOLD and no centre window.
+  "FrogHondaDriverOverrideThreshold": {"name": "Advanced Lateral Tuning: Override Effort", "unit": " torque units"},
+  "FrogHondaIncreaseOverrideTolerance": {"name": "Advanced Lateral Tuning: Double the Override Effort"},
+  "FrogHondaOverrideCenterAngle": {"decimals": 1, "name": "Advanced Lateral Tuning: Centre Window Width", "unit": " degrees"},
+  "FrogHondaOverrideCenterThreshold": {"name": "Advanced Lateral Tuning: Override Effort in the Centre Window", "unit": " torque units"},
   "FrogsGoMoosTweak": {"name": "Toyota/Lexus Settings: FrogsGoMoo's Personal Tweaks"},
   "GoatScream": {"name": "Goat Scream"},
   "GreenLightAlert": {"name": "Green Light Alert"},
@@ -1452,6 +1460,23 @@ class FrogPilotVariables:
     toggle.use_custom_latAccelFactor = (round(toggle.latAccelFactor, 6) != round(latAccelFactor, 6) and is_torque_car and not toggle.has_auto_tune and not toggle.force_auto_tune) or toggle.force_auto_tune_off
     toggle.steerRatio = self.get_value("SteerRatio", cast=float, condition=advanced_lateral_tuning and self.params.get("SteerRatio") != 0, default=steerRatio, minimum=steerRatio * 0.5, maximum=steerRatio * 1.5)
     toggle.use_custom_steerRatio = (round(toggle.steerRatio, 6) != round(steerRatio, 6) and not toggle.force_auto_tune) or toggle.force_auto_tune_off
+
+    # FrogPilot variables (NRDR): the Honda driver-override ladder - how hard the wheel has to be pushed before
+    # openpilot treats the steering as the driver's. Unlike this branch's Clarity map and gains (scoped by EPS
+    # firmware in opendbc/car/interfaces.py), these stay parameters: they change what openpilot believes the
+    # driver is doing, not what the loop commands, and the plan wants them reachable per car. Nothing is applied
+    # here; they travel through FrogPilotCarParams (the HONDA branch of get_frogpilot_params) to the press test
+    # in opendbc/car/honda/carstate.py. 0 for every one of them is that car's stock STEER_THRESHOLD with the
+    # centre window closed, which is what every Honda does today.
+    honda_override_allowed = advanced_lateral_tuning and toggle.is_honda_nidec
+    toggle.frog_honda_driver_override_threshold = self.get_value("FrogHondaDriverOverrideThreshold", cast=int,
+                                                                 condition=honda_override_allowed, default=0, maximum=8000)
+    toggle.frog_honda_override_center_threshold = self.get_value("FrogHondaOverrideCenterThreshold", cast=int,
+                                                                 condition=honda_override_allowed, default=0, maximum=8000)
+    toggle.frog_honda_override_center_angle = self.get_value("FrogHondaOverrideCenterAngle", cast=float,
+                                                             condition=honda_override_allowed, default=0.0, maximum=30.0)
+    toggle.frog_honda_increase_override_tolerance = self.get_value("FrogHondaIncreaseOverrideTolerance",
+                                                                   condition=honda_override_allowed)
 
     advanced_longitudinal_tuning = toggle.openpilot_longitudinal and self.get_value("AdvancedLongitudinalTune")
     toggle.longitudinalActuatorDelay = self.get_value("LongitudinalActuatorDelay", cast=float, condition=advanced_longitudinal_tuning and (self.params.get("LongitudinalActuatorDelay") != 0 or self.params.get("LongitudinalActuatorDelayStock") != 0), default=longitudinalActuatorDelay, minimum=0, maximum=1)

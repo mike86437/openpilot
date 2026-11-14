@@ -17,6 +17,12 @@ BUTTONS_DICT = {CruiseButtons.RES_ACCEL: ButtonType.accelCruise, CruiseButtons.D
                 CruiseButtons.MAIN: ButtonType.mainCruise, CruiseButtons.CANCEL: ButtonType.cancel}
 SETTINGS_BUTTONS_DICT = {CruiseSettings.DISTANCE: ButtonType.gapAdjustCruise, CruiseSettings.LKAS: ButtonType.lkas}
 
+# FrogPilot variables (NRDR): the Honda EPS family NRDR treats as touchy enough to double its override press
+# point when the driver asks for more tolerance before openpilot hands over (nrdr
+# sunnypilot/car/honda/carstate.py:10). The same three fingerprints, for the same reason: the hand torques
+# these EPS units publish sit close to STEER_THRESHOLD during ordinary steering.
+OVERRIDE_TOLERANCE_SENSITIVE_EPS = (CAR.HONDA_CLARITY, CAR.HONDA_CIVIC, CAR.HONDA_CIVIC_BOSCH)
+
 
 class CarState(CarStateBase):
   def __init__(self, CP):
@@ -48,6 +54,34 @@ class CarState(CarStateBase):
     # When available we use cp.vl["CAR_SPEED"]["ROUGH_CAR_SPEED_2"] to populate vEgoCluster
     # However, on cars without a digital speedometer this is not always present (HRV, FIT, CRV 2016, ILX and RDX)
     self.dash_speed_seen = False
+
+    # FrogPilot variables (NRDR): the press test in update(). These are the stock answer - every Honda does
+    # exactly this today - and init_frogpilot_params() only moves them when the Pond values are actually set,
+    # so a car with nothing configured is the old behaviour exactly.
+    self.override_threshold = STEER_THRESHOLD.get(CP.carFingerprint, 1200)
+    self.override_center_threshold = self.override_threshold
+    self.override_center_angle = 0.0
+
+  # FrogPilot variables (NRDR): resolve the override thresholds once, from the Pond values the card process
+  # bakes into FrogPilotCarParams (opendbc/car/interfaces.py, the HONDA branch of get_frogpilot_params). Zero
+  # in any of them means stock for this car, never zero torque. Nothing here is read per frame: the press test
+  # runs at 100 Hz, so it reads attributes prepared here.
+  def init_frogpilot_params(self):
+    stock = STEER_THRESHOLD.get(self.CP.carFingerprint, 1200)
+    self.override_threshold = self.FPCP.hondaOverrideThreshold or stock
+    self.override_center_threshold = self.FPCP.hondaOverrideCenterThreshold or stock
+    self.override_center_angle = max(0.0, self.FPCP.hondaOverrideCenterAngle)
+    if self.CP.carFingerprint in OVERRIDE_TOLERANCE_SENSITIVE_EPS and self.FPCP.hondaRaiseOverrideTolerance:
+      self.override_threshold *= 2
+      self.override_center_threshold *= 2
+
+  def override_press_threshold(self, steering_angle_deg: float) -> float:
+    """NRDR's centre boost: within override_center_angle of straight the press point is the centre threshold,
+    beyond it the driver threshold. Both start at this car's STEER_THRESHOLD, so with no Pond values set this
+    returns the number the press test used before any of these parameters existed."""
+    if self.override_center_angle > 0.0 and abs(steering_angle_deg) <= self.override_center_angle:
+      return self.override_center_threshold
+    return self.override_threshold
 
   def update(self, can_parsers) -> structs.CarState:
     cp = can_parsers[Bus.pt]
@@ -149,7 +183,8 @@ class CarState(CarStateBase):
     ret.gasPressed = cp.vl["POWERTRAIN_DATA"]["PEDAL_GAS"] > 1e-5
 
     ret.steeringTorque = cp.vl["STEER_STATUS"]["STEER_TORQUE_SENSOR"]
-    ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD.get(self.CP.carFingerprint, 1200)
+    # FrogPilot variables (NRDR): the driver-override ladder above replaces this car's flat STEER_THRESHOLD test.
+    ret.steeringPressed = abs(ret.steeringTorque) > self.override_press_threshold(ret.steeringAngleDeg)
 
     if self.CP.carFingerprint in HONDA_BOSCH:
       # The PCM always manages its own cruise control state, but doesn't publish it

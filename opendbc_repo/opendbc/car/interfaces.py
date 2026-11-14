@@ -230,6 +230,25 @@ class CarInterfaceBase(ABC):
           CP.lateralTuning.pid.kpV, CP.lateralTuning.pid.kiV = [[0.1575], [0.05175]]
           CP.lateralTuning.pid.kf = 0.00006
 
+        # FrogPilot variables (NRDR): the driver-override ladder, baked into FPCP here and read by the press
+        # test in honda/carstate.py. NRDR's own profile on this car (nrdr handcrafted_lateral.py:54 and its
+        # Nrdr* values) is 2000 CAN units while the wheel is off-centre and the stock 1200 within 3.0 degrees
+        # of straight - the centre part is why it is worth having both: light inputs during a lane change or a
+        # village turn stop being read as the driver steering, while straight-line takeover stays as easy as it
+        # is today. On this branch, measured on route 0000001e--6c0b5411e5 with the stock 1200 still in force:
+        # 87 s of frames flagged steeringPressed, 51 s of the same frames against a 2000-unit threshold, and in
+        # the earlier baseline 0000001d the hand crossed 1200 about 750 times in 393 s of steering. Every one of
+        # those flag events blanks the commanded torque for a frame and fades it back over a second
+        # (carcontroller.py's override_ramp), so the threshold and the smoothing are not independent levers.
+        # Zero in any field means "stock for this car", never "zero torque". Unlike the Clarity's map and gains
+        # just above - which this branch scopes by firmware, not by parameter - these stay parameters, because
+        # they change what openpilot believes the driver is doing rather than what the loop commands, and the
+        # plan wants them reachable per car.
+        fp_ret.hondaOverrideThreshold = max(0.0, float(getattr(frogpilot_toggles, "frog_honda_driver_override_threshold", 0) or 0))
+        fp_ret.hondaOverrideCenterThreshold = max(0.0, float(getattr(frogpilot_toggles, "frog_honda_override_center_threshold", 0) or 0))
+        fp_ret.hondaOverrideCenterAngle = max(0.0, float(getattr(frogpilot_toggles, "frog_honda_override_center_angle", 0) or 0))
+        fp_ret.hondaRaiseOverrideTolerance = bool(getattr(frogpilot_toggles, "frog_honda_increase_override_tolerance", False))
+
       elif platform in HYUNDAI:
         if candidate in CANFD_CAR:
           can_bus = HyundaiCanBus(CP)
