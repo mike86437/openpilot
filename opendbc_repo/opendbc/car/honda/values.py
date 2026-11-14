@@ -20,6 +20,22 @@ class CarControllerParams:
   NIDEC_ACCEL_MIN = -4.0  # m/s^2
   NIDEC_ACCEL_MAX = 1.6  # m/s^2, lower than 2.0 m/s^2 for tuning reasons
 
+  # FrogPilot variables: NIDEC_ACCEL_MAX exists to stop the longitudinal PID winding up against a stock PCM that
+  # cannot reach the acceleration being asked for (the comment in honda/interface.py). A Honda whose pedal
+  # openpilot commands through a gas interceptor has no such ceiling: compute_gb_honda_nidec maps full pedal to
+  # 4.8 m/s^2 (carcontroller.py:41), and the speed-dependent NIDEC_MAX_ACCEL table below only feeds pcm_accel,
+  # which the interceptor path zeroes (carcontroller.py:218-221). There the flat 1.6 is just the smallest number
+  # in the chain - below openpilot's own cruise table (A_CRUISE_MAX_VALS, longitudinal_planner.py:21-22, which
+  # starts at 1.6 and falls to 0.6) and below every FrogPilot acceleration profile: the default profile is SPORT
+  # at 3.0 m/s^2 from a stop (ACCELERATION_PROFILES, frogpilot_variables.py:163-168; A_CRUISE_MAX_VALS_SPORT,
+  # frogpilot_acceleration.py:17-21), which is exactly the demand the 1.6 was throwing away.
+  #
+  # This is not a target acceleration. It is FrogPilot's own ceiling - MAX_ACCELERATION, 4.0,
+  # frogpilot_variables.py:44, the largest value the Pond accepts for MaxDesiredAcceleration - chosen so this
+  # function can never be the binding limit and the profile the driver picked is. controlsd applies that clamp on
+  # the next line (selfdrive/controls/controlsd.py:154). Keep this equal to MAX_ACCELERATION.
+  GAS_INTERCEPTOR_ACCEL_MAX = 4.0  # m/s^2
+
   NIDEC_ACCEL_LOOKUP_BP = [-1., 0., .6]
   NIDEC_ACCEL_LOOKUP_V = [-4.8, 0., 2.0]
 
