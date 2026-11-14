@@ -18,7 +18,22 @@ class PIDController:
     self.i_dt = 1.0 / rate
     self.speed = 0.0
 
+    # FrogPilot variables: an optional rate-damping term, off unless a caller sets the strength. A
+    # torque-commanded EPS (Honda Nidec) closes the loop torque -> angle, which is a double integrator, and
+    # proportional feedback on a double integrator is an undamped oscillator. p, i and f are all gain knobs;
+    # only a term that reacts to how fast the wheel is moving can damp it. NRDR's verified form, kept
+    # identical so the two tunings are comparable. With strength 0 the term is exactly 0.0 and this
+    # controller is unchanged, term for term.
+    self.damping_strength = 0.0      # 100 applies the full output range at 10 deg/s of wheel movement
+    self.damping_fade_speed = 30.0   # m/s; at or above this speed the term is zero
+
     self.reset()
+
+  def damping(self, steering_rate_deg: float, v_ego: float) -> float:
+    if self.damping_strength <= 0.0 or v_ego >= self.damping_fade_speed:
+      return 0.0
+    fade = (self.damping_fade_speed - v_ego) / self.damping_fade_speed
+    return -(self.damping_strength * 0.001) * float(steering_rate_deg) * fade
 
   @property
   def k_p(self):
@@ -43,7 +58,7 @@ class PIDController:
     self.pos_limit = pos_limit
     self.neg_limit = neg_limit
 
-  def update(self, error, error_rate=0.0, speed=0.0, feedforward=0., freeze_integrator=False):
+  def update(self, error, error_rate=0.0, speed=0.0, feedforward=0., freeze_integrator=False, steering_rate_deg=None):
     self.speed = speed
     self.p = self.k_p * float(error)
     self.d = self.k_d * error_rate
@@ -59,5 +74,13 @@ class PIDController:
       self.i = np.clip(i, i_lowerbound, i_upperbound)
 
     control = self.p + self.i + self.d + self.f
+
+    # FrogPilot variables: applied after the terms are summed and before the clamp, so damping can only take
+    # output away from a wheel that is arriving fast; it never asks for authority the car does not already
+    # have, and it is never integrated, so it cannot wind up. It is deliberately left out of the i bound
+    # above: with strength 0 nothing here runs, and the integral evolves exactly as it does today.
+    if steering_rate_deg is not None:
+      control += self.damping(float(steering_rate_deg), speed)
+
     self.control = np.clip(control, self.neg_limit, self.pos_limit)
     return self.control
