@@ -887,6 +887,11 @@ SETTING_LABELS = {
   "FrogHondaIncreaseOverrideTolerance": {"name": "Advanced Lateral Tuning: Double the Override Effort"},
   "FrogHondaOverrideCenterAngle": {"decimals": 1, "name": "Advanced Lateral Tuning: Centre Window Width", "unit": " degrees"},
   "FrogHondaOverrideCenterThreshold": {"name": "Advanced Lateral Tuning: Override Effort in the Centre Window", "unit": " torque units"},
+  # FrogPilot variables (NRDR): the rate-damping term the lateral PID adds for this car. The number is the
+  # percent of the loop's full +-1.0 command it takes away per 10 deg/s of measured wheel rate: 3 brakes a wheel
+  # turning at 100 deg/s with 0.3 of full torque. 0 leaves the controller alone. Applied in
+  # selfdrive/controls/lib/latcontrol_pid.py through common/pid.py, only for the modified-EPS Clarity.
+  "FrogHondaRateDamping": {"decimals": 1, "name": "Advanced Lateral Tuning: Rate Damping", "unit": " % of full torque per 10 deg/s"},
   "FrogsGoMoosTweak": {"name": "Toyota/Lexus Settings: FrogsGoMoo's Personal Tweaks"},
   "GoatScream": {"name": "Goat Scream"},
   "GreenLightAlert": {"name": "Green Light Alert"},
@@ -1477,6 +1482,12 @@ class FrogPilotVariables:
                                                              condition=honda_override_allowed, default=0.0, maximum=30.0)
     toggle.frog_honda_increase_override_tolerance = self.get_value("FrogHondaIncreaseOverrideTolerance",
                                                                    condition=honda_override_allowed)
+    # FrogPilot variables (NRDR): the lateral rate damping described in the labels above. Same gate as the ladder:
+    # this is a lateral-loop term, it is only ever read for a Honda Nidec with advanced lateral tuning on, and it
+    # stays 0 for every other car. It is a parameter rather than a CarParams field for the same reason the ladder
+    # is one: the Pond can change it while controlsd runs, and latcontrol_pid reads it every frame.
+    toggle.frog_honda_rate_damping = self.get_value("FrogHondaRateDamping", cast=float,
+                                                    condition=honda_override_allowed, default=0.0, maximum=50.0)
 
     advanced_longitudinal_tuning = toggle.openpilot_longitudinal and self.get_value("AdvancedLongitudinalTune")
     toggle.longitudinalActuatorDelay = self.get_value("LongitudinalActuatorDelay", cast=float, condition=advanced_longitudinal_tuning and (self.params.get("LongitudinalActuatorDelay") != 0 or self.params.get("LongitudinalActuatorDelayStock") != 0), default=longitudinalActuatorDelay, minimum=0, maximum=1)

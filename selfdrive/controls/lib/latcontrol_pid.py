@@ -69,10 +69,39 @@ class LatControlPID(LatControl):
       if self.phase_latched and phase < 0.0 and self.pid.i * error > 0.0:
         freeze_integrator = True
 
+      # FrogPilot variables: rate damping, on the same firmware gate as the freeze above. Read every frame, like
+      # every other FrogPilot value here, so the Pond can change it without restarting controlsd. The term lives
+      # in common/pid.py and is off unless this is non-zero: strength 5 takes 0.005 of the +-1.0 command for
+      # every deg/s the wheel is turning, fading to nothing at the controller's damping_fade_speed.
+      #
+      # Why the wheel rate and not an error derivative: this EPS is torque-commanded, so the loop closes
+      # torque -> angle, a double integrator, and proportional feedback on a double integrator is an undamped
+      # oscillator. p, i and f are all gain knobs - only a term that reacts to how fast the wheel is moving can
+      # damp it. CS.steeringRateDeg is the EPS's own STEER_ANGLE_RATE, which agrees with the differentiated
+      # wheel angle in sign and magnitude and is already what pid_log reports.
+      #
+      # Measured against the pulled drives (analysis/rate_damping_calibration.py): at 18-30 kph the loop reaches
+      # full authority 1.0-1.5 s before a corner while still 8-15 deg short, and the wheel arrives at 115 deg/s
+      # p90 while the command is pegged. At strength 3 that is 0.27 of that authority taken back off the
+      # approaching wheel, which is the whole mechanism. At 50+ kph the wheel moves 4-5 deg/s at p90 and the term
+      # stays under 0.02 of the command, which is why the 30 m/s fade costs nothing on the highway. Strength 3 is
+      # NRDR's shipped default expressed in these units (their rate_damping 0.3 times 0.010 per deg/s).
+      self.pid.damping_strength = float(getattr(frogpilot_toggles, "frog_honda_rate_damping", 0.0) or 0.0) \
+          if self.phase_latched else 0.0
+
+      # A rate the driver caused is not the loop's own motion: damping it would be steering resistance, and a
+      # safety-limited steer is one openpilot is not allowed to move at all. Deliberately not gated on the
+      # command already being at the limit - the term is added before the clamp inside pid.update, so a command
+      # that would have pegged is exactly the one it can shorten, and that is the mechanism.
+      damping_rate = None
+      if self.pid.damping_strength > 0.0 and not CS.steeringPressed and not steer_limited_by_safety:
+        damping_rate = float(CS.steeringRateDeg)
+
       output_torque = self.pid.update(error,
                                 feedforward=ff,
                                 speed=CS.vEgo,
-                                freeze_integrator=freeze_integrator)
+                                freeze_integrator=freeze_integrator,
+                                steering_rate_deg=damping_rate)
 
       pid_log.active = True
       pid_log.p = float(self.pid.p)
