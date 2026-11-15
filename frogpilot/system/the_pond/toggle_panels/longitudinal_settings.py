@@ -798,6 +798,19 @@ ROWS = [
     "widget": "value"
   },
   {
+    "description": ("<b>The number on the driving screen becomes the speed openpilot is actually aiming at, whenever that " +
+                    "is lower than the speed you dialled in.</b><br><br>It changes over on a curve, a posted limit, " +
+                    "\"Taco Tune\", or a force coast target, and changes back the moment openpilot is aiming at your set " +
+                    "speed again. It never shows a higher number than you asked for, and your real set speed is " +
+                    "untouched - only the number changes.<br><br>It shows nothing while cruise control or longitudinal " +
+                    "control is off."),
+    "key": "ShowActualSpeedTarget",
+    "order": 8,
+    "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life"),
+    "title": "Show the Speed openpilot Is Aiming At",
+    "widget": "toggle"
+  },
+  {
     "description": ("<b>Adds a set amount of extra room between you and the car ahead, and keeps that room at every speed, not just when you are " +
                     "stopped.</b><br><br>You notice it most at red lights, where a few feet stops openpilot creeping up close. While moving, that " +
                     "same room means openpilot starts slowing a little sooner. \"Traffic Mode\" ignores this setting."),
