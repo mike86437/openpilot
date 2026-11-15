@@ -43,10 +43,11 @@ class CarState(CarStateBase):
 
     self.steer_status_values = defaultdict(lambda: "UNKNOWN", can_define.dv["STEER_STATUS"]["STEER_STATUS"])
 
-    # FrogPilot variables (NRDR): which EPS states are not a steering fault. Everything here is the upstream
-    # reading; the only addition is NO_TORQUE_ALERT_1 for the modified-EPS Clarity, and it is scoped by the same
-    # firmware predicate that selects this car's lateral tune, its actuator smoothing and its integrator freeze,
-    # so no other Honda sees it.
+    # FrogPilot variables (NRDR): which EPS states are not a steering fault. Everything in the tuple is the
+    # upstream reading. The one thing this branch adds is the NO_TORQUE_ALERT_1 exception, and it takes two yeses:
+    # the firmware predicate that already selects this car's lateral tune, its actuator smoothing and its
+    # integrator freeze decides that this car may have it, and FrogHondaOverrideNotAFault - the Pond row "Keep
+    # Steering When You Take Over" - decides whether it does. No other Honda can get it either way.
     #
     # Why: NO_TORQUE_ALERT_1 on this EPS is a statement about the driver, not about the actuator. Measured over
     # the seven pulled drives (analysis/dropout_check.py, and the state read straight off the bus in
@@ -60,14 +61,19 @@ class CarState(CarStateBase):
     # The same moments also carry NO_TORQUE_ALERT_2, which the block below already does not treat as a fault,
     # and it is that one Honda's own LKAS uses for "the driver is in the wheel". The upstream FIXME two lines
     # down is the counter-argument, written by someone with the stock camera in front of them: Honda's own LKAS
-    # stops steering on NO_TORQUE_ALERT_1 too. Accepted here because openpilot is not the stock camera and this
-    # car's carcontroller already puts out zero torque while the driver is pressing (carcontroller.py
-    # smooth_torque and its override_ramp), so keeping lateral commanded costs nothing and stops the flapping.
-    # Nothing else reads the flag except that latActive term and car_specific.py:208's alert ladder, and that
-    # one already stays silent while carState.steerPressed is set.
+    # stops steering on NO_TORQUE_ALERT_1 too. Accepted behind the parameter because openpilot is not the stock
+    # camera and this car's carcontroller already puts out zero torque while the driver is pressing
+    # (carcontroller.py smooth_torque and its override_ramp), so keeping lateral commanded costs nothing and stops
+    # the flapping - and because the parameter is there for anyone who wants the upstream reading back. Nothing
+    # else reads the flag except that latActive term and car_specific.py:208's alert ladder, and that one already
+    # stays silent while carState.steerPressed is set.
     self.steer_fault_states = ("NORMAL", "LOW_SPEED_LOCKOUT", "NO_TORQUE_ALERT_2")
-    if clarity_mod_eps(CP.carFingerprint, CP.carFw):
-      self.steer_fault_states += ("NO_TORQUE_ALERT_1",)
+    # Whether this car may be offered the NO_TORQUE_ALERT_1 exception at all: its EPS firmware decides that, and
+    # the Pond row ("Keep Steering When You Take Over", FrogHondaOverrideNotAFault) decides whether it is on. The
+    # second half is read per frame below so the Pond can flip it while card runs; this half cannot change while
+    # the car is running, and it is what keeps a stock Clarity - 39990-TYF-A020, no comma in the version - on
+    # upstream's reading no matter what its parameters say.
+    self.override_not_a_fault_available = clarity_mod_eps(CP.carFingerprint, CP.carFw)
 
     self.brake_switch_prev = False
     self.brake_switch_active = False
@@ -164,8 +170,13 @@ class CarState(CarStateBase):
       # LOW_SPEED_LOCKOUT is not worth a warning
       # NO_TORQUE_ALERT_2 can be caused by bump or steering nudge from driver
       # FIXME: the stock camera stops steering on NO_TORQUE_ALERT_1
-      # (FrogPilot variables: for the modified-EPS Clarity it is in self.steer_fault_states - see __init__)
-      ret.steerFaultTemporary = steer_status not in self.steer_fault_states
+      # FrogPilot variables: NO_TORQUE_ALERT_1 joins the not-a-fault set for the modified-EPS Clarity while the
+      # Pond row is on. Read every frame like every other FrogPilot value, with the same getattr default the
+      # override ladder uses (car/interfaces.py:247-250): an absent attribute is stock behaviour.
+      fault_states = self.steer_fault_states
+      if self.override_not_a_fault_available and getattr(self.frogpilot_toggles, "frog_honda_override_not_a_fault", False):
+        fault_states += ("NO_TORQUE_ALERT_1",)
+      ret.steerFaultTemporary = steer_status not in fault_states
 
     # All Honda EPS cut off slightly above standstill, some much higher
     # Don't alert in the near-standstill range, but alert for per-vehicle configured minimums above that

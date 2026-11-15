@@ -887,6 +887,12 @@ SETTING_LABELS = {
   "FrogHondaIncreaseOverrideTolerance": {"name": "Advanced Lateral Tuning: Double the Override Effort"},
   "FrogHondaOverrideCenterAngle": {"decimals": 1, "name": "Advanced Lateral Tuning: Centre Window Width", "unit": " degrees"},
   "FrogHondaOverrideCenterThreshold": {"name": "Advanced Lateral Tuning: Override Effort in the Centre Window", "unit": " torque units"},
+  # FrogPilot variables (NRDR): the switch over the Honda EPS state "the driver is steering harder than the assist
+  # is" (STEER_STATUS.NO_TORQUE_ALERT_1). Off is what every Honda does today - that state becomes a temporary
+  # steering fault and controlsd.py:133 lets go of lateral. On is honoured only by the modified-EPS Clarity, in
+  # opendbc/car/honda/carstate.py. Measured over the seven pulled drives: 101 of these states, every one while the
+  # driver was in the wheel, five real disengagements with them (analysis/DROPOUTS-2026-11-15.md).
+  "FrogHondaOverrideNotAFault": {"name": "Acura/Honda Settings: Keep Steering When You Take Over"},
   # FrogPilot variables (NRDR): the rate-damping term the lateral PID adds for this car. The number is the
   # percent of the loop's full +-1.0 command it takes away per 10 deg/s of measured wheel rate: 3 brakes a wheel
   # turning at 100 deg/s with 0.3 of full torque. 0 leaves the controller alone. Applied in
@@ -1674,6 +1680,13 @@ class FrogPilotVariables:
     toggle.honda_alt_tune = self.get_value("HondaAltTune", condition=honda_nidec_longitudinal)
     toggle.honda_low_speed_pedal = self.get_value("HondaLowSpeedPedal", condition=CP.enableGasInterceptorDEPRECATED and honda_nidec_longitudinal)
     toggle.honda_max_brake = self.get_value("HondaMaxBrake", condition=honda_nidec_longitudinal)
+    # FrogPilot variables (NRDR): the switch described in the labels above. No default= on purpose: an unwritten
+    # key returns the registered default "0", which is stock behaviour for every Honda (ISC-3). Not gated on
+    # AdvancedLateralTune the way the override ladder and the rate damping are - this is a car behaviour, not a
+    # steering number - and not carried in FrogPilotCarParams either, which would freeze it at fingerprinting:
+    # carstate reads it every frame, so the Pond can flip it while card is running.
+    toggle.frog_honda_override_not_a_fault = self.get_value("FrogHondaOverrideNotAFault",
+                                                             condition=toggle.is_honda_nidec)
 
     toggle.lane_changes = self.get_value("LaneChanges")
     toggle.lane_change_delay = self.get_value("LaneChangeTime", cast=float, condition=toggle.lane_changes)

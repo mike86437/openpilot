@@ -241,6 +241,14 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"FrogHondaIncreaseOverrideTolerance", {PERSISTENT, BOOL, "0", "0", 3}},
     {"FrogHondaOverrideCenterAngle", {PERSISTENT, FLOAT, "0.0", "0.0", 3}},
     {"FrogHondaOverrideCenterThreshold", {PERSISTENT, INT, "0", "0", 3}},
+    // FrogPilot variables (NRDR): whether the Honda EPS state "the driver is steering harder than the assist is"
+    // (STEER_STATUS.NO_TORQUE_ALERT_1) counts as a steering fault. 0 is what every Honda does today: it becomes
+    // steerFaultTemporary and controlsd.py:133 lets go of lateral. 1 is honoured only by the modified-EPS Clarity
+    // (clarity_mod_eps, opendbc/car/honda/values.py), in opendbc/car/honda/carstate.py: 101 of these states were
+    // recorded across the seven pulled drives, every one while the driver was in the wheel, carrying five real
+    // lateral disengagements with them. See analysis/DROPOUTS-2026-11-15.md and the Pond row in
+    // frogpilot/system/the_pond/toggle_panels/vehicle_settings.py.
+    {"FrogHondaOverrideNotAFault", {PERSISTENT, BOOL, "0", "0", 3}},
     // FrogPilot variables (NRDR): rate damping for the modified-EPS Clarity's lateral PID. Read in the same
     // advanced-lateral-tuning block as the ladder above and applied in selfdrive/controls/lib/latcontrol_pid.py
     // through common/pid.py. The unit is percent of the +-1.0 command per deg/s of measured wheel rate, so 3

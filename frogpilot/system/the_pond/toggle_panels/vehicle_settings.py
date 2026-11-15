@@ -89,6 +89,13 @@ def honda_low_speed_pedal_visible(context):
   return reason or context.car_reason(context.has_pedal)
 
 
+def keep_steering_on_override_visible(context):
+  # The row is visible exactly where the code reads the parameter: get_value gates FrogHondaOverrideNotAFault on
+  # toggle.is_honda_nidec (frogpilot_variables.py). What the row can then do is narrower - only the modified-EPS
+  # Clarity's carstate honours it (clarity_mod_eps) - and the row says so.
+  return car_row_reason(context, "FrogHondaOverrideNotAFault", context.is_honda_nidec)
+
+
 def long_pitch_visible(context):
   reason = car_row_reason(context, "LongPitch", context.is_gm) or longitudinal_reason(context)
   return reason or context.car_reason(not context.is_gm_cc_only)
@@ -282,6 +289,20 @@ ROWS = [
     "path": ("Vehicle Settings", "VEHICLE SETTINGS", "Acura/Honda Settings"),
     "title": "Responsive Pedal at Low Speeds",
     "visible": honda_low_speed_pedal_visible,
+    "widget": "toggle"
+  },
+  {
+    "description": ("<b>Keep openpilot steering through a corner when your car's power steering reports that you are turning the wheel harder than it " +
+                    "is assisting.</b><br><br>Your Honda publishes that state every time you steer firmly - a parking lot, a tight turn, a long curve at " +
+                    "speed. By default openpilot reads it as a steering fault and lets go of lateral for a moment each time it appears, which is the " +
+                    "wheel going slack in a corner you were already steering through. With it on, openpilot stays engaged, and it is not fighting you: it " +
+                    "already sends no steering effort while your hands are in the wheel, so only the letting go changes. Only a Clarity with the modified " +
+                    "EPS acts on this row - on every other Honda it changes nothing, on or off."),
+    "key": "FrogHondaOverrideNotAFault",
+    "order": 3,
+    "path": ("Vehicle Settings", "VEHICLE SETTINGS", "Acura/Honda Settings"),
+    "title": "Keep Steering When You Take Over",
+    "visible": keep_steering_on_override_visible,
     "widget": "toggle"
   },
   {
