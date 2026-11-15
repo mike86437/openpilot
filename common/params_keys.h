@@ -227,6 +227,12 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"FavoriteDestinations", {PERSISTENT | DONT_LOG, JSON, "[]", "[]"}},
     {"ForceAutoTune", {PERSISTENT, BOOL, "0", "0", 3}},
     {"ForceAutoTuneOff", {PERSISTENT, BOOL, "0", "0", 3}},
+    // FrogPilot variables (NRDR): force coast (the wheel button) is a throttle clamp, and `allow_throttle`
+    // (selfdrive/controls/lib/longitudinal_planner.py:175,185-187) is inert below MIN_ALLOW_THROTTLE_SPEED, so today
+    // the car coasts down and then pulls away at a stop. This is a signed speed offset in the user's own units that
+    // frogpilot/controls/lib/frogpilot_vcruise.py applies as an extra set-speed target below the car's own speed
+    // while force coast is armed; 0.0 means Off and is bit-for-bit today's behaviour.
+    {"ForceCoastTargetOffset", {PERSISTENT, FLOAT, "0.0", "0.0", 2}},
     {"ForceFingerprint", {PERSISTENT, BOOL, "0", "0", 2}},
     {"ForceOffroad", {CLEAR_ON_MANAGER_START, BOOL, "0", "0", 3}},
     {"ForceOnroad", {CLEAR_ON_MANAGER_START, BOOL, "0", "0", 3}},
