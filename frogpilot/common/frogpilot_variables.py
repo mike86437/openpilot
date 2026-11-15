@@ -885,6 +885,8 @@ SETTING_LABELS = {
   "Fahrenheit": {"name": "Numerical Temperature Gauge (Fahrenheit)"},
   "ForceAutoTune": {"name": "Force Auto-Tune On"},
   "ForceAutoTuneOff": {"name": "Force Auto-Tune Off"},
+  "ForceCoastTargetOffset": {"decimals": 1, "name": "Force openpilot to Coast: Target Below Current Speed",
+                             "unit": (" mph", " km/h"), "values": {0: "Off"}},
   "ForceFingerprint": {"name": "Disable Automatic Fingerprint Detection"},
   "ForceStops": {"name": "Force Stop at \"Detected\" Stop Lights/Signs"},
   "ForceTorqueController": {"name": "Force Torque Controller"},
