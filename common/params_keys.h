@@ -402,6 +402,10 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"SecOCKeys", {PERSISTENT | DONT_LOG, JSON, "[]", "[]", 0}},
     {"SetSpeedLimit", {PERSISTENT, BOOL, "0", "0", 1}},
     {"SetSpeedOffset", {PERSISTENT, FLOAT, "0.0", "0.0", 2}},
+    // FrogPilot variables (NRDR): the on-road speed number normally shows the set speed you dialled in. When this is
+    // on, selfdrive/controls/controlsd.py publishes the speed the planner is actually aiming at (frogpilotPlan.vCruise)
+    // whenever that is lower - a curve, a posted limit, Taco Tune, or a force coast target. "0" keeps today's HUD.
+    {"ShowActualSpeedTarget", {PERSISTENT, BOOL, "0", "0", 2}},
     {"ShowCEMStatus", {PERSISTENT, BOOL, "1", "0", 2}},
     {"ShowCPU", {PERSISTENT, BOOL, "1", "0", 3}},
     {"ShowCSCStatus", {PERSISTENT, BOOL, "1", "0", 2}},
