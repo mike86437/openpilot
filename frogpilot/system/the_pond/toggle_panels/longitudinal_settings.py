@@ -783,6 +783,21 @@ ROWS = [
     "widget": "toggle"
   },
   {
+    "description": ("<b>Only changes how \"Force openpilot to Coast\" behaves, and only while that button is armed.</b>" +
+                    "<br><br>openpilot then aims at a set speed this much <b>below your own current speed</b>, which is what keeps it " +
+                    "slowing instead of levelling off. A small value is a gentle coast, a larger one reaches for the stop sooner. Once your " +
+                    "own speed drops below this depth the target lands on zero and openpilot holds the car at the stop until you press the " +
+                    "button again, touch the gas, or brake.<br><br>Your own set speed, the cluster and the HUD are untouched. openpilot's own " +
+                    "braking never cancels force coast, only your pedals do."),
+    "key": "ForceCoastTargetOffset",
+    "order": 4,
+    "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life"),
+    "title": "Force openpilot to Coast: Aim Below Current Speed",
+    "value": rows.number(-30, 0, unit=" mph", labels={0: "Off"},
+                         metric=rows.number(-50, 0, unit=" km/h", labels={0: "Off"})),
+    "widget": "value"
+  },
+  {
     "description": ("<b>Adds a set amount of extra room between you and the car ahead, and keeps that room at every speed, not just when you are " +
                     "stopped.</b><br><br>You notice it most at red lights, where a few feet stops openpilot creeping up close. While moving, that " +
                     "same room means openpilot starts slowing a little sooner. \"Traffic Mode\" ignores this setting."),
