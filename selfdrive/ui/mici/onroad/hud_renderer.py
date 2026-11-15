@@ -13,6 +13,7 @@ from openpilot.common.filter_simple import FirstOrderFilter
 from cereal import log
 
 EventName = log.OnroadEvent.EventName
+LongSource = log.LongitudinalPlan.LongitudinalPlanSource
 
 # Constants
 SET_SPEED_NA = 255
@@ -20,6 +21,10 @@ KM_TO_MILE = 0.621371
 CRUISE_DISABLED_CHAR = '–'
 
 SET_SPEED_PERSISTENCE = 2.5  # seconds
+
+# FrogPilot variables: taking a target speed off the car the control is following
+LEAD_TARGET_SMOOTHING = 1.0  # seconds
+LEAD_TARGET_RESEED = 4.0  # m/s - a jump bigger than this in one frame is a different car
 
 
 @dataclass(frozen=True)
@@ -131,6 +136,9 @@ class HudRenderer(Widget):
 
     self._set_speed_alpha_filter = FirstOrderFilter(0.0, 0.1, 1 / gui_app.target_fps)
 
+    # FrogPilot variables: the lead target is re-seeded, never ramped from the last car
+    self._lead_target_filter = FirstOrderFilter(0.0, LEAD_TARGET_SMOOTHING, 1 / gui_app.target_fps, initialized=False)
+
     # FrogPilot variables
     self._frogpilot_widgets = FrogPilotWidgets()
 
@@ -184,9 +192,14 @@ class HudRenderer(Widget):
 
     self.set_speed is left alone - it drives is_cruise_set, the visibility and alpha filters, and the widget gating.
     Only the drawn text is allowed to differ from the speed the driver dialled in: that is what lets the box read 0
-    while a force coast target holds a stop without the UI concluding that cruise was cancelled. The target is
-    frogpilotPlan.vCruise, which is already the minimum of every target the planner is using (curve speed
-    controller, speed limit, Taco Tune, force coast), in m/s; self.set_speed is km/h.
+    while a force coast target holds a stop without the UI concluding that cruise was cancelled.
+
+    Two candidate targets, both in m/s, and the lower one is what gets drawn. self.set_speed is km/h and is only ever
+    a ceiling, never a value that can be raised:
+      - frogpilotPlan.vCruise, which is already the minimum of every target in the set-speed chain (curve speed
+        controller, speed limit, Taco Tune, force coast). A lead is not in that list and must not be - holding a
+        distance to a car is the MPC's job, not a set speed.
+      - the speed of the lead the MPC is actually constrained by, see _lead_target_speed.
     """
     self.displayed_speed = self.set_speed
     self._showing_speed_target = False
@@ -204,11 +217,54 @@ class HudRenderer(Widget):
       return
 
     target_kph = sm["frogpilotPlan"].vCruise * CV.MS_TO_KPH
+
+    lead_ms = self._lead_target_speed(sm)
+    if lead_ms is not None:
+      target_kph = min(target_kph, lead_ms * CV.MS_TO_KPH)
+
     to_display = 1.0 if ui_state.is_metric else KM_TO_MILE
     # Compared in display units: the number only changes when the number on the screen would actually change.
     if round(target_kph * to_display) < round(self.set_speed * to_display):
       self.displayed_speed = target_kph
       self._showing_speed_target = True
+
+  def _lead_target_speed(self, sm) -> float | None:
+    """FrogPilot variables: the speed of the lead the car is actually being held by, in m/s, or None.
+
+    long_mpc solves against three obstacles - lead0, lead1 and the cruise target - and publishes which one is nearer
+    at the first timestep (long_mpc.py:391, published at longitudinal_planner.py:262). That is the control's own
+    statement of what it is being held by, so a lead only has a target speed when it says lead0 or lead1: measured on
+    this car, a valid lead slower than the dialled speed exists in roughly half of all engaged frames, and most of
+    those are cars it is not aiming at yet (analysis/lead_target_probe.py, boots 00000022 and 00000024).
+
+    When it does say lead0, the plan's own speed over the next 2.5 s sits within 0.1 mph of that lead's vLead over
+    20,000 frames of two drives, so vLead is what the plan is aiming at even while we are still closing on it - which
+    is what a target is. The planned speed itself is not used anywhere in this file: while cruising at the dialled
+    speed with nothing in front it sits 7-8 mph below the set speed even at constant velocity, so it is a short-horizon
+    prediction, not a target.
+
+    vLead wobbles by about +/-0.4 kph frame to frame while following one steady car - enough to flip the drawn digit
+    5-7 times a minute - so it is smoothed. A jump bigger than LEAD_TARGET_RESEED is a different car, and a different
+    car reads immediately rather than sliding over.
+    """
+    if not sm.alive["longitudinalPlan"] or not sm.alive["radarState"]:
+      self._lead_target_filter.initialized = False
+      return None
+
+    source = sm["longitudinalPlan"].longitudinalPlanSource
+    if source not in (LongSource.lead0, LongSource.lead1):
+      self._lead_target_filter.initialized = False
+      return None
+
+    lead = sm["radarState"].leadOne if source == LongSource.lead0 else sm["radarState"].leadTwo
+    if not lead.status:
+      self._lead_target_filter.initialized = False
+      return None
+
+    v = max(lead.vLead, 0.0)
+    if not self._lead_target_filter.initialized or abs(v - self._lead_target_filter.x) > LEAD_TARGET_RESEED:
+      self._lead_target_filter.x = v
+    return self._lead_target_filter.update(v)
 
   def _render(self, rect: rl.Rectangle) -> None:
     """Render HUD elements to the screen."""
