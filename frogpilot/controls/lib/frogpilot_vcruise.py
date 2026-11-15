@@ -24,6 +24,7 @@ class FrogPilotVCruise:
 
     self.force_stop_timer = 0
     self.stop_distance = 0
+    self.force_coast_target = 0.0
 
   def update(self, long_control_active, now, time_validated, v_cruise, v_ego, sm, frogpilot_toggles):
     self.update_force_stop(long_control_active, v_ego, sm, frogpilot_toggles)
@@ -63,7 +64,14 @@ class FrogPilotVCruise:
       self.slc_offset = 0
       self.slc_target = 0
 
-    targets = [self.csc_target, v_cruise]
+    # Force coast: aim below our own speed so the coast reaches a stop instead of levelling off below the speed
+    # where the throttle clamp goes inert. The offset is a negative m/s value from the Pond; the target is floored
+    # at zero, it is never a negative set speed. Re-defaulted every frame so it is inert unless the key is armed.
+    self.force_coast_target = v_cruise
+    if long_control_active and sm["frogpilotCarState"].forceCoast and frogpilot_toggles.force_coast_target_offset < 0:
+      self.force_coast_target = max(v_ego + frogpilot_toggles.force_coast_target_offset, 0.0)
+
+    targets = [self.force_coast_target, self.csc_target, v_cruise]
     if frogpilot_toggles.speed_limit_controller and self.slc_target > 0:
       targets.append(max(max(self.slc.overridden_speed, self.slc_target + self.slc_offset) - v_ego_diff, frogpilot_variables.CRUISING_SPEED))
 
