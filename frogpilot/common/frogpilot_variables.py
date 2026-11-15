@@ -1093,6 +1093,7 @@ SETTING_LABELS = {
   "ScreenTimeoutOnroad": {"name": "Screen Timeout (Onroad)", "unit": " seconds"},
   "SetSpeedLimit": {"name": "Match Speed Limit on Engage"},
   "SetSpeedOffset": {"name": "Offset Set Speed by", "unit": (" mph", " km/h"), "values": {0: "Off"}},
+  "ShowActualSpeedTarget": {"name": "Show the Speed openpilot Is Aiming At"},
   "ShowCEMStatus": {"name": "Conditional Experimental Mode: Status Widget"},
   "ShowCPU": {"name": "Sidebar Metrics (CPU)"},
   "ShowCSCStatus": {"name": "Curve Speed Controller: Status Widget"},
@@ -1735,6 +1736,7 @@ class FrogPilotVariables:
     toggle.reverse_cruise_increase = self.get_value("ReverseCruise", condition=toggle.car_make == "toyota" and pcm_cruise and quality_of_life_longitudinal)
     toggle.set_speed_offset = self.get_value("SetSpeedOffset", cast=float, condition=not pcm_cruise and quality_of_life_longitudinal, conversion=(1 if toggle.is_metric else CV.MPH_TO_KPH))
     toggle.force_coast_target_offset = self.get_value("ForceCoastTargetOffset", cast=float, condition=quality_of_life_longitudinal, conversion=speed_conversion, minimum=-15.0, maximum=0.0)
+    toggle.show_actual_speed_target = self.get_value("ShowActualSpeedTarget", condition=quality_of_life_longitudinal)
     toggle.weather_presets = self.get_value("WeatherPresets", condition=quality_of_life_longitudinal)
     toggle.increase_following_distance_low_visibility = self.get_value("IncreaseFollowingLowVisibility", cast=float, condition=toggle.weather_presets)
     toggle.increase_following_distance_rain = self.get_value("IncreaseFollowingRain", cast=float, condition=toggle.weather_presets)
