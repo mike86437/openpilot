@@ -7,7 +7,7 @@ from opendbc.car.common.conversions import Conversions as CV
 from opendbc.car.honda.hondacan import CanBus
 from opendbc.car.honda.values import CAR, DBC, STEER_THRESHOLD, HONDA_BOSCH, HONDA_BOSCH_ALT_RADAR, HONDA_BOSCH_CANFD, \
                                                  HONDA_NIDEC_ALT_SCM_MESSAGES, HONDA_BOSCH_RADARLESS, HONDA_NIDEC_BRAKE_LIGHT_CARS, \
-                                                 HondaFlags, CruiseButtons, CruiseSettings, GearShifter, CarControllerParams
+                                                 HondaFlags, CruiseButtons, CruiseSettings, GearShifter, CarControllerParams, clarity_mod_eps
 from opendbc.car.interfaces import CarStateBase
 
 TransmissionType = structs.CarParams.TransmissionType
@@ -42,6 +42,32 @@ class CarState(CarStateBase):
     self.brake_error_msg = "HYBRID_BRAKE_ERROR" if CP.flags & HondaFlags.HYBRID else "STANDSTILL"
 
     self.steer_status_values = defaultdict(lambda: "UNKNOWN", can_define.dv["STEER_STATUS"]["STEER_STATUS"])
+
+    # FrogPilot variables (NRDR): which EPS states are not a steering fault. Everything here is the upstream
+    # reading; the only addition is NO_TORQUE_ALERT_1 for the modified-EPS Clarity, and it is scoped by the same
+    # firmware predicate that selects this car's lateral tune, its actuator smoothing and its integrator freeze,
+    # so no other Honda sees it.
+    #
+    # Why: NO_TORQUE_ALERT_1 on this EPS is a statement about the driver, not about the actuator. Measured over
+    # the seven pulled drives (analysis/dropout_check.py, and the state read straight off the bus in
+    # analysis/steer_status_timeline.py): 101 steerFaultTemporary onsets, and not one of them without
+    # carState.steerPressed - driver torque median 3144 CAN units against this branch's stock override threshold
+    # of 1200, while openpilot itself was commanding 500 units or less in 94 of them and lateral was already off
+    # in 95. The state appears and clears in 0.05-1.1 s cycles while the driver holds a corner at 30-45 degrees
+    # at 66 kph, and treated as a fault it drops lateral through controlsd.py:133 - five real dropouts in those
+    # drives, 0.1-0.3 s each, at 18-30 kph in tight turns the driver was steering anyway.
+    #
+    # The same moments also carry NO_TORQUE_ALERT_2, which the block below already does not treat as a fault,
+    # and it is that one Honda's own LKAS uses for "the driver is in the wheel". The upstream FIXME two lines
+    # down is the counter-argument, written by someone with the stock camera in front of them: Honda's own LKAS
+    # stops steering on NO_TORQUE_ALERT_1 too. Accepted here because openpilot is not the stock camera and this
+    # car's carcontroller already puts out zero torque while the driver is pressing (carcontroller.py
+    # smooth_torque and its override_ramp), so keeping lateral commanded costs nothing and stops the flapping.
+    # Nothing else reads the flag except that latActive term and car_specific.py:208's alert ladder, and that
+    # one already stays silent while carState.steerPressed is set.
+    self.steer_fault_states = ("NORMAL", "LOW_SPEED_LOCKOUT", "NO_TORQUE_ALERT_2")
+    if clarity_mod_eps(CP.carFingerprint, CP.carFw):
+      self.steer_fault_states += ("NO_TORQUE_ALERT_1",)
 
     self.brake_switch_prev = False
     self.brake_switch_active = False
@@ -138,7 +164,8 @@ class CarState(CarStateBase):
       # LOW_SPEED_LOCKOUT is not worth a warning
       # NO_TORQUE_ALERT_2 can be caused by bump or steering nudge from driver
       # FIXME: the stock camera stops steering on NO_TORQUE_ALERT_1
-      ret.steerFaultTemporary = steer_status not in ("NORMAL", "LOW_SPEED_LOCKOUT", "NO_TORQUE_ALERT_2")
+      # (FrogPilot variables: for the modified-EPS Clarity it is in self.steer_fault_states - see __init__)
+      ret.steerFaultTemporary = steer_status not in self.steer_fault_states
 
     # All Honda EPS cut off slightly above standstill, some much higher
     # Don't alert in the near-standstill range, but alert for per-vehicle configured minimums above that
