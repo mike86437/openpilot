@@ -1770,6 +1770,7 @@ class FrogPilotVariables:
     toggle.map_deceleration = self.get_value("MapDeceleration", condition=map_gears)
     toggle.reverse_cruise_increase = self.get_value("ReverseCruise", condition=toggle.car_make == "toyota" and pcm_cruise and quality_of_life_longitudinal)
     toggle.set_speed_offset = self.get_value("SetSpeedOffset", cast=float, condition=not pcm_cruise and quality_of_life_longitudinal, conversion=(1 if toggle.is_metric else CV.MPH_TO_KPH))
+    toggle.force_coast_target_offset = self.get_value("ForceCoastTargetOffset", cast=float, condition=quality_of_life_longitudinal, conversion=speed_conversion, minimum=-15.0, maximum=0.0)
     toggle.weather_presets = self.get_value("WeatherPresets", condition=quality_of_life_longitudinal)
     toggle.increase_following_distance_low_visibility = self.get_value("IncreaseFollowingLowVisibility", cast=float, condition=toggle.weather_presets)
     toggle.increase_following_distance_rain = self.get_value("IncreaseFollowingRain", cast=float, condition=toggle.weather_presets)
