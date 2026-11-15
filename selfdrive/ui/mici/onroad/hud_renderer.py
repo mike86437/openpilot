@@ -104,6 +104,8 @@ class HudRenderer(Widget):
     self.is_cruise_set: bool = False
     self.is_cruise_available: bool = True
     self.set_speed: float = SET_SPEED_NA
+    self.displayed_speed: float = SET_SPEED_NA
+    self._showing_speed_target: bool = False
     self._set_speed_changed_time: float = 0
     self.speed: float = 0.0
     self.v_ego_cluster_seen: bool = False
@@ -168,11 +170,45 @@ class HudRenderer(Widget):
     self.is_cruise_set = 0 < self.set_speed < SET_SPEED_NA
     self.is_cruise_available = self.set_speed != -1
 
+    # FrogPilot variables
+    self._update_displayed_speed(engaged)
+
     v_ego_cluster = car_state.vEgoCluster
     self.v_ego_cluster_seen = self.v_ego_cluster_seen or v_ego_cluster != 0.0
     v_ego = v_ego_cluster if self.v_ego_cluster_seen else car_state.vEgo
     speed_conversion = CV.MS_TO_KPH if ui_state.is_metric else CV.MS_TO_MPH
     self.speed = max(0.0, v_ego * speed_conversion)
+
+  def _update_displayed_speed(self, engaged: bool) -> None:
+    """FrogPilot variables: the number the MAX box draws, or the speed openpilot is aiming at when that is lower.
+
+    self.set_speed is left alone - it drives is_cruise_set, the visibility and alpha filters, and the widget gating.
+    Only the drawn text is allowed to differ from the speed the driver dialled in: that is what lets the box read 0
+    while a force coast target holds a stop without the UI concluding that cruise was cancelled. The target is
+    frogpilotPlan.vCruise, which is already the minimum of every target the planner is using (curve speed
+    controller, speed limit, Taco Tune, force coast), in m/s; self.set_speed is km/h.
+    """
+    self.displayed_speed = self.set_speed
+    self._showing_speed_target = False
+
+    if not engaged or not self.is_cruise_set or not ui_state.frogpilot_toggles.get("show_actual_speed_target"):
+      return
+
+    sm = ui_state.sm
+    if not sm["carControl"].longActive:
+      return
+
+    # A never-received or dropped frogpilotPlan still holds its zero-initialised default, so only a live message
+    # may override the nominal - a stale one must never zero the box.
+    if not sm.seen["frogpilotPlan"] or not sm.alive["frogpilotPlan"]:
+      return
+
+    target_kph = sm["frogpilotPlan"].vCruise * CV.MS_TO_KPH
+    to_display = 1.0 if ui_state.is_metric else KM_TO_MILE
+    # Compared in display units: the number only changes when the number on the screen would actually change.
+    if round(target_kph * to_display) < round(self.set_speed * to_display):
+      self.displayed_speed = target_kph
+      self._showing_speed_target = True
 
   def _render(self, rect: rl.Rectangle) -> None:
     """Render HUD elements to the screen."""
@@ -240,8 +276,11 @@ class HudRenderer(Widget):
 
   def _draw_set_speed(self, rect: rl.Rectangle) -> None:
     """Draw the MAX speed indicator box."""
-    alpha = self._set_speed_alpha_filter.update(0 < rl.get_time() - self._set_speed_changed_time < SET_SPEED_PERSISTENCE and
-                                                self._can_draw_top_icons and self._engaged and not ui_state.frogpilot_toggles.get("hide_max_speed"))
+    # FrogPilot variables: while the box is showing a target openpilot is actually aiming at it stays up - that
+    # number is meant to be read as the car walks down to a stop, not just for the first SET_SPEED_PERSISTENCE.
+    visible = (0 < rl.get_time() - self._set_speed_changed_time < SET_SPEED_PERSISTENCE or self._showing_speed_target) and \
+              self._can_draw_top_icons and self._engaged and not ui_state.frogpilot_toggles.get("hide_max_speed")
+    alpha = self._set_speed_alpha_filter.update(visible)
     if alpha < 1e-2:
       return
 
@@ -260,7 +299,8 @@ class HudRenderer(Widget):
     if ui_state.sm["frogpilotCarState"].trafficModeEnabled:
       max_color = rl.Color(255, 59, 48, int(255 * alpha))
 
-    set_speed = self.set_speed
+    # FrogPilot variables: what to draw, which is the target whenever openpilot is aiming below the set speed.
+    set_speed = self.displayed_speed
     if self.is_cruise_set and not ui_state.is_metric:
       set_speed *= KM_TO_MILE
 
