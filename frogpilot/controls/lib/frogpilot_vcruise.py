@@ -84,10 +84,26 @@ class FrogPilotVCruise:
 
     taco_active = taco_target < v_cruise
 
-    v_cruise = min(targets)
+    dialled = v_cruise
+    min_target = min(targets)
+    if (long_control_active and frogpilot_toggles.speed_float_above_set_speed and v_ego > dialled and
+        all(target >= dialled for target in targets)):
+      # Speed float: with nothing but the set speed holding the car and the car above it, aim just below our own speed
+      # instead of aiming at the dialled speed - so coming back is a coast, not a brake. The guard compared against the
+      # dialled speed is what makes this inert whenever curve speed control, Taco, a map limit or force coast is the
+      # thing lowering the target (targets contains the dialled speed, so all(t >= dialled) is min(targets) == dialled).
+      # The buffer is clamped by v_ego - dialled (the upstream "fix float", b562d9b9): with buffer <= v_ego - dialled,
+      # v_ego - buffer is never below dialled, so the float can only ever raise the aim. The cap is 10 mph.
+      actuator_accel = sm["carControl"].actuators.accel
+      buffer = min(0.1, v_ego - dialled) if actuator_accel < 0 else min(0.5, v_ego - dialled)
+      v_cruise = min(v_ego - buffer, dialled + 4.4704)
+    else:
+      v_cruise = min_target
 
-    self.csc_controlling_speed = self.csc_active and self.csc_target == v_cruise
-    self.taco_controlling_speed = taco_active and taco_target == v_cruise
+    # Whether a curve/limit feature owns the speed is decided by min(targets), not by the floated aim: that comparison
+    # is what selects the braking floor in frogpilot_acceleration.py:77-79, and the float must not change it.
+    self.csc_controlling_speed = self.csc_active and self.csc_target == min_target
+    self.taco_controlling_speed = taco_active and taco_target == min_target
 
     return v_cruise
 
