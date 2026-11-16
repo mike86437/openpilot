@@ -133,10 +133,14 @@ ROWS = [
   },
   {
     "description": ("<b>When the road ahead is clear and the car is above the speed you dialled in, let it aim at its own " +
-                    "speed instead of braking back to your number.</b><br><br>\"Float\" aims just below the car's own " +
-                    "speed - never below the speed you dialled in, and never more than 10 mph above it. It does nothing " +
-                    "when a curve, a posted limit, \"Taco Tune\" or a force coast target is what is slowing the car, and " +
-                    "the car still comes back to your set speed on its own.<br><br>\"Float + Coast Only\" also keeps the " +
+                    "speed instead of braking back to your number.</b><br><br>\"Float\" aims below the car's own speed - " +
+                    "never below the speed you dialled in, and never more than 10 mph above it. How far below its own " +
+                    "speed it aims is the same number as \"Force openpilot to Coast: Aim Below Current Speed\" in Gas / " +
+                    "Brake > Quality of Life: one setting for both, because both are asking the same question. Left at 0 " +
+                    "there, the float uses its own small built-in depth. A smaller overshoot than that depth is treated " +
+                    "normally, so the car still comes back to your set speed at the end of every float.<br><br>It does " +
+                    "nothing when a curve, a posted limit, \"Taco Tune\" or a force coast target is what is slowing the " +
+                    "car.<br><br>\"Float + Coast Only\" also keeps the " +
                     "throttle out of it while the car is above your set speed, so it drifts back on engine braking and " +
                     "regen alone: no brake lights, and a slower return.<br><br>\"Off\" is exactly what the car does today. " +
                     "The driving screen keeps showing the speed you dialled in."),
@@ -799,12 +803,17 @@ ROWS = [
     "widget": "toggle"
   },
   {
-    "description": ("<b>Only changes how \"Force openpilot to Coast\" behaves, and only while that button is armed.</b>" +
-                    "<br><br>openpilot then aims at a set speed this much <b>below your own current speed</b>, which is what keeps it " +
-                    "slowing instead of levelling off. A small value is a gentle coast, a larger one reaches for the stop sooner. Once your " +
-                    "own speed drops below this depth the target lands on zero and openpilot holds the car at the stop until you press the " +
-                    "button again, touch the gas, or brake.<br><br>Your own set speed, the cluster and the HUD are untouched. openpilot's own " +
-                    "braking never cancels force coast, only your pedals do."),
+    "description": ("<b>How far below your own current speed openpilot aims. Two features use it, and they are the same " +
+                    "question.</b><br><br>While the \"Force openpilot to Coast\" button is armed, openpilot aims this much " +
+                    "below your current speed, which is what keeps it slowing instead of levelling off. A small value is " +
+                    "a gentle coast, a larger one reaches for the stop sooner. Once your own speed drops below this depth " +
+                    "the target lands on zero and openpilot holds the car at the stop until you press the button again, " +
+                    "touch the gas, or brake.<br><br>With \"Speed Float Above Set Speed\" on, the same number is how far " +
+                    "below your current speed it aims while you are above the speed you dialled in - a larger value gives " +
+                    "the float less room and comes back sooner, a smaller one floats higher and longer. The float never " +
+                    "aims below your dialled speed, so this value can only raise the target, never lower it; left at 0 the " +
+                    "float uses its own small built-in depth.<br><br>Your own set speed, the cluster and the HUD are " +
+                    "untouched. openpilot's own braking never cancels force coast, only your pedals do."),
     "key": "ForceCoastTargetOffset",
     "order": 4,
     "path": ("Driving Controls", "GAS / BRAKE", "Quality of Life"),

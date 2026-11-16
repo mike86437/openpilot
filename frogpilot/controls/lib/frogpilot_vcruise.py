@@ -9,6 +9,14 @@ from openpilot.frogpilot.common import frogpilot_utilities, frogpilot_variables
 from openpilot.frogpilot.controls.lib.curve_speed_controller import CurveSpeedController
 from openpilot.frogpilot.controls.lib.speed_limit_controller import SpeedLimitController
 
+# Speed float (SpeedFloatAboveSetSpeed). How far below our own speed the aim sits comes from the Pond's
+# ForceCoastTargetOffset - the same key force coast already uses for the identical question - floored at these two
+# values so the aim is never exactly at v_ego, and capped so the float can never own more than 10 mph above what the
+# driver dialled.
+SPEED_FLOAT_MIN_DEPTH_MS = 0.5        # aiming at v_ego itself lets the MPC spend gas holding that speed: always sit below
+SPEED_FLOAT_MIN_DEPTH_SLOWING_MS = 0.1  # ...and shallower once a deceleration is already commanded, so it converges
+SPEED_FLOAT_CAP_MS = 4.4704           # 10 mph above the dialled speed, the most the float is allowed to aim above it
+
 class FrogPilotVCruise:
   def __init__(self, FrogPilotPlanner):
     self.frogpilot_planner = FrogPilotPlanner
@@ -88,15 +96,24 @@ class FrogPilotVCruise:
     min_target = min(targets)
     if (long_control_active and frogpilot_toggles.speed_float_above_set_speed and v_ego > dialled and
         all(target >= dialled for target in targets)):
-      # Speed float: with nothing but the set speed holding the car and the car above it, aim just below our own speed
+      # Speed float: with nothing but the set speed holding the car and the car above it, aim below our own speed
       # instead of aiming at the dialled speed - so coming back is a coast, not a brake. The guard compared against the
       # dialled speed is what makes this inert whenever curve speed control, Taco, a map limit or force coast is the
       # thing lowering the target (targets contains the dialled speed, so all(t >= dialled) is min(targets) == dialled).
-      # The buffer is clamped by v_ego - dialled (the upstream "fix float", b562d9b9): with buffer <= v_ego - dialled,
-      # v_ego - buffer is never below dialled, so the float can only ever raise the aim. The cap is 10 mph.
+      # How far below v_ego to aim is the driver's own number: frogpilot_toggles.force_coast_target_offset, the
+      # ForceCoastTargetOffset Pond value force coast uses one block above for the same question (negative m/s, "Off"
+      # at 0). One key, one meaning: how far below my current speed openpilot should aim. At 0 the float uses its own
+      # tuned minimum instead, because an aim sitting exactly at v_ego is what makes the MPC pay gas to hold a speed
+      # above the dialled one - the behaviour this feature exists to remove.
+      # The buffer is still clamped by v_ego - dialled (the upstream "fix float", b562d9b9): with buffer <= that, v_ego -
+      # buffer is never below the dialled speed, so the float can only ever raise the aim, and it degrades to a normal
+      # return to the dialled speed for the last stretch of any overshoot deeper than the offset.
+      offset = frogpilot_toggles.force_coast_target_offset
       actuator_accel = sm["carControl"].actuators.accel
-      buffer = min(0.1, v_ego - dialled) if actuator_accel < 0 else min(0.5, v_ego - dialled)
-      v_cruise = min(v_ego - buffer, dialled + 4.4704)
+      depth = -offset if offset < 0 else (SPEED_FLOAT_MIN_DEPTH_SLOWING_MS if actuator_accel < 0 else
+                                          SPEED_FLOAT_MIN_DEPTH_MS)
+      buffer = min(depth, v_ego - dialled)
+      v_cruise = min(v_ego - buffer, dialled + SPEED_FLOAT_CAP_MS)
     else:
       v_cruise = min_target
 
