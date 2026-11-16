@@ -225,9 +225,24 @@ class CarInterfaceBase(ABC):
         # corrected knee and removes the early ceiling.
         # No parameter gates this one - it is scoped to a single car by its EPS firmware. The which() test
         # keeps it inert, not fatal, if a torque controller or NNFF is ever selected for this car.
+        # Halved again on 2026-11-16, after route 0000002b (44 segments, 2362 s of hands-off engaged steering).
+        # With the gains above live, the wheel still passed the angle the loop had asked for: 20.7 overshoots a
+        # minute below 8 kph (10.0 and 6.0 on 00000023 and 00000024 at the same gains), 11.1 a minute in the
+        # 18-30 kph band with a median 9.6 deg past the commanded angle and a p90 of 34.9 deg, and the loop was
+        # already at >= 0.99 of its +-1.0 command in 67-75 % of those episode peaks. The P term is 92-99 % of
+        # what it was asking for in every band under 30 kph, so the gains are the term that is doing it.
+        # The actuator is not the limit here: torqueOutputCan was at or above 3700 counts in under 2 % of the
+        # frames on that drive. What saturates is the controller - at kpV 0.1575 full output arrives at 6.35 deg
+        # of tracking error, and the tracking error while it was steering hands-off below 30 kph measured 15-25
+        # deg at p90. It was held at the ceiling through the whole maneuver, which is the bang-bang that then
+        # overshoots the line and corrects back. Halving kp and ki moves that ceiling to 12.7 deg and takes the
+        # low-range torque request from 717 to 358 CAN units per unit of error.
+        # kf stays at NRDR's 6e-5 untouched on purpose: at 50 kph and above this loop is already feedforward
+        # dominant (52 % of the command, 0.3 deg median overshoot, 0.45 overshoots a minute) and those gains are
+        # not what the drive complained about. The 5760-knee map stays for the same reason it stayed in 4cbaaa8.
         if clarity_mod_eps(candidate, car_fw) and CP.lateralTuning.which() == "pid":
           CP.lateralParams.torqueBP, CP.lateralParams.torqueV = [[0, 5760, 10240], [0, 2560, 3840]]
-          CP.lateralTuning.pid.kpV, CP.lateralTuning.pid.kiV = [[0.1575], [0.05175]]
+          CP.lateralTuning.pid.kpV, CP.lateralTuning.pid.kiV = [[0.07875], [0.025875]]
           CP.lateralTuning.pid.kf = 0.00006
 
         # FrogPilot variables (NRDR): the driver-override ladder, baked into FPCP here and read by the press

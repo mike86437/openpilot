@@ -38,8 +38,9 @@ PLANT_NATURAL_DAMPING = 0.0
 
 
 def gains():
-  # The Clarity's own: opendbc/car/interfaces.py clarity_mod_eps() gives kp 0.1575 / ki 0.05175 at 0 m/s.
-  return [0.0], [0.1575], [0.0], [0.05175]
+  # The Clarity's own: opendbc/car/interfaces.py clarity_mod_eps() gives kp 0.07875 / ki 0.025875 at 0 m/s
+  # (halved from 0.1575 / 0.05175 after route 0000002b - see the comment there for the measurement).
+  return [0.0], [0.07875], [0.0], [0.025875]
 
 
 def make_pid(strength, v_ego):
