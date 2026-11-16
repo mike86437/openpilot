@@ -174,6 +174,17 @@ class LongitudinalPlanner:
     # FrogPilot variables
     self.allow_throttle &= not sm['frogpilotCarState'].forceCoast
 
+    # Speed float, state 2 ("Float + Coast Only"): when the aim has been raised above what the driver dialled and the
+    # car is still above that speed, the return is meant to be a coast - no throttle holding the higher speed up.
+    # Without this the MPC can feed gas to defend the floated target, which is exactly what ECO+ did in 00000026 (gas
+    # 0.018-0.081 in 1173 of 1198 engaged frames with the pedal untouched, because the aim was still the dialled speed
+    # and the car's own coast was pulling harder than the plan wanted). :184-187 below already turns allow_throttle ==
+    # False into clamping the MPC's upper bound to accel_coast, so this needs no other machinery.
+    if frogpilot_toggles.speed_float_above_set_speed == 2 and v_cruise_initialized and not lead_detected:
+      dialled_ms = sm['carState'].vCruise * CV.KPH_TO_MS
+      if v_cruise > dialled_ms + 0.05 and v_ego > dialled_ms + 0.05:
+        self.allow_throttle = False
+
     mpc_accel_max = max(accel_clip[1], 0.0) if lead_detected else accel_clip[1]
     mpc_accel_max = max(mpc_accel_max, self.a_desired - 0.05)
 
