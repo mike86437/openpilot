@@ -420,6 +420,12 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"ShowStoppingPointMetrics", {PERSISTENT, BOOL, "1", "0", 3}},
     {"ShowStorageLeft", {PERSISTENT, BOOL, "0", "0", 3}},
     {"ShowStorageUsed", {PERSISTENT, BOOL, "0", "0", 3}},
+    // FrogPilot variables (NRDR): the speed float, a port of the Clarity branch's "Float 10 mph over vcruise"
+    // (mike86436/openpilot e0a489f4, corrected by b562d9b9). "0" is today's behaviour: the plan always aims at the set
+    // speed you dialled in. "1" = when nothing else is lowering the target and the car is above the dialled speed, aim
+    // just below our own speed instead - never below your set speed, never more than 10 mph above it. "2" = the same,
+    // and no throttle while the aim sits above your set speed, so coming back is a coast.
+    {"SpeedFloatAboveSetSpeed", {PERSISTENT, INT, "0", "0", 2}},
     {"SidebarMetrics", {PERSISTENT, BOOL, "1", "0", 3}},
     {"SidebarOpen", {PERSISTENT, BOOL, "0", "0", 0}},
     {"SignalAnimation", {PERSISTENT, STRING, "frog", "stock", 0}},

@@ -1116,6 +1116,7 @@ SETTING_LABELS = {
   "ShowStoppingPointMetrics": {"name": "Model Stopping Point (Show Distance)"},
   "ShowStorageLeft": {"name": "Sidebar Metrics (SSD Left)"},
   "ShowStorageUsed": {"name": "Sidebar Metrics (SSD Used)"},
+  "SpeedFloatAboveSetSpeed": {"name": "Speed Float Above Set Speed", "values": {0: "Off", 1: "Float", 2: "Float + Coast Only"}},
   "SidebarMetrics": {"name": "Sidebar Metrics"},
   "SignalAnimation": {"name": "Custom Themes: Turn Signal"},
   "SignalMetrics": {"name": "Border Metrics (Turn Signal)"},
@@ -1715,6 +1716,7 @@ class FrogPilotVariables:
     longitudinal_tuning = toggle.openpilot_longitudinal and self.get_value("LongitudinalTune")
     toggle.acceleration_profile = self.get_value("AccelerationProfile", cast=float, condition=longitudinal_tuning)
     toggle.deceleration_profile = self.get_value("DecelerationProfile", cast=float, condition=longitudinal_tuning)
+    toggle.speed_float_above_set_speed = self.get_value("SpeedFloatAboveSetSpeed", cast=int, condition=longitudinal_tuning)
     toggle.human_acceleration = self.get_value("HumanAcceleration", condition=longitudinal_tuning)
     toggle.human_following = self.get_value("HumanFollowing", condition=longitudinal_tuning)
     toggle.human_lane_changes = toggle.has_radar and self.get_value("HumanLaneChanges", condition=longitudinal_tuning)

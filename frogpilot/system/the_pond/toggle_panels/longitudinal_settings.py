@@ -132,6 +132,22 @@ ROWS = [
     "widget": "select"
   },
   {
+    "description": ("<b>When the road ahead is clear and the car is above the speed you dialled in, let it aim at its own " +
+                    "speed instead of braking back to your number.</b><br><br>\"Float\" aims just below the car's own " +
+                    "speed - never below the speed you dialled in, and never more than 10 mph above it. It does nothing " +
+                    "when a curve, a posted limit, \"Taco Tune\" or a force coast target is what is slowing the car, and " +
+                    "the car still comes back to your set speed on its own.<br><br>\"Float + Coast Only\" also keeps the " +
+                    "throttle out of it while the car is above your set speed, so it drifts back on engine braking and " +
+                    "regen alone: no brake lights, and a slower return.<br><br>\"Off\" is exactly what the car does today. " +
+                    "The driving screen keeps showing the speed you dialled in."),
+    "key": "SpeedFloatAboveSetSpeed",
+    "options": ({"label": "Off", "value": 0}, {"label": "Float", "value": 1}, {"label": "Float + Coast Only", "value": 2}),
+    "order": 7,
+    "path": ("Driving Controls", "GAS / BRAKE", "Acceleration and Braking"),
+    "title": "Speed Float Above Set Speed",
+    "widget": "select"
+  },
+  {
     "description": ("<b>openpilot builds speed more like a person, holding back while your set speed is low and easing off as you close in on " +
                     "it.</b><br><br>At a 25 mph set speed you get roughly half the acceleration you otherwise would. On cars with a fixed launch " +
                     "push, this replaces that push with the same smooth target openpilot uses everywhere else, and the \"Start Acceleration\" row " +
