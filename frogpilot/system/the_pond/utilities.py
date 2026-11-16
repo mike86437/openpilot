@@ -12,7 +12,7 @@ from openpilot.common.params import Params
 from openpilot.system import sentry
 from openpilot.system.hardware import HARDWARE
 
-from openpilot.frogpilot.common import frogpilot_utilities, frogpilot_variables
+from openpilot.frogpilot.common import frogpilot_variables
 
 ACCOUNT_CHECK_INTERVAL = 1
 
@@ -66,9 +66,8 @@ class ThePond:
   def is_locked(self):
     if not self.sm.seen["deviceState"]:
       return True
-    if not self.sm["deviceState"].started or frogpilot_utilities.is_FrogsGoMoo():
-      return False
-    return not self.sm["frogpilotCarState"].parked
+
+    return False
 
   def send_request(self, kind, value=None):
     msg = messaging.new_message("thePondRequest")
