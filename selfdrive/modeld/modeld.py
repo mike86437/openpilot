@@ -32,6 +32,7 @@ from openpilot.selfdrive.modeld.models.commonmodel_pyx import DrivingModelFrame,
 from openpilot.selfdrive.modeld.runners.tinygrad_helpers import qcom_tensor_from_opencl_address
 
 from openpilot.frogpilot.common import frogpilot_model_utilities, frogpilot_utilities, frogpilot_variables
+from openpilot.frogpilot.controls.lateral.model_source import CURVATURE_HEAD, PLAN, delay_input
 
 
 PROCESS_NAME = "selfdrive.modeld.modeld"
@@ -45,6 +46,9 @@ POLICY_METADATA_PATH = Path(__file__).parent / 'models/driving_policy_metadata.p
 LAT_SMOOTH_SECONDS = 0.1
 LONG_SMOOTH_SECONDS = 0.3
 MIN_LAT_CONTROL_SPEED = 0.3
+# The DelayInput member for a model this frame tells no delay at all (cereal/log.capnp:1278 names it `none`,
+# and the field comment at :1264 calls the thing it denies "the told lateral delay").
+NO_DELAY_TOLD = "none"
 
 
 def get_action_from_model(model_output: dict[str, np.ndarray], prev_action: log.ModelDataV2.Action,
@@ -92,6 +96,83 @@ def get_action_from_model(model_output: dict[str, np.ndarray], prev_action: log.
     return log.ModelDataV2.Action(desiredCurvature=float(desired_curvature),
                                   desiredAcceleration=float(desired_accel),
                                   shouldStop=bool(should_stop))
+
+
+# FrogPilot lateral port (Task 9, plan S4). What the two functions below are for, and what they read.
+#
+# `model_source.lateral_source` classifies by the shape of a model's *outputs*, which is how dev-111826's
+# runner chooses (its action-head models are read off `model_output['action']`). This tree's legacy models
+# choose by *metadata*: `LegacyModelState.update_action` branches on `curvature_source` and only then touches
+# outputs (`frogpilot/common/frogpilot_model_utilities.py:214-240`). A model that has a curvature head and
+# metadata saying "plan" publishes the plan here, so classifying it by output shape would stamp it a
+# curvatureHead. What is read here instead is the same metadata `update_action` reads, and the horizon named
+# with it is the one that branch actually reads its value at:
+#
+#   who the model is             what gets published                                    stamped horizon
+#   -------------------------    ---------------------------------------------------  ------------------------------
+#   not a legacy model           get_curvature_from_plan in get_action_from_model      lat_action_t
+#   curvature_source == "plan"   … and update_action returns that action unchanged     lat_action_t
+#   curvature_source ==          get_curvature_from_plan again, at the actuator delay  steerActuatorDelay +
+#     "legacy_plan"              the plan lookup is given (:222-227)                  LATERAL_DELAY_OFFSET
+#   curvature_source ==          model_output["desired_curvature"]                     the delay the network
+#     "model" / "model_hold"                                                     was told: that one, or the
+#                                                                              actuator delay (:249-260)
+#
+# `delay_input` names an input that *carries the told delay*, and that is a different question in this tree
+# than it is in the source: there the runner fills `action_t` and `lateral_control_params` on every frame, so
+# presence is the whole answer. Here the only thing that fills either is `LegacyModelState.update_inputs`,
+# which modeld calls under `if legacy_model`; a stock model's inputs are filled with desire, the feature buffer
+# and traffic convention and nothing else (`modeld.py:307-308`). So presence is asked of the model only where
+# a delay is actually told, and a stock model is stamped `none` even if its metadata declared the input. That
+# is the one place this port refuses a name the source would have given, and it is measured as such in
+# analysis/lateral_timing_probe.py §17g rather than left to be noticed in a log.
+#
+# That last column is the reason it is not simply `lat_action_t`: `lateralActionTime` means "seconds from the
+# source vision frame to the lateral action target" (`cereal/log.capnp:1262`), and a legacy_plan model reads
+# its plan at a horizon that does not contain `lat_action_t` at all. Stamping this function's argument there
+# would make a port drive lie to the source tree's own analysis tools (Task 12).
+#
+# The two low-speed holds — `v_ego <= MIN_LAT_CONTROL_SPEED` here, and `"model_hold"` below
+# `min_lat_control_speed` there — re-publish the previous frame's curvature. Neither tree has a schema member
+# for a held value and neither tree stamps it, so neither does this one: the stamp names the source a model
+# reads from, not the frame a value was carried in.
+def frogpilot_lateral_action_source(model, legacy_model: bool, lat_action_t: float, lat_delay: float,
+                                    actuator_lateral_delay: float) -> tuple[str, float, str]:
+  """(lateralSource, the horizon that value was read at, delayInput) for this frame's model."""
+  model_delay_input = delay_input(model.numpy_inputs)
+  if not legacy_model:
+    return PLAN, lat_action_t, NO_DELAY_TOLD
+
+  told_delay = actuator_lateral_delay if model.lateral_delay_source == "vehicle" else lat_delay
+  if model.curvature_source == "plan":
+    return PLAN, lat_action_t, model_delay_input
+  if model.curvature_source == "legacy_plan":
+    return PLAN, actuator_lateral_delay, model_delay_input
+  # A curvature head names no horizon of its own: what it published is at the delay this frame told the
+  # network through `lateral_control_params`. A model with no such input was told nothing, so its horizon is
+  # not knowable here and the field says what to write in that case - "zero means unavailable"
+  # (`cereal/log.capnp:1262`). A zero in a port log is therefore an answer, not a gap.
+  if "lateral_control_params" not in model.numpy_inputs:
+    return CURVATURE_HEAD, 0.0, model_delay_input
+  return CURVATURE_HEAD, told_delay, model_delay_input
+
+
+def set_lateral_action_timing(modelv2_send, lateral_source: str, lateral_action_time: float,
+                             delay_input: str) -> None:
+  """Name, on the event that carries the curvature, where that curvature came from, the horizon it was read at
+  and which model input was told the delay — the same three fields, with the same meaning, as dev-111826's
+  `set_lateral_action_timing` (`modeld.py:89-101`), reached before the event is sent rather than after.
+
+  Two things the source has are not carried, both because this tree does not have the thing they sit on: its
+  `mdv2sp_send` (`modelDataV2SP`, whose whole purpose there is to mirror modelV2 for sunnypilot's tools — this
+  tree's mirror is `frogpilotModelV2`, which carries turn direction and nothing about timing), and its
+  `ptmTimingRestored` flag, left undefined here at @7 (the id is reserved, not reused). What a reader sees on
+  a frame this function did not run on is the declared default: 0.0 / unknown / unknown.
+  """
+  modelv2_send.modelV2.action.lateralActionTime = float(lateral_action_time)
+  modelv2_send.modelV2.action.lateralSource = lateral_source
+  modelv2_send.modelV2.action.delayInput = delay_input
+
 
 class FrameMeta:
   frame_id: int = 0
@@ -338,6 +419,34 @@ def main(demo=False):
     CP = messaging.log_from_bytes(params.get("CarParams", block=True), car.CarParams)
   cloudlog.info("modeld got CarParams: %s", CP.brand)
 
+  # FrogPilot lateral port (Task 9, plan S4): the prediction delay this car's EPS calibration models, resolved
+  # once per startup at the same point the source's modeld resolves it (`modeld.py:345-349`), including the
+  # deferred imports and the one blocking parameter read. That read is `FrogPilotCarParams`, which card writes
+  # in the same `read_params` call as `CarParams` (`selfdrive/car/card.py:203`) and which `controlsd.py:41`
+  # already blocks on; the resolver returns before it whenever this car's firmware is not the one the
+  # calibration models or the key is unset, so an unadmitted car never waits on a Honda-only parameter.
+  # None is the ordinary case, and every number below stays what it was in that case.
+  from openpilot.frogpilot.controls.lateral.controller_selection import firmware_controller_profile_for_model
+  from openpilot.frogpilot.controls.lateral.yaw_control_timing import prediction_delay_schedule
+  firmware_profile = firmware_controller_profile_for_model(params, CP)
+  delay_schedule = prediction_delay_schedule(firmware_profile)
+  if delay_schedule is not None:
+    # The horizon the source reads its plan at is lat_delay + DT_MDL + DT_MDL/2, unconditionally (its
+    # `frame_delay`/`action_delay`, `modeld.py:431-432`). This tree composes the same arithmetic only for
+    # ACTION_DELAY_MODELS, so for an admitted calibration the frame-centre delay comes with the schedule — a
+    # car fact gating a per-model value, not a change of that value: `use_action_delay` and
+    # `get_model_lat_smooth_seconds` are untouched, and every other model and every other car is unchanged.
+    # The smoothing term stays the model's own even here: the calibration owns the delay, not how a model's
+    # outputs are smoothed. That is a difference from the source, which overrides it with
+    # PTM_LAT_SMOOTH_SECONDS; it is recorded rather than hidden (ledger §2 D4), and for the model on this car
+    # today it is the same number: DEFAULT_MODEL lat_smooth_seconds 0.1 == PTM_LAT_SMOOTH_SECONDS. The same
+    # holds for `min_stable_delay`, which the source also forces to 0.0 for an admitted profile: left to
+    # `use_min_stable_delay` here, and both are 0 for every model except cd210-model.
+    action_delay = DT_MDL / 2
+  cloudlog.info("modeld lateral timing: profile=%s prediction_schedule=%s action_delay=%.3f",
+                firmware_profile.name if firmware_profile is not None else "none",
+                delay_schedule is not None, action_delay)
+
   # TODO this needs more thought, use .2s extra for now to estimate other delays
   # TODO Move smooth seconds to action function
   long_delay = frogpilot_toggles.longitudinalActuatorDelay + LONG_SMOOTH_SECONDS
@@ -394,7 +503,15 @@ def main(demo=False):
     is_rhd = sm["driverMonitoringState"].isRHD
     frame_id = sm["roadCameraState"].frameId
     v_ego = max(sm["carState"].vEgo, 0.)
-    lat_delay = sm["liveDelay"].lateralDelay + lat_smooth_seconds
+    # FrogPilot lateral port (Task 9): the delay term only. For an admitted EPS calibration it is that
+    # calibration's measured row, re-read every frame as speed changes — the source does the same through its
+    # own livedelay helper (`modeld.py:398-400`, `sunnypilot/livedelay/helpers.py:32-35`) and its own test
+    # says the schedule wins whatever the car's live estimate or saved delay says (analysis/
+    # lateral_timing_probe.py §12i). The `else` branch is this tree's existing line, unchanged.
+    if delay_schedule is not None:
+      lat_delay = float(np.interp(v_ego, *delay_schedule)) + lat_smooth_seconds
+    else:
+      lat_delay = sm["liveDelay"].lateralDelay + lat_smooth_seconds
     if sm.updated["liveCalibration"] and sm.seen['roadCameraState'] and sm.seen['deviceState']:
       device_from_calib_euler = np.array(sm["liveCalibration"].rpyCalib, dtype=np.float32)
       dc = DEVICE_CAMERAS[(str(sm['deviceState'].deviceType), str(sm['roadCameraState'].sensor))]
@@ -448,6 +565,12 @@ def main(demo=False):
       drivingdata_send = messaging.new_message('drivingModelData')
       posenet_send = messaging.new_message('cameraOdometry')
 
+      # FrogPilot lateral port: the two horizons keep the names the source gives them (`modeld.py:432-433`), so
+      # the value the conversion below uses and the value the stamps further down put on the event are the same
+      # value (D4). Nothing is recomputed here: on this base both names are composed above, at the FrogPilot
+      # variables block, and a combined model is handed them as inputs as well as the conversion being run with
+      # them - which is new relative to the base this port was written against, and is recorded rather than
+      # changed. The arithmetic, the arguments and `action_delay`'s per-model value are the target's.
       action = get_action_from_model(model_output, prev_action, lat_action_t, long_action_t, v_ego, lat_smooth_seconds, current_speed_stop, min_stable_delay)
 
       # FrogPilot variables
@@ -461,6 +584,16 @@ def main(demo=False):
       fill_model_msg(drivingdata_send, modelv2_send, model_output, action,
                      publish_state, meta_main.frame_id, meta_extra.frame_id, frame_id,
                      frame_drop_ratio, meta_main.timestamp_eof, model_execution_time, live_calib_seen)
+
+      # FrogPilot lateral port: the timing stamps go on modelV2 after the action is in it — including a legacy
+      # model's rewrite of it — and before it is sent, which is the point of the fields: a reader of a port
+      # rlog is told the same three things it is told about a dev-111826 rlog (ledger §2 D2). Nothing here
+      # changes a published value, and nothing reads these fields yet: `controlsd` does not exist for them
+      # until Task 19, and `latcontrol_fw`'s command-delay ramp is the only consumer this port intends.
+      lateral_source, lateral_action_time, model_delay_input = frogpilot_lateral_action_source(
+        model, legacy_model, lat_action_t, lat_delay,
+        frogpilot_toggles.steerActuatorDelay + frogpilot_variables.LATERAL_DELAY_OFFSET)
+      set_lateral_action_timing(modelv2_send, lateral_source, lateral_action_time, model_delay_input)
 
       desire_state = modelv2_send.modelV2.meta.desireState
       l_lane_change_prob = desire_state[log.Desire.laneChangeLeft]
