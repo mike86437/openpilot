@@ -13,6 +13,13 @@ Three rules this file exists to enforce:
      SOURCE_REFERENCE - the numbers a ported drive has to reproduce - and are never applied.
   3. Key names are the source's (`Nrdr*`), which is what lets the boot probe, drive notes and
      analysis/* tools run unchanged against both trees.
+  4. A key this tree has no code path for is still *reported*, but never presented as honoured. Lane centring is
+     that case: centring in this tree is model centring (plan §4, ledger D5 - `selfdrive/controls/lib/lane_centering.py`
+     is not ported), so `LaneGuidanceMode` 1 and 2 select nothing and the three `LaneCentering*` keys are read by no
+     control path. `describe()` prints their values like every other key, so what carries the truth is this file's
+     own comment on each one and `frogpilot/controls/lateral/README.md`; the source's mechanism for the same honesty
+     - demoting `BLENDFUL` to `MODEL_ONLY` per frame (`modeld.py:479-483` there) - has nothing to demote here,
+     because the answer is `MODEL_ONLY` before the parameter is read. Task 11 / S6.
 """
 from __future__ import annotations
 
@@ -45,11 +52,11 @@ LATERAL_KEYS: tuple[str, ...] = (
 STOCK_DEFAULTS: dict[str, Any] = {
   "NrdrLateralController": 0,        # 0 -> this tree's own LatControlPID / LatControlTorque (controlsd.py:65-67)
   "NrdrSteerRatioMode": 0,           # 0 -> no geometry override; the ported ladder arrives with Task 7
-  "NrdrOptimizedLaneChanges": False,
-  "LaneGuidanceMode": 0,             # 0 = off; the car reports LaneGuidanceMode=0 and LaneCentering=False
-  "LaneCenteringMinSpeed": 0,        # registered only: lane centring is deliberately not wired (D5)
-  "LaneCenteringStrength": 0.0,
-  "LaneCenterOffset": 0.0,
+  "NrdrOptimizedLaneChanges": False,  # the live lane key: arms the controller's lane-change gate (lane_change_tuning.py -> Task 19). The source defaults it ON (profiles.py:252, and this car has 1); unset is off here, so a comparable drive states it (D8)
+  "LaneGuidanceMode": 0,             # MODEL_ONLY, and 1/2 select nothing: centring here is model centring (rule 4). The car reports 0 and LaneCentering=False today
+  "LaneCenteringMinSpeed": 0,        # registered only, read by no control path: centring is deliberately not wired (D5)
+  "LaneCenteringStrength": 0.0,      #   "
+  "LaneCenterOffset": 0.0,           #   "
 }
 
 # Reference only - the source's own profile defaults (nrdr/params/profiles.py:268, specs.py:112-140).

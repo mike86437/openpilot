@@ -1262,9 +1262,17 @@ struct ModelDataV2 {
     lateralActionTime @3 :Float32; # Seconds from the source vision frame to the lateral action target; zero means unavailable.
     lateralSource @4 :LateralSource;  # where desiredCurvature came from; unknown in older logs
     delayInput @5 :DelayInput;        # which model input carries the told lateral delay; unknown in older logs
-    # @6 and @7 are left undefined and reserved: the source has laneGuidanceMode @6 :UInt8 and
-    # ptmTimingRestored @7 :Bool = true there, and Task 11 is what decides whether this tree carries them.
-    # Something else at @6 later is the struct-field version of the @151/@71 trap.
+    # @6 and @7 stay reserved. That is Task 11's decision, written here rather than left for a later reader.
+    # The source's laneGuidanceMode @6 :UInt8 says which centring path a model action was produced under, and in
+    # this tree the answer cannot vary: centring here is model centring. No centring code exists in this branch -
+    # selfdrive/controls/lib/lane_centering.py is not ported (plan §4, ledger D5) - so the source's own honesty
+    # mechanism, demoting BLENDFUL to MODEL_ONLY every frame it cannot serve it (`modeld.py:479-483`), has nothing
+    # to demote; and a UInt8 whose declared default is 0 already reads as model-only to a source-tree reader.
+    # A field this tree could only ever stamp with one value, with no code path behind it, is a name for a knob
+    # that does not exist. `ptmTimingRestored @7` is the source's legacy-timing flag: nothing in this tree
+    # restores a legacy timing, and its `= true` default exists only for historical decoding. Both ids stay free:
+    # something else landing at @6 is the struct-field version of the @151/@71 Event-union trap.
+    # (analysis/lateral_lane_change_probe.py §G checks this tree defines neither, and that the reason is here.)
 
     enum LateralSource {
       unknown @0;
