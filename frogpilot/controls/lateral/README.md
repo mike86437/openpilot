@@ -121,6 +121,28 @@ one is not a judgement call: that map holds `HONDA_RIDGELINE` and `HONDA_ODYSSEY
 calibration models" gate has never once applied to a Clarity. `analysis/lateral_admission_probe.py` prints that lookup
 and prints each of the five fleet cars the source's thirteen-entry table answers and this one-entry table cannot.
 
+## The settings surface (`lateral_settings.py`, S5)
+
+Nothing in this directory is a settings file, and it stays that way: the two keys are read through
+`frogpilot/common/lateral_settings.py` snapshots, and they are *offered* in The Pond's `lateral_settings.py` panel —
+two `select` rows at Driving Controls → STEERING → Advanced Lateral Tuning (`order` 8, 9), each gated on
+`firmware_lateral_visible`, which is `context.car_reason(context.can_use_firmware_lateral)` and nothing more. That
+car fact is computed once, in `FrogPilotVariables.update()`, from `FPCP.flags & HondaFrogPilotFlags.EPS_MODIFIED` and
+`CP.lateralTuning.which() == "pid"` — the car-side half of the admission above, written with this tree's own enum —
+and copied onto the Pond `Context` exactly like every other car fact, so the panel reads no Params of its own.
+
+What each row offers is only what this tree can honour: the controller row offers 0 (this tree's own controller) and 1
+(the measured EPS model Task 19 will build); 2 is not offered because no testing variant exists yet. The geometry row
+offers 0 and 3; 1 is left out because for this car it is numerically the car's own ratio, and 2 because this tree
+refuses it (table below). Both ask for a reboot `on_change`, since `controlsd` builds the controller at startup. A
+`manage` subgroup is deliberately not added for them: every `manage` row in this panel is gated on a registered
+parameter, and a grouping-only key would be a knob nothing reads.
+
+`analysis/lateral_ui_probe.py` reads the rows out of the panel's own syntax tree, the registrations out of the header
+the car compiles, runs the visibility helper as written on a car it can and cannot admit, and asks
+`firmware_controller_selected` / `firmware_controller_testing_selected` / `resolve_steer_ratio_selection` what each
+offered value actually does.
+
 ## The mode table
 
 `SteerRatioMode` keeps the source's four numbers and labels verbatim. What each one *does* in this tree:
@@ -180,6 +202,8 @@ directory, ported or not, so nothing above is an unrecorded omission.
                                                                  # the horizon each tree composes, the schema and both drives
 /root/frog/venv/bin/python analysis/lateral_admission_probe.py     # the admission: the same car, both trees, the same
                                                                  # profile — and every refusal condition refused
+/root/frog/venv/bin/python analysis/lateral_ui_probe.py          # the settings surface: what each offered option
+                                                                 # selects, the registry behind it, who is offered it
 ```
 
 `lateral_timing_probe.py` also settles two things that are easy to get wrong from the source's file list alone:

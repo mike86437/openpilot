@@ -13,7 +13,7 @@ from opendbc.car import gen_empty_fingerprint
 from opendbc.car.car_helpers import interfaces
 from opendbc.car.ford.values import CAR as FORD
 from opendbc.car.gm.values import CC_ONLY_CAR
-from opendbc.car.honda.values import HONDA_BOSCH
+from opendbc.car.honda.values import HONDA_BOSCH, HondaFrogPilotFlags
 from opendbc.car.hyundai.values import CANFD_CAR, HyundaiFlags
 from opendbc.car.interfaces import GearShifter
 from opendbc.car.mock.values import CAR as MOCK
@@ -1385,6 +1385,13 @@ class FrogPilotVariables:
     is_angle_car = CP.steerControlType == car.CarParams.SteerControlType.angle
     toggle.is_gm_cc_only = CP.carFingerprint in CC_ONLY_CAR
     toggle.is_honda_nidec = toggle.car_make == "honda" and CP.carFingerprint not in HONDA_BOSCH
+    # The lateral port's measured-EPS steering model is a fact about the car before it is a setting: it exists for
+    # a Honda whose EPS reports itself as modified (the bit get_frogpilot_params writes from carFw, the same test
+    # the Honda interface uses for its own tuning) and whose CarParams asks for a pid lateral tune. This is the
+    # car-side half of frogpilot/controls/lateral/controller_selection.py's admission - the settings half stays off
+    # by default (ISC-3), so a row is only offered where admission could ever succeed.
+    eps_modified = toggle.car_make == "honda" and bool(FPCP.flags & HondaFrogPilotFlags.EPS_MODIFIED.value)
+    toggle.can_use_firmware_lateral = eps_modified and CP.lateralTuning.which() == "pid"
     learned_lateral_profile = self.params.get("MaxLateralAcceleration")
     learned_lateral_acceleration = learned_lateral_profile.get("value", 0.0) if learned_lateral_profile.get("car_fingerprint") == toggle.car_model else 0.0
     toggle.can_use_always_on_lateral_lkas_button = toggle.car_make == "hyundai" and bool(CP.flags & HyundaiFlags.CANFD or CP.flags & HyundaiFlags.HAS_LDA_BUTTON)
