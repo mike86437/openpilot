@@ -67,10 +67,45 @@ from openpilot.frogpilot.controls.lateral.vfn_eps_core import HondaEpsFirmwareFe
 from openpilot.frogpilot.controls.lateral.yaw_control_timing import CommandDelay, command_delay, prediction_delay_schedule
 
 VFN_SOURCE_COMMIT = "f837ca86a639b1c20a0ce23bb8acf0ebbc6a05d4"
-GAIN_BP = [0.0, 11.175, 11.176, 22.352]
-KP = [0.018, 0.024, 0.048, 0.060]
+# The source's own angle-PID schedule (`latcontrol_fw.py:28-30`), kept named as it ships so the schedule built
+# below reads as a difference from the calibration instead of as new numbers invented here.
+GAIN_BP_SOURCE = [0.0, 11.175, 11.176, 22.352]
+KP_SOURCE = [0.018, 0.024, 0.048, 0.060]
 KI = [0.006, 0.008, 0.016, 0.020]
 ANGLE_RATE_LIMIT = 300.0
+
+# Low-speed proportional trim, from the first drive on this controller (00000041, 2026-11-19). The report was
+# the wheel oscillating at crawl, and the log agrees: over the hands-off frames in that boot the commanded angle
+# changed direction 60 times a minute at 0-8 kph against 10 in the same band on the dev-111826 drive, with the
+# overshoots 2-3x deeper (10.6 deg median against 4.2). At those speeds this controller is P-only by construction
+# - the integrator is frozen below 5 m/s (INTEGRATOR_MIN_SPEED) and the feedforward is gated off below
+# FF_SPEED_BP[0] and only joins once |angle error| is already under FF_JOIN_ERROR_DEG - and the core then
+# multiplies P by the lowest band of P_SCALE (1.25, vfn_eps_core.py:166). So the only authority in the loop at
+# crawl is P, and P is the number to turn.
+#
+# The trim is a deliberate deviation from the calibration, applied here because this file is where the controller
+# owns its gains (README §"the angle-PID gains belong to the controller, not to the core"). It stops at 8 m/s
+# (29 kph): the source's values stand unchanged from the 25 mph band edge up, and the controller probe
+# (analysis/lateral_controller_probe.py), which asserts the two trees' gain literals are equal by repr, now
+# reports this difference on purpose. Nothing else is touched: KI stays as the calibration has it (I cannot move at crawl
+# anyway), and the core's own tables, scales and feedforward are untouched so V19/V20 still hold.
+LOW_SPEED_TRIM_BP = [0.0, 3.0, 8.0]        # m/s
+LOW_SPEED_TRIM_KP = [0.70, 0.85, 1.00]     # multiplier on KP_SOURCE at those speeds
+
+
+def _trim_low_speed_kp():
+  """The source's schedule with the crawl-band knots inserted, above the trim's top knot unchanged by assertion."""
+  bp = sorted(set(GAIN_BP_SOURCE) | set(LOW_SPEED_TRIM_BP))
+  base = [float(np.interp(b, GAIN_BP_SOURCE, KP_SOURCE)) for b in bp]
+  trim = [float(np.interp(b, LOW_SPEED_TRIM_BP, LOW_SPEED_TRIM_KP)) for b in bp]
+  kp = [round(a * t, 6) for a, t in zip(base, trim)]
+  for b, base_k, got in zip(bp, base, kp):
+    if b >= LOW_SPEED_TRIM_BP[-1]:
+      assert got == round(base_k, 6), f"trim reached {b} m/s, past its own top knot"
+  return bp, kp
+
+
+GAIN_BP, KP = _trim_low_speed_kp()
 
 
 def _eps_modified_steering_pressed(raw_pressed, steering_torque: float, torque_command: float,
@@ -100,6 +135,10 @@ class LatControlFirmware(LatControl):
     cloudlog.info("PTM Controller profile=%s calibration=%s provisional=%s prediction_schedule=%s required_rwd=%s",
                   self.firmware_profile.name, self.firmware_profile.calibration,
                   self.firmware_profile.provisional, self.delay_schedule, self.firmware_profile.required_rwd or "-")
+    # The gain schedule the controller is actually running, printed once per startup next to the admission line:
+    # a port drive is judged against these numbers, so the log has to say which ones were in the loop.
+    cloudlog.info("PTM Controller angle-PID kp_bp=%s kp=%s (source %s trimmed by %s at %s m/s)",
+                  GAIN_BP, KP, KP_SOURCE, LOW_SPEED_TRIM_KP, LOW_SPEED_TRIM_BP)
     self.cmd_delay = CommandDelay(dt)
     self.cmd_delay_scale = 1.0
     self.prev_angle = 0.0
