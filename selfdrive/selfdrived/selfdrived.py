@@ -83,6 +83,11 @@ class SelfdriveD:
     self.car_state_sock = messaging.sub_sock('carState', timeout=20)
 
     ignore = self.sensor_packets + self.gps_packets + ['alertDebug', 'frogpilotProcessState']
+    # FrogPilot variables (NRDR): driver monitoring is not started on this branch (system/manager/
+    # process_config.py, dmonitoringd and dmonitoringmodeld are enabled=False). Its service must not be judged
+    # missing here: all_checks() would add commIssue, soft-disable a car that is driving normally, and refuse
+    # entry to it. The events it used to contribute are simply absent, which is the intent.
+    ignore += ['driverMonitoringState']
     if SIMULATION:
       ignore += ['driverCameraState', 'managerState']
     if REPLAY:

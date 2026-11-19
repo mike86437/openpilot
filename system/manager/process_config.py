@@ -102,7 +102,14 @@ procs = [
   PythonProcess("timed", "system.timed", always_run, enabled=not PC),
 
   PythonProcess("modeld", "selfdrive.modeld.modeld", only_onroad),
-  PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", driverview, enabled=(WEBCAM or not PC)),
+  # Driver monitoring is blocked on this branch, for every car. Same shape as the updated/uploader block
+  # above: process.py:287 tests p.enabled before should_run, so nothing is started and no parameter can turn
+  # it back on. What this buys is measured on this device (route 0000001e): dmonitoringmodeld 9.4 % CPU /
+  # 181 MB and dmonitoringd 4.5 %, plus the driver-camera stream out of camerad and the GPU inference the
+  # driver model runs. What it costs is every driver-monitoring measurement, not only its alerts: no pose,
+  # no face detection, no awarenessStatus in this branch's rlogs. selfdrived has to be told at the same time
+  # or all_checks() reports the now-absent 20 Hz service as a comm fault.
+  PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", driverview, enabled=False),
 
   PythonProcess("sensord", "system.sensord.sensord", only_onroad, enabled=not PC),
   PythonProcess("soundd", "selfdrive.ui.soundd", driverview),
@@ -115,7 +122,8 @@ procs = [
   PythonProcess("selfdrived", "selfdrive.selfdrived.selfdrived", only_onroad),
   PythonProcess("card", "selfdrive.car.card", only_onroad),
   PythonProcess("deleter", "system.loggerd.deleter", always_run),
-  PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", driverview, enabled=(WEBCAM or not PC)),
+  # (see the note above dmonitoringmodeld for why and what it costs)
+  PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", driverview, enabled=False),
   PythonProcess("qcomgpsd", "system.qcomgpsd.qcomgpsd", qcomgps, enabled=TICI),
   PythonProcess("pandad", "selfdrive.pandad.pandad", always_run),
   PythonProcess("paramsd", "selfdrive.locationd.paramsd", only_onroad),
