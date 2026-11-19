@@ -127,8 +127,15 @@ procs = [
   PythonProcess("radard", "selfdrive.controls.radard", only_onroad),
   PythonProcess("hardwared", "system.hardware.hardwared", always_run),
   PythonProcess("tombstoned", "system.tombstoned", always_run, enabled=not PC),
-  PythonProcess("updated", "system.updated.updated", always_run, enabled=not PC),
-  PythonProcess("uploader", "system.loggerd.uploader", allow_uploads),
+  # Disabled on this branch: no branch/software update may swap the checkout underneath a test, and no route
+  # data is uploaded to connect.comma.ai. Revert this commit to restore upstream behaviour. Same change as the
+  # source tree (nrdr-111826 process_config.py:154-158) and the Frog branch's ded8259; system/manager/process.py:287
+  # checks p.enabled before should_run, so the process never starts. Nothing here reads DisableUpdates, so no
+  # parameter can stop updated. FrogPilot's own telemetry process (frogpilot_telemetry, further down this list)
+  # is a separate path gated by the FrogPilotTelemetry toggle, whose registry default is "1" - turn that one off
+  # with the toggle, not here.
+  PythonProcess("updated", "system.updated.updated", always_run, enabled=False),
+  PythonProcess("uploader", "system.loggerd.uploader", allow_uploads, enabled=False),
   PythonProcess("statsd", "system.statsd", allow_logging),
   PythonProcess("feedbackd", "selfdrive.ui.feedback.feedbackd", only_onroad),
 
