@@ -106,6 +106,15 @@ def _trim_low_speed_kp():
 
 
 GAIN_BP, KP = _trim_low_speed_kp()
+# The integral belongs to the source's schedule, so it keeps its own breakpoints. This constructor used to take
+# one breakpoint list for both, and giving the integral the trimmed (longer) one made np.interp raise
+# "fp and xp are not of the same length" inside the control loop - controlsd died at latcontrol_fw.py's
+# pid.update and the car faulted out mid-drive (00000043, 2026-11-19). Asserted here because the failure was a
+# length mismatch between two lists this file builds, which is exactly the kind of thing a reader of the trim
+# above cannot see from the trim alone.
+KI_BP = GAIN_BP_SOURCE
+assert len(GAIN_BP) == len(KP), "kp schedule and its breakpoints disagree"
+assert len(KI_BP) == len(KI), "ki schedule and its breakpoints disagree"
 
 
 def _eps_modified_steering_pressed(raw_pressed, steering_torque: float, torque_command: float,
@@ -131,14 +140,15 @@ class LatControlFirmware(LatControl):
     self.live_tuning_snapshot = None
     self.delay_schedule = prediction_delay_schedule(self.firmware_profile)
     # The Clarity: the module defaults this core is built with are its own calibration and its own load model.
-    self.core = HondaEpsLateralCore(GAIN_BP, KP, GAIN_BP, KI, dt, ff=HondaEpsFirmwareFeedforward(dt))
+    self.core = HondaEpsLateralCore(GAIN_BP, KP, KI_BP, KI, dt, ff=HondaEpsFirmwareFeedforward(dt))
     cloudlog.info("PTM Controller profile=%s calibration=%s provisional=%s prediction_schedule=%s required_rwd=%s",
                   self.firmware_profile.name, self.firmware_profile.calibration,
                   self.firmware_profile.provisional, self.delay_schedule, self.firmware_profile.required_rwd or "-")
     # The gain schedule the controller is actually running, printed once per startup next to the admission line:
     # a port drive is judged against these numbers, so the log has to say which ones were in the loop.
-    cloudlog.info("PTM Controller angle-PID kp_bp=%s kp=%s (source %s trimmed by %s at %s m/s)",
-                  GAIN_BP, KP, KP_SOURCE, LOW_SPEED_TRIM_KP, LOW_SPEED_TRIM_BP)
+    cloudlog.info("PTM Controller angle-PID kp_bp=%s kp=%s (source %s trimmed by %s at %s m/s); "
+                  "ki_bp=%s ki=%s unchanged",
+                  GAIN_BP, KP, KP_SOURCE, LOW_SPEED_TRIM_KP, LOW_SPEED_TRIM_BP, KI_BP, KI)
     self.cmd_delay = CommandDelay(dt)
     self.cmd_delay_scale = 1.0
     self.prev_angle = 0.0
