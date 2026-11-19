@@ -143,6 +143,51 @@ the car compiles, runs the visibility helper as written on a car it can and cann
 `firmware_controller_selected` / `firmware_controller_testing_selected` / `resolve_steer_ratio_selection` what each
 offered value actually does.
 
+## Lane-change policy (`lane_change_tuning.py`, S6)
+
+One line: in this tree the **request shaping is inert, and it is inert because the source made it inert**; the
+thing that is not inert is the **gate**, and its caller is Task 19.
+
+`LaneChangeEntry` and `shape_lane_change_curvature` are the source's code unchanged, and they cannot change a
+curvature here: the entry reduction both trees read is `OPTIMIZED_VALUES["NrdrLaneChangeEntrySrReduction"]`, and
+the source fixed it to `0.0` — in both of its tables, with its own comment "Keep the selected geometry/request
+unchanged, including with legacy saved values". `onset` needs `requested > 0.0`, so no envelope is ever armed,
+`applied` is `0.0` on every frame, and the shaping returns `desired_curvature` at its first line. The source's
+tests agree with that (`test_optimized_entry_keeps_the_current_steering_ratio` expects 200 frames of `0.0`);
+one of them has drifted from its own code and **fails at `4a806bf`** (`test_lane_change_retired_sliders…`
+expects `5`, gets `0.0`). §B and §C of the gate run the tables and the source's own suite in both trees instead of
+taking either on faith. The
+shaping machinery is still ported whole, and tested at reductions 3 and 5, because the rule it encodes —
+reshape only through the selected geometry, restore `VM.sR`, never amplify or reverse a request — is what a
+reduction would have to obey if one ever existed.
+
+What the five fixed values do in each tree:
+
+| key | value (both tables) | source: who reads it | this tree |
+|---|---|---|---|
+| `NrdrLaneChangeEntrySrReduction` | `0.0` | `LaneChangeEntry.onset` | read, always `0.0` → nothing |
+| `NrdrLaneChangeEntryReturnTime` | `1.0` | the envelope's return ramp | read, unreachable (`reduction` is 0) |
+| `NrdrLaneChangeMinTime` | 0.5 / 1.0 | `desire_helper.py:82` (lane-change state machine) | **nothing** — this tree's knob for the same thing is FrogPilot's own `LaneChangeTime` → `toggle.lane_change_delay` → `desire_helper.py:91,94`; no second knob is registered |
+| `NrdrLaneChangeTorqueFactor` | 2.0 / 1.0 | `nrdr/features/driver_policy/lane_change.py` | **nothing** (not a lateral module, not ported) |
+| `NrdrLaneChangeFrictionPercent` | 0.0 / 100.0 | fallback `latcontrol_torque.py:100` | **nothing** (D5: no fallback path) |
+
+The table is kept complete for the same reason `torque_output_filter.py` kept its duck-typed `live` argument:
+flattening it would rewrite the source's policy while looking like a copy. The one function that is *not* the
+source's is `optimized_lane_changes_enabled`: it reads `NrdrOptimizedLaneChanges` through
+`LateralSettings.bool_of`, so an unset key is off here (ISC-3) where the source defaults it on
+(`nrdr/params/profiles.py:252`, which is what this car has saved — measured: `NrdrOptimizedLaneChanges=1`,
+`LaneGuidanceMode=0`, `LaneCentering=0`). A comparable drive states the key in both trees, as it must for
+`NrdrSteerRatioMode` (D8).
+
+`optimized_lane_change_active` is the reason this file exists in the port. The source's controller calls it per
+frame (`latcontrol_fw.py:135`) and hands the result to the core, which for the duration of a `starting` or
+`finishing` maneuver drops the feedforward — including the modeled EPS damping — and zeroes its rejoin ramp so
+the exit does not jump (`vfn_eps_core.py:579-582`). That branch is already in this tree's core and was run
+inside V20's equivalence frames; what is missing is the caller, and Task 19 is where it is reached, with the
+`LateralSettings` snapshot this module reads and the `modelV2` this tree's `controlsd.py` already passes to
+`LaC.update`. `state` is the capnp enum's `.raw` (`cereal/log.capnp:447-452`: off 0, pre 1, starting 2,
+finishing 3) — waiting for a nudge is not yet a lane change, which is the source's rule, kept.
+
 ## The mode table
 
 `SteerRatioMode` keeps the source's four numbers and labels verbatim. What each one *does* in this tree:
@@ -181,9 +226,44 @@ reason, and the reason is what the boot probe prints.
 - The other twelve images' command-delay rows and the five other prediction rows (`_PREDICTION_SCHEDULE_V` is
   empty here because in both trees the Clarity *is* the default row). A calibration not kept raises `KeyError`
   rather than borrowing the Clarity's numbers.
-- `Action.laneGuidanceMode @6` and `Action.ptmTimingRestored @7`, left undefined and written down as reserved in
-  `cereal/log.capnp`. Task 11 decides whether this tree carries them; a different meaning at `@6` would be the
+- `Action.laneGuidanceMode @6` and `Action.ptmTimingRestored @7`, **left undefined and written down as reserved**
+  in `cereal/log.capnp` (`cereal/log.capnp:1265-1275`). Decided at S6: this tree carries neither. Centring here
+  is model centring — `lane_centering.py` is not ported (D5), so the source's own honesty mechanism, demoting
+  BLENDFUL to MODEL_ONLY every frame it cannot serve it (`modeld.py:479-483`), has nothing to demote, and a
+  field that could only ever be stamped with one value is a name for a knob that does not exist. `@7` names a
+  legacy-timing restoration nothing in this tree does. Both ids stay free: something else landing at `@6` is the
   struct-field version of the `@151`/`@71` Event-union trap.
+- `lane_guidance.py` (138 L): the mode enum, its parsing, its backup/restore and the per-frame model-atomic
+  arbitration. Not ported because the only mode this tree could run is MODEL_ONLY (the car's
+  `LaneGuidanceMode=0`, and no centring code exists to blend with), the callers are the source's `modeld`,
+  `controlsd_ext`, its two settings UIs and sunnylink — none of which exists here — and the field that would
+  carry its answer (`@6`) is reserved above. What *is* stated is the consequence: centring in this tree is model
+  centring, written in the reservation.
+- `phase_detector.py` (8 L). Its only consumer in the source is `latcontrol_pid.py:23` (the fallback path, D5) —
+  everything else is `features/lateral/__init__.py`'s re-export, a legacy shim and its own tests. An 8-line
+  helper with no caller here is inert code.
+- the source's **caller**: `nrdr/hooks/controlsd.py:142-165`, `lane_change_request(...)`, which builds the entry
+  envelope per control frame and calls `shape_lane_change_curvature`. Not wired, because that call cannot change
+  a curvature: `requested` is the fixed `0.0` and `onset` requires `requested > 0.0`, so `reduction` is `0.0` and
+  the shaping returns its input (measured over 618 frames in both trees, `lateral_lane_change_probe.py` §C).
+  Wiring it would add a per-frame call, a `steer_ratio_latch`/`sm.all_checks` dependency and a
+  `record_applied_settings("lane_change_entry", …)` report to this tree's controlsd for an output that is always
+  the input. The live half of lane-change policy is the **gate** — `optimized_lane_change_active` — and its
+  caller is `latcontrol_fw` (Task 19), which is where the envelope gets a home if it ever gets a reason.
+- the **model-eligibility half** of `optimized_lane_changes_enabled` (`OPTIMIZED_MODEL_FAMILIES`, the 16
+  `OPTIMIZED_MODEL_REFS`, the `is_big`/chestnut exclusions): no carrier here. The only model row this tree writes
+  has three keys — id, name and `lat_smooth_seconds` — and whatever else the remote list carries is dropped at that
+  line (`frogpilot/system/model_manager.py:116-121`), so there is no family, no ref hash, no big-model flag and no
+  chestnut to test. Refusing it cannot disagree with the source on this car: there
+  is no `ModelManager_ActiveBundle` parameter here at all, and the source's own no-bundle default ref is in its
+  own admitted list. Reasoning and measurements in `lane_change_tuning.py`'s header and
+  `lateral_lane_change_probe.py` §E; if a drive ever shows a model that must not get the adaptation, this tree's
+  convention is a named model set beside `ACTION_DELAY_MODELS` / `MIN_STABLE_DELAY_MODELS`
+  (`frogpilot/common/frogpilot_variables.py:107-111`) — arriving with the measurement.
+- No `NrdrLaneChange*` key is registered (`common/params_keys.h` is still exactly the seven from Task 6), and no
+  Pond row for `NrdrOptimizedLaneChanges` yet. Both arrive with the consumer that acts on them (Task 19), for the
+  same reason `NrdrSteerRatioModelBlend` is not registered: a key or a row that nothing acts on is a knob a user
+  cannot tell the difference about.
 - `ptm_testing`, which existed only for a Clarity model-blend experiment in the source.
   `ptm_baseline` *is* kept: it selects the biscuit-PTM interpolation grid the actuator model core expects, and
   the consumer passes it (Task 19), the source's controlsd hook does the same at `:104-106`.
@@ -204,6 +284,12 @@ directory, ported or not, so nothing above is an unrecorded omission.
                                                                  # profile — and every refusal condition refused
 /root/frog/venv/bin/python analysis/lateral_ui_probe.py          # the settings surface: what each offered option
                                                                  # selects, the registry behind it, who is offered it
+/root/frog/venv/bin/python analysis/lateral_lane_change_probe.py  # lane-change policy: the module against the source's
+                                                                 # (def for def), the fixed 0.0 in both tables and the
+                                                                 # source's own red test, 17 scenarios + 405 shaped
+                                                                 # cases through each tree's own geometry, the model
+                                                                 # catalog both ways, and that nothing moved in the
+                                                                 # control path
 ```
 
 `lateral_timing_probe.py` also settles two things that are easy to get wrong from the source's file list alone:
