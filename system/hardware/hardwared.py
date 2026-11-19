@@ -17,6 +17,7 @@ from openpilot.common.filter_simple import FirstOrderFilter
 from openpilot.common.params import Params
 from openpilot.common.realtime import DT_HW
 from openpilot.selfdrive.selfdrived.alertmanager import set_offroad_alert
+from openpilot.selfdrive.selfdrived.helpers import excessive_actuation_disabled
 from openpilot.system.hardware import HARDWARE, TICI, AGNOS, PC
 from openpilot.system.loggerd.config import get_available_bytes, get_available_percent, get_used_bytes
 from openpilot.system.statsd import statlog
@@ -326,7 +327,11 @@ def hardware_thread(end_event, hw_queue) -> None:
     # **** starting logic ****
 
     startup_conditions["up_to_date"] = True
-    startup_conditions["no_excessive_actuation"] = params.get("Offroad_ExcessiveActuation") is None
+    # FrogPilot variables (NRDR): with DisableExcessiveActuationCheck on, a stale Offroad_ExcessiveActuation must
+    # not hold the stack off here either. This condition is inside `all(startup_conditions.values())` below, which
+    # is only consulted while the stack has not started: left as upstream wrote it, an alert from a drive the check
+    # no longer runs would keep the manager from starting until the alert was acknowledged on screen.
+    startup_conditions["no_excessive_actuation"] = excessive_actuation_disabled(params) or params.get("Offroad_ExcessiveActuation") is None
     startup_conditions["not_uninstalling"] = not params.get_bool("DoUninstall")
     startup_conditions["accepted_terms"] = params.get("HasAcceptedTerms") == terms_version
 
