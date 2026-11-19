@@ -132,7 +132,12 @@ def firmware_controller_profile_for_model(params, CP) -> FirmwareControllerProfi
   here touches storage, and it is the once-per-startup call the source's `modeld.py` makes, not a control frame — the
   per-frame read stays a `LateralSettings` snapshot handed in by the caller (D3).
   """
-  from openpilot.cereal import custom, messaging
+  # This tree is flat-layout: `cereal/` is a top-level package and `openpilot/` is a shim of symlinks to the
+  # top-level dirs (openpilot/{common,frogpilot,selfdrive,system,third_party,tools}) with no `cereal` entry.
+  # The source (package-layout dev-111826) wrote `openpilot.cereal`; here every other file in the tree writes
+  # `from cereal import ...` (frogpilot/frogpilot_process.py:8, selfdrive/modeld/modeld.py:14-17). Writing the
+  # source's spelling here made modeld die at startup with ModuleNotFoundError: openpilot.cereal.
+  from cereal import custom, messaging
   from openpilot.frogpilot.common.lateral_settings import LateralSettings
   settings = params if hasattr(params, "int_of") else LateralSettings.snapshot(params)
   if _firmware_family(CP) is None or _controller_state(settings) not in (1, 2):
