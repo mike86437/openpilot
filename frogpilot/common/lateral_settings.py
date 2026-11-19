@@ -50,9 +50,9 @@ LATERAL_KEYS: tuple[str, ...] = (
 # Unset = what this tree does today (ISC-3). Kept in the same order as LATERAL_KEYS so the two can be
 # diffed by eye and by test; analysis/lateral_settings_probe.py asserts common/params_keys.h agrees.
 STOCK_DEFAULTS: dict[str, Any] = {
-  "NrdrLateralController": 0,        # 0 -> this tree's own LatControlPID / LatControlTorque (controlsd.py:65-67)
-  "NrdrSteerRatioMode": 0,           # 0 -> no geometry override; the ported ladder arrives with Task 7
-  "NrdrOptimizedLaneChanges": False,  # the live lane key: arms the controller's lane-change gate (lane_change_tuning.py -> Task 19). The source defaults it ON (profiles.py:252, and this car has 1); unset is off here, so a comparable drive states it (D8)
+  "NrdrLateralController": 0,        # 0 -> this tree's own LatControlPID / LatControlTorque (controlsd.py:65-70); 1 asks for the port's controller, and controlsd builds it only where the admission also accepts the car (controlsd.py:89-95)
+  "NrdrSteerRatioMode": 0,           # 0 -> the car's own ratio. controlsd resolves the ported ladder every frame (controlsd.py:140-157); 0/unset answers "Stock car ratio (safe fallback)", 3 answers this car's measured EPS and rack map (D8)
+  "NrdrOptimizedLaneChanges": False,  # the live lane key: arms the controller's lane-change gate (lane_change_tuning.py, reached from latcontrol_fw - controlsd hands it the snapshot this reader produces). No Pond row yet: with a code path in place, presenting it is a change of its own. The source defaults it ON (profiles.py:252, and this car has 1); unset is off here, so a comparable drive states it (D8)
   "LaneGuidanceMode": 0,             # MODEL_ONLY, and 1/2 select nothing: centring here is model centring (rule 4). The car reports 0 and LaneCentering=False today
   "LaneCenteringMinSpeed": 0,        # registered only, read by no control path: centring is deliberately not wired (D5)
   "LaneCenteringStrength": 0.0,      # registered only, read by no control path: centring is deliberately not wired (D5)

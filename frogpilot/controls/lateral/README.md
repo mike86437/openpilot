@@ -55,9 +55,9 @@ which is exactly the call `computed_r6` makes.
 Nothing in this directory reads Params. `steer_ratio_tuning.py` takes a `LateralSettings` snapshot
 (`frogpilot/common/lateral_settings.py`) and calls `int_of("NrdrSteerRatioMode")`; `controller_selection.py` takes the
 same snapshot for `NrdrLateralController` and an `FrogPilotCarParams` for the EPS-modified fact. That is the whole
-configuration surface. Nothing here is wired into `controlsd` yet: admission exists (Task 10), the controller that
-consumes it exists too (`latcontrol_fw.py`, below), and what is still missing is the wiring between them —
-`controlsd` builds this tree's own controller until Task 31 puts the latch in.
+configuration surface. Everything the control path needs is now in it: the admission (Task 10), the controller that
+consumes it (`selfdrive/controls/lib/latcontrol_fw.py`, below) and the call site that constructs one from the other
+and hands it the latched geometry each frame (`selfdrive/controls/controlsd.py`, Task 31).
 
 ## The controller (`selfdrive/controls/lib/latcontrol_fw.py`, S3)
 
@@ -124,11 +124,12 @@ safety-limited frame never does), a dropout resetting the core and the press sta
 commanded angle, the lane gate armed by states 2 and 3 with the key on and refusing `preLaneChange` and an unset key,
 `pidState` equal to the core's own state at Float32 resolution, and 120/120 frames in which a hand-driven
 `HondaEpsLateralCore` built from the port's own `GAIN_BP/KP/KI` reproduces the controller exactly. Also asserted, as
-a fact: no file in the tree names `LatControlFirmware` except itself.
+a fact: the only file in the tree that names `LatControlFirmware` is `controlsd.py`, and it names it inside the
+admitted branch (Task 31).
 
-**Not covered by it, and said so in its own output:** the frame-for-frame gate against dev-111826's running
-controller (Task 30), the controlsd wiring (Task 31), the Testing variant, and the settings carrier `override_fade_up_s`
-would have needed.
+**Not covered by it, and said so in its own output:** the Testing variant and the settings carrier
+`override_fade_up_s` would have needed. The frame-for-frame gate against dev-111826's running controller and the
+controlsd call site are covered by their own gates, below.
 
 ## The timing layer (S4)
 
@@ -176,8 +177,10 @@ HondaFlagsSP.EPS_MODIFIED` (value 2). This tree has no `CarParamsSP` (D1), so it
 (`fw.ecu == "eps" and b"," in fw.fwVersion`) the Honda interface already uses for its tuning. Different object,
 different bit value, same decision; the probe compares the decision and never the number.
 
-**What admission does not do.** It enables nothing. `controlsd` still constructs this tree's own lateral controller
-until Task 31 puts the latch behind it — `latcontrol_fw` now exists, and nothing constructs it (ISC-3). The `NrdrLateralController` read is the source's own two states
+**What admission does not do.** It enables nothing by itself. `controlsd` constructs this tree's own lateral
+controller unless the key asks *and* the admission accepts the car: `firmware_controller_selected` is read once at
+startup and the override sits after the branch the CarParams asked for (Task 31), and a key at 0, unset or nonsense
+selects nothing (ISC-3). The `NrdrLateralController` read is the source's own two states
 (1 = the model, 2 = the model plus its measurement trace) read through `lateral_settings.py` as a registered INT;
 unset, `0`, out of range or unparseable is 0, i.e. this tree's stock controller — the same rule the mode ladder uses
 (`_mode_value`), which is why the probe can compare the two trees' answers for every parameter state.
@@ -205,8 +208,8 @@ car fact is computed once, in `FrogPilotVariables.update()`, from `FPCP.flags & 
 and copied onto the Pond `Context` exactly like every other car fact, so the panel reads no Params of its own.
 
 What each row offers is only what this tree can honour: the controller row offers 0 (this tree's own controller) and 1
-(the measured EPS model Task 19 will build); 2 is not offered because no testing variant exists yet. The geometry row
-offers 0 and 3; 1 is left out because for this car it is numerically the car's own ratio, and 2 because this tree
+(`LatControlFirmware`, which `controlsd` then builds for that car); 2 is not offered because no testing variant exists
+yet. The geometry row offers 0 and 3; 1 is left out because for this car it is numerically the car's own ratio, and 2 because this tree
 refuses it (table below). Both ask for a reboot `on_change`, since `controlsd` builds the controller at startup. A
 `manage` subgroup is deliberately not added for them: every `manage` row in this panel is gated on a registered
 parameter, and a grouping-only key would be a knob nothing reads.
@@ -268,7 +271,8 @@ prints the same two branches, and its §5 is executed as configured and as a com
 ## Lane-change policy (`lane_change_tuning.py`, S6)
 
 One line: in this tree the **request shaping is inert, and it is inert because the source made it inert**; the
-thing that is not inert is the **gate**, and its caller is Task 19.
+thing that is not inert is the **gate**, and its caller is `latcontrol_fw`, which `controlsd` constructs when the
+admission accepts the car (Task 31).
 
 `LaneChangeEntry` and `shape_lane_change_curvature` are the source's code unchanged, and they cannot change a
 curvature here: the entry reduction both trees read is `OPTIMIZED_VALUES["NrdrLaneChangeEntrySrReduction"]`, and
@@ -305,9 +309,8 @@ source's is `optimized_lane_changes_enabled`: it reads `NrdrOptimizedLaneChanges
 frame (`latcontrol_fw.py:135`) and hands the result to the core, which for the duration of a `starting` or
 `finishing` maneuver drops the feedforward — including the modeled EPS damping — and zeroes its rejoin ramp so
 the exit does not jump (`vfn_eps_core.py:579-582`). That branch is already in this tree's core and was run
-inside V20's equivalence frames; what is missing is the caller, and Task 19 is where it is reached, with the
-`LateralSettings` snapshot this module reads and the `modelV2` this tree's `controlsd.py` already passes to
-`LaC.update`. `state` is the capnp enum's `.raw` (`cereal/log.capnp:447-452`: off 0, pre 1, starting 2,
+inside V20's equivalence frames; the caller is this tree's own `latcontrol_fw`, and `controlsd` hands it the
+`LateralSettings` snapshot this module reads and the `modelV2` this tree already passes to `LaC.update` (Task 31). `state` is the capnp enum's `.raw` (`cereal/log.capnp:447-452`: off 0, pre 1, starting 2,
 finishing 3) — waiting for a nudge is not yet a lane change, which is the source's rule, kept.
 
 ## The mode table
@@ -371,7 +374,8 @@ reason, and the reason is what the boot probe prints.
   Wiring it would add a per-frame call, a `steer_ratio_latch`/`sm.all_checks` dependency and a
   `record_applied_settings("lane_change_entry", …)` report to this tree's controlsd for an output that is always
   the input. The live half of lane-change policy is the **gate** — `optimized_lane_change_active` — and its
-  caller is `latcontrol_fw` (Task 19), which is where the envelope gets a home if it ever gets a reason.
+  caller is `latcontrol_fw`, constructed by `controlsd` behind the admission flag (Task 31), which is where the
+  envelope gets a home if it ever gets a reason.
 - the **model-eligibility half** of `optimized_lane_changes_enabled` (`OPTIMIZED_MODEL_FAMILIES`, the 16
   `OPTIMIZED_MODEL_REFS`, the `is_big`/chestnut exclusions): no carrier here. The only model row this tree writes
   has three keys — id, name and `lat_smooth_seconds` — and whatever else the remote list carries is dropped at that
@@ -382,10 +386,15 @@ reason, and the reason is what the boot probe prints.
   `lateral_lane_change_probe.py` §E; if a drive ever shows a model that must not get the adaptation, this tree's
   convention is a named model set beside `ACTION_DELAY_MODELS` / `MIN_STABLE_DELAY_MODELS`
   (`frogpilot/common/frogpilot_variables.py:107-111`) — arriving with the measurement.
-- No `NrdrLaneChange*` key is registered (`common/params_keys.h` is still exactly the seven from Task 6), and no
-  Pond row for `NrdrOptimizedLaneChanges` yet. Both arrive with the wiring that acts on them (Task 31), for the
-  same reason `NrdrSteerRatioModelBlend` is not registered: a key or a row that nothing acts on is a knob a user
-  cannot tell the difference about.
+- No `NrdrLaneChange*` key is registered (`common/params_keys.h` is still exactly the seven from Task 6): the
+  source fixed their values in code, so no saved value arms anything.
+- `NrdrOptimizedLaneChanges` **has a code path now** — `controlsd` hands the frame's snapshot to the controller that
+  asks the gate (Task 31, `ab9ce2e3d`) — and it has **no Pond row yet**, which is now a change of its own rather
+  than something the wiring still has to deliver. The old reason for holding it (`a key nothing acts on is a knob a
+  user cannot tell the difference about`) stopped applying when the call site landed, so the honest statement is the
+  one in the ledger: presenting a key that something acts on is its own decision, and it is open. Either way it stays
+  off by default here, where the source defaults it on, so nothing moves until a row exists or someone writes the
+  parameter.
 - `ptm_testing`, which existed only for a Clarity model-blend experiment in the source.
   `ptm_baseline` *is* kept: it selects the biscuit-PTM interpolation grid the actuator model core expects, and
   the caller that resolves the geometry passes it (Task 31, as the source's controlsd hook does at `:104-106`);

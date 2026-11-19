@@ -508,8 +508,10 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     // a control path, and what says so is this comment, lateral_settings.py's note on each key and the README - not
     // the run-mode printout, which prints a value for every registered key. NrdrOptimizedLaneChanges is the live
     // key:
-    // it arms the controller's no-feedforward-during-a-lane-change gate (frogpilot/controls/lateral/
-    // lane_change_tuning.py -> latcontrol_fw, Task 19); unset is off here where the source defaults it on.
+    // its no-feedforward-during-a-lane-change gate (frogpilot/controls/lateral/lane_change_tuning.py ->
+    // latcontrol_fw, which controlsd constructs when the admission accepts the car); it has no Pond row yet, and
+    // that row is now a change of its own rather than something the wiring still has to deliver (README, lane-change
+    // section). unset is off here where the source defaults it on.
     // Its four sibling keys (NrdrLaneChange*) are deliberately NOT registered: the source fixed their values in
     // code - both of its tables hold NrdrLaneChangeEntrySrReduction 0.0, so no saved value arms anything - and the
     // one thing they would move that this tree already has a knob for is lane-change timing, which is FrogPilot's
