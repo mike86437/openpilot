@@ -20,7 +20,7 @@ from opendbc.car.common.simple_kalman import KF1D, get_kalman_gain
 from opendbc.car.ford.fordcan import CanBus as FordCanBus
 from opendbc.car.ford.values import CAR as FORD, NO_CRUISE_STANDBY_CAR, FordFlags
 from opendbc.car.gm.values import CAR as GM
-from opendbc.car.honda.values import CAR as HONDA, HONDA_BOSCH
+from opendbc.car.honda.values import CAR as HONDA, HONDA_BOSCH, HondaFrogPilotFlags
 from opendbc.car.hyundai.hyundaicanfd import CanBus as HyundaiCanBus
 from opendbc.car.hyundai.values import CAR as HYUNDAI, CANFD_CAR, CRUISE_STANDBY_LFA_BUTTON_CAR, HyundaiFlags, HyundaiFrogPilotSafetyFlags
 from opendbc.car.mock.values import CAR as MOCK
@@ -204,6 +204,11 @@ class CarInterfaceBase(ABC):
       elif platform in HONDA:
         fp_ret.alwaysOnLateralLKASButton = True
         fp_ret.canUsePedal = candidate not in HONDA_BOSCH
+
+        # The same detection honda/interface.py:98-102 already performs for its own tuning, and car_fw is
+        # already in scope here. Identity only: no behaviour follows from this flag on its own.
+        if any(fw.ecu == "eps" and b"," in fw.fwVersion for fw in car_fw):
+          fp_ret.flags |= HondaFrogPilotFlags.EPS_MODIFIED.value
 
         if candidate not in HONDA_BOSCH and frogpilot_toggles.honda_alt_tune:
           CP.longitudinalTuning.kiV = [0.6, 0.4, 0.25]

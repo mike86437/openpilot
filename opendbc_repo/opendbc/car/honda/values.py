@@ -64,6 +64,13 @@ class HondaFrogPilotSafetyFlags(IntFlag):
   CLARITY = 64
 
 
+class HondaFrogPilotFlags(IntFlag):
+  # An aftermarket or re-flashed EPS: its fwVersion carries a comma, e.g. "39990-TRW,A020".
+  # Car identity only, never a behaviour switch - the lateral port's admission reads it together with an
+  # explicit parameter, so a car whose EPS reports an unmodified version keeps stock FrogPilot behaviour.
+  EPS_MODIFIED = 1
+
+
 class HondaFlags(IntFlag):
   # Detected flags
   # Bosch models with alternate set of LKAS_HUD messages
