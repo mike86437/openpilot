@@ -116,6 +116,17 @@ class CarController(CarControllerBase):
     self.brake = 0.0
     self.last_torque = 0.0
 
+    # FrogPilot variables - the ported driver-override ramp (frogpilot/controls/lateral/override_ramp.py).
+    # The settings are built once here and read from a cached snapshot, the same shape controlsd uses for the
+    # rest of the port (controlsd.py:88), so a 100 Hz car controller never touches storage. The deferred import
+    # is this tree's own pattern for opendbc reaching openpilot.frogpilot (see the Clarity row of
+    # opendbc/car/honda/interface.py and get_frogpilot_params at opendbc/car/interfaces.py:180).
+    from openpilot.frogpilot.common.lateral_settings import LateralSettingsSource
+    from openpilot.frogpilot.controls.lateral.override_ramp import HondaOverrideRamp, assist_stays_on
+    self.lateral_settings = LateralSettingsSource()
+    self.override_ramp = HondaOverrideRamp()
+    self.assist_stays_on = assist_stays_on
+
   def update(self, CC, CS, now_nanos):
     actuators = CC.actuators
     hud_control = CC.hudControl
@@ -129,8 +140,21 @@ class CarController(CarControllerBase):
       accel = 0.0
       gas, brake = 0.0, 0.0
 
+    # *** driver override ***
+    # The source applies its override ramp here, on the torque command, before anything becomes a CAN value
+    # (opendbc/sunnypilot/car/honda/controller_features.py:114-140 -> honda/carcontroller.py:657), and it does
+    # not reach into the controller. Neither does this: the loop's P, I and feedforward are untouched, only what
+    # the EPS is asked for. With the keys unset the scale is 1.0 in both directions and nothing here changes.
+    settings = self.lateral_settings.current()
+    pressed = bool(CS.out.steeringPressed)
+    override_scale = self.override_ramp.update(
+      CC.latActive, pressed,
+      settings.float_of("HondaOverrideFadeDownSecs"), settings.float_of("HondaOverrideFadeUpSecs"),
+      settings.int_of("HondaOverrideTorqueScale"))
+    assist_through_override = self.assist_stays_on(settings.bool_of("HondaDriverAssistDuringOverride"), pressed)
+
     # *** rate limit steer ***
-    limited_torque = rate_limit(actuators.torque, self.last_torque, -self.params.STEER_DELTA_DOWN * DT_CTRL,
+    limited_torque = rate_limit(actuators.torque * override_scale, self.last_torque, -self.params.STEER_DELTA_DOWN * DT_CTRL,
                                 self.params.STEER_DELTA_UP * DT_CTRL)
     self.last_torque = limited_torque
 
@@ -159,7 +183,14 @@ class CarController(CarControllerBase):
         can_sends.append(make_tester_present_msg(0x18DAB0F1, 1, suppress_response=True))
 
     # Send steering command.
-    can_sends.append(hondacan.create_steering_control(self.packer, self.CAN, apply_torque, CC.latActive, self.tja_control))
+    # `lkas_active` is the source's second half of the same decision (controller_features.py:148-150): with
+    # "Assist Pass-Through" on, a press takes the assist out at the message - STEER_TORQUE 0 and
+    # STEER_TORQUE_REQUEST 0, which is what returns the EPS's own assist. It was `CC.latActive` here, which is
+    # the same answer whenever pass-through is off. The value handed to create_steering_control and the value
+    # published as torqueOutputCan are the same number on purpose: a drive is judged on what the EPS was told.
+    lkas_active = CC.latActive and assist_through_override
+    sent_torque = apply_torque if lkas_active else 0
+    can_sends.append(hondacan.create_steering_control(self.packer, self.CAN, sent_torque, lkas_active, self.tja_control))
 
     # wind brake from air resistance decel at high speed
     wind_brake = np.interp(CS.out.vEgo, [0.0, 2.3, 35.0], [0.001, 0.002, 0.15])
@@ -269,7 +300,7 @@ class CarController(CarControllerBase):
     new_actuators.gas = self.gas
     new_actuators.brake = self.brake
     new_actuators.torque = self.last_torque
-    new_actuators.torqueOutputCan = apply_torque
+    new_actuators.torqueOutputCan = sent_torque
 
     self.frame += 1
     return new_actuators, can_sends

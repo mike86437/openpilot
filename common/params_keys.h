@@ -524,6 +524,20 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     // one thing they would move that this tree already has a knob for is lane-change timing, which is FrogPilot's
     // own LaneChangeTime -> toggle.lane_change_delay -> desire_helper.py:91,94. A second knob for the same thing
     // is how a port gets two answers. Analysis: analysis/lateral_lane_change_probe.py §B, §G.
+    // Driver override (see frogpilot/controls/lateral/override_ramp.py and the car controller's steering command).
+    // Four keys the source has under these names (nrdr/params/specs.py:195-198, presented in its UI as
+    // "Assist Pass-Through", "Override Torque Fade Down/Up" and "Override Torque Retain",
+    // nrdr/ui/settings/override_tuning.py:45-77), read there by controller_features.py's override ramp.
+    // Their registered defaults in the source are assist-pass-through on, 0.1 s down, 1.0 s up, retain 0%. The
+    // defaults below are this tree's stock behaviour instead (rule 2 of lateral_settings.py, ISC-3): pass-through
+    // off, fade up 0.0 s, and retain 100%, which makes the ramp 1.0 from the first active frame and unchanging
+    // from there - present, inert, and the reason a car that never opts in drives exactly as it did before these
+    // keys existed. A fade-up of the source's 1.0 s is NOT inert: its ramp starts each activation at zero and
+    // climbs, which is a behaviour this tree does not have today.
+    {"HondaDriverAssistDuringOverride", {PERSISTENT, BOOL, "0", "0", 0}},
+    {"HondaOverrideFadeDownSecs", {PERSISTENT, FLOAT, "0.1", "0.1", 0}},
+    {"HondaOverrideFadeUpSecs", {PERSISTENT, FLOAT, "0.0", "0.0", 0}},
+    {"HondaOverrideTorqueScale", {PERSISTENT, INT, "100", "100", 0}},
     {"LaneCenterOffset", {PERSISTENT, FLOAT, "0.0", "0.0", 0}},
     {"LaneCenteringMinSpeed", {PERSISTENT, INT, "0", "0", 0}},
     {"LaneCenteringStrength", {PERSISTENT, FLOAT, "0.0", "0.0", 0}},

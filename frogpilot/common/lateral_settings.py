@@ -41,6 +41,10 @@ LATERAL_KEYS: tuple[str, ...] = (
   "NrdrLateralController",
   "NrdrSteerRatioMode",
   "NrdrOptimizedLaneChanges",
+  "HondaDriverAssistDuringOverride",
+  "HondaOverrideFadeDownSecs",
+  "HondaOverrideFadeUpSecs",
+  "HondaOverrideTorqueScale",
   "LaneGuidanceMode",
   "LaneCenteringMinSpeed",
   "LaneCenteringStrength",
@@ -53,6 +57,10 @@ STOCK_DEFAULTS: dict[str, Any] = {
   "NrdrLateralController": 0,        # 0 -> this tree's own LatControlPID / LatControlTorque (controlsd.py:65-70); 1 asks for the port's controller, and controlsd builds it only where the admission also accepts the car (controlsd.py:89-95)
   "NrdrSteerRatioMode": 0,           # 0 -> the car's own ratio. controlsd resolves the ported ladder every frame (controlsd.py:140-157); 0/unset answers "Stock car ratio (safe fallback)", 3 answers this car's measured EPS and rack map (D8)
   "NrdrOptimizedLaneChanges": False,  # the live lane key: arms the controller's lane-change gate (lane_change_tuning.py, reached from latcontrol_fw - controlsd hands it the snapshot this reader produces). No Pond row yet: with a code path in place, presenting it is a change of its own. The source defaults it ON (profiles.py:252, and this car has 1); unset is off here, so a comparable drive states it (D8)
+  "HondaDriverAssistDuringOverride": False,  # the source's "Assist Pass-Through" switch: with it on, the assist hands the wheel over while the driver is in it. Unset = today's behaviour, where assist continues through an override (override_ramp.py, read by the Honda car controller)
+  "HondaOverrideFadeDownSecs": 0.1,  # seconds the command fades to the floor when a press starts. Harmless on its own: with the stock floor of 100 % there is nothing below it to fade to
+  "HondaOverrideFadeUpSecs": 0.0,    # seconds the command returns to full after the press ends, and from zero on a fresh lateral activation. 0.0 here because the source's 1.0 is not inert: its ramp starts every activation at zero and climbs for a second, which is not what this tree does today
+  "HondaOverrideTorqueScale": 100,   # percent of the command that survives the fade-out. 100 here is the inert value: the ramp multiplies by 1.0 in both directions. The source registers 0 (specs.py:197), which is its own full removal
   "LaneGuidanceMode": 0,             # MODEL_ONLY, and 1/2 select nothing: centring here is model centring (rule 4). The car reports 0 and LaneCentering=False today
   "LaneCenteringMinSpeed": 0,        # registered only, read by no control path: centring is deliberately not wired (D5)
   "LaneCenteringStrength": 0.0,      # registered only, read by no control path: centring is deliberately not wired (D5)
@@ -65,6 +73,10 @@ SOURCE_REFERENCE: dict[str, Any] = {
   "NrdrLateralController": 1,        # 1 = firmware controller, 2 = testing controller
   "NrdrSteerRatioMode": 3,           # 3 = FIRMWARE (measured Clarity TRW-A020 rack map)
   "NrdrOptimizedLaneChanges": True,
+  "HondaDriverAssistDuringOverride": True,   # specs.py:198 / ui/settings/override_tuning.py:45 - "Assist Pass-Through", on in the source's Honda profile (profiles.py:259)
+  "HondaOverrideFadeDownSecs": 0.1,          # specs.py:195, and 0.10 in the source's Honda profile
+  "HondaOverrideFadeUpSecs": 1.0,            # specs.py:196, and 1.0 there
+  "HondaOverrideTorqueScale": 0,             # specs.py:197: assist fully out at the end of the fade
   "LaneGuidanceMode": 2,
   "LaneCenteringMinSpeed": 12,
   "LaneCenteringStrength": 0.95,
