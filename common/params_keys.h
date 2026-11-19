@@ -205,6 +205,13 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"DeviceShutdown", {PERSISTENT, INT, "9", "33", 1}},
     {"DisableOnroadUploads", {PERSISTENT, BOOL, "0", "0", 2}},
     {"DisableOpenpilotLongitudinal", {PERSISTENT, BOOL, "0", "0", 0}},
+    // FrogPilot variables (NRDR): the excessive-actuation check and everything its alert makes sticky - the
+    // offroad alert, the manager startup block, and the SOFT_DISABLE/NO_ENTRY event that refuses lateral control
+    // for the rest of a drive and again at the next start. "0" (unset) is upstream's behaviour unchanged; "1"
+    // turns the feature off. Read in selfdrive/selfdrived/helpers.py::excessive_actuation_disabled by
+    // selfdrived.py and system/hardware/hardwared.py, which are the only two places that consult the alert.
+    // Not a Pond row: a row for it is a change of its own, like the NrdrOptimizedLaneChanges row.
+    {"DisableExcessiveActuationCheck", {PERSISTENT, BOOL, "0", "0", 0}},
     {"DiscordUsername", {PERSISTENT | DONT_LOG, STRING, "", "", 0}},
     {"DisengageVolume", {PERSISTENT, INT, "101", "101", 2}},
     {"DistanceButtonControl", {PERSISTENT, INT, "1", "1", 2}},
