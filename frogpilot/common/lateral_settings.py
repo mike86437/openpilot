@@ -55,8 +55,8 @@ STOCK_DEFAULTS: dict[str, Any] = {
   "NrdrOptimizedLaneChanges": False,  # the live lane key: arms the controller's lane-change gate (lane_change_tuning.py -> Task 19). The source defaults it ON (profiles.py:252, and this car has 1); unset is off here, so a comparable drive states it (D8)
   "LaneGuidanceMode": 0,             # MODEL_ONLY, and 1/2 select nothing: centring here is model centring (rule 4). The car reports 0 and LaneCentering=False today
   "LaneCenteringMinSpeed": 0,        # registered only, read by no control path: centring is deliberately not wired (D5)
-  "LaneCenteringStrength": 0.0,      #   "
-  "LaneCenterOffset": 0.0,           #   "
+  "LaneCenteringStrength": 0.0,      # registered only, read by no control path: centring is deliberately not wired (D5)
+  "LaneCenterOffset": 0.0,           # registered only, read by no control path: centring is deliberately not wired (D5)
 }
 
 # Reference only - the source's own profile defaults (nrdr/params/profiles.py:268, specs.py:112-140).
