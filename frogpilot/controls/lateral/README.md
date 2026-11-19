@@ -84,10 +84,13 @@ raises, as the source raises: the controller refuses, it does not fall back. (2)
 and `_command_delay` reads `action.lateralSource` from. (3) `_eps_modified_steering_pressed` is carried as eight lines
 of this file rather than imported, because in the source it lives in `latcontrol_pid.py`, the *fallback* controller
 this port refuses (D5); porting a controller to borrow its press detector would smuggle the refused path back in.
-(4) `override_fade_up_s` is the constant `0.0`. In the source that value comes from the Honda interface's
-live-tuning provider (`HondaLiveTuning`, reached through the Honda entry of its per-brand config); nothing in this
-tree has such an object, so the core's limiter-feedback bleed (`vfn_eps_core.py`, the `OVERRIDE_FADE_I_BLEED_TAU`
-branch) can never run here. The drive-level consequence is stated in the module and is worth naming before a paired
+(4) `override_fade_up_s` is still the constant `0.0`. In the source that value comes from the Honda interface's
+live-tuning provider (`HondaLiveTuning`, reached through the Honda entry of its per-brand config). The port now has
+an equivalent carrier — `lateral_settings.py` read by `override_ramp.py` in the Honda car controller, on the key the
+source calls `HondaOverrideFadeUpSecs` — but this class is not handed it, deliberately: the same number does two
+unrelated jobs, fading assist back in at the wheel and bleeding this controller's integrator, and only the first has
+a drive behind it. So the core's limiter-feedback bleed (`vfn_eps_core.py`, the `OVERRIDE_FADE_I_BLEED_TAU` branch)
+can never run here yet. The drive-level consequence is stated in the module and is worth naming before a paired
 drive: there, a sustained steer limit after a press releases decays the integrator; here it freezes. That is the
 difference a comparison has to expect, not one to discover later.
 
@@ -313,6 +316,42 @@ inside V20's equivalence frames; the caller is this tree's own `latcontrol_fw`, 
 `LateralSettings` snapshot this module reads and the `modelV2` this tree already passes to `LaC.update` (Task 31). `state` is the capnp enum's `.raw` (`cereal/log.capnp:447-452`: off 0, pre 1, starting 2,
 finishing 3) — waiting for a nudge is not yet a lane change, which is the source's rule, kept.
 
+## Driver override (`override_ramp.py`, read by `opendbc/car/honda/carcontroller.py`)
+
+The one part of the source's lateral behaviour that sits *after* the controller: `update_steering_torque`
+(`opendbc/sunnypilot/car/honda/controller_features.py:114-150`), applied in its Honda car controller
+(`honda/carcontroller.py:657`, `:780`). It owns what happens to the assist when the driver takes the wheel, and it
+is the reason a dev-111826 drive feels different under a press from a port drive: the source fades the command out
+and back, and can take the assist out at the message outright. This tree could answer neither.
+
+What is carried is the arithmetic and the message gate, unchanged: the `DT_CTRL / fade_seconds` step in both
+directions, the `max(floor, …)` and `min(1.0, …)`, the `fade_seconds <= 0.0` shortcut that makes a fade
+instantaneous, the reset to 0.0 when lateral deactivates and on the first frame of a new activation, and
+`lkas_active = latActive and (not pass_through or not pressed)` — which on this car is the same signal
+`create_steering_control` already uses to put 0 in `STEER_TORQUE` and 0 in `STEER_TORQUE_REQUEST`, i.e. the moment
+the EPS's own assist comes back. The ramp multiplies the command *after* the controller produced it and touches
+none of the controller's state, exactly as the source does.
+
+Four keys, registered in `common/params_keys.h` and read through `lateral_settings.py`, named as the source names
+them (`HondaDriverAssistDuringOverride` — its UI calls it "Assist Pass-Through" — `HondaOverrideFadeDownSecs`,
+`HondaOverrideFadeUpSecs`, `HondaOverrideTorqueScale`, percent 0-100 divided by 100 as the source's own provider
+does). Their registered defaults are this tree's inert values, not the source's: pass-through off, fade-up 0.0 s,
+retain 100%. That is not shyness — the source's defaults would start every lateral activation at zero and climb
+for a second, which this tree does not do today, and rule 2 of `lateral_settings.py` says unset is today. Their
+`SOURCE_REFERENCE` values are the source's, printed by the run-mode probe like every other key here.
+
+Two things are deliberately not carried, both because the source itself has them off: its optional *filtered* press
+for the ramp (`increase_override_tolerance`, registered `TOMBSTONE` with default 0 there), and its own steer delta
+limiter — which the source disables outright whenever `NrdrLateralController` is 1 (`nrdr/car/opendbc.py:244-245`),
+so carrying it would add a limiter the source is not running either. The car controller's existing
+`STEER_DELTA_UP/DOWN` rate limit stays where it is, and the ramp is applied to the command before it, which is the
+source's order too.
+
+`create_steering_control` and `new_actuators.torqueOutputCan` are now handed the same number. When the assist is
+taken out the message carries 0, and before this change the published actuator still reported the torque that was
+computed. `analysis/actuator_map_probe.py` reads those fields, so a port drive's can/cmd has to be the torque the
+EPS was actually told or it is not a measurement of anything.
+
 ## The mode table
 
 `SteerRatioMode` keeps the source's four numbers and labels verbatim. What each one *does* in this tree:
@@ -422,6 +461,10 @@ directory, ported or not, so nothing above is an unrecorded omission.
                                                                  # cases through each tree's own geometry, the model
                                                                  # catalog both ways, and that nothing moved in the
                                                                  # control path
+/root/frog/venv/bin/python analysis/override_ramp_check.py       # the override ramp: that unset is today's
+                                                                 # behaviour, that the fade arithmetic is the source's
+                                                                 # frame for frame, and that the registrations and
+                                                                 # the reader agree
 /root/frog/venv/bin/python analysis/lateral_fw_probe.py          # the controller: the constants byte for byte, the method
                                                                  # bodies diffed statement for statement against the
                                                                  # source with every difference traced to a reason in

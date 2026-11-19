@@ -25,14 +25,17 @@ plan D1/D3/D5, todos 19/29):
    core's override handling and its feedforward fade depend on are carried here instead of porting a whole second
    controller to get them. Its numbers — the 0.10 command threshold, the opposite-sign test, the 0.28 s hold — are
    unchanged, and it keeps the same `DT_CTRL` step it adds to the hold.
-4. **`override_fade_up_s` is 0.0, and that is a behaviour difference, not a gap.** In the source it is read from the
-   Honda interface's live-tuning provider (`HondaLiveTuning`, reached through the Honda entry of the source's
-   per-brand interface config, `…honda.provider`); nothing in this tree has such an object, so the read has nowhere
-   to come from.
+4. **`override_fade_up_s` is still 0.0.** In the source it is read from the Honda interface's live-tuning
+   provider (`HondaLiveTuning`, reached through the Honda entry of the source's per-brand interface config,
+   `…honda.provider`); the port now has an equivalent carrier — `frogpilot/common/lateral_settings.py` read by
+   `frogpilot/controls/lateral/override_ramp.py` in the Honda car controller, whose `HondaOverrideFadeUpSecs` is
+   the same value the source hands this class — but this class is not given it, on purpose. It is one number
+   with two very different jobs: fading assist back in at the wheel, and bleeding this controller's integrator.
+   The second one has never been measured on this car.
    A literal 0.0 keeps the core's documented condition (`vfn_eps_core.py:420-423`) false, so what changes at drive
    level is: there, a sustained steer limit bleeds the integrator through `OVERRIDE_FADE_I_BLEED_TAU` after a press
-   releases; here it freezes. That is the number to look for in a paired drive, and it is the one thing this task
-   could not carry without inventing a settings carrier this tree does not have.
+   releases; here it freezes. That is the number to look for in a paired drive, and a drive that has just had its
+   actuator map corrected is the wrong one to read it in.
 5. **No calibration table at all.** The source's table lists the eleven images that have their own image constants,
    column load and residual-PID trims. The Clarity is not one of them — it takes the module-defaults branch, whose
    defaults *are* the Clarity's (`vfn_eps_core.CLARITY_A020` / `CLARITY_EPS_LOAD`, which is why that module was
