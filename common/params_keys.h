@@ -500,6 +500,21 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     // runs NrdrLateralController=1, NrdrSteerRatioMode=3, LaneGuidanceMode=2, LaneCenteringStrength=0.95, which
     // are the reference a ported drive must reproduce, never a hidden default). Read through
     // frogpilot/common/lateral_settings.py, never with Params() in a control loop. Not Pond toggles (tuning_level 0).
+    //
+    // Lane policy (Task 11, plan S6). Centring in this tree IS model centring: LaneGuidanceMode 1 and 2 select
+    // nothing, because no centring code is ported (selfdrive/controls/lib/lane_centering.py, D5), so the source's
+    // per-frame demotion of BLENDFUL to MODEL_ONLY (its modeld.py:479-483) has nothing here to demote. The four
+    // Lane* rows exist to keep the source's parameter names readable next to a port drive's; they are not read by
+    // a control path, and what says so is this comment, lateral_settings.py's note on each key and the README - not
+    // the run-mode printout, which prints a value for every registered key. NrdrOptimizedLaneChanges is the live
+    // key:
+    // it arms the controller's no-feedforward-during-a-lane-change gate (frogpilot/controls/lateral/
+    // lane_change_tuning.py -> latcontrol_fw, Task 19); unset is off here where the source defaults it on.
+    // Its four sibling keys (NrdrLaneChange*) are deliberately NOT registered: the source fixed their values in
+    // code - both of its tables hold NrdrLaneChangeEntrySrReduction 0.0, so no saved value arms anything - and the
+    // one thing they would move that this tree already has a knob for is lane-change timing, which is FrogPilot's
+    // own LaneChangeTime -> toggle.lane_change_delay -> desire_helper.py:91,94. A second knob for the same thing
+    // is how a port gets two answers. Analysis: analysis/lateral_lane_change_probe.py §B, §G.
     {"LaneCenterOffset", {PERSISTENT, FLOAT, "0.0", "0.0", 0}},
     {"LaneCenteringMinSpeed", {PERSISTENT, INT, "0", "0", 0}},
     {"LaneCenteringStrength", {PERSISTENT, FLOAT, "0.0", "0.0", 0}},
