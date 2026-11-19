@@ -1,14 +1,33 @@
-# `frogpilot/controls/lateral/` — the lateral geometry ported from dev-111826
+# `frogpilot/controls/lateral/` — the lateral stack ported from dev-111826
 
 What lives here, and what each file is for. Source: `/root/frog/nrdr-111826/openpilot/nrdr/features/lateral/`
-(branch `dev-111826`, the build on the car). Plan: `analysis/NRDR-LATERAL-PORT-PLAN-2026-11-18.md` §S2.
-Ledger: `analysis/PORT-LATERAL-LEDGER.md` §1a (port status per module), §8 (the parameter table).
+(branch `dev-111826`, the build on the car). Plan: `analysis/NRDR-LATERAL-PORT-PLAN-2026-11-18.md` §S2, §S3.
+Ledger: `analysis/PORT-LATERAL-LEDGER.md` §1a (port status per module), §1a.1 (the shared-library facts the
+S3 copies depend on), §8 (the parameter table).
 
 | file | source | what it is |
 |---|---|---|
 | `honda_vgr.py` | `honda_vgr.py` (200 L) | Table A: the EPS's own position map (`_TRW_A020_X/Y`, 30 knots) and the interpolation on it. **Clarity only.** |
 | `honda_rack_map.py` | `honda_rack_map.py` (287 L) | `CLARITY_TRW_A020_RACK`: the effective rack ratio by wheel angle measured on this car's VSA yaw, plus `RackMapGeometry` (Table A on the map, angle ⇄ curvature both ways). **Clarity only, one table.** |
 | `steer_ratio_tuning.py` | `steer_ratio_tuning.py` (476 L) | The mode enum, `SteerRatioSelection` (both directions, per-frame `VM.sR`), `SteerRatioModeLatch` (requested vs accepted, with `rejected_reason`). |
+| `pid.py` | `pid.py` (15 L) | `FeedforwardPIDController`: this tree's `common.pid.PIDController` with the feedforward multiplied by `k_f` on the way in. | 
+| `integral_pid.py` | `integral_pid.py` (32 L) | `IntegralScaledPIDController`: scales `k_i`, not the stored integral; `update_lateral` is the decision table (which conditions freeze the integrator, which reset it). **This is the class `vfn_eps_core` imports *as* its `PIDController`.** | 
+| `torque_output_filter.py` | `torque_output_filter.py` (39 L) | `HondaTorqueOutputFilter` + `torque_lpf_tau`: the comfort output LPF and its 25 mph / 50 mph bands. |
+
+## The three PID helpers (S3)
+
+The actuator model (`vfn_eps_core`, Task 17) is built out of these, so they come across or the core does not.
+`integral_pid.py` and `torque_output_filter.py` are byte-identical to the source apart from their module
+docstrings; `pid.py` is the same syntax tree with the `Gain` annotations dropped, because this tree's
+`common/pid.py` does not export that name (ledger §1a.1: it wraps a scalar gain as `[[0],[k]]` where dev-111826
+wraps it as `([0],[k])`, and its `update`/anti-windup/`k_i` are otherwise identical). No edit was made to this
+tree's `common/pid.py`, and no `Gain` alias was invented to make the annotations compile.
+
+`torque_output_filter.update`'s `live` argument is duck-typed on the source's live-torque-edit keys
+(`torque_lpf_enabled`, `lpf_tau_low / …_standard / …_highway`). **None of those keys is registered in this port**
+(ledger §8). The parameter is kept as the source wrote it rather than flattened into three floats, so the day a
+live-tuning snapshot exists it can be passed straight in; until then a caller must supply an object with those
+attributes. That is Task 10/19's job, not this file's.
 
 Nothing in this directory reads Params. `steer_ratio_tuning.py` takes a `LateralSettings` snapshot
 (`frogpilot/common/lateral_settings.py`) and calls `int_of("NrdrSteerRatioMode")` — that is the whole
@@ -49,6 +68,7 @@ reason, and the reason is what the boot probe prints.
 /root/frog/venv/bin/python analysis/lateral_geometry_probe.py     # the tables equal the source's, field for field
 /root/frog/venv/bin/python analysis/lateral_selection_probe.py    # the modes resolve as the table above says
 /root/frog/venv/bin/python analysis/test_lateral_geometry.py      # property test: round trip + source equivalence
+/root/frog/venv/bin/python analysis/lateral_pid_probe.py          # the three helpers, replaying the source's own tests
 ```
 
 The last two run each tree in its own subprocess (both trees ship a package named `openpilot`) and compare the
