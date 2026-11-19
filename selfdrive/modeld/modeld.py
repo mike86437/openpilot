@@ -32,7 +32,7 @@ from openpilot.selfdrive.modeld.models.commonmodel_pyx import DrivingModelFrame,
 from openpilot.selfdrive.modeld.runners.tinygrad_helpers import qcom_tensor_from_opencl_address
 
 from openpilot.frogpilot.common import frogpilot_model_utilities, frogpilot_utilities, frogpilot_variables
-from openpilot.frogpilot.controls.lateral.model_source import CURVATURE_HEAD, PLAN, delay_input
+from openpilot.frogpilot.controls.lateral.model_source import CURVATURE_HEAD, PLAN, PTM_LAT_SMOOTH_SECONDS, delay_input
 
 
 PROCESS_NAME = "selfdrive.modeld.modeld"
@@ -434,18 +434,27 @@ def main(demo=False):
     # The horizon the source reads its plan at is lat_delay + DT_MDL + DT_MDL/2, unconditionally (its
     # `frame_delay`/`action_delay`, `modeld.py:431-432`). This tree composes the same arithmetic only for
     # ACTION_DELAY_MODELS, so for an admitted calibration the frame-centre delay comes with the schedule — a
-    # car fact gating a per-model value, not a change of that value: `use_action_delay` and
-    # `get_model_lat_smooth_seconds` are untouched, and every other model and every other car is unchanged.
-    # The smoothing term stays the model's own even here: the calibration owns the delay, not how a model's
-    # outputs are smoothed. That is a difference from the source, which overrides it with
-    # PTM_LAT_SMOOTH_SECONDS; it is recorded rather than hidden (ledger §2 D4), and for the model on this car
-    # today it is the same number: DEFAULT_MODEL lat_smooth_seconds 0.1 == PTM_LAT_SMOOTH_SECONDS. The same
-    # holds for `min_stable_delay`, which the source also forces to 0.0 for an admitted profile: left to
-    # `use_min_stable_delay` here, and both are 0 for every model except cd210-model.
+    # car fact gating a per-model value, not a change of that value: `use_action_delay` is untouched, and every
+    # other model and every other car is unchanged.
+    # The smoothing is the source's, for the same reason the delay is: an admitted calibration owns both.
+    # The earlier wording here claimed "the model's own" and PTM_LAT_SMOOTH_SECONDS were the same number for
+    # this car because FrogPilot's default model carries 0.1. That was checked against the default, not against
+    # the model this car actually runs: `DrivingModel=cd210-model`, whose catalog row is
+    # `lat_smooth_seconds: 0.0`, and `smooth_value` at tau 0 is alpha 1 - no smoothing at all
+    # (selfdrive/controls/lib/drive_helpers.py:22). So on this car the admitted path was the one place the
+    # demand reached the lateral loop unsmoothed, and `analysis/demand_jitter.py` measures what that leaves in
+    # the published curvature: 0.006 1/m at p90 at 8-18 kph, 0.004 at 18-30 kph, which through this car's own
+    # 17.9:1 steer ratio is 10-18 degrees of wheel angle the loop is asked to chase. A demand like that is what
+    # a driver feels as the wheel oscillating at every speed, and no change of controller gain removes it.
+    # Not changed here, and still a known difference from the source: `min_stable_delay`, which the source
+    # forces to 0.0 for an admitted profile, is left to `use_min_stable_delay`, and cd210-model is the one row
+    # in this catalog that carries a non-zero value.
+    lat_smooth_seconds = PTM_LAT_SMOOTH_SECONDS
     action_delay = DT_MDL / 2
-  cloudlog.info("modeld lateral timing: profile=%s prediction_schedule=%s action_delay=%.3f",
+  cloudlog.info("modeld lateral timing: profile=%s prediction_schedule=%s action_delay=%.3f "
+                "lat_smooth_seconds=%.3f",
                 firmware_profile.name if firmware_profile is not None else "none",
-                delay_schedule is not None, action_delay)
+                delay_schedule is not None, action_delay, lat_smooth_seconds)
 
   # TODO this needs more thought, use .2s extra for now to estimate other delays
   # TODO Move smooth seconds to action function
