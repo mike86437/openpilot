@@ -17,6 +17,7 @@ S3 copies depend on), §8 (the parameter table).
 | `yaw_control_timing.py` | `yaw_control_timing.py` (66 L) | **Model-side prediction delay** (`DELAY_SCHEDULE_BP/V`, `prediction_delay_schedule`) and the controller's **command-delay line** (`CommandDelay`, a fixed-rate 0.30 s buffer read by linear interpolation). **Clarity only: one prediction row, one command-delay row.** |
 | `model_source.py` | `model_source.py` (55 L) | Which model output the curvature came from (`lateral_source`), which input carried the told delay (`delay_input`), `PTM_LAT_SMOOTH_SECONDS` / `CMD_DELAY_RAMP_S`, and `ModelActionRamp` (the 20 Hz action interpolated across 100 Hz frames). Names shared with the `Action` stamps in `cereal/log.capnp`. |
 | `controller_selection.py` | `controller_selection.py` (130 L) | **The admission**: the `(fingerprint, EPS firmware)` table, the four conditions on top of it, and the profile record (`name`, `calibration`, `prediction_schedule`, `provisional`, `required_rwd`). **Clarity only: one entry.** |
+| — ported **outside this directory**: `selfdrive/controls/lib/latcontrol_fw.py` | `latcontrol_fw.py` (161 L) | **The controller** (`LatControlFirmware`): the delay line, the geometry call, the 300 deg/s slew, the core call, the output ceiling shared with the core, and the `pidState` block. It is a `LatControl` subclass, so it lives with this tree's other controllers, not here (S3, Task 19/29). |
 
 ## The three PID helpers (S3)
 
@@ -54,9 +55,80 @@ which is exactly the call `computed_r6` makes.
 Nothing in this directory reads Params. `steer_ratio_tuning.py` takes a `LateralSettings` snapshot
 (`frogpilot/common/lateral_settings.py`) and calls `int_of("NrdrSteerRatioMode")`; `controller_selection.py` takes the
 same snapshot for `NrdrLateralController` and an `FrogPilotCarParams` for the EPS-modified fact. That is the whole
-configuration surface. Nothing here is wired into `controlsd` yet: admission exists (Task 10) and can be printed from
-a boot log by `analysis/ptm111826_boot_check.sh`, but the controller that would consume the selection and the
-admitted profile (`latcontrol_fw`) is Task 19, behind this core.
+configuration surface. Nothing here is wired into `controlsd` yet: admission exists (Task 10), the controller that
+consumes it exists too (`latcontrol_fw.py`, below), and what is still missing is the wiring between them —
+`controlsd` builds this tree's own controller until Task 31 puts the latch in.
+
+## The controller (`selfdrive/controls/lib/latcontrol_fw.py`, S3)
+
+It is a `LatControl` subclass, so it lives where this tree's controllers live — `selfdrive/controls/lib/`, next to
+`latcontrol_pid.py` — and not in this directory. This tree's `latcontrol.py`, `latcontrol_pid.py`,
+`latcontrol_torque.py` and `latcontrol_angle.py` are untouched; in git the port file is the only change in that
+directory (`analysis/lateral_fw_probe.py` asserts that rather than assuming it).
+
+**The order is the contract with the core**, and it is the source's order: command-delay line → geometry
+(`steer_ratio_selection.desired_angle_no_offset`) → 300 deg/s slew clamp → `HondaEpsLateralCore.update` → the
+ceiling `min(self.steer_max, self.core.ff.cal.output_ceiling())` shared with the core's own clamp → the `pidState`
+writes (`epsFf* @10-15`, `commandDelay @16`, appended to this tree's schema in `d4ae355ed`). `GAIN_BP
+[0, 11.175, 11.176, 22.352]`, `KP [0.018, 0.024, 0.048, 0.060]`, `KI [0.006, 0.008, 0.016, 0.020]`,
+`ANGLE_RATE_LIMIT 300` and `VFN_SOURCE_COMMIT` are the source's literals, byte for byte. Its docstring is kept
+verbatim above the port's own, because the ramp rule it states (plan → delay out over one second, anything else →
+back to the calibration) is a rule the port has to honour.
+
+**Four substitutions, each with its carrier named.** (1) `__init__(CP, CI, dt)` is this tree's base signature; there
+is no second CarParams and none is invented, so admission is called as `firmware_controller_profile(CP, CI.FPCP)` —
+`opendbc/car/interfaces.py:124` already attaches the FrogPilot CarParams the interface built (D1). A `None` answer
+raises, as the source raises: the controller refuses, it does not fall back. (2) The model arrives as the frame's own
+`model_data` argument — this tree's `LatControl.update` already receives `self.sm['modelV2']` (`controlsd.py:171-176`)
+— which replaces the source's `update_model_v2` injection and is what the lane gate reads `meta.laneChangeState` from
+and `_command_delay` reads `action.lateralSource` from. (3) `_eps_modified_steering_pressed` is carried as eight lines
+of this file rather than imported, because in the source it lives in `latcontrol_pid.py`, the *fallback* controller
+this port refuses (D5); porting a controller to borrow its press detector would smuggle the refused path back in.
+(4) `override_fade_up_s` is the constant `0.0`. In the source that value comes from the Honda interface's
+live-tuning provider (`HondaLiveTuning`, reached through the Honda entry of its per-brand config); nothing in this
+tree has such an object, so the core's limiter-feedback bleed (`vfn_eps_core.py`, the `OVERRIDE_FADE_I_BLEED_TAU`
+branch) can never run here. The drive-level consequence is stated in the module and is worth naming before a paired
+drive: there, a sustained steer limit after a press releases decays the integrator; here it freezes. That is the
+difference a comparison has to expect, not one to discover later.
+
+**Three narrowings, each measured against the source file rather than assumed.** The calibration table is gone because
+the Clarity is not one of the eleven images in it — the probe reads the source's own keys and counts them — so the
+module-defaults branch it takes is the branch that car already took, and the defaults *are* the Clarity's
+(`CLARITY_A020`, `CLARITY_EPS_LOAD`). The ride-through dropout is gone because evaluating the source's own
+`ride_through_frames` expression at `clarity_a020` gives 0: in both trees, for this car, every inactive frame is a
+hard reset, so the "track internally, freeze I, send zero" branch is unreachable code and `inactive_frames` counts
+nothing. `owns_output_filter`, `core_type` and `feedforward_type` are gone because the flag's only reader is the
+source's own controlsd hook (`nrdr/hooks/controlsd.py:32-35`), which uses it to skip *another* controller's output
+filter, and this tree has no post-`LaC` output filter to skip (`torque_output_filter.py` is ported and unwired) — a
+flag read by nobody is a name for a knob that does not exist. The Testing variant is a separate task (plan D5).
+
+**The geometry latch lives on this class only.** This tree's `LatControl` has no `steer_ratio_selection` and no
+settings snapshot; the source's base does. Rather than edit this tree's base — which every other controller in the
+tree subclasses — the ported class defaults itself to `stock_steer_ratio_selection(CP)`, which is identical to the
+geometry this tree's own controller uses today, and exposes `set_steer_ratio_selection` / `set_live_tuning_snapshot`
+for controlsd to replace them before the first frame (Task 31). A half-initialised controller therefore cannot steer
+on a geometry nobody asked for.
+
+**Checked by `analysis/lateral_fw_probe.py` (91/91, one process: only the target tree is imported, the source is read
+as text).** The five constants byte-for-byte and nothing else at module level; `_eps_modified_steering_pressed`
+AST-identical to the source's; the five method bodies diffed statement by statement — 32 differences, each matching a
+reason the module's own header states, and any line matching none reported as a bug; the base contract (both
+signatures compared to this tree's abstract methods, the class concrete, `reset` overridden, the other controllers
+unchanged in git); construction on the car's real `carFw` with the EPS-modified bit this tree's own `card` writes,
+and three refusals that raise instead of falling back; then behaviour against expectations written in the probe rather
+than read off the code — the command-delay ramp in both directions against a closed form, the 300 deg/s cap actually
+reached and the command then converging exactly on the geometry's answer, the press detector's eight cases, a press
+zeroing the feedforward weight where the same frames without a press fade it in, the output never exceeding the
+ceiling and a large demand actually reaching it and reporting saturated through the base class's timer (while a
+safety-limited frame never does), a dropout resetting the core and the press state but not the delay line or the
+commanded angle, the lane gate armed by states 2 and 3 with the key on and refusing `preLaneChange` and an unset key,
+`pidState` equal to the core's own state at Float32 resolution, and 120/120 frames in which a hand-driven
+`HondaEpsLateralCore` built from the port's own `GAIN_BP/KP/KI` reproduces the controller exactly. Also asserted, as
+a fact: no file in the tree names `LatControlFirmware` except itself.
+
+**Not covered by it, and said so in its own output:** the frame-for-frame gate against dev-111826's running
+controller (Task 30), the controlsd wiring (Task 31), the Testing variant, and the settings carrier `override_fade_up_s`
+would have needed.
 
 ## The timing layer (S4)
 
@@ -71,7 +143,8 @@ Two kinds of delay, and only one of them is a number this car would ever tune:
   `lat_action_t = lat_delay + frame_delay + action_delay` (ledger §2 D4; measured both ways by
   `analysis/lateral_timing_probe.py`, which evaluates each tree's own expression rather than quoting it).
 * **Command delay** — `COMMAND_DELAY_ENDPOINTS["clarity_a020"] = (0.20, 0.10)` over `(10.0, 15.0) m/s`, read
-  through `CommandDelay`. Where it is applied is `latcontrol_fw` (Task 19), and there the source first scales it:
+  through `CommandDelay`. Where it is applied is `latcontrol_fw` (its `_command_delay`, carried unchanged), and there
+  the source first scales it:
   `_command_delay` drives `cmd_delay_scale` to **zero** whenever `action.lateralSource == plan` and back to the
   calibration otherwise (`latcontrol_fw.py:86-92`). This tree's models all read the plan, and the real
   dev-111826 drive on this car says so too (`plan` on 48 325 of 48 325 model frames), so the honest expectation
@@ -104,7 +177,7 @@ HondaFlagsSP.EPS_MODIFIED` (value 2). This tree has no `CarParamsSP` (D1), so it
 different bit value, same decision; the probe compares the decision and never the number.
 
 **What admission does not do.** It enables nothing. `controlsd` still constructs this tree's own lateral controller
-until Task 19 puts `latcontrol_fw` behind it (ISC-3). The `NrdrLateralController` read is the source's own two states
+until Task 31 puts the latch behind it — `latcontrol_fw` now exists, and nothing constructs it (ISC-3). The `NrdrLateralController` read is the source's own two states
 (1 = the model, 2 = the model plus its measurement trace) read through `lateral_settings.py` as a registered INT;
 unset, `0`, out of range or unparseable is 0, i.e. this tree's stock controller — the same rule the mode ladder uses
 (`_mode_value`), which is why the probe can compare the two trees' answers for every parameter state.
@@ -261,12 +334,13 @@ reason, and the reason is what the boot probe prints.
   convention is a named model set beside `ACTION_DELAY_MODELS` / `MIN_STABLE_DELAY_MODELS`
   (`frogpilot/common/frogpilot_variables.py:107-111`) — arriving with the measurement.
 - No `NrdrLaneChange*` key is registered (`common/params_keys.h` is still exactly the seven from Task 6), and no
-  Pond row for `NrdrOptimizedLaneChanges` yet. Both arrive with the consumer that acts on them (Task 19), for the
+  Pond row for `NrdrOptimizedLaneChanges` yet. Both arrive with the wiring that acts on them (Task 31), for the
   same reason `NrdrSteerRatioModelBlend` is not registered: a key or a row that nothing acts on is a knob a user
   cannot tell the difference about.
 - `ptm_testing`, which existed only for a Clarity model-blend experiment in the source.
   `ptm_baseline` *is* kept: it selects the biscuit-PTM interpolation grid the actuator model core expects, and
-  the consumer passes it (Task 19), the source's controlsd hook does the same at `:104-106`.
+  the caller that resolves the geometry passes it (Task 31, as the source's controlsd hook does at `:104-106`);
+  `latcontrol_fw` resolves no geometry itself — it consumes the selection it is handed.
 
 The ledger (`analysis/PORT-LATERAL-LEDGER.md` §1a) carries a status line for every module in the source
 directory, ported or not, so nothing above is an unrecorded omission.
@@ -290,6 +364,12 @@ directory, ported or not, so nothing above is an unrecorded omission.
                                                                  # cases through each tree's own geometry, the model
                                                                  # catalog both ways, and that nothing moved in the
                                                                  # control path
+/root/frog/venv/bin/python analysis/lateral_fw_probe.py          # the controller: the constants byte for byte, the method
+                                                                 # bodies diffed statement for statement against the
+                                                                 # source with every difference traced to a reason in
+                                                                 # its header, this tree's base contract, construction
+                                                                 # on the car's own carFw, and the delay ramp / slew /
+                                                                 # press / ceiling / dropout / lane-gate behaviour
 ```
 
 `lateral_timing_probe.py` also settles two things that are easy to get wrong from the source's file list alone:
