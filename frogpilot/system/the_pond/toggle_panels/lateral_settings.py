@@ -18,6 +18,13 @@ def auto_tune_reason(context):
   return context.setting_reason(not is_forcing_auto_tune(context), "ForceAutoTune", wanted=False)
 
 
+def firmware_lateral_visible(context):
+  # Both rows are the lateral port's own two keys, and those keys are registered at tuning level 0, so the only gate
+  # is the car: a Honda whose EPS reports itself as modified and whose CarParams asks for a pid lateral tune is the
+  # only car this branch's admission could ever admit. Everywhere else there is nothing to offer.
+  return context.car_reason(context.can_use_firmware_lateral)
+
+
 def force_auto_tune_visible(context):
   torque_steering = context.is_torque_car or is_forcing_torque_controller(context) or is_using_nnff(context)
 
@@ -213,6 +220,41 @@ ROWS = [
     "title": "Force Torque Controller",
     "visible": force_torque_controller_visible,
     "widget": "toggle"
+  },
+  {
+    "description": ("<b>Steer with the model measured on this car's own steering firmware instead of the one "
+                    "openpilot tunes for itself.</b><br><br>What is measured is how that EPS turns assist on and off "
+                    "and how hard it pushes at each wheel angle, so the model adds assist the way the car's own "
+                    "firmware does instead of guessing at it with a PID. Off is exactly what this branch does today, "
+                    "and it only appears on a Honda whose EPS reports itself as modified, because that is the only "
+                    "car a model like this has been measured on. Changing it while driving asks for a reboot."),
+    "key": "NrdrLateralController",
+    "on_change": reboot_when_started,
+    "options": ({"label": "openpilot's own controller", "value": 0}, {"label": "Measured EPS model", "value": 1}),
+    "order": 8,
+    "path": ("Driving Controls", "STEERING", "Advanced Lateral Tuning"),
+    "title": "Measured EPS Steering Model",
+    "visible": firmware_lateral_visible,
+    "widget": "select"
+  },
+  {
+    "description": ("<b>Which steering geometry openpilot uses when it works out how far to turn the wheel.</b>"
+                    "<br><br>\"The car's own ratio\" is what openpilot uses today. \"Measured EPS and rack map\" "
+                    "reads this car's own measured tables instead: how its EPS maps a command to a wheel angle, and "
+                    "how the rack maps that angle back to the line the car takes. Those tables only exist for cars "
+                    "this branch has measured, so nothing else is offered, and the two options that would ask for "
+                    "something else are left out on purpose: ignoring the learned values gives this car the same "
+                    "number as its own ratio, and the measured-angle curve it could otherwise use has not been "
+                    "ported.<br><br>While \"Measured EPS Steering Model\" above is off this changes nothing on the "
+                    "road: the measured tables are read by that model, not by openpilot's own controller."),
+    "key": "NrdrSteerRatioMode",
+    "on_change": reboot_when_started,
+    "options": ({"label": "The car's own ratio", "value": 0}, {"label": "Measured EPS and rack map", "value": 3}),
+    "order": 9,
+    "path": ("Driving Controls", "STEERING", "Advanced Lateral Tuning"),
+    "title": "Measured Steering Geometry",
+    "visible": firmware_lateral_visible,
+    "widget": "select"
   },
   {
     "children": ("Driving Controls", "STEERING", "Always On Lateral"),

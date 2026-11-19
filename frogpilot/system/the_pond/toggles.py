@@ -228,6 +228,7 @@ class Context:
     self.can_map_gears = True
     self.can_use_always_on_lateral_lkas_button = True
     self.can_use_dsu_bypass = False
+    self.can_use_firmware_lateral = True
     self.can_use_pedal = False
     self.can_use_sdsu = False
     self.car_detected = False
@@ -301,6 +302,7 @@ class Context:
     self.can_map_gears = frogpilot_toggles.can_map_gears
     self.can_use_always_on_lateral_lkas_button = frogpilot_toggles.can_use_always_on_lateral_lkas_button
     self.can_use_dsu_bypass = frogpilot_toggles.can_use_dsu_bypass
+    self.can_use_firmware_lateral = frogpilot_toggles.can_use_firmware_lateral
     self.has_auto_tune = frogpilot_toggles.has_auto_tune
     self.has_bsm = car_params["enableBsm"]
     self.has_cruise_switch = car_make not in frogpilot_variables.NO_CRUISE_SWITCH_BRANDS
