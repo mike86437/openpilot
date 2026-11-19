@@ -13,10 +13,12 @@ S3 copies depend on), §8 (the parameter table).
 | `pid.py` | `pid.py` (15 L) | `FeedforwardPIDController`: this tree's `common.pid.PIDController` with the feedforward multiplied by `k_f` on the way in. | 
 | `integral_pid.py` | `integral_pid.py` (32 L) | `IntegralScaledPIDController`: scales `k_i`, not the stored integral; `update_lateral` is the decision table (which conditions freeze the integrator, which reset it). **This is the class `vfn_eps_core` imports *as* its `PIDController`.** | 
 | `torque_output_filter.py` | `torque_output_filter.py` (39 L) | `HondaTorqueOutputFilter` + `torque_lpf_tau`: the comfort output LPF and its 25 mph / 50 mph bands. |
+| `vfn_eps_core.py` | `vfn_eps_core.py` (608 L → 441 L) | **The actuator model**: the command map and its key clamp, the firmware P row as pieces over \|R5\|, the speed envelope, `R6` derived from the image's own Table A, the column load model, the piecewise-quadratic solve `r5_for_motion`, `EpsFirmwareCalibration` + `CLARITY_A020`, and the two classes the controller composes (`HondaEpsFirmwareFeedforward`, `HondaEpsLateralCore`). **Clarity only: one calibration object.** |
 
 ## The three PID helpers (S3)
 
-The actuator model (`vfn_eps_core`, Task 17) is built out of these, so they come across or the core does not.
+The actuator model (`vfn_eps_core`, ported in the same stage) is built out of these three, so they come across
+or the core does not.
 `integral_pid.py` and `torque_output_filter.py` are byte-identical to the source apart from their module
 docstrings; `pid.py` is the same syntax tree with the `Gain` annotations dropped, because this tree's
 `common/pid.py` does not export that name (ledger §1a.1: it wraps a scalar gain as `[[0],[k]]` where dev-111826
@@ -29,10 +31,27 @@ tree's `common/pid.py`, and no `Gain` alias was invented to make the annotations
 live-tuning snapshot exists it can be passed straight in; until then a caller must supply an object with those
 attributes. That is Task 10/19's job, not this file's.
 
+## The actuator model (`vfn_eps_core.py`)
+
+Copied first, then narrowed — the order matters because a re-typed table is where a port loses a digit. What was
+removed is whole blocks: eleven images' `EpsFirmwareCalibration` objects, their load fits, their Table A-derived
+`R6` shapes and their P/I trims (178 lines), plus the `rdx_rack` import and the measured-RDX member of
+`computed_r6`'s parameter type. Every def and class that survived is the source's syntax tree with annotations
+dropped — measured, not asserted, by `analysis/lateral_core_tables_probe.py`.
+
+It is **pure**: no capnp, no Params, no `selfdrive`, no modeld — plain values in, plain values out, which is what
+makes the frame-for-frame equivalence harness (Task 18) possible. The angle-PID gains it gets constructed with
+(`GAIN_BP`/`KP`/`KI`, `latcontrol_fw.py:28-30`) belong to the controller, not to this file; `P_SCALE`, `I_SCALE`,
+`INTEGRATOR_MIN_SPEED` and `OUTPUT_LPF_TAU` are the core's own constants and are the source's verbatim.
+
+`vfn_geometry.py` and `vfn_rack_map.py` are deliberately **not** ported: in the source each is imported only by
+`nrdr/tests/test_cleanup_policy.py`, and what they build is what `honda_vgr.ptm_inverse` already builds here —
+which is exactly the call `computed_r6` makes.
+
 Nothing in this directory reads Params. `steer_ratio_tuning.py` takes a `LateralSettings` snapshot
 (`frogpilot/common/lateral_settings.py`) and calls `int_of("NrdrSteerRatioMode")` — that is the whole
 configuration surface. Nothing here is wired into `controlsd` yet (Task 10); the controller that would consume
-it (`latcontrol_fw` + `vfn_eps_core`) is Task 8.
+it (`latcontrol_fw`) is Task 19, behind this core.
 
 ## The mode table
 
@@ -51,8 +70,10 @@ reason, and the reason is what the boot probe prints.
 
 ## What is deliberately not here
 
-- Other cars: the Civic / Insight / CR-V / Ridgeline / Odyssey Table A profiles and rack maps, the spec-predicted
-  maps and `honda_spec_plant` that predicted them, the RDX identity path. A lookup for another car returns `None`.
+- Other cars: the Civic / Insight / CR-V / Ridgeline / Odyssey / RDX Table A profiles and rack maps, the
+  spec-predicted maps and `honda_spec_plant` that predicted them, the RDX identity path, and in the core the
+  eleven non-Clarity `EpsFirmwareCalibration` images with their load fits, `R6` shapes and P/I trims. A lookup for
+  another car returns `None`, and the core holds exactly one calibration object.
 - `RawSteerRatioProfile` and the mode-2 curve; the manual center/final edit fields and `STEER_RATIO_METADATA`
   that fed them; `NrdrSteerRatioHybrid` / `hybrid_steer_ratio.py`; `NrdrSteerRatioModelBlend` and
   `model_blend_endpoint` (its keys are not registered here — see ledger §8, they arrive with a later ladder).
@@ -60,7 +81,10 @@ reason, and the reason is what the boot probe prints.
   `FrogPilotCarParams.flags & HondaFrogPilotFlags.EPS_MODIFIED`.
 - `ptm_testing`, which existed only for a Clarity model-blend experiment in the source.
   `ptm_baseline` *is* kept: it selects the biscuit-PTM interpolation grid the actuator model core expects, and
-  the consumer passes it (Task 8), the source's controlsd hook does the same at `:104-106`.
+  the consumer passes it (Task 19), the source's controlsd hook does the same at `:104-106`.
+
+The ledger (`analysis/PORT-LATERAL-LEDGER.md` §1a) carries a status line for every module in the source
+directory, ported or not, so nothing above is an unrecorded omission.
 
 ## Checking it
 
