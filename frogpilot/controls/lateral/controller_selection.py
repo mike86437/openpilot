@@ -81,6 +81,43 @@ def _firmware_family(CP) -> FirmwareControllerProfile | None:
   return None
 
 
+def firmware_profile_for_firmware(car_fingerprint, car_fw) -> FirmwareControllerProfile | None:
+  """The profile a car's own reported EPS rows select, for a caller that is still building CarParams.
+
+  Same table as `_firmware_family`, same normalisation, without needing a CarParams: the Honda interface has the
+  fingerprint and the firmware rows and nothing else at the point where it decides a car's lateral parameters.
+  Keeping the lookup here means there is one table that knows which car this controller is for.
+  """
+  for fw in car_fw:
+    if getattr(fw, "ecu", "") == "eps":
+      profile = _PROFILES.get((str(car_fingerprint), normalize_honda_eps_firmware(fw.fwVersion)))
+      if profile is not None:
+        return profile
+  return None
+
+
+# The lateral actuator map each calibration was measured through: CarParams.lateralParams torqueBP/torqueV, i.e.
+# how a normalised lateral command becomes CAN steering torque. Keyed by calibration rather than car, because a
+# calibration is only meaningful against the actuator it was measured on: this Clarity ran a straight 0-3840 map
+# in the build whose gains this controller runs, and a 0-2560-then-compressed map in FrogPilot's own row. The
+# gain schedule in latcontrol_fw.py is in normalised units, so which map is installed multiplies every gain.
+# Measured, not assumed: analysis/actuator_map_probe.py prints the slope from any drive's own logs - 3838 on
+# dev-111826 boot 0000003f, 15348 at lane-holding command sizes on this port's 00000041 and 00000046.
+CALIBRATION_LATERAL_PARAMS: dict[str, tuple[list[int], list[int]]] = {
+  "clarity_a020": ([0, 3840], [0, 3840]),
+}
+
+
+def calibration_lateral_params(profile) -> tuple[list[int], list[int]] | None:
+  """The actuator map a calibration was measured through, or None when it says nothing about the actuator."""
+  if profile is None:
+    return None
+  params = CALIBRATION_LATERAL_PARAMS.get(profile.calibration)
+  if params is None:
+    return None
+  return list(params[0]), list(params[1])
+
+
 def firmware_controller_profile(CP, FPCP) -> FirmwareControllerProfile | None:
   """The four-condition admission, as the source wrote it, with this tree's carrier for the EPS-modified fact.
 
