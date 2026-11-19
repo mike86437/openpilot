@@ -216,6 +216,53 @@ the car compiles, runs the visibility helper as written on a car it can and cann
 `firmware_controller_selected` / `firmware_controller_testing_selected` / `resolve_steer_ratio_selection` what each
 offered value actually does.
 
+## The call site (`selfdrive/controls/controlsd.py`, S3 wiring)
+
+Two edits, both small, both in `controlsd.py`, and nothing anywhere else in the control path.
+
+**At startup** (`__init__`, after the branches the CarParams asks for): a `LateralSettingsSource` is built once from
+`self.params`, `firmware_controller_selected(self.lateral_settings.current(), self.CP, self.FPCP)` is read once, and
+when it is true `self.LaC` is replaced by `LatControlFirmware(self.CP, self.CI, DT_CTRL)` plus a
+`SteerRatioModeLatch` seeded from `resolve_steer_ratio_selection(self.CP, snapshot, ptm_baseline=True)`. The override
+sits *after* the branch the CarParams asked for, which is where the source's own override sits
+(`sunnypilot/selfdrive/controls/controlsd_ext.py:57-63`, called from its `controlsd.py:77`), and the controller import
+is deferred into that branch, as it is there: a car the admission does not accept does not import the controller, its
+actuator model or the measured tables. `ptm_baseline=True` is this tree's way of writing the source's
+`ptm_baseline=getattr(controls.LaC, "firmware_profile", None) is not None` — the measured rack map is Table A only for
+a car the admission has accepted. `NrdrLateralController` absent, 0, 3 or nonsense selects nothing: the existing
+branches stand (ISC-3).
+
+**Every frame** (`state_control`): one snapshot from that source — the reader refreshes on its own clock, so the control
+loop performs no `Params` read (D3) — then the resolver, `self.steer_ratio_latch.update(candidate, lat_active)`,
+`set_live_tuning_snapshot(settings)` (the lane gate's input, S6) and `set_steer_ratio_selection(selection)`. The
+accepted selection then feeds **both** directions, as the source runs them: the ratio handed to `VM.update_params` and
+the curvature the reported wheel angle means both come from it, because a controller commanding through the measured map
+while `controlsd`'s own curvature came from the learned ratio is the mixed state this port forbids. To make that
+possible the activity gate (`standstill` / `lateral_allowed` / `lateral_active` / `lat_active`) is computed before the
+geometry, as the source's `controlsd.py:103-106` computes it; `CC.latActive` keeps this tree's extra
+`frogpilotPlan.lateralCheck` term on its own line, and `clip_curvature` stays last and unchanged.
+
+**What the wiring deliberately does not carry.** The source's held-ratio guard (`_held_comma_ratio` /
+`_valid_comma_ratio`, `nrdr/hooks/controlsd.py:69-84`, hold the last plausible learner ratio) is not ported: mode 1's
+live ratio is the `max(lp.steerRatio, 0.1)` this tree already runs on for every car, which is the ratio mode 1 asks
+for, and the Pond does not offer mode 1 (V23). `learn_stiffness` / `learn_angle_offset` are not carried — those keys
+are not registered here (D6), so stiffness and angle offset keep coming from `liveParameters` exactly as they do today.
+`initialize_live_parameter_settings`' `LiveParams` poller has no counterpart (this tree has `LateralSettingsSource`),
+`finalize_lateral_torque` has nothing to post-process (no output filter is applied to a `LaC` output in this tree),
+`lane_change_request` reduces curvature by a fixed `0.0` (D9), and `ModelActionRamp` sits upstream of the controller in
+both trees. `lat_delay` is passed as the base's contract requires and the controller ignores it: it computes its own
+from the admitted profile.
+
+`analysis/lateral_controlsd_probe.py` is that change's gate: it diffs the wired file against
+`HEAD:selfdrive/controls/controlsd.py` statement for statement, executes HEAD's geometry lines against the guarded
+else-branch over a grid of speeds, wheel angles, rolls, learned ratios, stiffness factors and offsets and requires
+bit-identical numbers, executes the construction block over car identities and parameter states to see which controller
+is built and to prove `firmware_lateral_selected` cannot be true without the admission, and runs this tree's admitted
+block against dev-111826's `vehicle_model_state` + `measured_curvature` on the same grid: identical at mode 3, with
+each recorded difference (mode 0, mode 2, the held-ratio guard) asserted in its stated direction. The run-mode script
+prints the same two branches, and its §5 is executed as configured and as a comparable drive would ask
+(`analysis/lateral_boot_probe.py`).
+
 ## Lane-change policy (`lane_change_tuning.py`, S6)
 
 One line: in this tree the **request shaping is inert, and it is inert because the source made it inert**; the
