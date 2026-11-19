@@ -16,6 +16,7 @@ S3 copies depend on), §8 (the parameter table).
 | `vfn_eps_core.py` | `vfn_eps_core.py` (608 L → 441 L) | **The actuator model**: the command map and its key clamp, the firmware P row as pieces over \|R5\|, the speed envelope, `R6` derived from the image's own Table A, the column load model, the piecewise-quadratic solve `r5_for_motion`, `EpsFirmwareCalibration` + `CLARITY_A020`, and the two classes the controller composes (`HondaEpsFirmwareFeedforward`, `HondaEpsLateralCore`). **Clarity only: one calibration object.** |
 | `yaw_control_timing.py` | `yaw_control_timing.py` (66 L) | **Model-side prediction delay** (`DELAY_SCHEDULE_BP/V`, `prediction_delay_schedule`) and the controller's **command-delay line** (`CommandDelay`, a fixed-rate 0.30 s buffer read by linear interpolation). **Clarity only: one prediction row, one command-delay row.** |
 | `model_source.py` | `model_source.py` (55 L) | Which model output the curvature came from (`lateral_source`), which input carried the told delay (`delay_input`), `PTM_LAT_SMOOTH_SECONDS` / `CMD_DELAY_RAMP_S`, and `ModelActionRamp` (the 20 Hz action interpolated across 100 Hz frames). Names shared with the `Action` stamps in `cereal/log.capnp`. |
+| `controller_selection.py` | `controller_selection.py` (130 L) | **The admission**: the `(fingerprint, EPS firmware)` table, the four conditions on top of it, and the profile record (`name`, `calibration`, `prediction_schedule`, `provisional`, `required_rwd`). **Clarity only: one entry.** |
 
 ## The three PID helpers (S3)
 
@@ -51,9 +52,11 @@ makes the frame-for-frame equivalence harness (Task 18) possible. The angle-PID 
 which is exactly the call `computed_r6` makes.
 
 Nothing in this directory reads Params. `steer_ratio_tuning.py` takes a `LateralSettings` snapshot
-(`frogpilot/common/lateral_settings.py`) and calls `int_of("NrdrSteerRatioMode")` — that is the whole
-configuration surface. Nothing here is wired into `controlsd` yet (Task 10); the controller that would consume
-it (`latcontrol_fw`) is Task 19, behind this core.
+(`frogpilot/common/lateral_settings.py`) and calls `int_of("NrdrSteerRatioMode")`; `controller_selection.py` takes the
+same snapshot for `NrdrLateralController` and an `FrogPilotCarParams` for the EPS-modified fact. That is the whole
+configuration surface. Nothing here is wired into `controlsd` yet: admission exists (Task 10) and can be printed from
+a boot log by `analysis/ptm111826_boot_check.sh`, but the controller that would consume the selection and the
+admitted profile (`latcontrol_fw`) is Task 19, behind this core.
 
 ## The timing layer (S4)
 
@@ -79,6 +82,45 @@ These are calibration data, not settings: `command_delay` accepts its `settings`
 as the source wrote it, and the retired `NrdrYawCommandDelayLow/High` (0.145 / 0.125 on this car) is not read
 by anything here and is not registered here (ledger §8).
 
+## Admission (`controller_selection.py`, S5)
+
+Everything above is a capability. Admission is the question "does this car qualify, and which calibration is it
+qualified *to*" — and it is the gate the rest of the port is judged against, because the actuator model, the geometry
+and the delay schedules are all keyed to one calibration id.
+
+The admission is the source's, unchanged in structure: a `(carFingerprint, normalized EPS firmware)` lookup, and on top
+of it four conditions — the car's EPS reports as modified, this tree holds a measured Table A for exactly that
+fingerprint+firmware pair, the CarParams asks for a `pid`-shaped lateral tune, and `NrdrLateralController` is 1 or 2.
+For this Clarity all four answer yes from data the car itself reports: `HONDA_CLARITY` + `39990-TRW,A020` →
+`Clarity A020`, calibration `clarity_a020`, `prediction_schedule=True`, `provisional=False`, `required_rwd=-` — the
+same answer the source tree prints on the car today (ledger §5), proved side by side in
+`analysis/lateral_admission_probe.py` (34/34).
+
+**One substitution, stated plainly:** the source reads the EPS-modified fact from `CarParamsSP.flags &
+HondaFlagsSP.EPS_MODIFIED` (value 2). This tree has no `CarParamsSP` (D1), so it reads
+`FrogPilotCarParams.flags & HondaFrogPilotFlags.EPS_MODIFIED` (value 1) — the bit its own
+`CarInterfaceBase.get_frogpilot_params` writes from the same `carFw`, from the same test
+(`fw.ecu == "eps" and b"," in fw.fwVersion`) the Honda interface already uses for its tuning. Different object,
+different bit value, same decision; the probe compares the decision and never the number.
+
+**What admission does not do.** It enables nothing. `controlsd` still constructs this tree's own lateral controller
+until Task 19 puts `latcontrol_fw` behind it (ISC-3). The `NrdrLateralController` read is the source's own two states
+(1 = the model, 2 = the model plus its measurement trace) read through `lateral_settings.py` as a registered INT;
+unset, `0`, out of range or unparseable is 0, i.e. this tree's stock controller — the same rule the mode ladder uses
+(`_mode_value`), which is why the probe can compare the two trees' answers for every parameter state.
+
+`required_rwd` is carried, never checked: it names the corrected-PTM build a calibration models by RWD SHA-256 prefix,
+and admission cannot see a flash. The Clarity's is empty, so `provisional=False` means "this family is exactly what
+the calibration models", **not** "the build in this car is known" — that is still walk §8.2's open question, and only
+a drive (`epsFfR5` against 0xE4) can close it.
+
+Nothing in the file names another car. The other twelve profiles, `rdx_identity` (whose `confirmed_rdx` gate needs an
+owner receipt that does not exist — `RDX_ROUTE_A_SHA256` is `None`), and `PTM_EPS_REVISIONS` are not ported. The last
+one is not a judgement call: that map holds `HONDA_RIDGELINE` and `HONDA_ODYSSEY` only
+(`opendbc/sunnypilot/car/honda/values_ext.py:14-17`), so its "the reported version must be the revision this
+calibration models" gate has never once applied to a Clarity. `analysis/lateral_admission_probe.py` prints that lookup
+and prints each of the five fleet cars the source's thirteen-entry table answers and this one-entry table cannot.
+
 ## The mode table
 
 `SteerRatioMode` keeps the source's four numbers and labels verbatim. What each one *does* in this tree:
@@ -99,7 +141,9 @@ reason, and the reason is what the boot probe prints.
 - Other cars: the Civic / Insight / CR-V / Ridgeline / Odyssey / RDX Table A profiles and rack maps, the
   spec-predicted maps and `honda_spec_plant` that predicted them, the RDX identity path, and in the core the
   eleven non-Clarity `EpsFirmwareCalibration` images with their load fits, `R6` shapes and P/I trims. A lookup for
-  another car returns `None`, and the core holds exactly one calibration object.
+  another car returns `None`, and the core holds exactly one calibration object. In admission the same rule: one
+  `_PROFILES` entry against the source's thirteen, twelve profile objects not constructed, and `PTM_EPS_REVISIONS`
+  left out because it holds no Clarity entry to gate.
 - `RawSteerRatioProfile` and the mode-2 curve; the manual center/final edit fields and `STEER_RATIO_METADATA`
   that fed them; `NrdrSteerRatioHybrid` / `hybrid_steer_ratio.py`; `NrdrSteerRatioModelBlend` and
   `model_blend_endpoint` (its keys are not registered here — see ledger §8, they arrive with a later ladder).
@@ -134,6 +178,8 @@ directory, ported or not, so nothing above is an unrecorded omission.
 /root/frog/venv/bin/python analysis/lateral_pid_probe.py          # the three helpers, replaying the source's own tests
 /root/frog/venv/bin/python analysis/lateral_timing_probe.py       # the timing layer: schedules, delay line, action ramp,
                                                                  # the horizon each tree composes, the schema and both drives
+/root/frog/venv/bin/python analysis/lateral_admission_probe.py     # the admission: the same car, both trees, the same
+                                                                 # profile — and every refusal condition refused
 ```
 
 `lateral_timing_probe.py` also settles two things that are easy to get wrong from the source's file list alone:
