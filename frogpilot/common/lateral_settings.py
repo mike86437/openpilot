@@ -1,0 +1,182 @@
+"""Settings reader for the lateral control ported from dev-111826.
+
+Scope, on purpose (analysis/PORT-LATERAL-LEDGER.md §2 D3/D6, plan §4): this is the *read shape* the
+ported stack uses - one object per control-loop frame, `settings.get(key)` everywhere else - and nothing
+more. The source's parameter registry (nrdr/params/{specs,profiles,snapshots,tuning_policy}.py, 1 487 LOC)
+is not ported, and neither is a second config system: the keys live in this tree's own registry
+(common/params_keys.h) and are read through openpilot.common.params.
+
+Three rules this file exists to enforce:
+  1. Storage is touched once per snapshot, never inside a control loop (see LateralSettingsSource).
+  2. An unset key resolves to THIS tree's stock behaviour (STOCK_DEFAULTS, all off/zero), so a car that
+     never enables the port runs its own lateral controller. The source's profile defaults are kept as
+     SOURCE_REFERENCE - the numbers a ported drive has to reproduce - and are never applied.
+  3. Key names are the source's (`Nrdr*`), which is what lets the boot probe, drive notes and
+     analysis/* tools run unchanged against both trees.
+"""
+from __future__ import annotations
+
+import time
+from collections.abc import Mapping
+from dataclasses import dataclass, field
+from types import MappingProxyType
+from typing import Any
+
+from openpilot.common.params import Params
+from openpilot.common.params_pyx import UnknownKeyName
+
+# Same bound as the source's polling cycle (nrdr/params/snapshots.py:6): a saved tuning edit reaches a
+# running control loop within about half a second, and the actuation loop never waits on storage.
+REFRESH_PERIOD = 0.5
+
+# The keys this port reads. Registered in common/params_keys.h under these exact names.
+LATERAL_KEYS: tuple[str, ...] = (
+  "NrdrLateralController",
+  "NrdrSteerRatioMode",
+  "NrdrOptimizedLaneChanges",
+  "LaneGuidanceMode",
+  "LaneCenteringMinSpeed",
+  "LaneCenteringStrength",
+  "LaneCenterOffset",
+)
+
+# Unset = what this tree does today (ISC-3). Kept in the same order as LATERAL_KEYS so the two can be
+# diffed by eye and by test; analysis/lateral_settings_probe.py asserts common/params_keys.h agrees.
+STOCK_DEFAULTS: dict[str, Any] = {
+  "NrdrLateralController": 0,        # 0 -> this tree's own LatControlPID / LatControlTorque (controlsd.py:65-67)
+  "NrdrSteerRatioMode": 0,           # 0 -> no geometry override; the ported ladder arrives with Task 7
+  "NrdrOptimizedLaneChanges": False,
+  "LaneGuidanceMode": 0,             # 0 = off; the car reports LaneGuidanceMode=0 and LaneCentering=False
+  "LaneCenteringMinSpeed": 0,        # registered only: lane centring is deliberately not wired (D5)
+  "LaneCenteringStrength": 0.0,
+  "LaneCenterOffset": 0.0,
+}
+
+# Reference only - the source's own profile defaults (nrdr/params/profiles.py:268, specs.py:112-140).
+# Printed by describe() so a drive can be compared against the source run mode; never used as a default.
+SOURCE_REFERENCE: dict[str, Any] = {
+  "NrdrLateralController": 1,        # 1 = firmware controller, 2 = testing controller
+  "NrdrSteerRatioMode": 3,           # 3 = FIRMWARE (measured Clarity TRW-A020 rack map)
+  "NrdrOptimizedLaneChanges": True,
+  "LaneGuidanceMode": 2,
+  "LaneCenteringMinSpeed": 12,
+  "LaneCenteringStrength": 0.95,
+  "LaneCenterOffset": 0.0,
+}
+
+# Sentinel for a key that is not in common/params_keys.h at all: Params() raises UnknownKeyName for those,
+# so a registry/reader drift would otherwise either crash controlsd or be silently swallowed.
+UNREGISTERED = object()
+
+
+def _is_unset(value: Any) -> bool:
+  return value is None or (isinstance(value, (str, bytes)) and not value.strip())
+
+
+def _bool_value(value: Any, default: bool = False) -> bool:
+  if _is_unset(value):
+    return default
+  if isinstance(value, (bytes, str)):
+    text = value.decode() if isinstance(value, bytes) else value
+    return text.strip().lower() not in ("", "0", "false")
+  return bool(value)
+
+
+def _number_value(value: Any, cast, default):
+  if _is_unset(value):
+    return default
+  if isinstance(value, bool):
+    return cast(value)
+  if isinstance(value, (int, float)):
+    return cast(value)
+  try:
+    text = value.decode() if isinstance(value, bytes) else str(value)
+    return cast(text.strip())
+  except (AttributeError, ValueError):
+    return default
+
+
+@dataclass(frozen=True)
+class LateralSettings:
+  """One immutable read of the lateral keys. `generation` is what a control loop compares against to see
+  whether tuning changed mid-drive, exactly like the source's ParamSnapshot."""
+  generation: int = 0
+  values: Mapping[str, Any] = field(default_factory=dict, repr=False)
+
+  @classmethod
+  def snapshot(cls, pm: Params | None = None, generation: int = 0) -> LateralSettings:
+    """Read every key exactly once. pm is injectable so the reader is testable without params_pyx."""
+    params = pm if pm is not None else Params()
+    values: dict[str, Any] = {}
+    for key in LATERAL_KEYS:
+      try:
+        values[key] = params.get(key)
+      except UnknownKeyName:
+        values[key] = UNREGISTERED
+    return cls(generation=generation, values=MappingProxyType(values))
+
+  @property
+  def unregistered(self) -> tuple[str, ...]:
+    return tuple(key for key in LATERAL_KEYS if self.values.get(key) is UNREGISTERED)
+
+  def get(self, key: str, default: Any = None) -> Any:
+    """Raw value for a key, or `default` when it is unset or missing from the registry."""
+    value = self.values.get(key, UNREGISTERED)
+    return default if value is UNREGISTERED or _is_unset(value) else value
+
+  def bool_of(self, key: str) -> bool:
+    return _bool_value(self.get(key), STOCK_DEFAULTS.get(key, False))
+
+  def int_of(self, key: str) -> int:
+    return _number_value(self.get(key), int, STOCK_DEFAULTS.get(key, 0))
+
+  def float_of(self, key: str) -> float:
+    return _number_value(self.get(key), float, STOCK_DEFAULTS.get(key, 0.0))
+
+  def describe(self) -> dict[str, dict[str, Any]]:
+    """The printable run-mode table for the boot probe / drive notes (Task 10): value, whether it came
+    from the car or from stock, and the source value a comparable drive would have had."""
+    out: dict[str, dict[str, Any]] = {}
+    for key in LATERAL_KEYS:
+      unset = _is_unset(self.get(key))
+      out[key] = {
+        "effective": STOCK_DEFAULTS[key] if unset else self.get(key),
+        "source": "stock default" if unset else "car",
+        "stock": STOCK_DEFAULTS[key],
+        "source_reference": SOURCE_REFERENCE[key],
+        "registered": key not in self.unregistered,
+      }
+    return out
+
+
+class LateralSettingsSource:
+  """Hands a control loop a snapshot without touching storage on every frame.
+
+  Refreshes on the caller's clock, at most once per REFRESH_PERIOD. The source keeps a background thread
+  for this (nrdr/params/snapshots.py LiveParams); the port stays thread-free until a second consumer needs
+  one. The first call is eager, so frame 0 already has values.
+  """
+
+  def __init__(self, pm: Params | None = None, refresh_period: float = REFRESH_PERIOD) -> None:
+    self._params = pm if pm is not None else Params()
+    self._period = max(refresh_period, 0.0)
+    self._generation = 0
+    self._snapshot = LateralSettings.snapshot(self._params, self._generation)
+    self._next_refresh = time.monotonic() + self._period
+
+  def current(self) -> LateralSettings:
+    now = time.monotonic()
+    if now >= self._next_refresh:
+      self._refresh(now)
+    return self._snapshot
+
+  def refresh(self) -> LateralSettings:
+    """Force a read - used when a settings screen has just written a key."""
+    return self._refresh(time.monotonic())
+
+  def _refresh(self, now: float) -> LateralSettings:
+    self._generation += 1
+    self._snapshot = LateralSettings.snapshot(self._params, self._generation)
+    self._next_refresh = now + self._period
+    return self._snapshot
+

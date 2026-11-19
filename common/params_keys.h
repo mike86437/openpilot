@@ -477,4 +477,18 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"WheelControls", {PERSISTENT, STRING, "", "", 2}},
     {"WheelIcon", {PERSISTENT, STRING, "frog", "stock", 0}},
     {"WheelSpeed", {PERSISTENT, BOOL, "0", "0", 2}},
+
+    // Lateral port from dev-111826. Keys keep the source's own names on purpose (analysis/PORT-LATERAL-LEDGER.md
+    // D6) so the boot probe and analysis tools run unchanged on both trees. Every default below is this tree's
+    // stock behaviour - off/zero - and deliberately NOT the source's profile defaults (nrdr/params/profiles.py:268
+    // runs NrdrLateralController=1, NrdrSteerRatioMode=3, LaneGuidanceMode=2, LaneCenteringStrength=0.95, which
+    // are the reference a ported drive must reproduce, never a hidden default). Read through
+    // frogpilot/common/lateral_settings.py, never with Params() in a control loop. Not Pond toggles (tuning_level 0).
+    {"LaneCenterOffset", {PERSISTENT, FLOAT, "0.0", "0.0", 0}},
+    {"LaneCenteringMinSpeed", {PERSISTENT, INT, "0", "0", 0}},
+    {"LaneCenteringStrength", {PERSISTENT, FLOAT, "0.0", "0.0", 0}},
+    {"LaneGuidanceMode", {PERSISTENT, INT, "0", "0", 0}},
+    {"NrdrLateralController", {PERSISTENT, INT, "0", "0", 0}},
+    {"NrdrOptimizedLaneChanges", {PERSISTENT, BOOL, "0", "0", 0}},
+    {"NrdrSteerRatioMode", {PERSISTENT, INT, "0", "0", 0}},
 };
