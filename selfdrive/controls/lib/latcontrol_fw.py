@@ -74,44 +74,22 @@ KP_SOURCE = [0.018, 0.024, 0.048, 0.060]
 KI = [0.006, 0.008, 0.016, 0.020]
 ANGLE_RATE_LIMIT = 300.0
 
-# Low-speed proportional trim, from the first drive on this controller (00000041, 2026-11-19). The report was
-# the wheel oscillating at crawl, and the log agrees: over the hands-off frames in that boot the commanded angle
-# changed direction 60 times a minute at 0-8 kph against 10 in the same band on the dev-111826 drive, with the
-# overshoots 2-3x deeper (10.6 deg median against 4.2). At those speeds this controller is P-only by construction
-# - the integrator is frozen below 5 m/s (INTEGRATOR_MIN_SPEED) and the feedforward is gated off below
-# FF_SPEED_BP[0] and only joins once |angle error| is already under FF_JOIN_ERROR_DEG - and the core then
-# multiplies P by the lowest band of P_SCALE (1.25, vfn_eps_core.py:166). So the only authority in the loop at
-# crawl is P, and P is the number to turn.
-#
-# The trim is a deliberate deviation from the calibration, applied here because this file is where the controller
-# owns its gains (README §"the angle-PID gains belong to the controller, not to the core"). It stops at 8 m/s
-# (29 kph): the source's values stand unchanged from the 25 mph band edge up, and the controller probe
-# (analysis/lateral_controller_probe.py), which asserts the two trees' gain literals are equal by repr, now
-# reports this difference on purpose. Nothing else is touched: KI stays as the calibration has it (I cannot move at crawl
-# anyway), and the core's own tables, scales and feedforward are untouched so V19/V20 still hold.
-LOW_SPEED_TRIM_BP = [0.0, 3.0, 8.0]        # m/s
-LOW_SPEED_TRIM_KP = [0.70, 0.85, 1.00]     # multiplier on KP_SOURCE at those speeds
-
-
-def _trim_low_speed_kp():
-  """The source's schedule with the crawl-band knots inserted, above the trim's top knot unchanged by assertion."""
-  bp = sorted(set(GAIN_BP_SOURCE) | set(LOW_SPEED_TRIM_BP))
-  base = [float(np.interp(b, GAIN_BP_SOURCE, KP_SOURCE)) for b in bp]
-  trim = [float(np.interp(b, LOW_SPEED_TRIM_BP, LOW_SPEED_TRIM_KP)) for b in bp]
-  kp = [round(a * t, 6) for a, t in zip(base, trim)]
-  for b, base_k, got in zip(bp, base, kp):
-    if b >= LOW_SPEED_TRIM_BP[-1]:
-      assert got == round(base_k, 6), f"trim reached {b} m/s, past its own top knot"
-  return bp, kp
-
-
-GAIN_BP, KP = _trim_low_speed_kp()
-# The integral belongs to the source's schedule, so it keeps its own breakpoints. This constructor used to take
-# one breakpoint list for both, and giving the integral the trimmed (longer) one made np.interp raise
-# "fp and xp are not of the same length" inside the control loop - controlsd died at latcontrol_fw.py's
-# pid.update and the car faulted out mid-drive (00000043, 2026-11-19). Asserted here because the failure was a
-# length mismatch between two lists this file builds, which is exactly the kind of thing a reader of the trim
-# above cannot see from the trim alone.
+# Gains verbatim from the source: no trim. There was a low-speed P trim here (0.70-1.00x below 8 m/s) added
+# from the first drive on this controller (00000041). It is removed because the thing it was absorbing is not a
+# gain. Measured from each build's own logs (analysis/actuator_map_probe.py), the same normalised torque became
+# CAN 3838 per unit on dev-111826 boot 0000003f and 15348 per unit on this port's 00000041 and 00000046
+# wherever the loop idles: FrogPilot's hot modified-EPS Clarity map was applied to a controller whose gains are
+# a firmware calibration, i.e. 4x the authority this schedule assumes at lane-holding sizes. And the trim never
+# reached past 8 m/s while the oscillation was everywhere: 00000046's untrimmed 30-50 and 50+ kph bands still
+# carried 2-4x the wheel motion its own commanded angle had (analysis/oscillation_source_probe.py). With the
+# actuator map taken from the calibration's own table (opendbc/car/honda/interface.py), these numbers run
+# against the actuator they were measured on, and analysis/lateral_controller_probe.py again finds the two
+# trees' gain literals equal by repr.
+GAIN_BP, KP = GAIN_BP_SOURCE, KP_SOURCE
+# The integral keeps its own list even while both are the source's again, because sharing one list for both is
+# what faulted the car: a longer list for the integral made np.interp raise "fp and xp are not of the same
+# length" inside the control loop, controlsd died at pid.update and openpilot dropped out mid-drive (00000043).
+# Asserted because a length disagreement between two lists this file builds is invisible from either list alone.
 KI_BP = GAIN_BP_SOURCE
 assert len(GAIN_BP) == len(KP), "kp schedule and its breakpoints disagree"
 assert len(KI_BP) == len(KI), "ki schedule and its breakpoints disagree"
@@ -146,9 +124,9 @@ class LatControlFirmware(LatControl):
                   self.firmware_profile.provisional, self.delay_schedule, self.firmware_profile.required_rwd or "-")
     # The gain schedule the controller is actually running, printed once per startup next to the admission line:
     # a port drive is judged against these numbers, so the log has to say which ones were in the loop.
-    cloudlog.info("PTM Controller angle-PID kp_bp=%s kp=%s (source %s trimmed by %s at %s m/s); "
-                  "ki_bp=%s ki=%s unchanged",
-                  GAIN_BP, KP, KP_SOURCE, LOW_SPEED_TRIM_KP, LOW_SPEED_TRIM_BP, KI_BP, KI)
+    cloudlog.info("PTM Controller angle-PID kp_bp=%s kp=%s; ki_bp=%s ki=%s (source values, untrimmed; the "
+                  "actuator map these gains assume comes from the calibration table, see the Honda interface)",
+                  GAIN_BP, KP, KI_BP, KI)
     self.cmd_delay = CommandDelay(dt)
     self.cmd_delay_scale = 1.0
     self.prev_angle = 0.0
