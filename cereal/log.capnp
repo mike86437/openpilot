@@ -1255,6 +1255,30 @@ struct ModelDataV2 {
     desiredCurvature @0 :Float32;
     desiredAcceleration @1 :Float32;
     shouldStop @2 :Bool;
+    # Timing stamps carried from dev-111826 (cereal/log.capnp:1227-1250) with the same field ids and the same
+    # enum members, so a source-tree drive decodes here field for field and a port drive decodes there
+    # (ledger §2 D2). Appending struct fields is safe in both directions; only Event *union* ids are not, and
+    # those are never reused (V4: driverMonitoringState @151 vs @71).
+    lateralActionTime @3 :Float32; # Seconds from the source vision frame to the lateral action target; zero means unavailable.
+    lateralSource @4 :LateralSource;  # where desiredCurvature came from; unknown in older logs
+    delayInput @5 :DelayInput;        # which model input carries the told lateral delay; unknown in older logs
+    # @6 and @7 are left undefined and reserved: the source has laneGuidanceMode @6 :UInt8 and
+    # ptmTimingRestored @7 :Bool = true there, and Task 11 is what decides whether this tree carries them.
+    # Something else at @6 later is the struct-field version of the @151/@71 trap.
+
+    enum LateralSource {
+      unknown @0;
+      plan @1;           # read off the plan at lateralActionTime - the only source this tree's models have
+      actionHead @2;     # the model's own action output - no model in this tree produces one
+      curvatureHead @3;  # a legacy model's desired_curvature output (frogpilot_model_utilities.update_action)
+    }
+
+    enum DelayInput {
+      unknown @0;
+      none @1;
+      actionT @2;
+      lateralControlParams @3;
+    }
   }
 }
 
