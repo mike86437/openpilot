@@ -226,7 +226,31 @@ class CarInterface(CarInterfaceBase):
         ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 2564, 8000], [0, 2564, 3840]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.3], [0.09]]
       elif candidate == CAR.HONDA_CLARITY:
-        if any(fw.ecu == "eps" and b"-" not in fw.fwVersion for fw in car_fw):
+        # A Clarity reports two EPS rows: a version row (this car: `39990-TRW,A020`) and a part number row
+        # (` BK8F162914D`). Which variant a Clarity is has to be read from the version row, and the test below
+        # reads any EPS row - a part number never contains a dash - so it answered "the hot map variant" for
+        # every modified Clarity, including a car whose lateral controller here is a firmware calibration.
+        #
+        # A calibration is stated in the actuator it was measured on. Measured on the drive that measured this
+        # one (dev-111826, boot 0000003f), the CAN torque the EPS was asked for is a straight line of the
+        # normalised command with slope 3838, i.e. a 0-3840 map. Measured on both drives of this port
+        # (00000041, 00000046), the same request produced slope 15348 wherever the loop idles: the hot map
+        # below hands a normalised gain schedule 4x the authority it assumes at lane-holding sizes, and 0.4x at
+        # the top. analysis/actuator_map_probe.py prints either drive's real slope; analysis/
+        # oscillation_source_probe.py then shows the wheel carrying 2-4x the 1.5-3.5 Hz motion its own
+        # commanded angle had. The map therefore comes from the calibration's own table, not from this file.
+        #
+        # What is deliberately not touched: FrogPilot's lateralTuning numbers for this row, which are a stock
+        # lateral PID's and were tuned against the hot map. The controller this car is admitted for reads none
+        # of them (admission requires a PID-shaped CarParams, not PID values). If this car ever runs FrogPilot's
+        # own controller again, this row's tune has to be revisited together with the map - that pairing is an
+        # open question, not something to guess at here.
+        from openpilot.frogpilot.controls.lateral.controller_selection import (
+          calibration_lateral_params, firmware_profile_for_firmware)
+        calibrated_params = calibration_lateral_params(firmware_profile_for_firmware(candidate, car_fw))
+        if calibrated_params is not None:
+          ret.lateralParams.torqueBP, ret.lateralParams.torqueV = calibrated_params
+        elif any(fw.ecu == "eps" and b"-" not in fw.fwVersion for fw in car_fw):
           ret.lateralParams.torqueBP, ret.lateralParams.torqueV = [[0, 2560, 15360], [0, 2560, 3840]]
           ret.lateralTuning.pid.kf = 0.00004
           ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.1575], [0.05175]]
