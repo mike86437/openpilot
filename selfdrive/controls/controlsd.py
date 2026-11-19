@@ -22,6 +22,9 @@ from openpilot.selfdrive.modeld.modeld import LAT_SMOOTH_SECONDS
 from openpilot.selfdrive.locationd.helpers import PoseCalibrator, Pose
 
 from openpilot.frogpilot.common import frogpilot_utilities, frogpilot_variables
+from openpilot.frogpilot.common.lateral_settings import LateralSettingsSource
+from openpilot.frogpilot.controls.lateral.controller_selection import firmware_controller_selected
+from openpilot.frogpilot.controls.lateral.steer_ratio_tuning import SteerRatioModeLatch, resolve_steer_ratio_selection
 from openpilot.frogpilot.controls.lib.neural_network_feedforward import LatControlNNFF
 
 State = log.SelfdriveState.OpenpilotState
@@ -76,6 +79,26 @@ class Controls:
     if self.CP.lateralTuning.which() == "torque" and (self.frogpilot_toggles.nnff or self.frogpilot_toggles.nnff_lite):
       self.LaC = LatControlNNFF(self.CP, self.CI, DT_CTRL)
 
+    # PTM lateral, S3 (`analysis/PORT-LATERAL-LEDGER.md` §1a, Task 31). The admission is read once, at startup,
+    # where the source reads it once (`sunnypilot/selfdrive/controls/controlsd_ext.py:57-63`), and the key is read
+    # through this tree's own settings reader rather than from Params directly (D3). `NrdrLateralController` absent
+    # or 0 selects nothing here: the four branches above stand, unchanged (ISC-3). The override sits where the
+    # source's own override sits, after the branch the CarParams asked for, and `firmware_controller_selected`
+    # already contains the four-condition admission, `lateralTuning.which() == 'pid'` included.
+    self.lateral_settings = LateralSettingsSource(self.params)
+    self.firmware_lateral_selected = firmware_controller_selected(self.lateral_settings.current(), self.CP, self.FPCP)
+    if self.firmware_lateral_selected:
+      # Deferred, as the source defers it (`controlsd_ext.py:58-63`): a car this admission does not accept does
+      # not import the controller, its core or the measured tables.
+      from openpilot.selfdrive.controls.lib.latcontrol_fw import LatControlFirmware
+      self.LaC = LatControlFirmware(self.CP, self.CI, DT_CTRL)
+      # The geometry the controller starts on, resolved from the same snapshot the admission was read from. Every
+      # frame after this replaces it through the latch below, which is what `ptm_baseline=True` means: the measured
+      # rack map is Table A only for a car the admission has accepted (D8). The source reaches the same value
+      # through `ptm_baseline=getattr(controls.LaC, "firmware_profile", None) is not None`.
+      self.steer_ratio_latch = SteerRatioModeLatch(
+        resolve_steer_ratio_selection(self.CP, self.lateral_settings.current(), ptm_baseline=True))
+
     if hasattr(self.LaC, "pid"):
       self.base_k_p = self.LaC.pid._k_p
 
@@ -99,14 +122,48 @@ class Controls:
   def state_control(self):
     CS = self.sm['carState']
 
+    # Check which actuators can be enabled, resolved before the geometry as the source's controlsd resolves it
+    # (`controlsd.py:103-106`): the steer-ratio latch is told whether the controller is engaged. `lat_active` is
+    # the source's own quantity; this tree's FrogPilot-only term stays on the `CC.latActive` line below.
+    standstill = abs(CS.vEgo) <= max(self.CP.minSteerSpeed, 0.3) or CS.standstill
+
+    # FrogPilot variables
+    # Taken from the base this branch now sits on, not carried from the one the port was written against:
+    # `12aec8d34` had no force_decel term in `CC.longActive` at all, and this one does (Force Stop / Pause
+    # Acceleration work, and the soft-disabling case). It is named here because the activity gate lives here now.
+    force_decel = bool((self.sm["driverMonitoringState"].awarenessStatus < 0.) or
+                       (self.sm["selfdriveState"].state == State.softDisabling))
+    lateral_allowed = not self.CP.alternativeExperience & ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL or self.sm["frogpilotCarState"].alwaysOnLateralAllowed
+    lateral_active = (lateral_allowed and self.sm["selfdriveState"].active) or self.sm["frogpilotCarState"].alwaysOnLateralEnabled
+    lat_active = lateral_active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and \
+                 (not standstill or self.CP.steerAtStandstill)
+
     # Update VehicleModel
     lp = self.sm['liveParameters']
     x = max(lp.stiffnessFactor, 0.1)
     sr = max(lp.steerRatio, 0.1)
-    self.VM.update_params(x, sr)
-
-    steer_angle_without_offset = math.radians(CS.steeringAngleDeg - lp.angleOffsetDeg)
-    self.curvature = -self.VM.calc_curvature(steer_angle_without_offset, CS.vEgo, lp.roll)
+    if self.firmware_lateral_selected:
+      # One settings snapshot for this frame (S1's reader refreshes on its own clock, so the control path does no
+      # Params read, D3), the latch, and the latched geometry in both directions. The same snapshot is what the
+      # controller's own lane gate reads (S6), which is the live half Task 11 left for this call site.
+      settings = self.lateral_settings.current()
+      self.LaC.set_live_tuning_snapshot(settings)
+      selection = self.steer_ratio_latch.update(
+        resolve_steer_ratio_selection(self.CP, settings, ptm_baseline=True), lat_active)
+      self.LaC.set_steer_ratio_selection(selection)
+      # The ratio the VehicleModel runs on and the curvature the car's measured angle means both come from the
+      # accepted selection, as the source runs them: a controller that commanded through the measured map while
+      # openpilot's own curvature still came from the learned ratio is the mixed state the plan forbids. Outside
+      # mode 1 `ratio_at` answers the car's own ratio; mode 1's live learner ratio is the same
+      # `liveParameters.steerRatio` this tree already runs on, with no held-ratio guard (see the README).
+      sr = max(selection.ratio_at(0.0, sr), 0.1)
+      self.VM.update_params(x, sr)
+      self.curvature = selection.measured_curvature(self.VM, CS.steeringAngleDeg, CS.vEgo, lp.roll,
+                                                    angle_offset_deg=lp.angleOffsetDeg)
+    else:
+      self.VM.update_params(x, sr)
+      steer_angle_without_offset = math.radians(CS.steeringAngleDeg - lp.angleOffsetDeg)
+      self.curvature = -self.VM.calc_curvature(steer_angle_without_offset, CS.vEgo, lp.roll)
 
     # Update Torque Params
     if self.CP.lateralTuning.which() == 'torque':
@@ -129,17 +186,10 @@ class Controls:
     CC = car.CarControl.new_message()
     CC.enabled = self.sm['selfdriveState'].enabled
 
-    # Check which actuators can be enabled
-    standstill = abs(CS.vEgo) <= max(self.CP.minSteerSpeed, 0.3) or CS.standstill
-
-    # FrogPilot variables
-    force_decel = bool((self.sm["driverMonitoringState"].awarenessStatus < 0.) or
-                       (self.sm["selfdriveState"].state == State.softDisabling))
-    lateral_allowed = not self.CP.alternativeExperience & ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL or self.sm["frogpilotCarState"].alwaysOnLateralAllowed
-    lateral_active = (lateral_allowed and self.sm["selfdriveState"].active) or self.sm["frogpilotCarState"].alwaysOnLateralEnabled
-
-    CC.latActive = lateral_active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and \
-                   (not standstill or self.CP.steerAtStandstill) and self.sm['frogpilotPlan'].lateralCheck
+    # The gate above is the only place this is computed. `lat_active` is the source's quantity, the same one the
+    # steer-ratio latch is told; this tree's FrogPilot-only term stays on the `CC.latActive` line, unchanged.
+    # `CC.longActive` keeps the base's `force_decel` term rather than the port branch's shorter line.
+    CC.latActive = lat_active and self.sm['frogpilotPlan'].lateralCheck
     CC.longActive = CC.enabled and not any(e.overrideLongitudinal for e in self.sm['onroadEvents']) and \
                     (force_decel or not self.sm['frogpilotCarState'].pauseLongitudinal) and self.CP.openpilotLongitudinalControl
 
