@@ -254,9 +254,11 @@ both trees. `lat_delay` is passed as the base's contract requires and the contro
 from the admitted profile.
 
 `analysis/lateral_controlsd_probe.py` is that change's gate: it diffs the wired file against
-`HEAD:selfdrive/controls/controlsd.py` statement for statement, executes HEAD's geometry lines against the guarded
-else-branch over a grid of speeds, wheel angles, rolls, learned ratios, stiffness factors and offsets and requires
-bit-identical numbers, executes the construction block over car identities and parameter states to see which controller
+`controlsd.py` **as it was immediately before this wiring** — pinned to the parent of the commit that added
+`self.firmware_lateral_selected` (found by searching the file's history for that text), because `HEAD` is now the wired
+file and comparing against it would silently compare the file with itself — statement for statement, executes that
+pre-wiring file's geometry lines against the guarded else-branch over a grid of speeds, wheel angles, rolls, learned
+ratios, stiffness factors and offsets and requires bit-identical numbers, executes the construction block over car identities and parameter states to see which controller
 is built and to prove `firmware_lateral_selected` cannot be true without the admission, and runs this tree's admitted
 block against dev-111826's `vehicle_model_state` + `measured_curvature` on the same grid: identical at mode 3, with
 each recorded difference (mode 0, mode 2, the held-ratio guard) asserted in its stated direction. The run-mode script
