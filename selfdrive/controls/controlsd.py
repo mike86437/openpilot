@@ -128,11 +128,6 @@ class Controls:
     standstill = abs(CS.vEgo) <= max(self.CP.minSteerSpeed, 0.3) or CS.standstill
 
     # FrogPilot variables
-    # Taken from the base this branch now sits on, not carried from the one the port was written against:
-    # `12aec8d34` had no force_decel term in `CC.longActive` at all, and this one does (Force Stop / Pause
-    # Acceleration work, and the soft-disabling case). It is named here because the activity gate lives here now.
-    force_decel = bool((self.sm["driverMonitoringState"].awarenessStatus < 0.) or
-                       (self.sm["selfdriveState"].state == State.softDisabling))
     lateral_allowed = not self.CP.alternativeExperience & ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL or self.sm["frogpilotCarState"].alwaysOnLateralAllowed
     lateral_active = (lateral_allowed and self.sm["selfdriveState"].active) or self.sm["frogpilotCarState"].alwaysOnLateralEnabled
     lat_active = lateral_active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and \
@@ -186,9 +181,16 @@ class Controls:
     CC = car.CarControl.new_message()
     CC.enabled = self.sm['selfdriveState'].enabled
 
-    # The gate above is the only place this is computed. `lat_active` is the source's quantity, the same one the
-    # steer-ratio latch is told; this tree's FrogPilot-only term stays on the `CC.latActive` line, unchanged.
-    # `CC.longActive` keeps the base's `force_decel` term rather than the port branch's shorter line.
+    # FrogPilot variables
+    # The base's own longitudinal term, left where the base computes it. The port's recorded delta is the lateral
+    # activity gate moving above the geometry and nothing else: `analysis/lateral_controlsd_probe.py` compares the
+    # wired file against the file it replaced statement for statement, and a base term moved out of the base's own
+    # block shows up there as an unrecorded change to a car that never asks for the port. `12aec8d34` had no
+    # force_decel at all; this base does, and it stays the base's.
+    force_decel = bool((self.sm["driverMonitoringState"].awarenessStatus < 0.) or
+                       (self.sm["selfdriveState"].state == State.softDisabling))
+    # The gate above is the only place the lateral activity is computed. `lat_active` is the source's quantity, the
+    # same one the steer-ratio latch is told; this tree's FrogPilot-only term stays on the `CC.latActive` line.
     CC.latActive = lat_active and self.sm['frogpilotPlan'].lateralCheck
     CC.longActive = CC.enabled and not any(e.overrideLongitudinal for e in self.sm['onroadEvents']) and \
                     (force_decel or not self.sm['frogpilotCarState'].pauseLongitudinal) and self.CP.openpilotLongitudinalControl
