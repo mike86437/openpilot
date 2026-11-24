@@ -13,7 +13,7 @@ from opendbc.car import gen_empty_fingerprint
 from opendbc.car.car_helpers import interfaces
 from opendbc.car.ford.values import CAR as FORD
 from opendbc.car.gm.values import CC_ONLY_CAR
-from opendbc.car.honda.values import HONDA_BOSCH, HondaFrogPilotFlags
+from opendbc.car.honda.values import CAR as HONDA, HONDA_BOSCH, HondaFrogPilotFlags
 from opendbc.car.hyundai.values import CANFD_CAR, HyundaiFlags
 from opendbc.car.interfaces import GearShifter
 from opendbc.car.mock.values import CAR as MOCK
@@ -64,7 +64,15 @@ IS_COMMA_FOUR = HARDWARE.get_device_type() == "mici"
 
 ALWAYS_ON_LATERAL_LKAS_BUTTON_BRANDS = {"chrysler", "ford", "toyota"}
 CRUISE_MAIN_OFF_AT_START_BRANDS = {"chrysler"}
-CRUISE_MAIN_OFF_AT_START_CAR = set(CANFD_CAR) | (set(TOYOTA) - UNSUPPORTED_DSU_CAR)
+# Whether Always On Lateral can arm at start depends on what this car's cruise main switch does when the car is
+# powered off. always_on_lateral.py:20-25 assumes any car not named here starts with its main ON, so the MAIN_ON a
+# drive reports first is not a driver action and the gate waits for a real off -> on cycle; a car named here starts
+# with cruise_main_prev=False, so turning cruise main on arms it - which is what test_main_at_start asserts, and
+# what the `listed_car` line of test_quick_restart asserts for the CAN-invalid start-up a real start-up actually is.
+# The Clarity is one of those cars: on six drives (00000056-0000005b) MAIN_ON is off at the first carState frame
+# of the boot and on a tenth of a second later, canValid is False across that window, and not one of the six armed
+# Always On Lateral on its own - that first MAIN_ON is the driver turning cruise main on as the system comes up.
+CRUISE_MAIN_OFF_AT_START_CAR = set(CANFD_CAR) | (set(TOYOTA) - UNSUPPORTED_DSU_CAR) | {HONDA.HONDA_CLARITY}
 DISABLE_OPENPILOT_LONG_BRANDS = {"ford", "toyota"}
 DISTANCE_BUTTON_BRANDS = {"chrysler", "ford", "gm", "honda", "hyundai", "mazda", "nissan", "volkswagen"}
 LKAS_BUTTON_BRANDS = {"chrysler", "ford", "honda", "mazda", "nissan"}

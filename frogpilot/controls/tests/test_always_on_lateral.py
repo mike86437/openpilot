@@ -490,6 +490,23 @@ def test_main_at_start_toyota():
     assert frogpilotCarState.alwaysOnLateralWaiting != allowed, fingerprint
 
 
+def test_main_at_start_honda_clarity():
+  # The Clarity is named in CRUISE_MAIN_OFF_AT_START_CAR because its ACC main is off at the first carState frame of
+  # every boot and the driver turns it on as the system comes up, with canValid still false across that window - so
+  # the first MAIN_ON is the driver action, and arming has to come from it. The other Honda keeps FrogPilot's
+  # assumption that the main is already on at start, and still has to be told to cycle cruise main.
+  clarity = Drive(brand="honda", fingerprint=HONDA.HONDA_CLARITY)
+  clarity.step(can_valid=False)
+  started = clarity.step()
+
+  civic = Drive(brand="honda", fingerprint=HONDA.HONDA_CIVIC).step()
+
+  assert started.alwaysOnLateralAllowed
+  assert not started.alwaysOnLateralWaiting
+  assert not civic.alwaysOnLateralAllowed
+  assert civic.alwaysOnLateralWaiting
+
+
 def test_no_cruise_main():
   for brand in frogpilot_variables.NO_CRUISE_SWITCH_BRANDS:
     drive = Drive(brand=brand)
