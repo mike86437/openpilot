@@ -62,12 +62,7 @@ UPDATE_PROGRESS_INTERVAL = 0.1            # Seconds between update progress chec
 
 IS_COMMA_FOUR = HARDWARE.get_device_type() == "mici"
 
-# The list upstream uses for this is chrysler/ford/toyota, but the behaviour it unlocks is not brand-specific in the
-# firmware: panda's safety/safety.h:383 consumes a rising LKAS-button edge for whatever mode reports one, and
-# modes/honda.h:138,140 is what reports it for this car. Leaving Honda out here is what makes
-# can_use_always_on_lateral_lkas_button False, and a toggle that can never be read (:1499) leaves the button's role
-# decided solely by whatever the fingerprint asserted (:1500).
-ALWAYS_ON_LATERAL_LKAS_BUTTON_BRANDS = {"chrysler", "ford", "honda", "toyota"}
+ALWAYS_ON_LATERAL_LKAS_BUTTON_BRANDS = {"chrysler", "ford", "toyota"}
 CRUISE_MAIN_OFF_AT_START_BRANDS = {"chrysler"}
 CRUISE_MAIN_OFF_AT_START_CAR = set(CANFD_CAR) | (set(TOYOTA) - UNSUPPORTED_DSU_CAR)
 DISABLE_OPENPILOT_LONG_BRANDS = {"ford", "toyota"}
@@ -1407,6 +1402,12 @@ class FrogPilotVariables:
     toggle.has_lkas_button = toggle.car_make in LKAS_BUTTON_BRANDS or toggle.can_use_always_on_lateral_lkas_button
     toggle.has_lkas_button |= toggle.car_make == "toyota" and CP.carFingerprint != TOYOTA.TOYOTA_PRIUS_V
     toggle.can_use_always_on_lateral_lkas_button |= toggle.car_make in ALWAYS_ON_LATERAL_LKAS_BUTTON_BRANDS and toggle.has_lkas_button
+    # A car that declared the capability in its own CarParams has it, whatever brand list upstream has tested. That
+    # is the honest source for it: the gate the flag asks for is brand-agnostic in firmware (safety/safety.h:383
+    # acts on a rising LKAS-button edge for any mode that reports one, and modes/honda.h:138,140 reports it for
+    # this car), and without this line the AlwaysOnLateralLKASButton toggle can never be read for a Honda
+    # (:1499) - leaving the button's role decided only by what the fingerprint asserted.
+    toggle.can_use_always_on_lateral_lkas_button |= bool(FPCP.alwaysOnLateralLKASButton) and toggle.has_lkas_button
     toggle.can_use_always_on_lateral_lkas_button &= CP.carFingerprint not in UNVERIFIED_LKAS_BUTTON_CAR
     toggle.has_distance_button = toggle.car_make in DISTANCE_BUTTON_BRANDS
     toggle.has_distance_button |= (toggle.car_make == "toyota" and bool(CP.flags & ToyotaFlags.TSS2) and
