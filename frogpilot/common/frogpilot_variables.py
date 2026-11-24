@@ -62,7 +62,12 @@ UPDATE_PROGRESS_INTERVAL = 0.1            # Seconds between update progress chec
 
 IS_COMMA_FOUR = HARDWARE.get_device_type() == "mici"
 
-ALWAYS_ON_LATERAL_LKAS_BUTTON_BRANDS = {"chrysler", "ford", "toyota"}
+# The list upstream uses for this is chrysler/ford/toyota, but the behaviour it unlocks is not brand-specific in the
+# firmware: panda's safety/safety.h:383 consumes a rising LKAS-button edge for whatever mode reports one, and
+# modes/honda.h:138,140 is what reports it for this car. Leaving Honda out here is what makes
+# can_use_always_on_lateral_lkas_button False, and a toggle that can never be read (:1499) leaves the button's role
+# decided solely by whatever the fingerprint asserted (:1500).
+ALWAYS_ON_LATERAL_LKAS_BUTTON_BRANDS = {"chrysler", "ford", "honda", "toyota"}
 CRUISE_MAIN_OFF_AT_START_BRANDS = {"chrysler"}
 CRUISE_MAIN_OFF_AT_START_CAR = set(CANFD_CAR) | (set(TOYOTA) - UNSUPPORTED_DSU_CAR)
 DISABLE_OPENPILOT_LONG_BRANDS = {"ford", "toyota"}
@@ -1497,8 +1502,18 @@ class FrogPilotVariables:
 
     toggle.always_on_lateral = self.get_value("AlwaysOnLateral")
     toggle.always_on_lateral_lkas_button = self.get_value("AlwaysOnLateralLKASButton", condition=toggle.can_use_always_on_lateral_lkas_button and toggle.always_on_lateral)
-    toggle.always_on_lateral_lkas_button_forced = FPCP.alwaysOnLateralLKASButton and toggle.has_lkas_button
-    toggle.always_on_lateral_lkas_button |= toggle.always_on_lateral_lkas_button_forced and toggle.always_on_lateral
+    # Upstream's answer for a Honda is that the fingerprint decides: opendbc/car/interfaces.py writes
+    # `fp_ret.alwaysOnLateralLKASButton = True` for every Honda (5f5d10072 and cd40aae5e "Always On Lateral",
+    # 2025-12-01; 5216e413d added this forced flag and the OR below on 2025-12-09), and once this value is True
+    # the button's own mapping is discarded without being read (:1680). On this car that is why "Force openpilot
+    # to Coast" (LKASButtonControl=2, still stored) cannot fire while Always On Lateral is on - measured over four
+    # drives by analysis/lkas_button_probe.py: 8 presses, every one arming or disarming Always On Lateral,
+    # forceCoast true in zero frames. dev-111826 and nrdr111326 never carried the forcing and the mapping worked
+    # with Always On Lateral on, so this branch declines it. What the car claims is still recorded, as the
+    # fingerprint flag below, and the panda's own gate follows this one term
+    # (frogpilot/controls/lib/always_on_lateral.py:31).
+    toggle.always_on_lateral_lkas_button_forced = False
+    toggle.always_on_lateral_lkas_button_fingerprint = bool(FPCP.alwaysOnLateralLKASButton) and toggle.has_lkas_button
     toggle.always_on_lateral_pause_on_brake_speed = self.get_value("PauseAOLOnBrake", cast=float, condition=toggle.always_on_lateral, conversion=speed_conversion)
 
     toggle.automatic_updates = self.get_value("AutomaticUpdates", condition=self.release_branch or self.vetting_branch or self.frogs_go_moo, default=True) and not frogpilot_paths.BACKUP_PATH.is_file()

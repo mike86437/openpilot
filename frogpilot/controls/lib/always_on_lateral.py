@@ -27,7 +27,13 @@ class AlwaysOnLateral:
     if frogpilot_toggles.always_on_lateral and not CP.passive:
       CP.alternativeExperience |= ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL
 
-      if frogpilot_toggles.always_on_lateral_lkas_button or FPCP.alwaysOnLateralLKASButton:
+      # Only the driver's toggle asks for the LKAS button to be the gate. Upstream also asks for it whenever the
+      # car's own FrogPilotCarParams claims it (opendbc/car/interfaces.py, HONDA branch), which for a Honda means
+      # always - and this bit is what panda's safety.h:383 honours, so leaving it in would keep the button acting
+      # as the Always On Lateral switch in firmware no matter what the mapping says. Dropping it leaves
+      # get_lateral_allowed() (safety.h:586-589) taking `acc_main_on`, so Always On Lateral still arms with the
+      # car's cruise main switch on; what stops working is steering with cruise main off armed by the button.
+      if frogpilot_toggles.always_on_lateral_lkas_button:
         CP.alternativeExperience |= ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL_LKAS_BUTTON
 
     self.always_on_lateral = bool(CP.alternativeExperience & ALTERNATIVE_EXPERIENCE.ALWAYS_ON_LATERAL)
